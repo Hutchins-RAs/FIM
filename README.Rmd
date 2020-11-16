@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# fim
+# Fiscal Impact Measure
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/malcalakovalski/fim-pkg.svg?branch=master)](https://travis-ci.com/malcalakovalski/fim-pkg)
