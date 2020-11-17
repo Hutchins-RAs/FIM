@@ -7,16 +7,15 @@
 \format{
 A data frame with 56 rows and 10 variables:
 \describe{
-\item{\code{fy}}{double. DESCRIPTION.}
-\item{\code{gftfp}}{double. DESCRIPTION.}
-\item{\code{gfrpt}}{double. DESCRIPTION.}
-\item{\code{gfrpri}}{double. DESCRIPTION.}
-\item{\code{gfrcp}}{double. DESCRIPTION.}
-\item{\code{gfrs}}{double. DESCRIPTION.}
-\item{\code{yptmr}}{double. DESCRIPTION.}
-\item{\code{yptmd}}{double. DESCRIPTION.}
-\item{\code{yptu}}{double. DESCRIPTION.}
-\item{\code{date}}{double. DESCRIPTION.}
+\item{\code{date}}{Quarterly calendar data. Data was originally annual in fiscal years.}
+\item{\code{gftfp}}{Federal Government Social Benefit Payments to Persons}
+\item{\code{gfrpt}}{Federal Government Personal Current Tax Receipts}
+\item{\code{gfrpri}}{Federal Government Tax Receipts on Production & Imports}
+\item{\code{gfrcp}}{Federal Government Tax Receipts on Corporate Income}
+\item{\code{gfrs}}{Contributions for Federal Government Social Insurance}
+\item{\code{yptmr}}{Government Social Benefit Payments to Persons: Medicare}
+\item{\code{yptmd}}{Government Social Benefit Payments to Persons: Medicaid}
+\item{\code{yptu}}{Govt Transf to Persons: Unemployment Insurance Benefits}
 }
 }
 \usage{

@@ -7,13 +7,13 @@
 \format{
 A data frame with 203 rows and 52 variables:
 \describe{
-\item{\code{date}}{double. Quarterly.}
-\item{\code{gdp}}{double. Nominal Gross Domestic Product (SAAR, Bil.$).}
-\item{\code{c}}{double. Personal Consumption Expenditures (SAAR, Bil.$).}
-\item{\code{ch}}{double. Real Personal Consumption Expenditures}
-\item{\code{gdph}}{double. Real Gross Domestic Product (SAAR, Bil.Chn.2012$)}
-\item{\code{jc}}{double. Personal Consumption Expenditures: Chain Price Index (SA, 2012=100)}
-\item{\code{jgdp}}{double. Gross Domestic Product: Chain Price Index (SA, 2012=100).}
+\item{\code{date}}{Quarterly.}
+\item{\code{gdp}}{Nominal Gross Domestic Product (SAAR, Bil.$).}
+\item{\code{c}}{Personal Consumption Expenditures (SAAR, Bil.$).}
+\item{\code{ch}}{Real Personal Consumption Expenditures}
+\item{\code{gdph}}{Real Gross Domestic Product (SAAR, Bil.Chn.2012$)}
+\item{\code{jc}}{Personal Consumption Expenditures: Chain Price Index (SA, 2012=100)}
+\item{\code{jgdp}}{Gross Domestic Product: Chain Price Index (SA, 2012=100).}
 \item{\code{jgf}}{Federal Govt Consumption & Gross Investment: Chn Price Index(SA, 2012=100)}
 \item{\code{jgs}}{State & Local Govt Consumption/Gross Investment: Chn Price Index(SA, 2012=100)}
 \item{\code{jgse}}{State & Local Govt Consumption Expenditures: Chain Price Index (SA, 2012=100)}
