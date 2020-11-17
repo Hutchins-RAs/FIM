@@ -6,58 +6,58 @@
 #'
 #' @format A data frame with 203 rows and 52 variables:
 #' \describe{
-#'   \item{\code{date}}{double. Quarterly.}
-#'   \item{\code{gdp}}{double. Nominal Gross Domestic Product (SAAR, Bil.$).}
-#'   \item{\code{c}}{double. Personal Consumption Expenditures (SAAR, Bil.$).}
-#'   \item{\code{ch}}{double. Real Personal Consumption Expenditures}
-#'   \item{\code{gdph}}{double. Real Gross Domestic Product (SAAR, Bil.Chn.2012$)}
-#'   \item{\code{jc}}{double. Personal Consumption Expenditures: Chain Price Index (SA, 2012=100)}
-#'   \item{\code{jgdp}}{double. Gross Domestic Product: Chain Price Index (SA, 2012=100).}
-#'   \item{\code{jgf}}{double. DESCRIPTION.}
-#'   \item{\code{jgs}}{double. DESCRIPTION.}
-#'   \item{\code{jgse}}{double. DESCRIPTION.}
-#'   \item{\code{jgsi}}{double. DESCRIPTION.}
-#'   \item{\code{ptgh}}{double. DESCRIPTION.}
-#'   \item{\code{ptgsh}}{double. DESCRIPTION.}
-#'   \item{\code{ptgfh}}{double. DESCRIPTION.}
-#'   \item{\code{yptmr}}{double. DESCRIPTION.}
-#'   \item{\code{yptmd}}{double. DESCRIPTION.}
-#'   \item{\code{yptu}}{double. DESCRIPTION.}
-#'   \item{\code{gtfp}}{double. DESCRIPTION.}
-#'   \item{\code{ypog}}{double. DESCRIPTION.}
-#'   \item{\code{yptx}}{double. DESCRIPTION.}
-#'   \item{\code{ytpi}}{double. DESCRIPTION.}
-#'   \item{\code{yctlg}}{double. DESCRIPTION.}
-#'   \item{\code{g}}{double. DESCRIPTION.}
-#'   \item{\code{grcsi}}{double. DESCRIPTION.}
-#'   \item{\code{dc}}{double. DESCRIPTION.}
-#'   \item{\code{gf}}{double. DESCRIPTION.}
-#'   \item{\code{gs}}{double. DESCRIPTION.}
-#'   \item{\code{gfh}}{double. DESCRIPTION.}
-#'   \item{\code{gsh}}{double. DESCRIPTION.}
-#'   \item{\code{gfrpt}}{double. DESCRIPTION.}
-#'   \item{\code{gfrpri}}{double. DESCRIPTION.}
-#'   \item{\code{gfrcp}}{double. DESCRIPTION.}
-#'   \item{\code{gfrs}}{double. DESCRIPTION.}
-#'   \item{\code{gftfp}}{double. DESCRIPTION.}
-#'   \item{\code{gfeg}}{double. DESCRIPTION.}
-#'   \item{\code{gsrpt}}{double. DESCRIPTION.}
-#'   \item{\code{gsrpri}}{double. DESCRIPTION.}
-#'   \item{\code{gsrcp}}{double. DESCRIPTION.}
-#'   \item{\code{gsrs}}{double. DESCRIPTION.}
-#'   \item{\code{gstfp}}{double. DESCRIPTION.}
-#'   \item{\code{gset}}{double. DESCRIPTION.}
-#'   \item{\code{gfeghhx}}{double. DESCRIPTION.}
-#'   \item{\code{gfeghdx}}{double. DESCRIPTION.}
-#'   \item{\code{gfeigx}}{double. DESCRIPTION.}
-#'   \item{\code{gfsub}}{double. DESCRIPTION.}
-#'   \item{\code{gssub}}{double. DESCRIPTION.}
-#'   \item{\code{gsub}}{double. DESCRIPTION.}
-#'   \item{\code{gftfbusx}}{double. DESCRIPTION.}
-#'   \item{\code{pcw}}{double. DESCRIPTION.}
-#'   \item{\code{gdppothq}}{double. DESCRIPTION.}
-#'   \item{\code{gdppotq}}{double. DESCRIPTION.}
-#'   \item{\code{recessq}}{double. DESCRIPTION.}
+#'   \item{\code{date}}{Quarterly.}
+#'   \item{\code{gdp}}{Nominal Gross Domestic Product (SAAR, Bil.$).}
+#'   \item{\code{c}}{Personal Consumption Expenditures (SAAR, Bil.$).}
+#'   \item{\code{ch}}{Real Personal Consumption Expenditures}
+#'   \item{\code{gdph}}{Real Gross Domestic Product (SAAR, Bil.Chn.2012$)}
+#'   \item{\code{jc}}{Personal Consumption Expenditures: Chain Price Index (SA, 2012=100)}
+#'   \item{\code{jgdp}}{Gross Domestic Product: Chain Price Index (SA, 2012=100).}
+#'   \item{\code{jgf}}{Federal Govt Consumption & Gross Investment: Chn Price Index(SA, 2012=100)}
+#'   \item{\code{jgs}}{State & Local Govt Consumption/Gross Investment: Chn Price Index(SA, 2012=100)}
+#'   \item{\code{jgse}}{State & Local Govt Consumption Expenditures: Chain Price Index (SA, 2012=100)}
+#'   \item{\code{jgsi}}{State & Local Govt Gross Investment: Chain Price Index (SA, 2012=100)}
+#'   \item{\code{ptgh}}{Government Consumption & Investment: Contrib to Real GDP % Change (SAAR, %Pt)}
+#'   \item{\code{ptgsh}}{State & Local Govt Consumption/Investment: Contrib to Real GDP % Chg (SAAR, %Pt)}
+#'   \item{\code{ptgfh}}{Federal Govt Consumption & Investment: Contrib to Real GDP % Change (SAAR, %Pt)}
+#'   \item{\code{yptmr}}{Government Social Benefit Payments to Persons: Medicare (SAAR, Bil.$)}
+#'   \item{\code{yptmd}}{Government Social Benefit Payments to Persons: Medicaid (SAAR, Bil.$)}
+#'   \item{\code{yptu}}{Govt Transf to Persons: Unemployment Insurance Benefits (SAAR, Bil.$)}
+#'   \item{\code{gtfp}}{Government Social Benefit Payments to Persons (SAAR, Bil.$)}
+#'   \item{\code{ypog}}{Personal Current Transfer Payments to Government (SAAR, Bil.$)}
+#'   \item{\code{yptx}}{Personal Current Taxes (SAAR, Bil.$)}
+#'   \item{\code{ytpi}}{Government Tax Receipts on Production & Imports (SAAR, Bil.$)}
+#'   \item{\code{yctlg}}{Government Tax Receipts on Corporate Income (SAAR, Bil.$)}
+#'   \item{\code{g}}{Government Consumption Expenditures & Gross Investment (SAAR, Bil.$)}
+#'   \item{\code{grcsi}}{Contributions for Government Social Insurance (SAAR, Bil.$)}
+#'   \item{\code{dc}}{Personal Consumption Expenditures: Implicit Price Deflator (SA, 2012=100)}
+#'   \item{\code{gf}}{Federal Government Consumption & Gross Investment (SAAR, Bil.$)}
+#'   \item{\code{gs}}{State & Local Government Consumption & Gross Investment (SAAR, Bil.$)}
+#'   \item{\code{gfh}}{Real Federal Government Consumption & Gross Investment (SAAR, Bil.Chn.2012$)}
+#'   \item{\code{gsh}}{Real State & Local Govt Consumption & Gross Investment (SAAR, Bil.Chn.2012$)}
+#'   \item{\code{gfrpt}}{Federal Government Personal Current Tax Receipts (SAAR, Bil.$)}
+#'   \item{\code{gfrpri}}{Federal Government Tax Receipts on Production & Imports (SAAR, Bil.$)}
+#'   \item{\code{gfrcp}}{Federal Government Tax Receipts on Corporate Income (SAAR, Bil.$)}
+#'   \item{\code{gfrs}}{Contributions for Federal Government Social Insurance (SAAR, Bil.$)}
+#'   \item{\code{gftfp}}{Federal Government Social Benefit Payments to Persons (SAAR, Bil.$)}
+#'   \item{\code{gfeg}}{Federal Grants-in-Aid to State & Local Governments (SAAR, Bil.$)}
+#'   \item{\code{gsrpt}}{State & Local Government Personal Current Tax Receipts (SAAR, Bil.$)}
+#'   \item{\code{gsrpri}}{State & Local Government Tax Receipts on Production & Imports (SAAR, Bil.$)}
+#'   \item{\code{gsrcp}}{State & Local Government Tax Receipts on Corporate Income (SAAR, Bil.$)}
+#'   \item{\code{gsrs}}{Contributions for State & Local Government Social Insurance (SAAR, Bil.$)}
+#'   \item{\code{gstfp}}{State & Local Government Social Benefit Payments to Persons (SAAR, Bil.$)}
+#'   \item{\code{gset}}{State & Local Government Expenditures (SAAR, Bil.$)}
+#'   \item{\code{gfeghhx}}{Federal Grants to State & Local Governments: Health & Hospitals (SAAR, Mil.$)}
+#'   \item{\code{gfeghdx}}{Federal Grants to State & Local Governments: Medicaid (SAAR, Mil.$)}
+#'   \item{\code{gfeigx}}{Federal Investment Grants to State and Local Governments (SAAR, Mil.$)}
+#'   \item{\code{gfsub}}{Federal Government Subsidies (SAAR, Bil.$)}
+#'   \item{\code{gssub}}{State & Local Government Subsidies (SAAR, Bil.$)}
+#'   \item{\code{gsub}}{Government Subsidies (SAAR, Bil.$)}
+#'   \item{\code{gftfbusx}}{Fed Transfer Payments/Persons: State Unemployment Insur Benefits (SAAR, Mil.$)}
+#'   \item{\code{pcw}}{CPI-W: All Items (SA, 1982-84=100), Bureau of Labor Statistics}
+#'   \item{\code{gdppothq}}{Real Potential Gross Domestic Product [CBO] (SAAR, Bil.Chn.2012$)}
+#'   \item{\code{gdppotq}}{Potential Gross Domestic Product [CBO] (SAAR, Bil.$)}
+#'   \item{\code{recessq}}{Quarterly NBER Recession/Expansion: Recession Shading}
 #' }
 "haver"
 
