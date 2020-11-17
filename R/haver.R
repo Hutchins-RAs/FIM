@@ -1,3 +1,4 @@
+
 #' Historical Data
 #'
 #' @description Historical quarterly national accounts and economic statistics data from Haver
@@ -6,12 +7,12 @@
 #' @format A data frame with 203 rows and 52 variables:
 #' \describe{
 #'   \item{\code{date}}{double. Quarterly.}
-#'   \item{\code{gdp}}{double. Nominal gross domestic product.}
-#'   \item{\code{c}}{double. Nominal consumption.}
-#'   \item{\code{ch}}{double. Real consumption.}
-#'   \item{\code{gdph}}{double. Real Gross Domestic Product.}
-#'   \item{\code{jc}}{double. Consumption deflator.}
-#'   \item{\code{jgdp}}{double. DESCRIPTION.}
+#'   \item{\code{gdp}}{double. Nominal Gross Domestic Product (SAAR, Bil.$).}
+#'   \item{\code{c}}{double. Personal Consumption Expenditures (SAAR, Bil.$).}
+#'   \item{\code{ch}}{double. Real Personal Consumption Expenditures}
+#'   \item{\code{gdph}}{double. Real Gross Domestic Product (SAAR, Bil.Chn.2012$)}
+#'   \item{\code{jc}}{double. Personal Consumption Expenditures: Chain Price Index (SA, 2012=100)}
+#'   \item{\code{jgdp}}{double. Gross Domestic Product: Chain Price Index (SA, 2012=100).}
 #'   \item{\code{jgf}}{double. DESCRIPTION.}
 #'   \item{\code{jgs}}{double. DESCRIPTION.}
 #'   \item{\code{jgse}}{double. DESCRIPTION.}
