@@ -2,8 +2,8 @@ Package: fim
 Title: Fiscal Impact Measure
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Manuel",
+           family = "Alcala Kovalski",
            role = c("aut", "cre"),
            email = "first.last@example.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -14,6 +14,14 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Suggests: 
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 Depends: 
-    R (>= 2.10)
+    R (>= 2.10),
+    tidyverse
+Imports: 
+    purrr,
+    lubridate,
+    rlang
+VignetteBuilder: knitr
