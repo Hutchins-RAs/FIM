@@ -18,6 +18,5 @@ fmap <-
   read_xlsx(here::here("inst",'extdata', 'nhe_fmap.xlsx'))
 
 # Save data
-usethis::use_data(econ, overwrite = TRUE)
 usethis::use_data(econ_a, overwrite = TRUE)
 usethis::use_data(fmap, overwrite = TRUE)
