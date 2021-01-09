@@ -104,7 +104,9 @@ get_recession_shade <- function(df){
 #' @examples
 fim_plot <-
   function(df, title){
-    recession_shade <- get_recession_shade()
+    recession_shade <-
+      df %>% 
+      get_recession_shade()
     df %>%
       ggplot() +
       geom_bar(aes(x = date, y = value, fill = variable),
@@ -140,6 +142,7 @@ fim_plot <-
       scale_color_manual(" ", 
                          values=c("4-quarter moving-average" ="black",
                                   "4-quarter moving-average" ="black")) +
+      get_recession_shade() +
       format_legends() +
       fim_theme() 
   }
