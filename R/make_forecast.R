@@ -16,7 +16,7 @@ get_forecast_period <- function(df, last_historical_date){
 #' @export
 #'
 #' @examples
-make_forecast <- function(df, forecast_period) {
+make_forecast <- function(df, forecast_period, components) {
   for(f in forecast_period) {
     df[f,components] = df[f-1, components]  * (1 + df[f, paste0(components, "_g")])
   }
