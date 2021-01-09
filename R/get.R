@@ -99,16 +99,7 @@ skim_contributions <- function(df){
     skimr::skim()
 }
 
-#' Forecast period
-#'
-#' @return numbers of rows in projection period
-#' @export
-#'
-#' @examples
-get_forecast_period <- function(){
-  forecastPeriod <- which(prepare_projections$date > last_hist_date)
-  return(forecastPeriod)
-}
+
 
 #' Title
 #'

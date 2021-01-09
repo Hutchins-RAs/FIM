@@ -4,7 +4,7 @@
 \alias{make_forecast}
 \title{Title}
 \usage{
-make_forecast()
+make_forecast(df)
 }
 \value{
 
