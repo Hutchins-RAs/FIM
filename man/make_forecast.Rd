@@ -2,7 +2,8 @@
 % Please edit documentation in R/make_forecast.R
 \name{make_forecast}
 \alias{make_forecast}
-\title{Title}
+\title{Make forecast
+Use growth rates to iteratively forecast}
 \usage{
 make_forecast(df, forecast_period, components)
 }
@@ -17,5 +18,6 @@ make_forecast(df, forecast_period, components)
 
 }
 \description{
-Title
+Make forecast
+Use growth rates to iteratively forecast
 }

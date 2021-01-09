@@ -11,8 +11,8 @@ get_forecast_period <- function(df, last_historical_date){
   forecastPeriod <- which(df$date > last_historical_date)
   return(forecastPeriod)
 }
-#' Title
-#' 
+#' Make forecast
+#' Use growth rates to iteratively forecast
 #' 
 #'
 #' @param df 
