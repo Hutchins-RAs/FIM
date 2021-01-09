@@ -106,7 +106,7 @@ skim_contributions <- function(df){
 #'
 #' @examples
 get_forecast_period <- function(){
-  forecastPeriod <- which(projections$date > last_hist_date)
+  forecastPeriod <- which(prepare_projections$date > last_hist_date)
   return(forecastPeriod)
 }
 
