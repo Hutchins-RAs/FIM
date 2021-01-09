@@ -53,18 +53,18 @@ load_unemployment_insurance_override <- function(){
 get_haver_data <- function(){
   # Load U.S. national accounts and economic statistics data into the Global Environment
   haver_data_path <-
-    here('data/raw/haver/')
+    here::here('data/raw/haver/')
   haver_data_names <- 
     haver_data_path  %>%
     list.files() %>%
-    .[str_detect(., ".xlsx")]
+    .[stringr::str_detect(., ".xlsx")]
   
   # Load raw Haver data into global environment
   haver_data_names %>%  
     purrr::map(function(file_name){ # iterate through each file name
-      assign(x = str_remove(file_name, ".xlsx"), 
+      assign(x = stringr::str_remove(file_name, ".xlsx"), 
              value = readxl::read_xlsx(paste0(haver_data_path,"/", file_name), na = 'NA') %>%
-               mutate(date = as.Date(date)),
+               dplyr::mutate(date = lubridate::as_date(date)),
              envir = .GlobalEnv)
     }) 
   # Merge quarterly and annual data 
