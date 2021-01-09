@@ -109,3 +109,17 @@ get_forecast_period <- function(){
   forecastPeriod <- which(projections$date > last_hist_date)
   return(forecastPeriod)
 }
+
+#' Title
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_last_hist_date <- function(df) { 
+  df %>%
+  pull(date) %>%
+  max()
+}
