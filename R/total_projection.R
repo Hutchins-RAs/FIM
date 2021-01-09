@@ -16,3 +16,4 @@ total_projection <- function(df, total, federal, state){
     mutate({{total}} := if_else(date > last_hist_date, {{federal}} + {{state}}, {{total}})
     )
 }
+
