@@ -27,5 +27,12 @@ Imports:
     TTR,
     zoo,
     glue,
-    tsibble
+    tsibble,
+    dplyr,
+    here,
+    readxl,
+    roll,
+    skimr,
+    tidyr,
+    tidyselect
 VignetteBuilder: knitr

@@ -15,6 +15,3 @@ millions_to_billions(df)
 \description{
 Millions to billions
 }
-\examples{
-gftfbusx
-}
