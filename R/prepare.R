@@ -52,7 +52,7 @@ prepare_results <- function(){
          projections = projections)
   
   output_xlsx <- function(data, names){ 
-    write_xlsx(data, glue('results/{fim::get_current_month}/{names}.xlsx'))
+    write_xlsx(data, glue('results/{fim::get_current_month()}/{names}.xlsx'))
   }
   
   list(data = results, 
