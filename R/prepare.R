@@ -43,7 +43,7 @@ prepare_interactive <- function(df){
 prepare_results <- function(){
   # Create folder for current month's update
   
-  dir.create(here('results', current_month()))
+  dir.create(here('results', fim::get_current_month()))
   
   # Write csv to current month's folder
   results <- 
@@ -52,7 +52,7 @@ prepare_results <- function(){
          projections = projections)
   
   output_xlsx <- function(data, names){ 
-    write_xlsx(data, glue('results/{current_month}/{names}.xlsx'))
+    write_xlsx(data, glue('results/{fim::get_current_month}/{names}.xlsx'))
   }
   
   list(data = results, 
