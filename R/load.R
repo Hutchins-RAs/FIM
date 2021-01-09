@@ -73,7 +73,8 @@ load_haver_data <- function(){
   economic_statistics <- load_economic_statistics()
   dplyr::left_join(national_accounts,
             economic_statistics,
-            by = "date") 
+            by = "date") %>%
+    dplyr::mutate(date = lubridate::as_date(date))
 }
 
 
