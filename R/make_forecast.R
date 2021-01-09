@@ -5,7 +5,7 @@
 #'
 #' @examples
 get_forecast_period <- function(df){
-  forecastPeriod <- which(df$date > last_hist_date)
+  forecastPeriod <- which(df$date > get_last_hist_date(hist))
   return(forecastPeriod)
 }
 #' Title
