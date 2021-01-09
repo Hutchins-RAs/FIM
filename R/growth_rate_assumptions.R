@@ -127,3 +127,26 @@ state_purchases_growth_override <- function(df){
   #   projections %>% mutate(replacement_rate = if_else(date >= '2020-12-31' & date <= '2022-03-31',
   #   )
 }
+
+#' State taxes
+#'
+#' We assume that state and local taxes growth with GDP.
+#' @param df 
+#' Quarterly tax data comes from Haver.
+#' @return
+#' @export
+#'
+#' @examples
+state_taxes <- function(df){
+  df %>% 
+    left_join(hist %>%
+                select(date, gsrpt ,gsrpri, gsrcp, gsrs),
+              all.x = F) %>%
+    filter(date > '2016-12-31') %>%
+    mutate(
+      across(
+        .cols = c("gsrpt" ,"gsrpri", "gsrcp" ,"gsrs"),
+        .fns = ~ na.locf(. / gdp) * gdp
+      )
+    )
+}
