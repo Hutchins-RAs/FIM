@@ -139,14 +139,14 @@ state_purchases_growth_override <- function(df){
 #' @examples
 state_taxes <- function(df){
   df %>% 
-    left_join(hist %>%
-                select(date, gsrpt ,gsrpri, gsrcp, gsrs),
+    dplyr::left_join(hist %>%
+                dplyr::select(date, gsrpt ,gsrpri, gsrcp, gsrs),
               all.x = F) %>%
-    filter(date > '2016-12-31') %>%
-    mutate(
-      across(
+    dplyr::filter(date > '2016-12-31') %>%
+    dplyr::mutate(
+      dplyr::across(
         .cols = c("gsrpt" ,"gsrpri", "gsrcp" ,"gsrs"),
-        .fns = ~ na.locf(. / gdp) * gdp
+        .fns = ~ zoo::na.locf(. / gdp) * gdp
       )
     )
 }
