@@ -142,7 +142,7 @@ fim_plot <-
       scale_color_manual(" ", 
                          values=c("4-quarter moving-average" ="black",
                                   "4-quarter moving-average" ="black")) +
-      get_recession_shade() +
+      recession_shade +
       format_legends() +
       fim_theme() 
   }
