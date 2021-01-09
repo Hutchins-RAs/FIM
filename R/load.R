@@ -5,8 +5,8 @@
 #'
 #' @examples
 load_economic_projections <- function(){
-  read_xlsx(here('data/raw/cbo/cbo_econ_proj_quarterly.xlsx')) %>%
-    mutate(date = as_date(date))
+  readxl::read_xlsx(here::here('data/raw/cbo/cbo_econ_proj_quarterly.xlsx')) %>%
+    dplyr::mutate(date = lubridate::as_date(date))
 }
 #' Title
 #'
@@ -15,7 +15,7 @@ load_economic_projections <- function(){
 #'
 #' @examples
 load_budget_projections <- function(){
-  read_xlsx(here('data/raw/cbo/cbo_budget_nipas_proj_annual.xlsx')) %>%
+  readxl::read_xlsx(here('data/raw/cbo/cbo_budget_nipas_proj_annual.xlsx')) %>%
     as_tsibble(index = fy)
 }
 #' Title
@@ -39,10 +39,10 @@ load_cbo_projections <- function(){
 #'
 #' @examples
 load_unemployment_insurance_override <- function(){
-  read_excel("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
+  readxl::read_excel("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
              sheet = "FIM Add Factors") %>%
-    mutate(date = as_date(date)) %>%
-    select(date, contains('unemployment_insurance'))
+    dplyr::mutate(date = lubridate::as_date(date)) %>%
+    dplyr::select(date, contains('unemployment_insurance'))
 }
 #' Title
 #'
@@ -63,7 +63,7 @@ get_haver_data <- function(){
   haver_data_names %>%  
     purrr::map(function(file_name){ # iterate through each file name
       assign(x = str_remove(file_name, ".xlsx"), 
-             value = read_xlsx(paste0(haver_data_path,"/", file_name), na = 'NA') %>%
+             value = readxl::read_xlsx(paste0(haver_data_path,"/", file_name), na = 'NA') %>%
                mutate(date = as.Date(date)),
              envir = .GlobalEnv)
     }) 
@@ -81,14 +81,14 @@ get_haver_data <- function(){
 #'
 #' @examples
 load_contributions <- function(){
-  start <- as_date("2000-01-01")
-  end <- as_date("2022-12-31")
+  start <- lubridate::as_date("2000-01-01")
+  end <- lubridate::as_date("2022-12-31")
   
   current_month <- glue('{month(today())}-{year(today())}')
   
   readxl::read_xlsx(glue("results/{get_current_month()}/fim.xlsx")) %>%
     select(date, fiscal_impact, fiscal_impact_moving_average,
            ends_with('cont'), recession) %>%
-    mutate(date = as_date(date)) %>% 
+    mutate(date = lubridate::as_date(date)) %>% 
     filter(date > start & date <= end)
 }
