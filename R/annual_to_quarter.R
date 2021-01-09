@@ -24,7 +24,7 @@ annual_to_quarter <- function(df, var){
   df %>%
     year_to_quarter({{var}}) %>%
     dplyr::mutate(date = glue::glue('{year(yq)}-{month(yq)}') %>% 
-             zoo::as.yearmon() %>% lubridate::as_date() + lubridate::months(1) - lubridate::days(1),
+             zoo::as.yearmon() %>% lubridate::as_date() + base::months(1) - lubridate::days(1),
            yq = tsibble::yearquarter(yq)
     ) %>%
     dplyr::select(-{{var}}) %>%
