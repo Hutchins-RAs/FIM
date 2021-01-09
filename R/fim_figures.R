@@ -119,7 +119,7 @@ fim_plot <-
             colour = "4-quarter moving-average"), size = 1
       ) +
       labs(
-        title = glue("**Hutchins Center Fiscal Impact Measure: {title}**"),
+        title = glue::glue("**Hutchins Center Fiscal Impact Measure: {title}**"),
         x = '',
         y = '',
         subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
@@ -130,15 +130,15 @@ fim_plot <-
                         y = max_y), 
                     label = "Projection",
                     cex = 2, 
-                    fill = NA, label.color = NA, # remove background and outline
+                    fill = NA, label.color = NA # remove background and outline
       ) +
       annotate("rect", xmin = last_hist_date + 40, xmax = end,
                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
       scale_x_date(breaks = 0, date_breaks = "2 years", date_labels = '%Y',
                    expand = c(0,0)) + 
       scale_color_manual(" ", 
-                         values=c("4-quarter moving-average" ="black",
-                                  "4-quarter moving-average" ="black")) +
+                         values=c("4-quarter moving-average" = "black",
+                                  "4-quarter moving-average" = "black")) +
       format_legends() +
       fim_theme() 
   }
