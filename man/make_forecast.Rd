@@ -6,6 +6,13 @@
 \usage{
 make_forecast(df, forecast_period, components)
 }
+\arguments{
+\item{df}{}
+
+\item{forecast_period}{}
+
+\item{components}{}
+}
 \value{
 
 }

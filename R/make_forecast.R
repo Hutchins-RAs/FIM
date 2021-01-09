@@ -1,5 +1,8 @@
 #' Forecast period
 #'
+#' @param df 
+#' @param last_historical_date 
+#'
 #' @return numbers of rows in projection period
 #' @export
 #'
@@ -11,6 +14,10 @@ get_forecast_period <- function(df, last_historical_date){
 #' Title
 #' 
 #' 
+#'
+#' @param df 
+#' @param forecast_period 
+#' @param components 
 #'
 #' @return
 #' @export

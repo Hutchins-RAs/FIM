@@ -6,6 +6,11 @@
 \usage{
 get_forecast_period(df, last_historical_date)
 }
+\arguments{
+\item{df}{}
+
+\item{last_historical_date}{}
+}
 \value{
 numbers of rows in projection period
 }
