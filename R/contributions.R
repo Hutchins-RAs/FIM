@@ -119,3 +119,51 @@ calculate_mpc <- function(df, taxes_transfers){
              !!state := glue('state_{taxes_transfers}_{net}_xmpc'))
   }
 }
+
+#' Title
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+taxes_contributions <- function(df){
+  taxes <- c('noncorp_taxes_post_mpc', 'corporate_taxes_post_mpc')
+  all_taxes <- c(glue('{taxes}'), glue('federal_{taxes}'), glue('state_{taxes}')) 
+  df %>%
+    mutate(
+      across(
+        .cols  = all_of(all_taxes),
+        .fns = ~ 400 * .x / lag(gdp),
+        .names = "{.col}_cont"
+      )
+    ) %>%
+    rename_with(~ gsub('post_mpc_cont', 'cont', .x))
+  
+}
+
+#' Title
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+transfers_contributions <- function(df){
+  transfers <- c('social_benefits', 'health_outlays', 'subsidies',
+                 'unemployment_insurance', 'rebate_checks') %>%
+    paste0('_post_mpc')
+  all_transfers <- c(glue('{transfers}'), glue('federal_{transfers}'), glue('state_{transfers}')) 
+  df %>%
+    mutate(
+      across(
+        .cols  = all_of(all_transfers),
+        .fns = ~ 400 * .x / lag(gdp),
+        .names = "{.col}_cont"
+      )
+    ) %>%
+    rename_with(~ gsub('post_mpc_cont', 'cont', .x))
+}
+
