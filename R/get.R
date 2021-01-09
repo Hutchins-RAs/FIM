@@ -98,3 +98,14 @@ skim_contributions <- function(df){
     filter(date > '2019-12-31') %>%
     skimr::skim()
 }
+
+#' Forecast period
+#'
+#' @return numbers of rows in projection period
+#' @export
+#'
+#' @examples
+get_forecast_period <- function(){
+  forecastPeriod <- which(projections$date > last_hist_date)
+  return(forecastPeriod)
+}
