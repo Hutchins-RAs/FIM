@@ -1,12 +1,14 @@
 
 #' Cola adjustment 
-#'
+#' Adjust transfers for their cola related bump
+#' @param df 
+#' Cbo projections
 #' @return
 #' @export
 #'
 #' @examples
-  cola_adjustment <- function() {
-    cbo_projections %>%
+  cola_adjustment <- function(df) {
+    df %>%
       mutate(cpiu_g = q_a(cpiu) / 100,
              cola_rate = if_else(month(date) == 3,
                                  lag(cpiu_g, 2),
