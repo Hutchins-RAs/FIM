@@ -2,13 +2,18 @@
 % Please edit documentation in R/cbo_projections_calculations.R
 \name{cola_adjustment}
 \alias{cola_adjustment}
-\title{Cola adjustment}
+\title{Cola adjustment
+Adjust transfers for their cola related bump}
 \usage{
-cola_adjustment()
+cola_adjustment(df)
+}
+\arguments{
+\item{df}{Cbo projections}
 }
 \value{
 
 }
 \description{
 Cola adjustment
+Adjust transfers for their cola related bump
 }

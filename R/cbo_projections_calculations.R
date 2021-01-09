@@ -121,3 +121,40 @@
       )
   }
  
+#' Get growth rates of federal transfers
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+federal_transfers_growth_rates <- function(df){
+  df %>%
+    mutate(
+      across(
+        .cols = c("gfrpt",  "gfrpri",  "gfrcp",  "gfrs"),
+        .fns = ~ q_g(.x),
+        .names = "{.col}_g"
+      )
+    ) 
+  }
+
+#' Get health growth rates
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+health_outlays_growth_rates <- function(df){
+  df %>%
+    mutate(
+      across(
+        .cols = c("yptmr",  "yptmd" ),
+        .fns = ~ q_g(.x),
+        .names = "{.col}_g"
+      )
+    ) 
+}
