@@ -50,29 +50,33 @@ load_unemployment_insurance_override <- function(){
 #' @export
 #'
 #' @examples
-get_haver_data <- function(){
-  # Load U.S. national accounts and economic statistics data into the Global Environment
-  haver_data_path <-
-    here::here('data/raw/haver/')
-  haver_data_names <- 
-    haver_data_path  %>%
-    list.files() %>%
-    .[stringr::str_detect(., ".xlsx")]
-  
-  # Load raw Haver data into global environment
-  haver_data_names %>%  
-    purrr::map(function(file_name){ # iterate through each file name
-      assign(x = stringr::str_remove(file_name, ".xlsx"), 
-             value = readxl::read_xlsx(paste0(haver_data_path,"/", file_name), na = 'NA') %>%
-               dplyr::mutate(date = lubridate::as_date(date)),
-             envir = .GlobalEnv)
-    }) 
-  # Merge quarterly and annual data 
-  # change hist and aa to haver quarterly and annual
-  left_join(national_accounts,
+load_national_accounts <- function(){
+  readxl::read_xlsx(here::here('data/raw/haver/national_accounts.xlsx'))
+}
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+load_economic_statistics <- function(){
+  readxl::read_xlsx(here::here('data/raw/haver/economic_statistics.xlsx'))
+}
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+load_haver_data <- function(){
+  national_accounts <- load_national_accounts()
+  economic_statistics <- load_economic_statistics()
+  dplyr::left_join(national_accounts,
             economic_statistics,
             by = "date") 
 }
+
+
 
 #' Load contributions used in figures
 #'
