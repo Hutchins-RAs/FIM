@@ -25,5 +25,6 @@ Imports:
     rlang,
     tidyverse,
     TTR,
-    zoo
+    zoo,
+    glue
 VignetteBuilder: knitr
