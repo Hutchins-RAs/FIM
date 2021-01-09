@@ -4,7 +4,7 @@
 \alias{get_forecast_period}
 \title{Forecast period}
 \usage{
-get_forecast_period(df)
+get_forecast_period(df, last_historical_date)
 }
 \value{
 numbers of rows in projection period
