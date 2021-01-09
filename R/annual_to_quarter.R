@@ -12,21 +12,21 @@ annual_to_quarter <- function(df, var){
   year_to_quarter <- function(df, year){
     n <- 
       df %>%
-      n_distinct()
-    q <- glue('Q{rep(1:4, {n})}')
+      dplyr::n_distinct()
+    q <- glue::glue('Q{rep(1:4, {n})}')
     df %>%
-      uncount(4) %>%
-      mutate(yq = paste({{year}}, q) %>% 
+      tidyr::uncount(4) %>%
+      dplyr::mutate(yq = base::paste({{year}}, q) %>% 
                yearquarter(fiscal_start = 12)
       ) %>%
-      as_tsibble(index = yq)
+      tsibble::as_tsibble(index = yq)
   }
   df %>%
     year_to_quarter({{var}}) %>%
-    mutate(date = glue('{year(yq)}-{month(yq)}') %>% 
-             as.yearmon() %>% as_date() + months(1) - days(1),
-           yq = yearquarter(yq)
+    dplyr::mutate(date = glue::glue('{year(yq)}-{month(yq)}') %>% 
+             zoo::as.yearmon() %>% lubridate::as_date() + lubridate::months(1) - lubridate::days(1),
+           yq = tsibble::yearquarter(yq)
     ) %>%
-    select(-{{var}}) %>%
-    select(date, yq, everything())
+    dplyr::select(-{{var}}) %>%
+    dplyr::select(date, yq, tidyselect::everything())
 }

@@ -26,5 +26,6 @@ Imports:
     tidyverse,
     TTR,
     zoo,
-    glue
+    glue,
+    tsibble
 VignetteBuilder: knitr

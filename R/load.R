@@ -30,7 +30,7 @@ load_cbo_projections <- function(){
   
   budget %>%
     annual_to_quarter(fy) %>%
-    left_join(economic)
+    dplyr::left_join(economic)
 }
 #' Title
 #'
