@@ -104,6 +104,7 @@ get_recession_shade <- function(df){
 #' @examples
 fim_plot <-
   function(df, title){
+    recession_shade <- get_recession_shade()
     df %>%
       ggplot() +
       geom_bar(aes(x = date, y = value, fill = variable),
@@ -134,10 +135,7 @@ fim_plot <-
       ) +
       annotate("rect", xmin = last_hist_date + 40, xmax = end,
                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
-      geom_rect(data = recessions,
-                aes(x = NULL, y = NULL,
-                    xmin = start, xmax = end, 
-                    ymin=-Inf, ymax=+Inf), fill = 'grey', alpha = 0.3) +
+      recession_shade +
       scale_x_date(breaks = 0, date_breaks = "2 years", date_labels = '%Y',
                    expand = c(0,0)) + 
       scale_color_manual(" ", 
