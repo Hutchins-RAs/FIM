@@ -14,8 +14,7 @@ add_factors <- function(df){
       date = lubridate::as_date(date)
     ) 
   df %>% 
-    dplyr::full_join(add_factors %>% dplyr::select(-tidyselect::ends_with('override')) %>%
-                dplyr::filter(historical == 0),
+    dplyr::full_join(add_factors %>% dplyr::select(-tidyselect::ends_with('override')),
               by = "date") %>%
     dplyr::mutate(dplyr::across(
       .cols = tidyselect::starts_with('add_'),
