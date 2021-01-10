@@ -88,7 +88,7 @@ forecast_series <- function(df, comp){
 #' @examples
 make_cumulative_growth_rates <- function(df){
 df %>%
-  mutate(forecast_period = if_else(date <= last_hist_date, 0, 1)) %>%
+  mutate(forecast_period = if_else(date <= '2020-09-30', 0, 1)) %>%
   group_by(forecast_period) %>%
   mutate(
     across(
