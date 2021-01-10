@@ -78,7 +78,7 @@ forecast_series <- function(df, comp){
                                  {{comp}})
     ) 
 }
-#' Title
+#' Calculate cumulative growth rate
 #'
 #' @param df 
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_forecast.R
 \name{make_cumulative_growth_rates}
 \alias{make_cumulative_growth_rates}
-\title{Title}
+\title{Calculate cumulative growth rate}
 \usage{
 make_cumulative_growth_rates(df)
 }
@@ -13,5 +13,5 @@ make_cumulative_growth_rates(df)
 
 }
 \description{
-Title
+Calculate cumulative growth rate
 }
