@@ -9,6 +9,7 @@
 fim_create <- function(df){
   df %>%
     transmute(date = date,
+              historical = historical,
               # REFERENCE VARIABLES
               gdp = gdp, # nominal gdp
               gdppot = q_g(gdppothq) + q_g(jgdp) , #  nominal potential output growth
