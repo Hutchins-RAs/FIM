@@ -8,23 +8,23 @@
 #' @examples
 add_factors <- function(df){
   #load add factor file
-  add_factors <- read_excel("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
+  add_factors <- readxl::read_excel("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
                             sheet = "FIM Add Factors") %>%
     mutate(
-      date = as_date(date)
+      date = lubridate::as_date(date)
     ) 
   df %>% 
-    full_join(add_factors %>% select(-ends_with('override')) %>%
-                filter(date > last_hist_date),
+    dplyr::full_join(add_factors %>% dplyr::select(-tidyselect::ends_with('override')) %>%
+                dplyr::filter(historical == 0),
               by = "date") %>%
-    mutate(across(
-      .cols = starts_with('add_'),
+    dplyr::mutate(dplyr::across(
+      .cols = tidyselect::starts_with('add_'),
       .fns = ~ if_else(is.na(.x), 
                        0,
                        .x)
     )
     ) %>%
-    mutate(
+    dplyr::mutate(
       #calculate new variables by adding the add factors
       state_health_outlays  = state_health_outlays + add_state_health_outlays,
       state_social_benefits  = state_social_benefits + add_state_social_benefits,
