@@ -17,7 +17,6 @@ get_forecast_period <- function(df, last_historical_date){
 #'
 #' @param df 
 #' @param forecast_period 
-#' @param components 
 #'
 #' @return
 #' @export
@@ -87,16 +86,30 @@ forecast_series <- function(df, comp){
 #'
 #' @examples
 make_cumulative_growth_rates <- function(df){
+
+  ~
 df %>%
   mutate(forecast_period = if_else(date <= '2020-09-30', 0, 1)) %>%
   group_by(forecast_period) %>%
   mutate(
     across(
-      .cols = all_of(glue('{components}_g')),
+      .cols = all_of(paste0(c("gdp","gdph",     "jgdp",     "gdppotq",  "gdppothq", "g",        "gf",           "gs",       "jgf",
+                              "jgs",
+                              "jgse",     "jgsi",     "gfeg",     "gfeghhx",  "gfeghdx",  "gfeigx",   "gf    rpt",    "gsrpt",
+                              "gfrs",     "gsrs",
+                              "gfrcp",    "gsrcp",    "gfrpri",   "gsrpri",   "gftfp",    "gstfp",    "yp    tmd",    "yptmr",
+                              "gssub",    "gfsub",
+                              "c",        "jc"), '_g')),
       .fns = ~ lag(cumprod(1 + .)),
       .names = '{.col}_cumulative_growth'
     )
   ) %>%
   ungroup() %>%
-  fill(all_of(components)) 
+  fill(all_of(paste0(c("gdp","gdph",     "jgdp",     "gdppotq",  "gdppothq", "g",        "gf",           "gs",       "jgf",
+                       "jgs",
+                       "jgse",     "jgsi",     "gfeg",     "gfeghhx",  "gfeghdx",  "gfeigx",   "gf    rpt",    "gsrpt",
+                       "gfrs",     "gsrs",
+                       "gfrcp",    "gsrcp",    "gfrpri",   "gsrpri",   "gftfp",    "gstfp",    "yp    tmd",    "yptmr",
+                       "gssub",    "gfsub",
+                       "c",        "jc"), '_g'))) 
 }

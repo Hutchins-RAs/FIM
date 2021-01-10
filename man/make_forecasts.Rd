@@ -11,8 +11,6 @@ make_forecasts(df)
 \item{df}{}
 
 \item{forecast_period}{}
-
-\item{components}{}
 }
 \value{
 
