@@ -91,23 +91,17 @@ df %>%
   group_by(forecast_period) %>%
   mutate(
     across(
-      .cols = all_of(paste0(c("gdp","gdph",     "jgdp",     "gdppotq",  "gdppothq", "g",        "gf",           "gs",       "jgf",
-                              "jgs",
-                              "jgse",     "jgsi",     "gfeg",     "gfeghhx",  "gfeghdx",  "gfeigx",   "gf    rpt",    "gsrpt",
-                              "gfrs",     "gsrs",
-                              "gfrcp",    "gsrcp",    "gfrpri",   "gsrpri",   "gftfp",    "gstfp",    "yp    tmd",    "yptmr",
-                              "gssub",    "gfsub",
-                              "c",        "jc"), '_g')),
+      .cols = all_of(paste0(c("gdp","gdph","jgdp","gdppotq","gdppothq", "g","gf","gs","jgf",
+                              "jgs", "jgse","jgsi","gfeg","gfeghhx","gfeghdx","gfeigx","gfrpt","gsrpt",
+                              "gfrs","gsrs","gfrcp","gsrcp","gfrpri","gsrpri","gftfp","gstfp","yptmd","yptmr",
+                              "gssub","gfsub","c","jc"),'_g')),
       .fns = ~ lag(cumprod(1 + .)),
       .names = '{.col}_cumulative_growth'
     )
   ) %>%
   ungroup() %>%
-  fill(all_of(paste0(c("gdp","gdph",     "jgdp",     "gdppotq",  "gdppothq", "g",        "gf",           "gs",       "jgf",
-                       "jgs",
-                       "jgse",     "jgsi",     "gfeg",     "gfeghhx",  "gfeghdx",  "gfeigx",   "gf    rpt",    "gsrpt",
-                       "gfrs",     "gsrs",
-                       "gfrcp",    "gsrcp",    "gfrpri",   "gsrpri",   "gftfp",    "gstfp",    "yp    tmd",    "yptmr",
-                       "gssub",    "gfsub",
-                       "c",        "jc"), '_g'))) 
+  fill(all_of(paste0(c("gdp","gdph","jgdp","gdppotq","gdppothq", "g","gf","gs","jgf",
+                              "jgs", "jgse","jgsi","gfeg","gfeghhx","gfeghdx","gfeigx","gfrpt","gsrpt",
+                              "gfrs","gsrs","gfrcp","gsrcp","gfrpri","gsrpri","gftfp","gstfp","yptmd","yptmr",
+                              "gssub","gfsub","c","jc"),'_g')))
 }
