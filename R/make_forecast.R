@@ -67,13 +67,12 @@ make_forecasts <- function(df){
 #'
 #' @examples
 forecast_series <- function(df, comp){
-  start <- get_last_hist_date(historical)
   comp <- ensym(comp)
   comp_string <- rlang::as_string(enexpr(comp))
   comp_cum_growth_string <- paste0(comp_string, '_g_cumulative_growth')
   comp_cum_growth <- rlang::sym(comp_cum_growth_string)
   df %>%
-    mutate('{{comp}}' := if_else(date > start,
+    mutate('{{comp}}' := if_else(historical == 0,
                                  lag({{comp}}) * !!(comp_cum_growth),
                                  {{comp}})
     ) 
