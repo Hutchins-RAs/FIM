@@ -89,7 +89,7 @@ load_contributions <- function(){
   start <- lubridate::as_date("2000-01-01")
   end <- lubridate::as_date("2022-12-31")
   
-  current_month <- glue::glue('{month(today())}-{year(today())}')
+
   
   readxl::read_xlsx(glue::glue(drake::file_in("results/{get_current_month()}/fim-{get_current_month()}.xlsx"))) %>%
     dplyr::select(date, fiscal_impact, fiscal_impact_moving_average,
