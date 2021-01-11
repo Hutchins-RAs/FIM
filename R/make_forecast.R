@@ -75,7 +75,7 @@ forecast_series <- function(df, comp){
   df %>%
     group_by(forecast_period) %>%
     mutate('{{comp}}_forecast' := {{comp}} * dplyr::lead(!!(comp_cum_growth)),
-           '{{comp}}' := if_else(forecast_period == 0,
+           '{{comp}}' := if_else(date < '2020-09-30',
                                  {{comp}},
                                  !!(comp_forecast))) %>%
     ungroup()
