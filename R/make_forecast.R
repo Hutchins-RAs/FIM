@@ -77,7 +77,7 @@ forecast_series <- function(df, comp){
     mutate('{{comp}}_forecast' := {{comp}} *(!!(comp_cum_growth)),
            '{{comp}}' := if_else(forecast_period == 0,
                                  {{comp}},
-                                 !!(comp_forecast))) %>%
+                                 {{comp}} * (!!(comp_cum_growth)))) %>%
     ungroup()
 }
 #' Calculate cumulative growth rate
