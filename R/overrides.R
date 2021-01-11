@@ -41,7 +41,6 @@ override_projections <- function(df){
 #'
 #' @examples
 fill_overrides <- function(df){
-  overrides <- c('unemployment_insurance', 'federal_unemployment_insurance', 'state_unemployment_insurance')
   df %>%
     mutate(
       across(
