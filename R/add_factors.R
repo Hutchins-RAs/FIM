@@ -15,7 +15,7 @@ add_factors <- function(df){
     ) 
   df %>% 
     dplyr::full_join(add_factors %>% dplyr::select(-tidyselect::ends_with('override')) %>% 
-                       filter(date > get_last_hist_date(historical)),
+                       filter(date > '2020-09-30'),
               by = "date") %>%
     dplyr::mutate(dplyr::across(
       .cols = tidyselect::starts_with('add_'),
