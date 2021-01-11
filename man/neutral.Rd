@@ -4,7 +4,7 @@
 \alias{neutral}
 \title{Calculate neutral counterfactual taxes and transfers}
 \usage{
-neutral(x)
+neutral(.data, var)
 }
 \arguments{
 \item{x}{}

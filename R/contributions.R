@@ -41,7 +41,7 @@ total_purchases <- function(df){
 #' @export
 #'
 #' @examples
-neutral <- function(x){
+neutral <- function(.data, var){
   dplyr::lag(x) * (1 + fim$gdppoth + fim$pi_pce)
 }
 all_taxes_transfers <- function(){
@@ -58,6 +58,10 @@ all_taxes_transfers <- function(){
 #' @param df 
 #'
 #' @return
+#' Difference between realized and counterfactual paths for taxes and transfers.
+#' We assume that taxes and transfers would grow with potential gdp. Therefore,
+#' the counterfactual growth is 'neutral' since it wouldn't deviate from the
+#' potential growth of the economy.
 #' @export
 #'
 #' @examples
@@ -65,7 +69,7 @@ taxes_transfers_minus_neutral <- function(df){
   df %>%
     dplyr::mutate(
       dplyr::across(.cols = all_of(all_taxes_transfers()),
-             .fns = ~ . - neutral(.),
+             .fns = ~ . - dplyr::lag(.) * (1 + gdppoth + pi_pce),
              .names = '{.col}_minus_neutral')
     )
 }
