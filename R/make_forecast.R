@@ -100,8 +100,8 @@ df %>%
     )
   ) %>%
   ungroup() %>%
-  fill(all_of(paste0(c("gdp","gdph","jgdp","gdppotq","gdppothq", "g","gf","gs","jgf",
+  fill(all_of(c("gdp","gdph","jgdp","gdppotq","gdppothq", "g","gf","gs","jgf",
                               "jgs", "jgse","jgsi","gfeg","gfeghhx","gfeghdx","gfeigx","gfrpt","gsrpt",
                               "gfrs","gsrs","gfrcp","gsrcp","gfrpri","gsrpri","gftfp","gstfp","yptmd","yptmr",
-                              "gssub","gfsub","c","jc"),'_g')))
+                              "gssub","gfsub","c","jc")))
 }
