@@ -42,7 +42,16 @@ total_purchases <- function(df){
 #'
 #' @examples
 neutral <- function(x){
-  lag(x) * (1 + fim$gdppoth + fim$pi_pce)
+  dplyr::lag(x) * (1 + fim$gdppoth + fim$pi_pce)
+}
+all_taxes_transfers <- function(){
+  taxes_transfers <- c("subsidies","health_outlays", "social_benefits",
+                       "noncorp_taxes", "corporate_taxes", 'rebate_checks', 
+                       'unemployment_insurance')
+  government_level <- c('federal', 'state')
+  all_taxes_transfers <- c(glue::glue('{taxes_transfers}'), glue::glue('federal_{taxes_transfers}'),
+                           glue::glue('state_{taxes_transfers}'))
+  return(all_taxes_transfers)
 }
 #' Subtract counterfactual taxes and transfers from realized taxes and transfers
 #'
@@ -53,20 +62,14 @@ neutral <- function(x){
 #'
 #' @examples
 taxes_transfers_minus_neutral <- function(df){
-  taxes_transfers <- c("subsidies","health_outlays", "social_benefits",
-                       "noncorp_taxes", "corporate_taxes", 'rebate_checks', 
-                       'unemployment_insurance')
-  government_level <- c('federal', 'state')
-  all_taxes_transfers <- c(glue('{taxes_transfers}'), glue('federal_{taxes_transfers}'),
-                           glue('state_{taxes_transfers}'))
   df %>%
-    mutate(
-      across(.cols = all_of(all_taxes_transfers),
+    dplyr::mutate(
+      dplyr::across(.cols = all_of(all_taxes_transfers()),
              .fns = ~ . - neutral(.),
              .names = '{.col}_minus_neutral')
     )
-  
 }
+
 
 #' Apply mpcs to taxes and transfers 
 #'
