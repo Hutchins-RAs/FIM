@@ -84,57 +84,7 @@ taxes_transfers_minus_neutral <- function(df){
 #' @export
 #'
 #' @examples
-calculate_mpc <- function(df, taxes_transfers){
-  
-  net <- 'minus_neutral'
-  government_levels <- c(glue('{taxes_transfers}_{net}'), glue('federal_{taxes_transfers}_{net}'),
-                         glue('state_{taxes_transfers}_{net}'))
-  total <- glue('{taxes_transfers}_post_mpc')
-  federal <- glue('federal_{taxes_transfers}_post_mpc')
-  state <- glue('state_{taxes_transfers}_post_mpc')
-  
-  if(taxes_transfers == 'subsidies'){
-    second_draw <- as_date('2021-03-31')
-    mpc_fun <- eval(sym(glue('mpc_{taxes_transfers}')))
-    mpc_fun_second_draw <- eval(sym(glue('mpc_{taxes_transfers}_second_draw')))
-    df %>%
-      mutate(
-        across(
-          .cols = all_of(government_levels),
-          .fns = ~ if_else(date < second_draw, 
-                           mpc_fun(.),
-                           mpc_fun_second_draw(.)),
-          .names = '{.col}_xmpc'
-        )
-      ) %>%
-      rename(!!total := glue('{taxes_transfers}_{net}_xmpc'),
-             !!federal := glue('federal_{taxes_transfers}_{net}_xmpc'),
-             !!state := glue('state_{taxes_transfers}_{net}_xmpc'))
-  }
-  else{
-    mpc_fun <- eval(sym(glue('mpc_{taxes_transfers}')))
-    df %>%
-      mutate(
-        across(
-          .cols = all_of(government_levels),
-          .fns = ~ mpc_fun(.),
-          .names = '{.col}_xmpc'
-        )
-      ) %>%
-      rename(!!total := glue('{taxes_transfers}_{net}_xmpc'),
-             !!federal := glue('federal_{taxes_transfers}_{net}_xmpc'),
-             !!state := glue('state_{taxes_transfers}_{net}_xmpc'))
-  }
-}
 
-#' Title
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
 taxes_contributions <- function(df){
   taxes <- c('noncorp_taxes_post_mpc', 'corporate_taxes_post_mpc')
   all_taxes <- c(glue('{taxes}'), glue('federal_{taxes}'), glue('state_{taxes}')) 

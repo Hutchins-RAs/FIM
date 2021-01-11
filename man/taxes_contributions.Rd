@@ -2,16 +2,18 @@
 % Please edit documentation in R/contributions.R
 \name{taxes_contributions}
 \alias{taxes_contributions}
-\title{Title}
+\title{Apply mpcs to taxes and transfers}
 \usage{
 taxes_contributions(df)
 }
 \arguments{
 \item{df}{}
+
+\item{taxes_transfers}{}
 }
 \value{
 
 }
 \description{
-Title
+Apply mpcs to taxes and transfers
 }

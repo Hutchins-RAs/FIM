@@ -105,3 +105,55 @@ mpc_noncorp_taxes <- function(x){
   mpc * roll::roll_sum(x, width = length(weights),
                        weights = weights, online = FALSE)
 }
+
+calculate_mpc <- function(df, taxes_transfers){
+  
+  net <- 'minus_neutral'
+  government_levels <- c(glue::glue('{taxes_transfers}_{net}'), glue::glue('federal_{taxes_transfers}_{net}'),
+                         glue::glue('state_{taxes_transfers}_{net}'))
+  total <- glue::glue('{taxes_transfers}_post_mpc')
+  federal <- glue::glue('federal_{taxes_transfers}_post_mpc')
+  state <- glue::glue('state_{taxes_transfers}_post_mpc')
+  
+  if(taxes_transfers == 'subsidies'){
+    second_draw <- lubridate::as_date('2021-03-31')
+    mpc_fun <- eval(sym(glue::glue('mpc_{taxes_transfers}')))
+    mpc_fun_second_draw <- eval(sym(glue::glue('mpc_{taxes_transfers}_second_draw')))
+    df %>%
+      mutate(
+        across(
+          .cols = all_of(government_levels),
+          .fns = ~ if_else(date < second_draw, 
+                           mpc_fun(.),
+                           mpc_fun_second_draw(.)),
+          .names = '{.col}_xmpc'
+        )
+      ) %>%
+      rename(!!total := glue::glue('{taxes_transfers}_{net}_xmpc'),
+             !!federal := glue::glue('federal_{taxes_transfers}_{net}_xmpc'),
+             !!state := glue::glue('state_{taxes_transfers}_{net}_xmpc'))
+  }
+  else{
+    mpc_fun <- eval(sym(glue::glue('mpc_{taxes_transfers}')))
+    df %>%
+      mutate(
+        across(
+          .cols = all_of(government_levels),
+          .fns = ~ mpc_fun(.),
+          .names = '{.col}_xmpc'
+        )
+      ) %>%
+      rename(!!total := glue::glue('{taxes_transfers}_{net}_xmpc'),
+             !!federal := glue::glue('federal_{taxes_transfers}_{net}_xmpc'),
+             !!state := glue::glue('state_{taxes_transfers}_{net}_xmpc'))
+  }
+}
+
+#' Title
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
