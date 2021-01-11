@@ -29,6 +29,7 @@ make_forecasts <- function(df){
     forecast_series(jgdp) %>%
     forecast_series(gdppotq) %>%
     forecast_series(gdppothq) %>%
+    forecast_series(g) %>%
     forecast_series(gs) %>%
     forecast_series(gf) %>%
     forecast_series(jgf) %>%
