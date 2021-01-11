@@ -98,7 +98,7 @@ df %>%
                               "jgs", "jgse","jgsi","gfeg","gfeghhx","gfeghdx","gfeigx","gfrpt","gsrpt",
                               "gfrs","gsrs","gfrcp","gsrcp","gfrpri","gsrpri","gftfp","gstfp","yptmd","yptmr",
                               "gssub","gfsub","c","jc"),'_g')),
-      .fns = ~ lag(cumprod(1 + .)),
+      .fns = ~ cumprod(1 + .),
       .names = '{.col}_cumulative_growth'
     )
   ) %>%
