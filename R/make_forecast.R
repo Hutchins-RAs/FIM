@@ -71,11 +71,13 @@ forecast_series <- function(df, comp){
   comp_string <- rlang::as_string(enexpr(comp))
   comp_cum_growth_string <- paste0(comp_string, '_g_cumulative_growth')
   comp_cum_growth <- rlang::sym(comp_cum_growth_string)
+  comp_forecast <- rlang::sym(paste0(comp_string, '_forecast'))
   df %>%
-    mutate('{{comp}}' := if_else(historical == 0,
-                                 lag({{comp}}) * !!(comp_cum_growth),
-                                 {{comp}})
-    ) 
+    group_by(forecast_period) %>%
+    mutate('{{comp}}_forecast' := lag({{comp}}) * !!(comp_cum_growth),
+           '{{comp}}' := if_else(forecast_period == 0,
+                                 {{comp}},
+                                 !!(comp_forecast)))
 }
 #' Calculate cumulative growth rate
 #'
@@ -99,9 +101,5 @@ df %>%
       .names = '{.col}_cumulative_growth'
     )
   ) %>%
-  ungroup() %>%
-  fill(all_of(c("gdp","gdph","jgdp","gdppotq","gdppothq", "g","gf","gs","jgf",
-                              "jgs", "jgse","jgsi","gfeg","gfeghhx","gfeghdx","gfeigx","gfrpt","gsrpt",
-                              "gfrs","gsrs","gfrcp","gsrcp","gfrpri","gsrpri","gftfp","gstfp","yptmd","yptmr",
-                              "gssub","gfsub","c","jc")))
+  ungroup()
 }
