@@ -7,30 +7,29 @@
 #'
 #' @examples
 prepare_interactive <- function(df){
-  firstDate <- "1999-12-31"
   df %>% 
-    filter(date >= firstDate) %>% 
-    mutate(
-      yrq = as.yearqtr(date),
-      projection = if_else(date > last_hist_date,
+    dplyr::filter(date >= "1999-12-31") %>% 
+    dplyr::mutate(
+      yrq = zoo::as.yearqtr(date),
+      projection = dplyr::if_else(date > last_hist_date,
                            1,
                            0),
       taxes_transfers_subsidies_cont = taxes_transfers_cont
     ) %>%
-    separate(yrq, c("year", "quarter")) %>%
-    select(year, quarter, fim_bars_ma, recession,
+    tidyr::separate(yrq, c("year", "quarter")) %>%
+    dplyr::select(year, quarter, fim_bars_ma, recession,
            fim_bars, 
            federal_cont, state_local_cont,
            taxes_transfers_subsidies_cont,
            projection) %>%
-    rename(
+    dplyr::rename(
       "total" = fim_bars,
       "impact" = fim_bars_ma,
       "federal" = federal_cont,
       "state_local" = state_local_cont,
       "consumption" = taxes_transfers_subsidies_cont
     ) %>% 
-    mutate(recession = if_else(is.na(recession),
+    dplyr::mutate(recession = dplyr::if_else(is.na(recession),
                                0,
                                recession))
 }
