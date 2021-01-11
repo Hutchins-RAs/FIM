@@ -11,9 +11,9 @@ prepare_interactive <- function(df){
     dplyr::filter(date >= "1999-12-31") %>% 
     dplyr::mutate(
       yrq = zoo::as.yearqtr(date),
-      projection = dplyr::if_else(date > last_hist_date,
-                           1,
-                           0),
+      projection = dplyr::if_else(historical == 1,
+                           0,
+                           1),
       taxes_transfers_subsidies_cont = taxes_transfers_cont
     ) %>%
     tidyr::separate(yrq, c("year", "quarter")) %>%
