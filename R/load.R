@@ -5,7 +5,7 @@
 #'
 #' @examples
 load_economic_projections <- function(){
-  readxl::read_xlsx(here::here('data/raw/cbo/cbo_econ_proj_quarterly.xlsx')) %>%
+  readxl::read_xlsx(here::here(drake::file_in('data/raw/cbo/cbo_econ_proj_quarterly.xlsx'))) %>%
     dplyr::mutate(date = lubridate::as_date(date))
 }
 #' Title
@@ -15,7 +15,7 @@ load_economic_projections <- function(){
 #'
 #' @examples
 load_budget_projections <- function(){
-  readxl::read_xlsx(here('data/raw/cbo/cbo_budget_nipas_proj_annual.xlsx')) %>%
+  readxl::read_xlsx(here::here(drake::file_in('data/raw/cbo/cbo_budget_nipas_proj_annual.xlsx'))) %>%
     as_tsibble(index = fy)
 }
 #' Title
@@ -39,10 +39,10 @@ load_cbo_projections <- function(){
 #'
 #' @examples
 load_unemployment_insurance_override <- function(){
-  readxl::read_excel("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
-             sheet = "FIM Add Factors") %>%
+  readxl::read_excel(drake::file_in("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
+             sheet = "FIM Add Factors")) %>%
     dplyr::mutate(date = lubridate::as_date(date)) %>%
-    dplyr::select(date, contains('unemployment_insurance'))
+    dplyr::select(date, tidyselect::contains('unemployment_insurance'))
 }
 #' Title
 #'
@@ -51,7 +51,7 @@ load_unemployment_insurance_override <- function(){
 #'
 #' @examples
 load_national_accounts <- function(){
-  readxl::read_xlsx(here::here('data/raw/haver/national_accounts.xlsx'))
+  readxl::read_xlsx(here::here(drake::file_in('data/raw/haver/national_accounts.xlsx')))
 }
 #' Title
 #'
@@ -60,7 +60,7 @@ load_national_accounts <- function(){
 #'
 #' @examples
 load_economic_statistics <- function(){
-  readxl::read_xlsx(here::here('data/raw/haver/economic_statistics.xlsx'))
+  readxl::read_xlsx(here::here(drake::file_in('data/raw/haver/economic_statistics.xlsx')))
 }
 #' Title
 #'
