@@ -39,8 +39,8 @@ load_cbo_projections <- function(){
 #'
 #' @examples
 load_unemployment_insurance_override <- function(){
-  readxl::read_excel(drake::file_in("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
-             sheet = "FIM Add Factors")) %>%
+  readxl::read_excel(drake::file_in("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx"),
+                     sheet = "FIM Add Factors") %>%
     dplyr::mutate(date = lubridate::as_date(date)) %>%
     dplyr::select(date, tidyselect::contains('unemployment_insurance'))
 }
