@@ -65,26 +65,26 @@ fim_colors <- function(){
 get_recession_shade <- function(df){
   recessions <-
     df %>% 
-    select(date, recession) %>%
-    mutate(recession = if_else(is.na(recession),
+    dplyr::select(date, recession) %>%
+    dplyr::mutate(recession = dplyr::if_else(is.na(recession),
                                0,
                                recession),
-           recession_event = recession - lag(recession),
-           start = if_else(recession_event == 1, 
+           recession_event = recession - dplyr::lag(recession),
+           start = dplyr::if_else(recession_event == 1, 
                            date,
-                           NA_Date_) ,
-           end = if_else(recession_event == -1,
+                           lubridate::NA_Date_) ,
+           end = dplyr::if_else(recession_event == -1,
                          date,
-                         NA_Date_) 
+                         lubridate::NA_Date_) 
     ) %>%
-    select(start, end) %>%
-    pivot_longer(cols = c(start, end)) %>%
+    dplyr::select(start, end) %>%
+    tidyr::pivot_longer(cols = c(start, end)) %>%
     na.omit() %>%
     group_by(name) %>%
-    mutate(row = row_number()) %>%
+    dplyr::mutate(row = row_number()) %>%
     pivot_wider(names_from = name,
                 values_from = value) %>%
-    select(-row)
+    dplyr::select(-row)
   
   recession_shade <-
     geom_rect(data = recessions, aes(xmin = start, xmax = end, ymin=-Inf, ymax=+Inf),
