@@ -74,7 +74,7 @@ forecast_series <- function(df, comp){
   comp_forecast <- rlang::sym(paste0(comp_string, '_forecast'))
   df %>%
     group_by(forecast_period) %>%
-    mutate('{{comp}}_forecast' := lag({{comp}}) * !!(comp_cum_growth),
+    mutate('{{comp}}_forecast' := {{comp}} * dplyr::lead(!!(comp_cum_growth)),
            '{{comp}}' := if_else(forecast_period == 0,
                                  {{comp}},
                                  !!(comp_forecast))) %>%
