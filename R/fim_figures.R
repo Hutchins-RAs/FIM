@@ -94,7 +94,7 @@ get_recession_shade <- function(df){
 }
 
 #' Create a fim plot
-#'
+#' Functions for consistency in our plots
 #' @param df 
 #' @param title 
 #'

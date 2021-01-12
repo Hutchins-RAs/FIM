@@ -2,7 +2,8 @@
 % Please edit documentation in R/fim_figures.R
 \name{fim_plot}
 \alias{fim_plot}
-\title{Create a fim plot}
+\title{Create a fim plot
+Functions for consistency in our plots}
 \usage{
 fim_plot(df, title)
 }
@@ -16,4 +17,5 @@ fim_plot(df, title)
 }
 \description{
 Create a fim plot
+Functions for consistency in our plots
 }
