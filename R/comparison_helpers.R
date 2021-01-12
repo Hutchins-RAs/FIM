@@ -24,7 +24,7 @@ comparison_plot <- function(df = old, df_new = new, variable = fiscal_impact, ti
     geom_col(position = 'dodge') +
     geom_vline(xintercept = last_hist_date, linetype = 'dotted') +
     labs(x = '', y = '', title = title) +
-    scale_fill_brewer(name = "", labels = c('Previous', 'Updated'),
+    scale_fill_brewer(name = "", labels = c('Updated', 'Previous'),
                       type = 'qual', palette = 'Paired', direction = 1) + 
     theme_hc() +
     theme(plot.title.position = 'plot')
