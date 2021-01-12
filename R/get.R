@@ -60,15 +60,32 @@ get_taxes <- function(){
            diff = total - sum)
 }
 
-#' Get current month
-#'
+#' Current month
+#' Helper function to retrieve the current months date. 
+#' This is particularly helpful when navigating across the
+#' results and reports directories.
 #' @return
 #' @export
 #'
 #' @examples
 get_current_month <- function(){
-  glue::glue('{lubridate::month(lubridate::today())}-{lubridate::year(lubridate::today())}')
+  current_date <- lubridate::today()
+  glue(month(current_date),'-',year(current_date))
 }
+
+#' Previous month
+#' Helper function to retrieve the previous months date. 
+#' This is particularly helpful when navigating across the
+#' results and reports directories.
+#' @return
+#' @export
+#'
+#' @examples
+get_previous_month <- function(){
+  previous_date <- lubridate::today() - months(1)
+  glue(month(previous_date), '-', year(previous_date))
+}
+
 #' Get upper bound for y axis
 #'
 #' @param df 
