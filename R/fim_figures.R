@@ -142,6 +142,12 @@ fim_plot <-
   }
 
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 total_fiscal_impact_plot <- function() {
   contributions %>%
     select(date, fiscal_impact, fiscal_impact_moving_average) %>%
@@ -153,6 +159,12 @@ total_fiscal_impact_plot <- function() {
                       ymin = -Inf, ymax = Inf, alpha = 0.1, fill = "yellow")
 }       
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 taxes_transfers <- function() {
   contributions %>%
     select(date,  state_local_cont, federal_cont, taxes_transfers_cont, fiscal_impact_moving_average) %>%
@@ -165,6 +177,12 @@ taxes_transfers <- function() {
     ggplot2::annotate("rect", xmin = last_hist_date + 40, xmax = end, 
                       ymin = -Inf, ymax = Inf, alpha = 0.1, fill = "yellow")
 }
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 components_govt <- function() {
   contributions %>%
     select(date, fiscal_impact_moving_average, state_local_cont, state_taxes_transfers_cont, 
@@ -179,6 +197,12 @@ components_govt <- function() {
                                  " Federal Taxes, Transfers, & Subsidies")
     )
 }  
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 taxes_transfers_govt <- function(){
   contributions %>%
     select(date, fiscal_impact_moving_average,
@@ -195,6 +219,12 @@ taxes_transfers_govt <- function(){
     )
 }
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 taxes <- function(){
   contributions %>%
     filter(date > lubridate::today() - lubridate::years(2)) %>%
@@ -212,6 +242,12 @@ taxes <- function(){
       title = '**Impact of Taxes by Level of Government**'
     )
 }
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 social_benefits <- function(){  
   contributions %>%
     filter(date > lubridate::today() - lubridate::years(5)) %>%
@@ -230,6 +266,12 @@ social_benefits <- function(){
          y ='')
 }
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 health_outlays <- function(){
   contributions %>%
     filter(date > lubridate::today() - lubridate::years(5)) %>%
@@ -249,6 +291,12 @@ health_outlays <- function(){
 }
 
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 legislation <- function(){
   contributions %>%
     filter(date > lubridate::today() - lubridate::years(1)) %>%
