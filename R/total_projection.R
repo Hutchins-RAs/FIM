@@ -8,7 +8,7 @@
 #' @return
 #' @export
 #'
-#' @examples projections %>% aggregate(gtfp, gftfp, gstfp) 
+#' @examples 
 #' 
 #'    
 total_projection <- function(df, total, federal, state){

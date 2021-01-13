@@ -34,5 +34,8 @@ Imports:
     roll,
     skimr,
     tidyr,
-    tidyselect
+    tidyselect,
+    magrittr,
+    drake,
+    ggplot2
 VignetteBuilder: knitr

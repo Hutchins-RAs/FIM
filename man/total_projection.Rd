@@ -22,7 +22,6 @@ total_projection(df, total, federal, state)
 Aggregate federal and state components
 }
 \examples{
-projections \%>\% aggregate(gtfp, gftfp, gstfp) 
 
    
 }
