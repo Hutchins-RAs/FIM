@@ -9,8 +9,7 @@
 #' @export
 #'
 #' @examples 
-#' projections %>%
-#'    sum_projections(gtfp, gftfp, gstfp) 
+
 
 sum_projections <- function(df, total, federal, state){
   df %>%

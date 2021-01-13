@@ -21,7 +21,3 @@ sum_projections(df, total, federal, state)
 \description{
 Sum federal and state projections
 }
-\examples{
-projections \%>\%
-   sum_projections(gtfp, gftfp, gstfp) 
-}
