@@ -53,7 +53,38 @@ fim_colors <- function(){
   federal_blue = rgb(33, 152, 199,  maxColorValue = 255)
   taxes_transfers_green = rgb(27, 149, 83,  maxColorValue = 255)
 }
+#' Create recessions data frame
+#' Data frame with start and end dates of U.S. recessions from NBER. 
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+get_recessions <- function(df){
 
+  df %>% 
+  dplyr::select(date, recession) %>%
+  dplyr::mutate(recession = dplyr::if_else(is.na(recession),
+                                           0,
+                                           recession),
+                recession_event = recession - dplyr::lag(recession),
+                start = dplyr::if_else(recession_event == 1, 
+                                       date,
+                                       lubridate::NA_Date_) ,
+                end = dplyr::if_else(recession_event == -1,
+                                     date,
+                                     lubridate::NA_Date_) 
+  ) %>%
+  dplyr::select(start, end) %>%
+  tidyr::pivot_longer(cols = c(start, end)) %>%
+  na.omit() %>%
+  group_by(name) %>%
+  dplyr::mutate(row = row_number()) %>%
+  pivot_wider(names_from = name,
+              values_from = value) %>%
+  dplyr::select(-row)
+}
 #' Get recession start and end dates for shading 
 #'
 #' @param df 
@@ -63,31 +94,8 @@ fim_colors <- function(){
 #'
 #' @examples
 get_recession_shade <- function(df){
-  recessions <-
-    df %>% 
-    dplyr::select(date, recession) %>%
-    dplyr::mutate(recession = dplyr::if_else(is.na(recession),
-                               0,
-                               recession),
-           recession_event = recession - dplyr::lag(recession),
-           start = dplyr::if_else(recession_event == 1, 
-                           date,
-                           lubridate::NA_Date_) ,
-           end = dplyr::if_else(recession_event == -1,
-                         date,
-                         lubridate::NA_Date_) 
-    ) %>%
-    dplyr::select(start, end) %>%
-    tidyr::pivot_longer(cols = c(start, end)) %>%
-    na.omit() %>%
-    group_by(name) %>%
-    dplyr::mutate(row = row_number()) %>%
-    pivot_wider(names_from = name,
-                values_from = value) %>%
-    dplyr::select(-row)
-  
   recession_shade <-
-    geom_rect(data = recessions, aes(xmin = start, xmax = end, ymin=-Inf, ymax=+Inf),
+    geom_rect(data = df, aes(xmin = start, xmax = end, ymin=-Inf, ymax=+Inf),
               fill = 'grey', alpha = 0.3)
   
   return(recession_shade)
