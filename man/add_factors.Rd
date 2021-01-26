@@ -4,7 +4,7 @@
 \alias{add_factors}
 \title{Include add factors}
 \usage{
-add_factors(df)
+add_factors(df, last_date)
 }
 \arguments{
 \item{df}{}
