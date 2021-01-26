@@ -146,10 +146,27 @@ fim_plot <-
                    expand = c(0,0)) + 
       scale_color_manual(" ", 
                          values=c("4-quarter moving-average" ="black",
-                                  "4-quarter moving-average" ="black")) +
-      guidez +
-      uni.theme() 
+                                  "4-quarter moving-average" ="black")) 
   }
+uni.theme <- function() {
+  theme_bw() +
+    theme(legend.position = "bottom", 
+          panel.grid.minor.x=element_blank(),
+          panel.grid.major.x=element_blank(),
+          plot.margin=unit(c(1.2,.5,.5,.5),"cm"),
+          plot.title = element_markdown(size=12),
+          plot.subtitle = element_markdown(size=10) , 
+          plot.caption = 
+            element_textbox_simple(size = 9,
+                                   lineheight = 1,
+                                   padding = margin(5.5, 5.5, 5.5, 5.5),
+                                   margin = margin(0, 0, 5.5, 0)),
+          legend.text=element_markdown(size=10), 
+          legend.title=element_blank(),
+          legend.spacing.y = unit(2, 'cm')
+    ) # , legend.margin = unit(c(rep(-.8, 4)),"cm")
+}
+
 
 
 #' Title
