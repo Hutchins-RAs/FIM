@@ -111,7 +111,7 @@ get_recession_shade <- function(df){
 #'
 #' @examples
 fim_plot <-
-  function(df, title){
+  function(df, title, last_hist_date = last_hist_date){
     df %>%
       ggplot() +
       geom_bar(aes(x = date, y = value, fill = variable),
