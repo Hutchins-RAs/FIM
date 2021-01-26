@@ -142,7 +142,7 @@ fim_plot <-
       ) +
       annotate("rect", xmin = last_hist_date + 40, xmax = end,
                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
-      geom_rect(data = !!recessions,
+      geom_rect(data = !!enquo(recessions),
                 aes(x = NULL, y = NULL,
                     xmin = start, xmax = end, 
                     ymin=-Inf, ymax=+Inf), fill = 'grey', alpha = 0.3) +
