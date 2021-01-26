@@ -135,7 +135,7 @@ fim_plot <-
         and Congressional Budget Office data; grey shaded areas indicate recessions 
         and yellow shaded areas indicate projection.") +
       geom_richtext(aes(x = Sys.Date()+350,
-                        y = max_y), 
+                        y = 16), 
                     label = "Projection",
                     cex = 2, 
                     fill = NA, label.color = NA, # remove background and outline
