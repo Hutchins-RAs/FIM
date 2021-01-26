@@ -119,7 +119,7 @@ fim_plot <-
             colour = "4-quarter moving-average"), size = 1
       ) +
       labs(
-        title = glue::glue("**Hutchins Center Fiscal Impact Measure: {title}**"),
+        title = glue("**Hutchins Center Fiscal Impact Measure: {title}**"),
         x = '',
         y = '',
         subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
@@ -127,18 +127,24 @@ fim_plot <-
         and Congressional Budget Office data; grey shaded areas indicate recessions 
         and yellow shaded areas indicate projection.") +
       geom_richtext(aes(x = Sys.Date()+350,
-                        y = 16), 
+                        y = max_y), 
                     label = "Projection",
                     cex = 2, 
-                    fill = NA, label.color = NA # remove background and outline
+                    fill = NA, label.color = NA, # remove background and outline
       ) +
+      annotate("rect", xmin = last_hist_date + 40, xmax = end,
+               ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
+      geom_rect(data = recessions,
+                aes(x = NULL, y = NULL,
+                    xmin = start, xmax = end, 
+                    ymin=-Inf, ymax=+Inf), fill = 'grey', alpha = 0.3) +
       scale_x_date(breaks = 0, date_breaks = "2 years", date_labels = '%Y',
                    expand = c(0,0)) + 
       scale_color_manual(" ", 
-                         values=c("4-quarter moving-average" = "black",
-                                  "4-quarter moving-average" = "black")) +
-      format_legends() +
-      fim_theme() 
+                         values=c("4-quarter moving-average" ="black",
+                                  "4-quarter moving-average" ="black")) +
+      guidez +
+      uni.theme() 
   }
 
 
