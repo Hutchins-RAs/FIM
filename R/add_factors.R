@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-add_factors <- function(df){
+add_factors <- function(df, last_date){
   #load add factor file
   add_factors <- readxl::read_excel("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
                             sheet = "FIM Add Factors") %>%
@@ -15,7 +15,7 @@ add_factors <- function(df){
     ) 
   df %>% 
     dplyr::full_join(add_factors %>% dplyr::select(-tidyselect::ends_with('override')) %>% 
-                       filter(date > get_last_hist_date(historical)),
+                       filter(date > last_date),
               by = "date") %>%
     dplyr::mutate(dplyr::across(
       .cols = tidyselect::starts_with('add_'),
