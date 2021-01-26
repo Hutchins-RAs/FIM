@@ -146,7 +146,8 @@ fim_plot <-
                    expand = c(0,0)) + 
       scale_color_manual(" ", 
                          values=c("4-quarter moving-average" ="black",
-                                  "4-quarter moving-average" ="black")) 
+                                  "4-quarter moving-average" ="black")) +
+      uni.theme() 
   }
 uni.theme <- function() {
   theme_bw() +
