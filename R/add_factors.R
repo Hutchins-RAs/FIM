@@ -8,7 +8,7 @@
 #' @examples
 add_factors <- function(df, last_date){
   #load add factor file
-  add_factors <- readxl::read_excel("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
+  add_factors <- readxl::read_excel("data/add-ons/LSFIM_KY_v7.xlsx", 
                             sheet = "FIM Add Factors") %>%
     mutate(
       date = lubridate::as_date(date)

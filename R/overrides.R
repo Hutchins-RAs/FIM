@@ -7,7 +7,7 @@
 #'
 #' @examples
 override_projections <- function(df){ 
-  override <- readxl::read_excel("documentation/COVID-19 Changes/September/LSFIM_KY_v6_round2.xlsx", 
+  override <- readxl::read_excel("data/add-ons/LSFIM_KY_v7.xlsx", 
                          sheet = "FIM Add Factors") %>%
     dplyr::select(date, ends_with('override')) %>%
     mutate(date = lubridate::as_date(date)) 
