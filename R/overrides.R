@@ -49,3 +49,15 @@ fill_overrides <- function(df){
       )
     )
 }
+
+
+create_override <- function(df, var, start, end, values){
+  override <- 
+    tibble(date = df %>%
+             filter(date >= start & date <= end) %>%
+             pull(date),
+           '{{var}}' := values
+    )
+  df %>%
+    rows_update(override, by = 'date')
+}

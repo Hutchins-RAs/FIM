@@ -5,7 +5,7 @@
 \title{Create a fim plot
 Functions for consistency in our plots}
 \usage{
-fim_plot(df, title)
+fim_plot(df, title, last_hist_date = last_hist_date)
 }
 \arguments{
 \item{df}{}

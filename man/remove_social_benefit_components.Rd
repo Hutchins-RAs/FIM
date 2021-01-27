@@ -4,7 +4,7 @@
 \alias{remove_social_benefit_components}
 \title{Separate unemployment insurance and rebate checks from social benefits}
 \usage{
-remove_social_benefit_components(df, component)
+remove_social_benefit_components(df)
 }
 \arguments{
 \item{df}{}
