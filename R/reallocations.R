@@ -9,8 +9,8 @@
 unemployment_insurance_reallocation <- function(df){
   df %>%
     mutate(
-      gftfp = gftfp - yptu + federal_unemployment_insurance_override,
-      gstfp = gstfp + yptu - federal_unemployment_insurance_override
+      gftfp = gftfp - gftfbusx+ federal_unemployment_insurance_override,
+      gstfp = gstfp + gftfbusx - federal_unemployment_insurance_override
     )
 }
 #' Calculate fmap share
