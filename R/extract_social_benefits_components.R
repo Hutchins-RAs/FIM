@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-remove_social_benefit_components <- function(df, component){
+remove_social_benefit_components <- function(df){
   remove_unemployment_insurance <- function(df){
     df %>%
       mutate(social_benefits = social_benefits - unemployment_insurance,
