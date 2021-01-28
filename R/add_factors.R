@@ -28,8 +28,6 @@ add_factors <- function(df, last_date){
       #calculate new variables by adding the add factors
       state_health_outlays  = state_health_outlays + add_state_health_outlays,
       state_social_benefits  = state_social_benefits + add_state_social_benefits,
-      state_noncorp_taxes  =  state_noncorp_taxes + add_state_noncorp_taxes,
-      state_corporate_taxes  = state_corporate_taxes + add_state_corporate_taxes,
       
       federal_health_outlays  = federal_health_outlays + add_federal_health_outlays,
       federal_social_benefits  = federal_social_benefits + add_federal_social_benefits,
@@ -37,6 +35,9 @@ add_factors <- function(df, last_date){
       # federal_corporate_taxes  = federal_corporate_taxes + add_federal_corporate_taxes,
       federal_subsidies  = federal_subsidies + add_federal_subsidies,
       federal_cgrants = federal_cgrants + add_federal_cgrants,
+      state_local_nom = state_local_nom + add_state_purchases,
+      federal_nom = add_federal_purchases + federal_nom,
+      
       
       #new category totals
       health_outlays  = state_health_outlays  + federal_health_outlays ,
@@ -44,8 +45,6 @@ add_factors <- function(df, last_date){
       noncorp_taxes  = state_noncorp_taxes  + federal_noncorp_taxes ,
       corporate_taxes  = state_corporate_taxes  + federal_corporate_taxes ,
       subsidies   = state_subsidies + federal_subsidies,
-      state_local_nom = state_local_nom + add_state_purchases,
-      federal_nom = add_federal_purchases + federal_nom,
       federal_rebate_checks = federal_rebate_checks + add_rebate_checks,
       rebate_checks = rebate_checks + add_rebate_checks
     )
