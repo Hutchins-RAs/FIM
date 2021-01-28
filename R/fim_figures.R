@@ -140,7 +140,7 @@ fim_plot <-
                     cex = 2, 
                     fill = NA, label.color = NA, # remove background and outline
       ) +
-      annotate("rect", xmin = last_hist_date + 40, xmax = end,
+      annotate("rect", xmin = last_hist_date + 40, xmax = lubridate::as_date('2022-12-31'),
                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
       scale_x_date(breaks = 0, date_breaks = "2 years", date_labels = '%Y',
                    expand = c(0,0)) + 
