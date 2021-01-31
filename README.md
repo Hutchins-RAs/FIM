@@ -1,9 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 # Fiscal Impact Measure
-
-<!-- badges: start -->
+[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
 [![Travis build
 status](https://travis-ci.com/malcalakovalski/fim-pkg.svg?branch=master)](https://travis-ci.com/malcalakovalski/fim-pkg)
