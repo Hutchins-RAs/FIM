@@ -3,8 +3,7 @@
 # Fiscal Impact Measure
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-[![Travis build
-status](https://travis-ci.com/malcalakovalski/fim-pkg.svg?branch=master)](https://travis-ci.com/malcalakovalski/fim-pkg)
+
 <!-- badges: end -->
 
 The Fiscal Impact Measure (FIM) is a tool created the Hutchins Center to
