@@ -39,3 +39,4 @@ Imports:
     drake,
     ggplot2
 VignetteBuilder: knitr
+URL: https://fim.org, https://github.com/malcalakovalski/fim
