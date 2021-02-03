@@ -20,18 +20,62 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
+The purpose of this document is to explain our methodology for calculating the Fiscal Impact Measure (FIM) and show how we calculate the contribution due to government purchases.
 
+## Fiscal Impact
 
-```{r load-stuff, include = FALSE}
+The FIM is defined as the actual contributions of real government purchases and real consumption to GDP less the contributions that would have prevailed if real purchases, real taxes, and real transfers were growing with potential GDP.
+
+Define $G$ as nominal government purchases, $\pi_{G}$ as the inflation rate for government purchases, $C$ as nominal consumption, $C$ as nominal consumption, $T$ as nominal tax or transfer payments, $Y$ as nominal GDP, and $\mu$ as real potential output growth.
+
+Then the contribution of real purchases to GDP is the growth rate of real government purchases times the share of government in GDP:
+
+$$
+\frac{G_t}{G_{t-1}} - \frac{G_{t-1}}{Y_{t-1}} \times (1 + \pi_{G} ) = \frac{G_t - G_{t-1} \times (1 + \pi_{G})}{Y_{t-1}}
+$$
+
+The counterfactual contribution of real government purchases under the assumption that real government spending rises with potential GDP is
+
+$$
+\mu \frac{G_{t-1}}{Y_{t-1}}
+$$
+
+Thus, the FIM for purchases is defined as
+
+$$
+\text{FIM}_{t}^{G} = \frac{G_t - G_{t-1} * (1 + \pi_G + \mu )}{Y_{t-1}}
+$$
+
+## 
+
+## **How is the FIM different than BEA's numbers?**
+
+Each quarter, BEA measures how much federal, state, and local governments spend on goods and services and reports what contribution those expenditures made to the headline GDP number (see Table 1.1.2 in the GDP release, for example).
+The FIM is related to this measure, but estimates instead the contribution that government policies are making to GDP beyond the contribution they would make if they were growing in line with the longer-run, potential path of the economy.
+Therefore, the FIM can be interpreted as a measure of how expansionary or contractionary fiscal policy is relative to the potential path of the economy.
+
+Another important difference is that the FIM reallocates the federal grants to state & local governments to spending by the federal government.
+In particular, we reallocate consumption & investment grants and federal medicaid grants to the contribution of the federal government.
+Conversely, we reattribute the portion of unemployment insurance spending which is not from federal legislation to state & local governments.
+For instance, in 2020 we attributed all spending on unemployment insurance related to the expansion of payments, duration of benefits, and eligibility passed in the CARES act to the federal government and the remainder to state & local governments.
+
+Moreover, we spread out the \$150 billion Coronavirus Relief Fund established by the CARES Act to reflect our assumptions on when state & local governments will spend these funds.
+
+## Data
+
+```{r packages}
 library('rmarkdown')
 library('tidyverse')
+library('magrittr')
 library('dplyover')
 library('tidyr')
 library('tsibble')
 library('janitor')
 library('snakecase')
 library('fim')
+```
 
+```{r load-data, include = FALSE}
 
 to_table <- function(df) {
   df %>%
@@ -45,7 +89,11 @@ add_factors <- readxl::read_xlsx('inst/extdata/LSFIM_KY_v7.xlsx',
                          sheet = 'FIM Add Factors')
 ```
 
-## Data
+The data underlying the FIM comes from the BEA's [NIPA tables](https://apps.bea.gov/iTable/iTable.cfm?reqid=19&step=2#reqid=19&step=2&isuri=1&1921=survey).
+We reassign federal medicaid grants away from consumption grants to federal transfers.
+
+In addition, we calculate quarter over quarter growth rates for each input and its corresponding deflator.
+Our forecasts are informed by the budgetary and economic projections from the Congressional Budget Office.
 
 ```{r}
 nipa <-
@@ -85,31 +133,9 @@ nipa <-
 paged_table(nipa %>% to_table())
 ```
 
-## Fiscal Impact
-
-The FIM is defined as the actual contributions of real government purchases and real consumption to GDP less the contributions that would have prevailed if real purchases, real taxes, and real transfers were growing with potential GDP.
-
-Define $G$ as nominal government purchases, $\pi_{G}$ as the inflation rate for government purchases, $C$ as nominal consumption, $C$ as nominal consumption, $T$ as nominal tax or transfer payments, $Y$ as nominal GDP, and $\mu$ as real potential output growth.
-
-Then the contribution of real purchases to GDP is the growth rate of real government purchases times the share of government in GDP:
-
-$$
-\frac{G_t}{G_{t-1}} - \frac{G_{t-1}}{Y_{t-1}} \times (1 + \pi_{G} ) = \frac{G_t - G_{t-1} \times (1 + \pi_{G})}{Y_{t-1}}
-$$
-
-The counterfactual contribution of real government purchases under the assumption that real government spending rises with potential GDP is
-
-$$
-\mu \frac{G_{t-1}}{Y_{t-1}}
-$$
-
-Thus, the FIM for purchases is defined as
-
-$$
-\text{FIM}_{t}^{G} = \frac{G_t - G_{t-1} * (1 + \pi_G + \mu )}{Y_{t-1}}
-$$
-
 ## BEA Methodology
+
+The contribution of purchases consistent with the BEA's methodology is calculated as follows:
 
 ```{r}
 
@@ -138,9 +164,11 @@ nipa %>%
 
 ## Hutchins Methodology
 
+The FIM's contributions differ slightly because we estimate the contribution of government policies to GDP relative to the contribution they would make if they were growing at the same rate as the potential path of the economy.
+
 ```{r, linewidth=160}
   
-  nipa %>%
+  nipa %<>%
   mutate(
     over(
       c('federal_purchases', 'state_purchases', 
@@ -149,12 +177,23 @@ nipa %>%
             lag(.("{.x}")) * 
             (1 + .("{.x}_deflator_growth") + real_potential_gdp_growth)) 
               / lag(gross_domestic_product),
-      .names = "{x}_contribution"),
+      .names = "{x}_contribution")) 
     
-      grants_contribution = consumption_grants_net_contribution + investment_grants_contribution,
+```
+
+Finally, we reallocate the contribution of federal grants to federal purchases and subtract them from the contribution of state purchases.
+
+```{r}
+nipa %<>%
+  mutate(grants_contribution = consumption_grants_net_contribution + investment_grants_contribution,
       federal_contribution = federal_purchases_contribution + grants_contribution,
-      state_contribution = state_purchases_contribution - grants_contribution,
-    across(where(is.numeric), ~ round(., digits = 2))) %>%
+      state_contribution = state_purchases_contribution - grants_contribution
+    )
+```
+
+```{r, echo = FALSE}
+nipa %>%
+  mutate(across(where(is.numeric), ~ round(., digits = 2))) %>%
     
   select(date, federal_contribution,
          state_contribution, grants_contribution) %>%
