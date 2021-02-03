@@ -2,7 +2,10 @@
 % Please edit documentation in R/reallocations.R
 \name{unemployment_insurance_reallocation}
 \alias{unemployment_insurance_reallocation}
-\title{Unemployment insurance reallocation}
+\title{Unemployment insurance reallocation
+Before constructing our projections, we reallocate unemployment insurance
+from the Federal government to S&L governments-- except for emergency legislation
+paid for by the Federal govt (e.g. CARES act UI expansion)}
 \usage{
 unemployment_insurance_reallocation(df)
 }
@@ -14,4 +17,7 @@ unemployment_insurance_reallocation(df)
 }
 \description{
 Unemployment insurance reallocation
+Before constructing our projections, we reallocate unemployment insurance
+from the Federal government to S&L governments-- except for emergency legislation
+paid for by the Federal govt (e.g. CARES act UI expansion)
 }

@@ -1,7 +1,9 @@
 #' Unemployment insurance reallocation 
-#'
+#' Before constructing our projections, we reallocate unemployment insurance 
+#' from the Federal government to S&L governments-- except for emergency legislation
+#' paid for by the Federal govt (e.g. CARES act UI expansion)
 #' @param df 
-#'
+#' 
 #' @return
 #' @export
 #'
@@ -40,7 +42,9 @@ fmap_share_old <- function(df){
         na.locf())
 }
 #' Medicaid reallocation
-#'
+#' Before  constructing projections, we reallocate Federal Medicaid grants from 
+#' S&L governments to the Federal govt.
+#' 
 #' @param df 
 #'
 #' @return

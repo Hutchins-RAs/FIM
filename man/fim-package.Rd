@@ -8,6 +8,14 @@
 \description{
 The Hutchins Center Fiscal Impact Measure shows how much local, state, and federal tax and spending policy adds to or subtracts from overall economic growth, and provides a near-term forecast of fiscal policies’ effects on economic activity.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://fim.org}
+  \item \url{https://github.com/malcalakovalski/fim}
+}
+
+}
 \author{
 \strong{Maintainer}: Manuel Alcala Kovalski \email{malcalakovalski@brookings.edu} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
 

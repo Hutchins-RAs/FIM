@@ -1,18 +1,33 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 # Fiscal Impact Measure
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
+[![standard-readme
+compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
 <!-- badges: end -->
-The Hutchins Center Fiscal Impact Measure shows how much local, state, and federal tax and spending policy adds to or subtracts from overall economic growth, and provides a near-term forecast of fiscal policies’ effects on economic activity.
 
-Click [here](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/) to see the most recent version of the FIM.
+The Hutchins Center Fiscal Impact Measure shows how much local, state,
+and federal tax and spending policy adds to or subtracts from overall
+economic growth, and provides a near-term forecast of fiscal policies’
+effects on economic activity.
+
+Click
+[here](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/)
+to see the most recent version of the FIM.
 
 ## Motivation
 
-The Fiscal Impact Measure (FIM) is a tool created the Hutchins Center to illustrate how much local, state and federal fiscal policy adds to or subtracts from overall economic growth. When the FIM is positive, policy is expansionary in the sense that it is pushing growth in real Gross Domestic Product (GDP) above its longer-run potential. When the FIM is negative, policy is lowering real GDP growth relative to potential. The FIM is broader than measures of fiscal impetus that rely on the size of the federal deficit because it includes the includes the direct effects of federal, state, and local government purchases as well as the more indirect effects of government taxes and government transfers, which affect private consumption.
-
+The Fiscal Impact Measure (FIM) is a tool created the Hutchins Center to
+illustrate how much local, state and federal fiscal policy adds to or
+subtracts from overall economic growth. When the FIM is positive, policy
+is expansionary in the sense that it is pushing growth in real Gross
+Domestic Product (GDP) above its longer-run potential. When the FIM is
+negative, policy is lowering real GDP growth relative to potential. The
+FIM is broader than measures of fiscal impetus that rely on the size of
+the federal deficit because it includes the includes the direct effects
+of federal, state, and local government purchases as well as the more
+indirect effects of government taxes and government transfers, which
+affect private consumption.
 
 ## Installation
 
@@ -22,4 +37,3 @@ You can install the released version of the fim by running
 # install.packages("devtools")
 devtools::install_github("malcalakovalski/fim")
 ```
-

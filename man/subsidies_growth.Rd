@@ -13,5 +13,5 @@ subsidies_growth(df)
 
 }
 \description{
-Subsidies growth rate assumptions
+Grow subsidies with real potential  GDP
 }

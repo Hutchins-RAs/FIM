@@ -1,0 +1,163 @@
+---
+title: "NIPA Consistent Fiscal Impact Measure Walkthrough"
+author: "Manuel Alcala Kovalski"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE,
+  results = 'asis'
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+
+
+```{r load-stuff, include = FALSE}
+library('rmarkdown')
+library('tidyverse')
+library('dplyover')
+library('tidyr')
+library('tsibble')
+library('janitor')
+library('snakecase')
+library('fim')
+
+
+to_table <- function(df) {
+  df %>%
+    rename_with(.fn = ~ to_title_case(.),
+                .cols = where(is.numeric)) %>%
+    pivot_longer(where(is.numeric), names_to = ' ') %>%
+    pivot_wider(names_from = date, values_from = value)
+}
+nipa_projections <- readxl::read_xlsx('inst/extdata/nipa_projections.xlsx')
+add_factors <- readxl::read_xlsx('inst/extdata/LSFIM_KY_v7.xlsx', 
+                         sheet = 'FIM Add Factors')
+```
+
+## Data
+
+```{r}
+nipa <-
+  nipa_projections %>%
+  filter(date >= '2018-03-31' & date <= '2022-12-31') %>%
+  left_join(add_factors %>%
+              select(date, contains(c(
+                'purchases', 'grants'
+              )))) %>%
+  mutate(across(starts_with('add'), ~ coalesce(., 0))) %>%
+  transmute(
+    date = date,
+    gross_domestic_product = gdp,
+    
+    federal_purchases = gf + add_federal_purchases,
+    state_purchases = gs + add_state_purchases,
+    consumption_grants_gross = gfeg,
+    medicaid_grants = gfeghdx,
+    consumption_grants_net = add_federal_cgrants + consumption_grants_gross - medicaid_grants,
+    investment_grants = gfeigx,
+    
+    federal_purchases_deflator_growth = q_g(jgf),
+    state_purchases_deflator_growth = q_g(jgs),
+    consumption_grants_net_deflator_growth = q_g(jgse),
+    investment_grants_deflator_growth = q_g(jgsi),
+    real_potential_gdp_growth = q_g(gdppothq),
+    
+    federal_purchases_growth = gf_g,
+    state_purchases_growth = gs_g,
+    consumption_grants_gross_growth = gfeg_g,
+    medicaid_grants_growth = gfeghhx_g,
+    investment_grants_growth = gfeigx_g
+  ) %>%
+  mutate(date  = yearquarter(date),
+         across(where(is.numeric), ~ round(., digits = 2)))
+
+paged_table(nipa %>% to_table())
+```
+
+## Fiscal Impact
+
+The FIM is defined as the actual contributions of real government purchases and real consumption to GDP less the contributions that would have prevailed if real purchases, real taxes, and real transfers were growing with potential GDP.
+
+Define $G$ as nominal government purchases, $\pi_{G}$ as the inflation rate for government purchases, $C$ as nominal consumption, $C$ as nominal consumption, $T$ as nominal tax or transfer payments, $Y$ as nominal GDP, and $\mu$ as real potential output growth.
+
+Then the contribution of real purchases to GDP is the growth rate of real government purchases times the share of government in GDP:
+
+$$
+\frac{G_t}{G_{t-1}} - \frac{G_{t-1}}{Y_{t-1}} \times (1 + \pi_{G} ) = \frac{G_t - G_{t-1} \times (1 + \pi_{G})}{Y_{t-1}}
+$$
+
+The counterfactual contribution of real government purchases under the assumption that real government spending rises with potential GDP is
+
+$$
+\mu \frac{G_{t-1}}{Y_{t-1}}
+$$
+
+Thus, the FIM for purchases is defined as
+
+$$
+\text{FIM}_{t}^{G} = \frac{G_t - G_{t-1} * (1 + \pi_G + \mu )}{Y_{t-1}}
+$$
+
+## BEA Methodology
+
+```{r}
+
+
+nipa %>%
+  mutate(over(c('federal_purchases', 'state_purchases', 
+                'consumption_grants_net', 'investment_grants'),
+             .fn =  ~ 400 * (.("{.x}") - lag(.("{.x}")) * (1 + .("{.x}_deflator_growth"))) 
+              / lag(gross_domestic_product),
+              .names = "{x}_contribution"),
+         grants_contribution = consumption_grants_net_contribution +
+           investment_grants_contribution,
+         across(where(is.numeric),
+                ~ round(., digits = 2))) %>%
+  select(
+    date,
+    federal_purchases_contribution,
+    state_purchases_contribution,
+    grants_contribution
+  ) %>%
+    to_table() %>%
+    paged_table()
+
+
+```
+
+## Hutchins Methodology
+
+```{r, linewidth=160}
+  
+  nipa %>%
+  mutate(
+    over(
+      c('federal_purchases', 'state_purchases', 
+        'consumption_grants_net', 'investment_grants'),
+      .fn = ~ 400 * (.("{.x}") - 
+            lag(.("{.x}")) * 
+            (1 + .("{.x}_deflator_growth") + real_potential_gdp_growth)) 
+              / lag(gross_domestic_product),
+      .names = "{x}_contribution"),
+    
+      grants_contribution = consumption_grants_net_contribution + investment_grants_contribution,
+      federal_contribution = federal_purchases_contribution + grants_contribution,
+      state_contribution = state_purchases_contribution - grants_contribution,
+    across(where(is.numeric), ~ round(., digits = 2))) %>%
+    
+  select(date, federal_contribution,
+         state_contribution, grants_contribution) %>%
+  to_table() %>%
+  paged_table()
+```

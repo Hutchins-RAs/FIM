@@ -1,5 +1,6 @@
 #' Subsidies growth rate assumptions 
-#'
+#' 
+#' Grow subsidies with real potential  GDP
 #' @param df 
 #'
 #' @return
@@ -14,7 +15,7 @@ subsidies_growth <- function(df){
     )
 }
 #' Purchases assumptions
-#'
+#' 
 #' @param df 
 #'
 #' @return
@@ -46,7 +47,8 @@ transfers_growth <- function(df){
     )
 }
 #' Health outlays growth assumptions 
-#'
+#'  Grow Federal Medicaid grants to states and Health & Hospital grants
+#'  with Medicaid 
 #' @param df 
 #'
 #' @return
@@ -63,7 +65,7 @@ health_growth <- function(df){
     )
 }
 #' Grants growth rate assumptions 
-#'
+#' 
 #' @param df 
 #'
 #' @return
@@ -130,7 +132,7 @@ state_purchases_growth_override <- function(df){
 
 #' State taxes
 #'
-#' We assume that state and local taxes growth with GDP.
+#' We assume that S&L taxes growth with GDP.
 #' @param df 
 #' Quarterly tax data comes from Haver.
 #' @return

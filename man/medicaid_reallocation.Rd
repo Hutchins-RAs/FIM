@@ -2,7 +2,9 @@
 % Please edit documentation in R/reallocations.R
 \name{medicaid_reallocation}
 \alias{medicaid_reallocation}
-\title{Medicaid reallocation}
+\title{Medicaid reallocation
+Before  constructing projections, we reallocate Federal Medicaid grants from
+S&L governments to the Federal govt.}
 \usage{
 medicaid_reallocation(df)
 }
@@ -14,4 +16,6 @@ medicaid_reallocation(df)
 }
 \description{
 Medicaid reallocation
+Before  constructing projections, we reallocate Federal Medicaid grants from
+S&L governments to the Federal govt.
 }

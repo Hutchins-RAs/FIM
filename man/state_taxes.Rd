@@ -13,5 +13,5 @@ state_taxes(df)
 
 }
 \description{
-We assume that state and local taxes growth with GDP.
+We assume that S&L taxes growth with GDP.
 }
