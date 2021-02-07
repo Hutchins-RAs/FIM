@@ -1,7 +1,7 @@
 Package: fim
 Title: Fiscal Impact Measure
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R:
     person(given = "Manuel",
            family = "Alcala Kovalski",
            role = c("aut", "cre"),
@@ -13,13 +13,15 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Suggests: 
+Suggests:
     testthat,
     knitr,
-    rmarkdown
-Depends: 
+    rmarkdown,
+    devtools,
+    git2r
+Depends:
     R (>= 2.10)
-Imports: 
+Imports:
     purrr,
     lubridate,
     rlang,
@@ -37,6 +39,7 @@ Imports:
     tidyselect,
     magrittr,
     drake,
-    ggplot2
+    ggplot2,
+    bookdown
 VignetteBuilder: knitr
 URL: https://fim.org, https://github.com/malcalakovalski/fim
