@@ -40,6 +40,8 @@ Imports:
     magrittr,
     drake,
     ggplot2,
-    bookdown
+    bookdown,
+    targets,
+    tarchetypes
 VignetteBuilder: knitr
 URL: https://fim.org, https://github.com/malcalakovalski/fim

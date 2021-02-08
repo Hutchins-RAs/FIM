@@ -1,44 +1,29 @@
 
-#' Cola adjustment 
-#' Adjust transfers for their cola related bump
-#' @param df 
-#' Cbo projections
-#' @return
-#' @export
-#'
-#' @examples
-  cola_adjustment <- function(df) {
+cola_adjustment <- function(df){
+  
+  get_cola_rate <- function(df){
     df %>%
       mutate(cpiu_g = q_a(cpiu) / 100,
              cola_rate = if_else(month(date) == 3,
-                                 lag(cpiu_g, 2),
-                                 NULL) 
-      ) %>%
-      fill(cola_rate) %>%
-      mutate(
-        gftfp_before_cola = gftfp,
-        health_ui = SMA(yptmd + yptmr + yptu, n = 4),
-        gftfp_noCOLA = SMA((gftfp - health_ui)*(1-cola_rate), n = 4),
-        gftfp =  gftfp_noCOLA * (1 + cola_rate)  + health_ui,
-      ) 
-  } 
-#' Smooth budget series
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-  smooth_budget_series <- function(df){
-    # smooth all budget series except total social transfers, which we did above
-    df %>%
-      mutate(
-        across(.cols = c("gfrpt",  "gfrpri",  "gfrcp",  "gfrs", "yptmr",  "yptmd"),
-               .fns = ~ rollapply(.x, width = 4, mean, fill = NA, align =  'right')
-        ) 
-      )
+                                 lag(cpiu_g, 2), 
+                                 NULL)) %>%
+      fill(cola_rate)
   }
+  smooth_transfers_net_health_ui <- function(df){
+    df %>%
+      mutate(health_ui = SMA(yptmd + yptmr + yptu, n = 4),
+             gftfp_unadjusted = SMA((gftfp - health_ui) * (1 - cola_rate), n = 4),
+             gftfp = if_else(id == 'forecast', 
+                             gftfp_unadjusted * (1 + cola_rate) + health_ui,
+                             gftfp)) %>%
+      select(-c(health_ui, gftfp_unadjusted, cola_rate))
+  }
+  df %>%
+    get_cola_rate() %>%
+    smooth_transfers_net_health_ui()
+  
+}
+
 #' Alternative tax scenario
 #'
 #' @param df 

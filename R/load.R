@@ -1,36 +1,16 @@
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-load_economic_projections <- function(){
-  readxl::read_xlsx(here::here(drake::file_in('data/raw/cbo/cbo_econ_proj_quarterly.xlsx'))) %>%
-    dplyr::mutate(date = lubridate::as_date(date))
-}
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-load_budget_projections <- function(){
-  readxl::read_xlsx(here::here(drake::file_in('data/raw/cbo/cbo_budget_nipas_proj_annual.xlsx'))) %>%
+
+get_cbo_projections <- function(){
+  budget_projections <- 
+    readRDS('data/budget_projections.rds') %>%
     as_tsibble(index = fy)
-}
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-load_cbo_projections <- function(){
-  budget <- load_budget_projections()
-  economic <- load_economic_projections()
+  economic_projections <- 
+    readRDS('data/economic_projections.rds') 
   
-  budget %>%
+  budget_projections %>%
     annual_to_quarter(fy) %>%
-    dplyr::left_join(economic)
+    dplyr::left_join(economic_projections) %>%
+    mutate(id = 'projection') %>%
+    mutate(date = lubridate::as_date(date))
 }
 #' Title
 #'
@@ -44,37 +24,18 @@ load_unemployment_insurance_override <- function(){
     dplyr::mutate(date = lubridate::as_date(date)) %>%
     dplyr::select(date, tidyselect::contains('unemployment_insurance'))
 }
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-load_national_accounts <- function(){
-  readxl::read_xlsx(here::here(drake::file_in('data/raw/haver/national_accounts.xlsx')))
-}
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-load_economic_statistics <- function(){
-  readxl::read_xlsx(here::here(drake::file_in('data/raw/haver/economic_statistics.xlsx')))
-}
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-load_haver_data <- function(){
-  national_accounts <- load_national_accounts()
-  economic_statistics <- load_economic_statistics()
-  dplyr::left_join(national_accounts,
-            economic_statistics,
-            by = "date") %>%
-    dplyr::mutate(date = lubridate::as_date(date))
+
+
+read_data <- function(){
+  historical <- 
+    readRDS('data/historical.rds') %>%
+    mutate(id = 'historical') %>%
+    millions_to_billions() %>%
+    rename(cpiu = ui) 
+  projections <- get_cbo_projections()
+  
+  historical %>%
+    coalesce_join(projections, by = 'date') 
 }
 
 
