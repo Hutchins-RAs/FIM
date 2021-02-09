@@ -3,7 +3,8 @@ get_cbo_projections <- function(){
   budget_projections <- 
     readRDS('data/budget_projections.rds') %>%
     as_tsibble(index = fy) %>%
-    annual_to_quarter() 
+    annual_to_quarter() %>%
+    fiscal_to_calendar()
   economic_projections <- 
     readRDS('data/economic_projections.rds') %>%
     mutate(date = yearquarter(date)) %>%
@@ -16,12 +17,9 @@ get_cbo_projections <- function(){
     smooth_budget_series() %>%
     cola_adjustment() %>%
     implicit_price_deflators() %>%
-    select(-(contains(c('health_ui', 'unadj', 'cola_rate',  'cpiu_g')))) %>%
     growth_rates() %>%
     alternative_tax_scenario() %>%
-    select(date, id, gdp, ends_with('growth')) %>%
-    format_tsibble() %>%
-    fiscal_to_calendar()
+    format_tsibble() 
 }
 #' Title
 #'
@@ -50,6 +48,10 @@ read_data <- function(){
     millions_to_billions() %>%
     rename(cpiu = ui) %>%
     format_tsibble()
+  last_date <- 
+    historical %>%
+    pull(date) %>%
+    max()
   projections <- get_cbo_projections()
   
   historical %>%

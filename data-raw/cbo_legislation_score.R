@@ -8,7 +8,6 @@ cbo_legislation_score <-
   janitor::clean_names() %>%
   mutate(
     across(everything(), ~ replace_na(., 0)),
-    across(where(is.numeric), ~ . * 4),
     year = as.numeric(year)
   ) 
 

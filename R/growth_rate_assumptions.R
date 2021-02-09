@@ -125,7 +125,7 @@ growth_assumptions <- function(df){
            
            grants_growth = federal_purchases_growth,
            investment_grants_growth = federal_purchases_growth,
-           consumption_grants_growth  =  consumption_grants_deflator_growth,
+           consumption_grants_growth  =  federal_purchases_growth,
            
            consumption_grants_deflator_growth = state_purchases_deflator_growth,
            investment_grants_deflator_growth = state_purchases_deflator_growth)

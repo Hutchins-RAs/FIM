@@ -121,13 +121,14 @@ forecast <- function(df){
     fill(variables) %>%
     group_by(id) %>%
     mutate(across(all_of(glue('{variables}_growth')),
-                  ~  get_cumulative_growth(.x)
+                  ~  get_cumulative_growth(.x),
+                  .names = "{.col}_cumulative"
                   )) %>%
     ungroup() %>%
     mutate(
            dplyover::over(all_of(variables),
                 ~ if_else(id == 'projection', 
-                          .("{.x}") * .("{.x}_growth"),
+                          .("{.x}") * (1 + .("{.x}_growth_cumulative")),
                           .("{.x}"))
            )
     ) %>%
@@ -146,7 +147,7 @@ forecast <- function(df){
 
 get_cumulative_growth <- function(x){
   
-  x <- cumprod(1 + x)
+  x <- cumprod(x)
   return(x)
 }
 
