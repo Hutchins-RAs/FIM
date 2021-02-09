@@ -103,3 +103,63 @@ df %>%
   ) %>%
   ungroup()
 }
+forecast <- function(df){
+  gdp <- c('gdp', 'real_gdp', 'gdp_deflator',
+                 'real_potential_gdp', 'consumption', 'consumption_deflator')
+  purchases <- c('purchases', 'federal_purchases', 'state_purchases',
+                  'federal_purchases_deflator', 'state_purchases_deflator')
+  grants  <- c('health_grants', 'medicaid_grants', 'investment_grants', 'consumption_grants',
+                'consumption_grants_deflator', 'investment_grants_deflator')
+  health <- c('medicaid', 'medicare')
+  transfers <- c('social_benefits', 'subsidies')  %>% government_levels()
+  taxes <- c('personal_taxes', 'production_taxes', 'payroll_taxes', 'corporate_taxes')
+  federal_taxes <- taxes  %>% as_federal()
+  state_taxes <- taxes %>% as_state()
+  variables <- c(gdp, purchases, grants,  health, transfers, federal_taxes) 
+  
+  df %>%
+    fill(variables) %>%
+    group_by(id) %>%
+    mutate(across(all_of(glue('{variables}_growth')),
+                  ~  get_cumulative_growth(.x)
+                  )) %>%
+    ungroup() %>%
+    mutate(
+           dplyover::over(all_of(variables),
+                ~ if_else(id == 'projection', 
+                          .("{.x}") * .("{.x}_growth"),
+                          .("{.x}"))
+           )
+    ) %>%
+    mutate(
+           across(all_of(state_taxes),
+                  ~ if_else(id == 'projection',
+                            zoo::na.locf(. / gdp) * gdp,
+                            .)
+                  )
+    )
+    
+}
+
+
+
+
+get_cumulative_growth <- function(x){
+  
+  x <- cumprod(1 + x)
+  return(x)
+}
+
+government_levels <- function(x){
+  c(glue('federal_{x}'), glue('state_{x}'))
+}
+
+as_federal <- function(x){
+  x <- glue('federal_{x}')
+  return(x)
+}
+
+as_state <- function(x){
+  x <- glue('state_{x}')
+  return(x)
+}

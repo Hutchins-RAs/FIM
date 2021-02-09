@@ -7,22 +7,7 @@ library('writexl')
 library('tsibble')
 
 source('src/functions.R')
-monthly_to_quarterly <- function(df){
-  df %>%
-    mutate(yq = tsibble::yearquarter(date)) %>%
-    as_tsibble(index = date) %>%
-    select(date, yq, everything()) %>%
-    index_by(yq) %>%
-    mutate(
-      across(
-        .cols = where(is.numeric), 
-        .fns = ~ mean(.x, na.rm = TRUE)
-      )
-    ) %>%
-    filter(row_number()== n()) %>%
-    ungroup() %>%
-    select(-yq)
-}
+
 
 # 0.1 Pull Raw Data---------------------------------------------------------------
 

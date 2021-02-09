@@ -4,19 +4,17 @@ cola_adjustment <- function(df){
   get_cola_rate <- function(df){
     df %>%
       mutate(cpiu_g = q_a(cpiu) / 100,
-             cola_rate = if_else(month(date) == 3,
+             cola_rate = if_else(quarter(date) == 1,
                                  lag(cpiu_g, 2), 
                                  NULL)) %>%
       fill(cola_rate)
   }
   smooth_transfers_net_health_ui <- function(df){
     df %>%
-      mutate(health_ui = SMA(yptmd + yptmr + yptu, n = 4),
-             gftfp_unadjusted = SMA((gftfp - health_ui) * (1 - cola_rate), n = 4),
-             gftfp = if_else(id == 'forecast', 
-                             gftfp_unadjusted * (1 + cola_rate) + health_ui,
-                             gftfp)) %>%
-      select(-c(health_ui, gftfp_unadjusted, cola_rate))
+      mutate(gftfp_unadj = gftfp,
+             health_ui = TTR::SMA(yptmd + yptmr + yptu, n = 4),
+             smooth_gftfp_minus_health_ui = TTR::SMA((gftfp - health_ui) * (1 - cola_rate), n =4),
+             gftfp = smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui)
   }
   df %>%
     get_cola_rate() %>%
@@ -40,15 +38,15 @@ cola_adjustment <- function(df){
     
     df %>%
       mutate(gfrptCurrentLaw = gfrpt,
-             gfrptCurrentLaw_g = gfrpt_g,
-             gfrpt_g =
+             gfrptCurrentLaw_growth = gfrpt_growth,
+             gfrpt_growth =
                if_else(date >= expdate,
-                       lag(gfrpt_g),
-                       gfrpt_g,
+                       lag(gfrpt_growth),
+                       gfrpt_growth,
                        missing = NULL
                ),
              gfrpt  = if_else(date >= predate,
-                              lag(gfrpt) * (1 + gfrpt_g / 400),
+                              lag(gfrpt) * (1 + gfrpt_growth / 400),
                               gfrpt))
   }
 #' Implicit price deflators
@@ -99,13 +97,14 @@ cola_adjustment <- function(df){
     df %>%
       mutate(
         across(
-          .cols = where(is.numeric),
+          .cols = where(is.numeric) & !ends_with('_growth'),
           .fns = ~ q_g(.),
-          .names = "{.col}_g"
+          .names = "{.col}_growth"
         ) 
       )
   }
- 
+
+
 #' Get growth rates of federal transfers
 #'
 #' @param df 
@@ -139,7 +138,16 @@ health_outlays_growth_rates <- function(df){
       across(
         .cols = c("yptmr",  "yptmd" ),
         .fns = ~ q_g(.x),
-        .names = "{.col}_g"
+        .names = "{.col}_growth"
       )
     ) 
+}
+
+smooth_budget_series <- function(df) {
+  federal_taxes <- c('gfrpt', 'gfrpri', 'gfrcp', 'gfrs')
+  health_outlays <- c('yptmd', 'yptmr')
+  unemployment_insurance <- 'yptu'
+  df %>%
+    mutate(across(all_of(c(federal_taxes, health_outlays, unemployment_insurance)),
+                  ~ rollapply(.x, width = 4, mean, fill = NA, align = 'right')))
 }

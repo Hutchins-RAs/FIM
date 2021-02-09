@@ -2,15 +2,26 @@
 get_cbo_projections <- function(){
   budget_projections <- 
     readRDS('data/budget_projections.rds') %>%
-    as_tsibble(index = fy)
+    as_tsibble(index = fy) %>%
+    annual_to_quarter() 
   economic_projections <- 
-    readRDS('data/economic_projections.rds') 
+    readRDS('data/economic_projections.rds') %>%
+    mutate(date = yearquarter(date)) %>%
+    as_tsibble(index = date)
   
   budget_projections %>%
-    annual_to_quarter(fy) %>%
     dplyr::left_join(economic_projections) %>%
     mutate(id = 'projection') %>%
-    mutate(date = lubridate::as_date(date))
+    mutate(date = lubridate::as_date(date)) %>%
+    smooth_budget_series() %>%
+    cola_adjustment() %>%
+    implicit_price_deflators() %>%
+    select(-(contains(c('health_ui', 'unadj', 'cola_rate',  'cpiu_g')))) %>%
+    growth_rates() %>%
+    alternative_tax_scenario() %>%
+    select(date, id, gdp, ends_with('growth')) %>%
+    format_tsibble() %>%
+    fiscal_to_calendar()
 }
 #' Title
 #'
@@ -26,12 +37,19 @@ load_unemployment_insurance_override <- function(){
 }
 
 
+#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
 read_data <- function(){
   historical <- 
     readRDS('data/historical.rds') %>%
     mutate(id = 'historical') %>%
     millions_to_billions() %>%
-    rename(cpiu = ui) 
+    rename(cpiu = ui) %>%
+    format_tsibble()
   projections <- get_cbo_projections()
   
   historical %>%

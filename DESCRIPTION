@@ -42,6 +42,7 @@ Imports:
     ggplot2,
     bookdown,
     targets,
-    tarchetypes
+    tarchetypes,
+    dplyover
 VignetteBuilder: knitr
 URL: https://fim.org, https://github.com/malcalakovalski/fim
