@@ -1,7 +1,7 @@
 
 
 librarian::shelf('tidyverse', 'zoo', 'TTR', 'tsibble', 'targets', 'tarchetypes', 'lubridate',
-                 'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover')
+                 'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover', 'tsibble')
 
 devtools::load_all()
 # Build workflow plan data frame.
@@ -56,12 +56,43 @@ tar_plan(
   projections = 
     read_data() %>%
     define_variables() %>%
-    reallocations() %>%
     growth_assumptions() %>%
+    reallocations() %>%
     forecast() %>%
     mutate(across(where(is.numeric),
-                  ~ coalesce(.x, 0)))
+                  ~ coalesce(.x, 0))),
+  fim = 
+    projections %>%
+    add_factors() %>%
+    mutate(dplyover::over(c('ui', 'federal_ui', 'state_ui'),
+                          ~if_else(id == 'projection',
+                                   .('{.x}_override'),
+                                   .('{.x}'))
+                          )
+           ) %>%
+    purchases_contributions() %>% 
+       spread_social_benefits() %>%
+    mutate(non_corporate_taxes =personal_taxes + payroll_taxes+production_taxes,
+           federal_non_corporate_taxes =federal_personal_taxes + federal_payroll_taxes+federal_production_taxes,
+           state_non_corporate_taxes =state_personal_taxes + state_payroll_taxes+state_production_taxes) %>% 
+     taxes_transfers_minus_neutral() %>% 
+      calculate_mpc('subsidies') %>%
+      calculate_mpc('health_outlays') %>%
+      calculate_mpc('social_benefits') %>%
+      calculate_mpc('ui') %>%
+      calculate_mpc('non_corporate_taxes') %>%
+      calculate_mpc('corporate_taxes') %>%
+      mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>% 
+      taxes_contributions() %>% 
+    sum_taxes_contributions() %>% 
+    transfers_contributions() %>% 
+      sum_transfers_contributions() %>% 
+    add_social_benefit_components() %>% 
+    sum_taxes_transfers() %>% 
+    mutate(federal_contribution = federal_purchases_contribution + federal_taxes_contribution + federal_transfers_contribution)
 )
+
+
 # Next steps:
 #  - add factors
 #  - overrides

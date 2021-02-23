@@ -118,9 +118,9 @@ forecast <- function(df){
   variables <- c(gdp, purchases, grants,  health, transfers, federal_taxes) 
   
   df %>%
-    fill(variables) %>%
-    group_by(id) %>%
-    mutate(across(all_of(glue('{variables}_growth')),
+    tidyr::fill(variables) %>%
+    dplyr::group_by(id) %>%
+    dplyr::mutate(dplyr::across(all_of(glue::glue('{variables}_growth')),
                   ~  get_cumulative_growth(.x),
                   .names = "{.col}_cumulative"
                   )) %>%
@@ -128,7 +128,7 @@ forecast <- function(df){
     mutate(
            dplyover::over(all_of(variables),
                 ~ if_else(id == 'projection', 
-                          .("{.x}") * (1 + .("{.x}_growth_cumulative")),
+                          lag(.("{.x}")) * (.("{.x}_growth_cumulative")),
                           .("{.x}"))
            )
     ) %>%
@@ -147,7 +147,7 @@ forecast <- function(df){
 
 get_cumulative_growth <- function(x){
   
-  x <- cumprod(x)
+  x <- cumprod(1 + x)
   return(x)
 }
 

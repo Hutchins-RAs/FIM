@@ -19,7 +19,7 @@ mpc_social_benefits = function(x){
 #' @export
 #'
 #' @examples
-mpc_unemployment_insurance <- function(x){
+mpc_ui <- function(x){
   mpc <- 0.9
   weights <- c(rep(0.05, 2), rep(0.1, 2), rep(0.35, 2))
   mpc * roll::roll_sum(x, width = length(weights), 
@@ -78,6 +78,25 @@ mpc_subsidies_second_draw <- function(x){
   mpc * roll::roll_sum(x, width = length(weights),
                        weights = weights, online = FALSE)
 }
+
+
+# 
+# mpc_factory <- build_factory(
+#   function(x,  ...){
+#     mpc  * roll::roll_sum(x, online = FALSE, ...)
+#   },
+#   mpc,
+#   online = FALSE,
+#   fill = NA,
+#   align = 'right',
+#   .pass_dots = TRUE
+# )
+
+# mpc_subsidies_second_draw_exp <- mpc_factory(0.525, width = 12, weights =  c(rep(0.0625, 4), rep(0.0750, 4), 0.0875, 0.1, 0.1125, 0.15))
+
+
+
+
 ### Taxes ---------------------------------------------------------------------------------------
 #' Title
 #'
@@ -89,7 +108,7 @@ mpc_subsidies_second_draw <- function(x){
 #' @examples
 mpc_corporate_taxes <- function(x){
   mpc <- -0.4
-  mpc * rollapply(x, width = 12, mean, fill = NA, align =  'right')
+  mpc * zoo::rollapply(x, width = 12, mean, fill = NA, align =  'right')
 }
 #' Title
 #'
@@ -105,6 +124,8 @@ mpc_noncorp_taxes <- function(x){
   mpc * roll::roll_sum(x, width = length(weights),
                        weights = weights, online = FALSE)
 }
+
+mpc_non_corporate_taxes <- mpc_noncorp_taxes
 #' Calculate mpc's
 #' Create mpc
 #' @param df 
@@ -123,7 +144,7 @@ calculate_mpc <- function(df, taxes_transfers){
   state <- glue::glue('state_{taxes_transfers}_post_mpc')
   
   if(taxes_transfers == 'subsidies'){
-    second_draw <- lubridate::as_date('2021-03-31')
+    second_draw <- tsibble::yearquarter('2021 Q1')
     mpc_fun <- eval(sym(glue::glue('mpc_{taxes_transfers}')))
     mpc_fun_second_draw <- eval(sym(glue::glue('mpc_{taxes_transfers}_second_draw')))
     df %>%

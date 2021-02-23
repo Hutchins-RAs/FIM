@@ -55,7 +55,8 @@ read_data <- function(){
   projections <- get_cbo_projections()
   
   historical %>%
-    coalesce_join(projections, by = 'date') 
+    coalesce_join(projections, by = 'date') %>%
+    as_tsibble(key = id, index = date)
 }
 
 

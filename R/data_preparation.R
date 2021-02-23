@@ -15,6 +15,7 @@ define_variables <- function(df){
               consumption = c,
               real_consumption = ch,
               consumption_deflator = jc,
+              consumption_deflator_growth  = q_g(jc),
               cpiu,
               
               # PURCHASES
@@ -60,7 +61,7 @@ define_variables <- function(df){
               medicare = yptmr,
               medicaid = yptmd,
               ui = yptu,
-              #ui_expansion = gftfpu, 
+              ui_expansion = gftfpu, 
               peuc = yptue,
               pua = yptup,
               puc = yptuc,
@@ -133,6 +134,6 @@ reallocations <- function(df){
            federal_social_benefits = federal_social_benefits - medicare,
            state_social_benefits = state_social_benefits - medicaid,
            
-           federal_ui = pua + peuc + puc + wages_lost_assistance,
+           federal_ui = pua + 2 * peuc + puc + wages_lost_assistance,
            state_ui = ui - federal_ui)
 }

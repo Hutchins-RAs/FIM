@@ -1,15 +1,15 @@
 
 format_tsibble <- function(df){
   df %>%
-    mutate(date = yearquarter(date)) %>%
+    mutate(date = tsibble::yearquarter(date)) %>%
     relocate(id, .before = date) %>%
-    as_tsibble(key = id, index = date)
+    tsibble::as_tsibble(key = id, index = date)
 }
 
 annual_to_quarter <- function(df){
   year <-
     df %>%
-      index_var()
+      tsibble::index_var()
   min <-
     df %>%
     select(rlang::enexpr(year)) %>%
@@ -19,17 +19,17 @@ annual_to_quarter <- function(df){
     df %>%
     select(rlang::enexpr(year)) %>%
     max()
-  start <- yearquarter(glue::glue('{min} Q1'))
-  end <- yearquarter(glue::glue('{max} Q4'))
+  start <- tsibble::yearquarter(glue::glue('{min} Q1'))
+  end <- tsibble::yearquarter(glue::glue('{max} Q4'))
   x <- seq(start,  end, by = 1)
   
   df %>%
     as_tibble() %>%
     slice(rep(1:n(), each=4)) %>%
-    mutate(date = yearquarter(x, fiscal_start =  1)) %>%
+    mutate(date = tsibble::yearquarter(x, fiscal_start =  1)) %>%
     relocate(date, .before =  everything()) %>%
     select(-rlang::enexpr(year)) %>%
-    as_tsibble(index = date)
+    tsibble::as_tsibble(index = date)
 }
 
 fiscal_to_calendar <- function(df){

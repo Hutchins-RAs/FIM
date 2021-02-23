@@ -1,3 +1,24 @@
+#' Title
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+purchases_contributions <- function(df){
+  df %>%
+    mutate(over(c('federal_purchases', 
+                  'state_purchases', 
+                  'consumption_grants', 
+                  'investment_grants'),
+                
+                .fn =  ~ 400 * (.("{.x}") - lag(.("{.x}")) * (1 + .("{.x}_deflator_growth"))) 
+                / lag(gdp),
+                
+                .names = "{x}_contribution"))
+}
+
 #' Calculate contributions of grants and purchases
 #'
 #' @param df 
@@ -42,14 +63,14 @@ total_purchases <- function(df){
 #'
 #' @examples
 neutral <- function(.data, var){
-  dplyr::lag(x) * (1 + fim$gdppoth + fim$pi_pce)
+  dplyr::lag(x) * (1 + fim$gdppoth + fim$consumption_deflator_growth)
 }
 all_taxes_transfers <- function(){
   taxes_transfers <- c("subsidies","health_outlays", "social_benefits",
-                       "noncorp_taxes", "corporate_taxes", 'rebate_checks', 
-                       'unemployment_insurance')
-  government_level <- c('federal', 'state')
-  all_taxes_transfers <- c(glue::glue('{taxes_transfers}'), glue::glue('federal_{taxes_transfers}'),
+                       "non_corporate_taxes", "corporate_taxes",  
+                       'ui')
+
+  all_taxes_transfers <- c(glue::glue('{taxes_transfers}'), glue::glue('federal_{taxes_transfers}'),'rebate_checks',
                            glue::glue('state_{taxes_transfers}'))
   return(all_taxes_transfers)
 }
@@ -69,7 +90,7 @@ taxes_transfers_minus_neutral <- function(df){
   df %>%
     dplyr::mutate(
       dplyr::across(.cols = all_of(all_taxes_transfers()),
-             .fns = ~ . - dplyr::lag(.) * (1 + gdppoth + pi_pce),
+             .fns = ~ . - dplyr::lag(.) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
              .names = '{.col}_minus_neutral')
     )
 }
@@ -86,7 +107,7 @@ taxes_transfers_minus_neutral <- function(df){
 #' @examples
 
 taxes_contributions <- function(df){
-  taxes <- c('noncorp_taxes_post_mpc', 'corporate_taxes_post_mpc')
+  taxes <- c('non_corporate_taxes_post_mpc', 'corporate_taxes_post_mpc')
   all_taxes <- c(glue('{taxes}'), glue('federal_{taxes}'), glue('state_{taxes}')) 
   df %>%
     mutate(
@@ -110,9 +131,9 @@ taxes_contributions <- function(df){
 #' @examples
 transfers_contributions <- function(df){
   transfers <- c('social_benefits', 'health_outlays', 'subsidies',
-                 'unemployment_insurance', 'rebate_checks') %>%
+                 'ui' ) %>%
     paste0('_post_mpc')
-  all_transfers <- c(glue('{transfers}'), glue('federal_{transfers}'), glue('state_{transfers}')) 
+  all_transfers <- c(glue('{transfers}'),'rebate_checks', glue('federal_{transfers}'), glue('state_{transfers}')) 
   df %>%
     mutate(
       across(

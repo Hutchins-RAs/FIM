@@ -9,7 +9,7 @@
 millions_to_billions <- function(df){
   df %>% 
     dplyr::mutate(
-      dplyr::across(.cols = c('gftfbusx', 'gfeghhx', 'gfeghdx', 'gfeigx'),
+      dplyr::across(.cols = any_of(c('gftfbusx', 'gfeghhx', 'gfeghdx', 'gfeigx')),
              .fns = ~ . / 1000)
     )
 }

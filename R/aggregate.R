@@ -25,12 +25,12 @@ sum_projections <- function(df, total, federal, state){
 #'
 #' @examples
 sum_taxes_contributions <- function(df){
-  taxes <- c('noncorp_taxes', 'corporate_taxes')
+  taxes <- c('non_corporate_taxes', 'corporate_taxes')
   df %>%
     mutate(
-      taxes_cont = rowSums(select(., .dots = all_of(str_glue('{taxes}_cont')))),
-      federal_taxes_cont = rowSums(select(., .dots = all_of(str_glue('federal_{taxes}_cont')))),
-      state_taxes_cont = rowSums(select(., .dots = all_of(str_glue('state_{taxes}_cont'))))
+      taxes_cont = corporate_taxes_cont + non_corporate_taxes_cont,
+      federal_taxes_cont = federal_corporate_taxes_cont + federal_non_corporate_taxes_cont,
+      state_taxes_cont = state_corporate_taxes_cont + state_non_corporate_taxes_cont
     )
 }
 #' Title
@@ -43,13 +43,12 @@ sum_taxes_contributions <- function(df){
 #' @examples
 sum_transfers_contributions <- function(df){
   transfers <- c('social_benefits',  'health_outlays', 'subsidies',
-                 'unemployment_insurance', 'rebate_checks')
+                 'ui', 'rebate_checks')
   df %>%
     mutate(
-      transfers_cont = rowSums(select(., .dots = all_of(str_glue('{transfers}_cont'))), na.rm = TRUE),
-      federal_transfers_cont = rowSums(select(., .dots = all_of(str_glue('federal_{transfers}_cont'))), na.rm = TRUE),
-      state_transfers_cont = rowSums(select(., .dots = all_of(str_glue('state_{transfers}_cont'))), na.rm = TRUE)
-    )
+      transfers_cont = social_benefits_cont + health_outlays_cont + subsidies_cont + ui_cont + rebate_checks_cont,
+      federal_transfers_cont = federal_social_benefits_cont + federal_health_outlays_cont + federal_subsidies_cont + federal_ui_cont + rebate_checks_cont,
+      state_transfers_cont = state_social_benefits_cont + state_health_outlays_cont + state_ui_cont + state_subsidies_cont)
 }
 #' Title
 #'

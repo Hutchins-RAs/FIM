@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-add_factors <- function(df, last_date){
+add_factors_deprecated <- function(df, last_date){
   #load add factor file
   add_factors <- readxl::read_excel("data/add-ons/LSFIM_KY_v7.xlsx", 
                             sheet = "FIM Add Factors") %>%
@@ -46,6 +46,49 @@ add_factors <- function(df, last_date){
       corporate_taxes  = state_corporate_taxes  + federal_corporate_taxes ,
       subsidies   = state_subsidies + federal_subsidies,
       federal_rebate_checks = federal_rebate_checks + add_rebate_checks,
+      rebate_checks = rebate_checks + add_rebate_checks
+    )
+}
+
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+add_factors <- function(df){
+  #load add factor file
+  state <- c('health_outlays', 'social_benefits', 'purchases') %>% as_state()
+  federal <- c('health_outlays', 'social_benefits', 'subsidies', 'purchases') %>% as_federal()
+  other <- c('consumption_grants', 'rebate_checks')
+  variables <- c(federal, state, other)
+  add_factors <- readxl::read_excel("inst/extdata/add_factors.xlsx", 
+                                    sheet = "FIM Add Factors") %>%
+    mutate(date = tsibble::yearquarter(date)) %>%
+    as_tsibble(index = date)
+  df %>% 
+    dplyr::full_join(add_factors,
+                     by = "date") %>%
+    dplyr::mutate(dplyr::across(
+      .cols = tidyselect::starts_with('add_'),
+      .fns = ~ coalesce(.x, 0)
+    ),
+    dplyover::over(all_of(variables),
+                   ~ if_else(id == 'projection', 
+                             .("{.x}") + .("add_{.x}"),
+                             .("{.x}"))
+    )
+    
+    ) %>% 
+    dplyr::mutate(
+
+      
+      
+      #new category totals
+      health_outlays  = state_health_outlays  + federal_health_outlays ,
+      social_benefits  = state_social_benefits  + federal_social_benefits ,
+      subsidies   = state_subsidies + federal_subsidies,
       rebate_checks = rebate_checks + add_rebate_checks
     )
 }
