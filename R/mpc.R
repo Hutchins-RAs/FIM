@@ -8,9 +8,16 @@
 #' @export
 #'
 #' @examples
-mpc_social_benefits = function(x){
-  0.9 * rollapply(x, width = 4, mean, partial = TRUE, fill = NA, align =  'right')
+mpc_social_benefits = function(df){
+  df %>% 
+    mutate(
+      across(
+        .cols = all_levels('social_benefits'),
+        .fns = ~ 0.9 * rollapply(.x, width = 4, mean, partial = TRUE, fill = NA, align =  'right')
+      )
+    ) 
 }
+
 #' Title
 #'
 #' @param x 
@@ -19,26 +26,22 @@ mpc_social_benefits = function(x){
 #' @export
 #'
 #' @examples
-mpc_ui <- function(x){
-  mpc <- 0.9
-  weights <- c(rep(0.05, 2), rep(0.1, 2), rep(0.35, 2))
-  mpc * roll::roll_sum(x, width = length(weights), 
-                       weights = weights, online = FALSE)
-}
-#' Title
-#'
-#' @param x 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-mpc_rebate_checks <- function(x){
+mpc_rebate_checks <- function(df){
   mpc <- 0.7
   weights <- c(rep(0.08, 6), 0.15, 0.35)
-  mpc * roll::roll_sum(x, width = length(weights),
-                       weights = weights, online = FALSE)
+  
+  df %>% 
+    mutate(
+      across(
+        any_of(all_levels('rebate_checks_minus_neutral')),
+        ~ mpc * roll::roll_sum(.x, width = length(weights), 
+                               weights = weights,
+                               online = FALSE)
+      )
+    )
+
 }
+
 #' Title
 #'
 #' @param x 
@@ -47,37 +50,19 @@ mpc_rebate_checks <- function(x){
 #' @export
 #'
 #' @examples
-mpc_subsidies <- function(x) {
-  mpc <- 0.45
-  weights <- c(rep(0.075,4), rep(0.08,4), 0.085, 0.09, 0.095, 0.11)
-  mpc * roll::roll_sum(x, width = length(weights), 
-                       weights = weights, online = FALSE)
+mpc_health_outlays = function(df){
+  mpc <- 0.9
+  
+  df %>% 
+    mutate(
+      across(
+        all_levels('health_outlays_minus_neutral'),
+        ~  mpc * rollapply(.x, width = 4, mean, fill = NA, align =  'right')
+      )
+    )
+  
 }
-#' Title
-#'
-#' @param x 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-mpc_health_outlays = function(x){
-  0.9 * rollapply(x, width = 4, mean, fill = NA, align =  'right')
-}
-#' Title
-#'
-#' @param x 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-mpc_subsidies_second_draw <- function(x){
-  mpc <- 0.525
-  weights <- c(rep(0.0625, 4), rep(0.0750, 4), 0.0875, 0.1, 0.1125, 0.15)
-  mpc * roll::roll_sum(x, width = length(weights),
-                       weights = weights, online = FALSE)
-}
+
 
 
 # 
@@ -106,9 +91,15 @@ mpc_subsidies_second_draw <- function(x){
 #' @export
 #'
 #' @examples
-mpc_corporate_taxes <- function(x){
+mpc_corporate_taxes <- function(df){
   mpc <- -0.4
-  mpc * zoo::rollapply(x, width = 12, mean, fill = NA, align =  'right')
+  df %>% 
+    mutate(
+      across(
+        any_of(all_levels('corporate_taxes')),
+        ~ mpc * zoo::rollapply(.x, width = 12, mean, fill = NA, align =  'right')
+      )
+    )
 }
 #' Title
 #'
@@ -118,14 +109,138 @@ mpc_corporate_taxes <- function(x){
 #' @export
 #'
 #' @examples
-mpc_noncorp_taxes <- function(x){
+mpc_non_corporate_taxes <- function(df){
   mpc <- -0.6
   weights <- c(rep(0.1, 6), rep(0.2, 2))
-  mpc * roll::roll_sum(x, width = length(weights),
-                       weights = weights, online = FALSE)
+  df %>% 
+    mutate(
+      across(
+        (all_levels('non_corporate_taxes_minus_neutral')),
+        ~ mpc * roll::roll_sum(.x, width = length(weights),
+                               weights = weights, online = FALSE)
+      )
+    )
 }
 
-mpc_non_corporate_taxes <- mpc_noncorp_taxes
+
+#' Marginal propensity to consume for Subsidies 
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+mpc_subsidies  <- function(df){
+  
+  mpc <- 0.45
+  weights <- c(rep(0.075,4), rep(0.08,4), 0.085, 0.09, 0.095, 0.11)
+  
+  mpc_second_draw <- 0.525
+  weights_second_draw <- c(rep(0.0625, 4), rep(0.0750, 4), 0.0875, 0.1, 0.1125, 0.15)
+
+  second_draw_start <- tsibble::yearquarter('2021 Q1')
+  df %>% 
+     dplyr::mutate(
+       dplyr::across(
+         .cols  = all_levels('subsidies_minus_neutral'), 
+         ~ if_else(date < second_draw_start,
+                   mpc * roll::roll_sum(.x, width = length(weights), 
+                                        weights = weights, online = FALSE),
+                      mpc_second_draw * roll::roll_sum(.x, width = length(weights_second_draw),
+                                            weights = weights_second_draw, online = FALSE)),
+         .names = "{.col}"
+       )
+     ) 
+}
+
+
+
+#' Marginal propensity to consume for Subsidies 
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+mpc_ui <- function(df){
+  weights <- c(rep(0.05, 2), rep(0.1, 2), rep(0.35, 2))
+  df %>% 
+    mutate(
+      across(all_levels('ui_minus_neutral'),
+             ~ get_mpc(0.9, .x, weights = weights, width = length(weights), online = FALSE))
+    ) 
+}
+#' Rename mpc 
+#' Ad hoc function to rename column from 'minus_neutral' to 'post_mpc'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+rename_mpc <- function(df){
+  df %>% 
+  rename_with(~paste0(str_remove(., 'minus_neutral'), 'post_mpc'),
+              .cols = contains('minus_neutral')) 
+}
+get_mpc <- function(mpc, ...){
+  dots <- list(...)
+  mpc * roll::roll_sum(...)
+}
+
+get_fun <- function(df, x){
+ fun <- eval(sym(paste0('mpc_', {{x}})))
+return(fun)
+}
+
+
+
+foo3 <- function(.data, ...){
+  user_exprs <- enexprs(...)
+  funs <- list(syms(paste0('mpc_', user_exprs)))
+  
+  .data %>% map_df(~invoke_map(funs, ,.), .id="id")
+}
+
+foo2 <- function(x){
+  function_names <- eval(sym(paste0('mpc_', x)))
+  return(function_names)
+  
+  
+}
+mpc_transfers <- function(df, ...){
+  user_exprs <- enexprs(...)
+  function_names <- syms(paste0('mpc_', user_exprs))
+  
+  variables <- all_levels(user_exprs)
+  mpc_functions <- eval(sym(glue::glue('mpc_{variables}')))
+
+}
+
+mpc_taxes_transfers <- function(df){
+  df %>% 
+    mpc_ui() %>% 
+    mpc_social_benefits() %>% 
+    mpc_health_outlays() %>% 
+    mpc_subsidies()  %>% 
+    mpc_rebate_checks() %>% 
+    mpc_corporate_taxes() %>% 
+    mpc_non_corporate_taxes() %>% 
+    rename_mpc()
+    
+}
+
+
+get_all_mpc <- function(df){
+  transfers <- paste0('mpc_', c('subsidies', 'ui'))
+  variables <- transfers%>% all_levels() %>% paste0('_minus_neutral')
+ 
+    mpc_fun <- eval(sym(glue::glue('mpc_{transfers}'))) 
+     
+}
+
 #' Calculate mpc's
 #' Create mpc
 #' @param df 

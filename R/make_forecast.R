@@ -152,15 +152,15 @@ get_cumulative_growth <- function(x){
 }
 
 government_levels <- function(x){
-  c(glue('federal_{x}'), glue('state_{x}'))
+  c(glue::glue('federal_{x}'), glue::glue('state_{x}'))
 }
 
 as_federal <- function(x){
-  x <- glue('federal_{x}')
+  x <- glue::glue('federal_{x}')
   return(x)
 }
 
 as_state <- function(x){
-  x <- glue('state_{x}')
+  x <- glue::glue('state_{x}')
   return(x)
 }

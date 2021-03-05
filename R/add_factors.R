@@ -59,10 +59,11 @@ add_factors_deprecated <- function(df, last_date){
 #' @examples
 add_factors <- function(df){
   #load add factor file
-  state <- c('health_outlays', 'social_benefits', 'purchases') %>% as_state()
-  federal <- c('health_outlays', 'social_benefits', 'subsidies', 'purchases') %>% as_federal()
+  
+  state <- c('health_outlays', 'social_benefits') %>% as_state()
+  federal <- c('health_outlays', 'social_benefits', 'subsidies') %>% as_federal()
   other <- c('consumption_grants', 'rebate_checks')
-  variables <- c(federal, state, other)
+  my_variables <- c(federal, state, other)
   add_factors <- readxl::read_excel("inst/extdata/add_factors.xlsx", 
                                     sheet = "FIM Add Factors") %>%
     mutate(date = tsibble::yearquarter(date)) %>%
@@ -74,7 +75,7 @@ add_factors <- function(df){
       .cols = tidyselect::starts_with('add_'),
       .fns = ~ coalesce(.x, 0)
     ),
-    dplyover::over(all_of(variables),
+    dplyover::over(all_of(my_variables),
                    ~ if_else(id == 'projection', 
                              .("{.x}") + .("add_{.x}"),
                              .("{.x}"))

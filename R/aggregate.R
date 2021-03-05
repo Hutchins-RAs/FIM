@@ -28,9 +28,9 @@ sum_taxes_contributions <- function(df){
   taxes <- c('non_corporate_taxes', 'corporate_taxes')
   df %>%
     mutate(
-      taxes_cont = corporate_taxes_cont + non_corporate_taxes_cont,
-      federal_taxes_cont = federal_corporate_taxes_cont + federal_non_corporate_taxes_cont,
-      state_taxes_cont = state_corporate_taxes_cont + state_non_corporate_taxes_cont
+      taxes_contribution = corporate_taxes_contribution + non_corporate_taxes_contribution,
+      federal_taxes_contribution = federal_corporate_taxes_contribution + federal_non_corporate_taxes_contribution,
+      state_taxes_contribution = state_corporate_taxes_contribution + state_non_corporate_taxes_contribution
     )
 }
 #' Title
@@ -46,9 +46,9 @@ sum_transfers_contributions <- function(df){
                  'ui', 'rebate_checks')
   df %>%
     mutate(
-      transfers_cont = social_benefits_cont + health_outlays_cont + subsidies_cont + ui_cont + rebate_checks_cont,
-      federal_transfers_cont = federal_social_benefits_cont + federal_health_outlays_cont + federal_subsidies_cont + federal_ui_cont + rebate_checks_cont,
-      state_transfers_cont = state_social_benefits_cont + state_health_outlays_cont + state_ui_cont + state_subsidies_cont)
+      transfers_contribution = social_benefits_contribution + health_outlays_contribution + subsidies_contribution + ui_contribution + rebate_checks_contribution,
+      federal_transfers_contribution = federal_social_benefits_contribution + federal_health_outlays_contribution + federal_subsidies_contribution + federal_ui_contribution + rebate_checks_contribution,
+      state_transfers_contribution = state_social_benefits_contribution + state_health_outlays_contribution + state_ui_contribution + state_subsidies_contribution)
 }
 #' Title
 #'
@@ -61,9 +61,18 @@ sum_transfers_contributions <- function(df){
 sum_taxes_transfers <- function(df){
   df %>%
     mutate(
-      taxes_transfers_cont = taxes_cont + transfers_cont,
-      federal_taxes_transfers_cont = federal_taxes_cont + federal_transfers_cont,
-      state_taxes_transfers_cont = state_taxes_cont + state_transfers_cont,
+      taxes_transfers_contribution = taxes_contribution + transfers_contribution,
+      federal_taxes_transfers_contribution = federal_taxes_contribution + federal_transfers_contribution,
+      state_taxes_transfers_contribution = state_taxes_contribution + state_transfers_contribution,
+    )
+}
+
+get_non_corporate_taxes <- function(df){
+  df %>% 
+    mutate(
+      non_corporate_taxes = payroll_taxes + personal_taxes + production_taxes,
+      federal_non_corporate_taxes = federal_payroll_taxes + federal_personal_taxes + federal_production_taxes,
+      state_non_corporate_taxes = state_payroll_taxes + state_personal_taxes + state_production_taxes,
     )
 }
 

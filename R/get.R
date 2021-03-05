@@ -8,10 +8,8 @@
 #' @examples
 get_fiscal_impact <- function(df){
   df %>%
-    mutate(fiscal_impact = federal_cont + state_cont + taxes_transfers_cont,
-           fim_bars = fiscal_impact,
-           fiscal_impact_moving_average = SMA(na.locf(fiscal_impact, na.rm = F), n=4),
-           fim_bars_ma = fiscal_impact_moving_average
+    mutate(fiscal_impact = federal_contribution + state_contribution + taxes_contribution + transfers_contribution,
+           fiscal_impact_moving_average = SMA(zoo::na.locf(fiscal_impact, na.rm = F), n=4),
     )
 }
 #' Retrieve contributions of transfers

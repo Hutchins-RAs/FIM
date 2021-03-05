@@ -79,16 +79,19 @@ define_variables <- function(df){
               personal_taxes = yptx,
               production_taxes = ytpi,
               payroll_taxes = grcsi,
+              non_corporate_taxes = personal_taxes + production_taxes + payroll_taxes,
               corporate_taxes = yctlg,
               
               federal_personal_taxes =  gfrpt,
               federal_production_taxes = gfrpri,
               federal_payroll_taxes = gfrs,
+              federal_non_corporate_taxes = federal_personal_taxes + federal_production_taxes + federal_payroll_taxes,
               federal_corporate_taxes = gfrcp,
               
               state_personal_taxes =  gsrpt,
               state_production_taxes = gsrpri,
               state_payroll_taxes = gsrs,
+              state_non_corporate_taxes = state_personal_taxes + state_production_taxes + state_payroll_taxes,
               state_corporate_taxes = gsrcp,
               
               # GROWTH
@@ -110,8 +113,6 @@ define_variables <- function(df){
               real_federal_purchases_growth = gfh_growth,
               state_purchases_growth = gs_growth,
               real_state_purchases_growth = gsh_growth,
-              
-              
     ) 
     
   
@@ -121,10 +122,6 @@ reallocations <- function(df){
   df %>%
     mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
            grants = consumption_grants + investment_grants,
-           
-           purchases = purchases + grants, 
-           federal_purchases = federal_purchases + grants,
-           state_purchases = state_purchases - grants,
            
            health_outlays = medicare + medicaid,
            federal_health_outlays = medicare + medicaid_grants,

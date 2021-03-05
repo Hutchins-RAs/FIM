@@ -1,57 +1,23 @@
-
-
 librarian::shelf('tidyverse', 'zoo', 'TTR', 'tsibble', 'targets', 'tarchetypes', 'lubridate',
                  'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover', 'tsibble')
 
 devtools::load_all()
+
+conflicted::conflict_prefer('filter', 'dplyr') 
+conflicted::conflict_prefer('lag', 'dplyr')
 # Build workflow plan data frame.
 
 options(tidyverse.quiet = TRUE)
 options(crayon.enabled = FALSE)
 
 
-# This is an example _targets.R file. Every
-# {targets} pipeline needs one.
-# Use tar_script() to create _targets.R and tar_edit()
-# to open it again for editing.
-# Then, run tar_make() to run the pipeline
-# and tar_read(summary) to view the results.
-
-# Define custom functions and other global objects.
-# This is where you write source(\"R/functions.R\")
-# if you keep your functions in external scripts.
 
 # Set target-specific options such as packages.
 tar_option_set(error = "workspace")
 
-create_projections <- function(df){
-  components <- get_components_names()
-  df %>%  
-    make_cumulative_growth_rates() %>%
-    fill(components) %>%
-    make_forecasts() %>% 
-    sum_projections(gtfp, gftfp, gstfp) %>%
-    sum_projections(yptx, gfrpt, gsrpt) %>%
-    sum_projections(ytpi, gfrpri, gsrpri) %>%
-    sum_projections(grcsi, gfrs, gsrs) %>%
-    sum_projections(grcsi, gfrs, gsrs) %>%
-    sum_projections(yctlg, gfrcp, gsrcp) %>%
-    sum_projections(gsub, gfsub, gssub)
-}
-
-components_growth_rates <- function(df){
-  df %>%
-    purchases_growth() %>%
-    transfers_growth() %>%
-    health_growth() %>%
-    subsidies_growth() %>%
-    grants_growth() %>%
-    deflators_growth() 
-}
 
 
 # End this file with a list of target objects.
-last_hist_date <- '2020-12-31'
 tar_plan(
   projections = 
     read_data() %>%
@@ -60,40 +26,96 @@ tar_plan(
     reallocations() %>%
     forecast() %>%
     mutate(across(where(is.numeric),
-                  ~ coalesce(.x, 0))),
+                  ~ coalesce(.x, 0))) %>% 
+    get_non_corporate_taxes(),
+  manu = 
+    projections %>%
+    add_factors(), 
   fim = 
     projections %>%
     add_factors() %>%
-    mutate(dplyover::over(c('ui', 'federal_ui', 'state_ui'),
-                          ~if_else(id == 'projection',
-                                   .('{.x}_override'),
-                                   .('{.x}'))
-                          )
-           ) %>%
+    get_overrides() %>%
     purchases_contributions() %>% 
-       spread_social_benefits() %>%
-    mutate(non_corporate_taxes =personal_taxes + payroll_taxes+production_taxes,
-           federal_non_corporate_taxes =federal_personal_taxes + federal_payroll_taxes+federal_production_taxes,
-           state_non_corporate_taxes =state_personal_taxes + state_payroll_taxes+state_production_taxes) %>% 
-     taxes_transfers_minus_neutral() %>% 
-      calculate_mpc('subsidies') %>%
-      calculate_mpc('health_outlays') %>%
-      calculate_mpc('social_benefits') %>%
-      calculate_mpc('ui') %>%
-      calculate_mpc('non_corporate_taxes') %>%
-      calculate_mpc('corporate_taxes') %>%
-      mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>% 
+    spread_social_benefits() %>%
+    taxes_transfers_minus_neutral() %>% 
+    mpc_taxes_transfers() %>% 
       taxes_contributions() %>% 
     sum_taxes_contributions() %>% 
     transfers_contributions() %>% 
       sum_transfers_contributions() %>% 
     add_social_benefit_components() %>% 
     sum_taxes_transfers() %>% 
-    mutate(federal_contribution = federal_purchases_contribution + federal_taxes_contribution + federal_transfers_contribution)
+    get_fiscal_impact()
 )
+# tar_load(projections)
+# mpc <- 0.7
+# weights2 <- c(rep(0.08, 6), 0.15, 0.35)
+# 
+# rebate_summary <-
+#   projections %>% 
+#   add_factors() %>% 
+#   get_overrides() %>% 
+#   filter_index('2016 Q1' ~ '2021 Q1') %>% 
+#   select(date, id,gdp, real_potential_gdp_growth, consumption_deflator_growth,
+#          rebate_checks ) %>% 
+#   mutate(lag = lag(rebate_checks),
+#          counter = lag * (1 + real_potential_gdp_growth +  consumption_deflator_growth),
+#          net  = rebate_checks -   counter,
+#          mpc = mpc  *  roll_sum(x = net, width = 8, weights2,  online = FALSE),
+#                                 cont  = 400  * mpc  /  lag(gdp))
+#   
+# tar_load(fim)
+# fim_summary <-
+#   fim %>% 
+#   filter_index('2020 Q1' ~ '2021 Q1') 
+# 
+# library('XLConnect')
+# 
+# #loading the package
+# 
+# #create an Excel workbook. Both .xls and .xlsx file formats can be used.
+# mywb <- loadWorkbook("summary.xlsx", create = TRUE)
+# #Create a sheet called GSStock within the Excel workbook
+# createSheet(mywb, name = "Contributions")
+# createSheet(mywb, name = "Transfers Contributions")
+# 
+# 
+# #load data from the flat file into R as a data frame
+# contributions <- fim_summary %>% 
+#   select(date, id, fiscal_impact, federal_purchases_contribution, state_purchases_contribution, 
+#          taxes_contribution, transfers_contribution) %>% 
+#   rename_with(~ snakecase::to_title_case(.))
+# 
+# contributions_transfers <- 
+#   fim_summary %>% 
+#   select(date, id, all_levels(c('transfers_contribution', 'social_benefits_contribution',
+#                                 'health_outlays_contribution', 'subsidies_contribution', 'ui_contribution')),
+#          rebate_checks_contribution) %>% 
+#   rename_with(~ snakecase::to_title_case(.))
+
+# 
+# transfers_levels <- 
+#   fim_summary %>% 
+#   select(date, id, real_potential_gdp_growth, consumption_deflator_growth, all_levels(c('social_benefits',
+#                                 'health_outlays', 'subsidies', 'ui')),
+#          rebate_checks) %>% 
+#   rename_with(~ snakecase::to_title_case(.))
+# 
+# #write the gs_data data frame into GSStock sheet in the new workbook
+# writeWorksheet(mywb, contributions,
+#                , sheet = "Contributions", startRow = 1, startCol = 1)
+# 
+# writeWorksheet(mywb, contributions_transfers,
+#                 sheet = "Transfers Contributions", startRow = 1, startCol = 1)
+# 
+# writeWorksheet(mywb, transfers_levels, sheet = 'Transfers Contributions',
+#                startRow = 7)
+# #save the workbook to the corresponding Excel file and writes the file to disk.
+# saveWorkbook(mywb)
+# 
 
 
-# Next steps:
+s# Next steps:
 #  - add factors
 #  - overrides
 #  - grants contributions
