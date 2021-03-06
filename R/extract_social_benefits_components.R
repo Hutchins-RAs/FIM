@@ -10,7 +10,11 @@
 spread_social_benefits <- function(df){
   
   df %>% 
-    mutate(social_benefits = social_benefits - ui - rebate_checks,
+    mutate(
+      social_benefits_net_health = social_benefits, 
+      federal_social_benefits_net_health = federal_social_benefits,
+      state_social_benefits_net_health = state_social_benefits,
+      social_benefits = social_benefits - ui - rebate_checks,
            federal_social_benefits = federal_social_benefits - federal_ui - rebate_checks,
            state_social_benefits = state_social_benefits - state_ui) 
 }

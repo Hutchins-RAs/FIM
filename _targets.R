@@ -28,24 +28,42 @@ tar_plan(
     mutate(across(where(is.numeric),
                   ~ coalesce(.x, 0))) %>% 
     get_non_corporate_taxes(),
-  manu = 
-    projections %>%
-    add_factors(), 
   fim = 
     projections %>%
     add_factors() %>%
     get_overrides() %>%
+    mutate(grants = consumption_grants + investment_grants,
+           federal_purchases_deflator_growth = q_g(federal_purchases_deflator),
+           state_purchases_deflator_growth = q_g(state_purchases_deflator),
+           consumption_grants_deflator_growth = q_g(consumption_grants_deflator),
+           investment_grants_deflator_growth = q_g(investment_grants_deflator),
+           consumption_deflator_growth  =  q_g(consumption_deflator),
+           real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
     purchases_contributions() %>% 
-    spread_social_benefits() %>%
+    mutate(social_benefits = social_benefits - ui - rebate_checks,
+           federal_social_benefits = federal_social_benefits - federal_ui - rebate_checks,
+           state_social_benefits = state_social_benefits - state_ui) %>% 
+    
     taxes_transfers_minus_neutral() %>% 
     mpc_taxes_transfers() %>% 
       taxes_contributions() %>% 
     sum_taxes_contributions() %>% 
     transfers_contributions() %>% 
       sum_transfers_contributions() %>% 
-    add_social_benefit_components() %>% 
     sum_taxes_transfers() %>% 
-    get_fiscal_impact()
+    get_fiscal_impact(),
+  summary = 
+    fim %>% 
+      filter_index('2020 Q2' ~ '2021 Q1') %>% 
+      select(date, id, fiscal_impact, social_benefits_contribution,
+             health_outlays_contribution, subsidies_contribution,
+             ui_contribution, rebate_checks_contribution),
+  levels =
+    fim %>% 
+      filter_index('2020 Q2' ~ '2021 Q1') %>% 
+      select(date, id, fiscal_impact, social_benefits,
+             health_outlays, subsidies,
+             ui_contribution, rebate_checks_contribution)
 )
 # tar_load(projections)
 # mpc <- 0.7
@@ -78,7 +96,7 @@ tar_plan(
 # #Create a sheet called GSStock within the Excel workbook
 # createSheet(mywb, name = "Contributions")
 # createSheet(mywb, name = "Transfers Contributions")
-# 
+
 # 
 # #load data from the flat file into R as a data frame
 # contributions <- fim_summary %>% 
@@ -104,7 +122,7 @@ tar_plan(
 # #write the gs_data data frame into GSStock sheet in the new workbook
 # writeWorksheet(mywb, contributions,
 #                , sheet = "Contributions", startRow = 1, startCol = 1)
-# 
+
 # writeWorksheet(mywb, contributions_transfers,
 #                 sheet = "Transfers Contributions", startRow = 1, startCol = 1)
 # 

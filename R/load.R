@@ -42,8 +42,8 @@ load_unemployment_insurance_override <- function(){
 #'
 #' @examples
 read_data <- function(){
-  historical <- 
-    readRDS('data/historical.rds') %>%
+  historical <-
+    fim::historical %>% 
     mutate(id = 'historical') %>%
     millions_to_billions() %>%
     rename(cpiu = ui) %>%

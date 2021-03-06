@@ -1,0 +1,4 @@
+cat('Welcome to the FIM Project')
+library('librarian')
+shelf('targets')
+tar_edit()

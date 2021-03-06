@@ -12,7 +12,7 @@ mpc_social_benefits = function(df){
   df %>% 
     mutate(
       across(
-        .cols = all_levels('social_benefits'),
+        .cols = all_levels('social_benefits_minus_neutral'),
         .fns = ~ 0.9 * rollapply(.x, width = 4, mean, partial = TRUE, fill = NA, align =  'right')
       )
     ) 
