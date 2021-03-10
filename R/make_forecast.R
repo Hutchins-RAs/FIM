@@ -118,6 +118,14 @@ forecast <- function(df){
   variables <- c(gdp, purchases, grants,  health, transfers, federal_taxes) 
   
   df %>%
+    dplyr::mutate(
+      dplyr::across(
+        all_of(variables),
+        ~if_else(id == 'projection', 
+                 NA_real_,
+                 .x)
+      )
+    ) %>% 
     tidyr::fill(variables) %>%
     dplyr::group_by(id) %>%
     dplyr::mutate(dplyr::across(all_of(glue::glue('{variables}_growth')),
@@ -128,7 +136,7 @@ forecast <- function(df){
     mutate(
            dplyover::over(all_of(variables),
                 ~ if_else(id == 'projection', 
-                          lag(.("{.x}")) * (.("{.x}_growth_cumulative")),
+                          .("{.x}") * (.("{.x}_growth_cumulative")),
                           .("{.x}"))
            )
     ) %>%
@@ -138,7 +146,9 @@ forecast <- function(df){
                             zoo::na.locf(. / gdp) * gdp,
                             .)
                   )
-    )
+    ) %>% 
+    mutate(federal_health_outlays = medicare + medicaid_grants,
+           state_health_outlays = medicaid - medicaid_grants)
     
 }
 

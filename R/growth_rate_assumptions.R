@@ -98,6 +98,21 @@ deflators_growth <- function(df){
       jgse_g = jgs_g
     )
 }
+
+
+create_override <- function(df, var, start, end, values){
+  start <- yearquarter(start)
+  end <- yearquarter(end)
+  override <- 
+    tibble(date = df %>%
+            filter_index(start ~ end) %>% 
+             pull(date),
+           '{{var}}' := values
+    )
+  df %>%
+    rows_update(override, by = 'date')
+}
+
 #' All growth assumptions
 #'
 #' @param df 
@@ -107,6 +122,10 @@ deflators_growth <- function(df){
 #'
 #' @examples
 growth_assumptions <- function(df){
+
+  
+  
+
   cap_expiration <- yearquarter('2021 Q3')
   df %>%
     mutate(subsidies_growth = real_potential_gdp_growth,
@@ -116,6 +135,8 @@ growth_assumptions <- function(df){
            federal_purchases_growth = if_else(date > cap_expiration,
                                               real_potential_gdp_growth + gdp_deflator_growth,
                                               federal_purchases_growth),
+           
+           
            
            federal_social_benefits_growth = federal_social_benefits_growth,
            state_social_benefits_growth = state_purchases_growth,

@@ -4,7 +4,7 @@
 \alias{mpc_health_outlays}
 \title{Title}
 \usage{
-mpc_health_outlays(x)
+mpc_health_outlays(df)
 }
 \arguments{
 \item{x}{}

@@ -28,9 +28,9 @@ sum_taxes_contributions <- function(df){
   taxes <- c('non_corporate_taxes', 'corporate_taxes')
   df %>%
     mutate(
-      taxes_contribution = corporate_taxes_contribution + non_corporate_taxes_contribution,
       federal_taxes_contribution = federal_corporate_taxes_contribution + federal_non_corporate_taxes_contribution,
-      state_taxes_contribution = state_corporate_taxes_contribution + state_non_corporate_taxes_contribution
+      state_taxes_contribution = state_corporate_taxes_contribution + state_non_corporate_taxes_contribution,
+      taxes_contribution = federal_taxes_contribution + state_taxes_contribution
     )
 }
 #' Title
@@ -61,18 +61,19 @@ sum_transfers_contributions <- function(df){
 sum_taxes_transfers <- function(df){
   df %>%
     mutate(
-      taxes_transfers_contribution = taxes_contribution + transfers_contribution,
       federal_taxes_transfers_contribution = federal_taxes_contribution + federal_transfers_contribution,
       state_taxes_transfers_contribution = state_taxes_contribution + state_transfers_contribution,
+      taxes_transfers_contribution = federal_taxes_transfers_contribution + state_taxes_transfers_contribution
     )
 }
 
 get_non_corporate_taxes <- function(df){
   df %>% 
     mutate(
-      non_corporate_taxes = payroll_taxes + personal_taxes + production_taxes,
+      
       federal_non_corporate_taxes = federal_payroll_taxes + federal_personal_taxes + federal_production_taxes,
       state_non_corporate_taxes = state_payroll_taxes + state_personal_taxes + state_production_taxes,
+      non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes
     )
 }
 

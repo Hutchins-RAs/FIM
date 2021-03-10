@@ -33,19 +33,18 @@ cola_adjustment <- function(df){
   alternative_tax_scenario <- function(df){
     # Construct alternative scenario for personal current taxes, under which the TCJA provisions for income taxes don't
     # expire in 2025
-    expdate <- "2025-12-30"
-    predate <- "2025-09-30"
+    expdate <- yearquarter('2025 Q3')
     
     df %>%
       mutate(gfrptCurrentLaw = gfrpt,
              gfrptCurrentLaw_growth = gfrpt_growth,
              gfrpt_growth =
-               if_else(date >= expdate,
+               if_else(date > expdate,
                        lag(gfrpt_growth),
                        gfrpt_growth,
                        missing = NULL
                ),
-             gfrpt  = if_else(date >= predate,
+             gfrpt  = if_else(date >= expdate,
                               lag(gfrpt) * (1 + gfrpt_growth / 400),
                               gfrpt))
   }

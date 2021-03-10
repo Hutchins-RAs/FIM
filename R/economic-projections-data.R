@@ -23,4 +23,4 @@
 #'   \item{\code{gs}}{double. DESCRIPTION.}
 #'   \item{\code{cpiu}}{double. DESCRIPTION.}
 #' }
-"econ"
+"projections"

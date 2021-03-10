@@ -96,7 +96,7 @@ mpc_corporate_taxes <- function(df){
   df %>% 
     mutate(
       across(
-        any_of(all_levels('corporate_taxes')),
+        any_of(all_levels('corporate_taxes_minus_neutral')),
         ~ mpc * zoo::rollapply(.x, width = 12, mean, fill = NA, align =  'right')
       )
     )

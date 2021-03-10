@@ -4,7 +4,7 @@
 \alias{mpc_social_benefits}
 \title{Title}
 \usage{
-mpc_social_benefits(x)
+mpc_social_benefits(df)
 }
 \arguments{
 \item{x}{}

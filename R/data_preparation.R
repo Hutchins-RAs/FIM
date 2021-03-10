@@ -23,7 +23,7 @@ define_variables <- function(df){
               federal_purchases = gf,
               real_federal_purchases = gfh,
               federal_purchases_deflator = jgf,
-              federal_purchases_deflator_growth = jgs_growth,
+              federal_purchases_deflator_growth = jgf_growth,
               state_purchases = gs,
               state_purchases_deflator = jgs,
               consumption_grants_deflator = jgse,

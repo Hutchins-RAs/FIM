@@ -1,37 +1,13 @@
 
 get_cbo_projections <- function(){
-  budget_projections <- 
-    readRDS('data/budget_projections.rds') %>%
-    as_tsibble(index = fy) %>%
-    annual_to_quarter() %>%
-    fiscal_to_calendar()
-  economic_projections <- 
-    readRDS('data/economic_projections.rds') %>%
-    mutate(date = yearquarter(date)) %>%
-    as_tsibble(index = date)
-  
-  budget_projections %>%
-    dplyr::left_join(economic_projections) %>%
-    mutate(id = 'projection') %>%
-    mutate(date = lubridate::as_date(date)) %>%
+  fim::projections %>% 
     smooth_budget_series() %>%
     cola_adjustment() %>%
     implicit_price_deflators() %>%
     growth_rates() %>%
     alternative_tax_scenario() %>%
-    format_tsibble() 
-}
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-load_unemployment_insurance_override <- function(){
-  readxl::read_excel(drake::file_in("data/add-ons/LSFIM_KY_v7.xlsx"),
-                     sheet = "FIM Add Factors") %>%
-    dplyr::mutate(date = lubridate::as_date(date)) %>%
-    dplyr::select(date, tidyselect::contains('unemployment_insurance'))
+    format_tsibble() %>% 
+    select(id, date, gdp, gdppothq, gdppotq, starts_with('j'), dc, ends_with('growth'), cpiu)
 }
 
 
@@ -42,19 +18,10 @@ load_unemployment_insurance_override <- function(){
 #'
 #' @examples
 read_data <- function(){
-  historical <-
-    fim::historical %>% 
-    mutate(id = 'historical') %>%
-    millions_to_billions() %>%
-    rename(cpiu = ui) %>%
-    format_tsibble()
-  last_date <- 
-    historical %>%
-    pull(date) %>%
-    max()
+
   projections <- get_cbo_projections()
   
-  historical %>%
+  fim::national_accounts %>%
     coalesce_join(projections, by = 'date') %>%
     as_tsibble(key = id, index = date)
 }
