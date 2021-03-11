@@ -4,21 +4,24 @@ df <-
   read_xlsx('inst/extdata/fim-march.xlsx') %>% 
   mutate(date = yearquarter(date)) %>% 
   as_tsibble(index = date) %>% 
-  filter_index('2021 Q1' ~ '2022 Q1') %>% 
   rename(consumption_grants = federal_cgrants,
          ui = unemployment_insurance,
          ui_post_mpc = unemployment_insurance_post_mpc,
-         ui_contribution_df = unemployment_insurance_cont) 
+         ui_contribution_df = unemployment_insurance_cont) %>% 
+  mutate(social_benefits2 = social_benefits - ui - rebate_checks,
+         federal_social_benefits2 = federal_social_benefits - federal_unemployment_insurance_override - rebate_checks) %>% 
+  filter_index('2020 Q4' ~ '2022 Q1') 
 
 compare <- function( variable_df1, variable_df2){
   fim  %>% 
-    filter_index('2021 Q1' ~ '2022 Q1') %>% 
+    filter_index('2020 Q4' ~ '2022 Q1') %>% 
     select(date, id, {{variable_df1}}) %>% 
     left_join(df %>% select({{variable_df2}})) %>% 
     mutate(diff  =  round({{variable_df1}} - {{ variable_df2 }}))
 }
 
 tar_load(fim)
+fim_sum <- fim %>% filter_index('2020 Q4' ~ '2021 Q4')
 # Contributions -------------------------------------------------------------------------------
 
 compare(gdp, gdp)
@@ -37,12 +40,18 @@ compare(federal_purchases_contribution, federal_nom_cont)
 ##  Taxes
 ## Transfers
 compare(social_benefits_contribution, social_benefits_cont)
+compare(social_benefits, social_benefits2)
   
+compare(federal_social_benefits, federal_social_benefits2)
+compare(social_benefits, social_benefits2)
+
+
 compare(taxes_contribution, taxes_cont)
 compare(corporate_taxes_contribution, corporate_taxes_cont)
 compare(non_corporate_taxes_contribution, noncorp_taxes_cont)
 
-
+compare(federal_corporate_taxes, federal_corporate_taxes)
+df$federal_corporate_taxes
 compare(federal_non_corporate_taxes,  federal_noncorp_taxes)
 compare(non_corporate_taxes_post_mpc, noncorp_taxes_post_mpc)
 
@@ -82,21 +91,18 @@ compare(corporate_taxes_contribution, corporate_taxes_cont)
 
 ### TRANSFERS ###
 
-# Super different for Q1-Q4
+# Pass
 compare(health_outlays_contribution, health_outlays_cont)
 compare(federal_health_outlays_contribution, federal_health_outlays_cont)
 compare(state_health_outlays_contribution, state_health_outlays_cont)
 
 
-cbind(fim_simp$federal_health_outlays_growth,proj$federal_health_outlays )
-compare(health_outlays_contribution, health_outlays_cont)
-compare(federal_health_outlays_contribution, federal_health_outlays_cont)
-compare(state_health_outlays_contribution, state_health_outlays_cont)
 # Different
 compare(social_benefits_contribution, social_benefits_cont)
 compare(federal_social_benefits_contribution, federal_social_benefits_cont)
 compare(state_social_benefits_contribution, state_social_benefits_cont)
 
+fim_simp <- fim %>% filter_index('2021 Q1' ~ '2022 Q1')
 cbind(fim_simp$federal_social_benefits, df$federal_social_benefits)
 
 # Good
@@ -105,6 +111,7 @@ compare(ui_contribution, ui_contribution_df)
 compare(rebate_checks_contribution, rebate_checks_cont)
 # Good
 compare(subsidies_contribution, subsidies_cont)
+compare(fiscal_impact, fim_bars)
 
 
 # Rinse ---------------------------------------------------------------------------------------

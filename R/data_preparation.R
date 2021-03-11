@@ -127,14 +127,15 @@ reallocations <- function(df){
            federal_health_outlays = medicare + medicaid_grants,
            state_health_outlays = medicaid - medicaid_grants,
            
+           federal_ui = pua + 2 * peuc + puc + wages_lost_assistance,
+           state_ui = ui - federal_ui,         
            # Social Benefits with Health
            social_benefits_gross = social_benefits,
            federal_social_benefits_gross = federal_social_benefits,
            state_social_benefits_gross = state_social_benefits,
-           social_benefits = social_benefits - health_outlays,
-           federal_social_benefits = federal_social_benefits - federal_health_outlays,
-           state_social_benefits = state_social_benefits - state_health_outlays,
            
-           federal_ui = pua + 2 * peuc + puc + wages_lost_assistance,
-           state_ui = ui - federal_ui)
+
+           federal_social_benefits = federal_social_benefits - federal_health_outlays - ui - rebate_checks,
+           state_social_benefits = state_social_benefits - state_health_outlays,
+           social_benefits = federal_social_benefits + state_social_benefits)
 }

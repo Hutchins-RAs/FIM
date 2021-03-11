@@ -29,7 +29,14 @@ tar_plan(
       end = yearquarter('2022 Q1'),
       values = c(rep(0.0025, 3), 0.005, 0.0075, 0.01)
     )  %>%
+    create_override(
+      var = federal_social_benefits_growth,
+      start = yearquarter('2021 Q1'),
+      end = yearquarter('2022 Q3'),
+      values = c(rep(-0.75, 3), rep(1.5,4))
+    ) %>% 
     reallocations() %>% 
+    # Override CBO Growth Rate for Federal Social Benefits
     forecast() %>%
     ungroup() %>% 
     mutate(social_benefits = federal_social_benefits + state_social_benefits) %>% 
@@ -52,9 +59,6 @@ tar_plan(
            consumption_deflator_growth  =  q_g(consumption_deflator),
            real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
     purchases_contributions() %>% 
-    mutate(social_benefits = social_benefits - ui - rebate_checks,
-           federal_social_benefits = federal_social_benefits - federal_ui - rebate_checks,
-           state_social_benefits = state_social_benefits - state_ui) %>% 
     taxes_transfers_minus_neutral() %>% 
     mpc_taxes_transfers() %>% 
       taxes_contributions() %>% 
