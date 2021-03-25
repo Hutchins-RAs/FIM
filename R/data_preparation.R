@@ -38,21 +38,21 @@ define_variables <- function(df){
               medicaid_grants = gfeghdx,
               gross_consumption_grants = gfeg,
               investment_grants = gfeigx,
-              coronavirus_relief_fund = gfegc,
+              coronavirus_relief_fund = gfegc, 
               education_stabilization_fund = gfege,
-              provider_relief_fund = gfegv,
+              provider_relief_fund = gfegv / 2,
               
               # SUBSIDIES
               subsidies = gsub,
               federal_subsidies = gfsub,
               state_subsidies = gssub,
-              ppp = gfsubp,
-              #coronavirus_food_assistance = gfsubf,
+              ppp =gfsubp, ppp,
+              coronavirus_food_assistance = gfsubf,
               employee_retention = gfsube,
               paid_sick_leave = gfsubk,
               aviation = gfsubg,
-              #provider_relief_fund_subsidies = gfsubv,
-              #transit = gfsubs,
+              provider_relief_fund_subsidies = gfsubv,
+              transit = gfsubs,
               
               # Transfers
               social_benefits = gtfp,
@@ -64,11 +64,15 @@ define_variables <- function(df){
               ui_expansion = gftfpu, 
               peuc = yptue,
               pua = yptup,
-              puc = yptuc,
+              puc = yptuc, 
               wages_lost_assistance = yptolm,
+              federal_ui = coalesce(ui_expansion, 0),
+              state_ui = ui - federal_ui,
               rebate_checks = gftfpe,
               nonprofit_ppp = gftfpp,
-              nonprofit_provider_relief_fund = gftfpv,
+              nonprofit_provider_relief_fund =gftfpv, 
+              medicare_reimbursement_increase = gftfpr,
+          
               
               across(c('peuc', 'pua', 'puc',  'wages_lost_assistance', 'rebate_checks', 'nonprofit_ppp',
                        'nonprofit_provider_relief_fund','coronavirus_relief_fund', 'education_stabilization_fund',
@@ -127,15 +131,13 @@ reallocations <- function(df){
            federal_health_outlays = medicare + medicaid_grants,
            state_health_outlays = medicaid - medicaid_grants,
            
-           federal_ui = pua + 2 * peuc + puc + wages_lost_assistance,
-           state_ui = ui - federal_ui,         
+          
            # Social Benefits with Health
            social_benefits_gross = social_benefits,
            federal_social_benefits_gross = federal_social_benefits,
            state_social_benefits_gross = state_social_benefits,
            
-
-           federal_social_benefits = federal_social_benefits - federal_health_outlays - ui - rebate_checks,
-           state_social_benefits = state_social_benefits - state_health_outlays,
-           social_benefits = federal_social_benefits + state_social_benefits)
+           federal_social_benefits = federal_social_benefits - state_ui + medicaid_grants,
+           state_social_benefits = state_social_benefits + state_ui - medicaid_grants,
+ + state_social_benefits)
 }

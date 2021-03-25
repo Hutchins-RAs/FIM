@@ -104,6 +104,12 @@ add_factors <- function(df) {
     dplyr::mutate(dplyr::across(
       .cols = tidyselect::starts_with('add_'),
       .fns = ~ coalesce(.x, 0)
+    ),
+    dplyr::across(
+      .cols = tidyselect::starts_with('add_'),
+      .fns = ~ if_else(id == 'historical',
+                       0,
+                       .x)
     )) %>% dplyr::mutate(
     state_health_outlays = state_health_outlays +
       add_state_health_outlays,

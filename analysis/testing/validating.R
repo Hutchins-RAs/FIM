@@ -1,7 +1,7 @@
 librarian::shelf('tidyverse', 'tsibble', 'readxl', 'arsenal')
 
 df <-
-  read_xlsx('inst/extdata/fim-march.xlsx') %>% 
+  read_xlsx('inst/extdata/fim-february.xlsx') %>% 
   mutate(date = yearquarter(date)) %>% 
   as_tsibble(index = date) %>% 
   rename(consumption_grants = federal_cgrants,

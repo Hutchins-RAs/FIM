@@ -7,10 +7,20 @@ get_cbo_projections <- function(){
     growth_rates() %>%
     alternative_tax_scenario() %>%
     format_tsibble() %>% 
-    select(id, date, gdp, gdppothq, gdppotq, starts_with('j'), dc, ends_with('growth'), cpiu)
+    select(id, date, gdp, gdppothq, gdppotq, starts_with('j'), dc, ends_with('growth'), cpiu, federal_ui, state_ui)
 }
 
+safe_quarter  <- function(df){
+  df %>% 
+    as_tibble() %>% 
+    mutate(date = as.character(date))
+}
 
+undo_safe_quarter <- function(df){
+  df %>% 
+    mutate(date = yearquarter(date)) %>% 
+    as_tsibble(index = 'date')
+}
 #' Title
 #'
 #' @return
@@ -22,7 +32,7 @@ read_data <- function(){
   projections <- get_cbo_projections()
   
   fim::national_accounts %>%
-    coalesce_join(projections, by = 'date') %>%
+    coalesce_join(projections, by = 'date') %>% 
     as_tsibble(key = id, index = date)
 }
 

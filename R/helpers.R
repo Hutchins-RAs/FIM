@@ -28,7 +28,6 @@ annual_to_quarter <- function(df){
     slice(rep(1:n(), each=4)) %>%
     mutate(date = tsibble::yearquarter(x, fiscal_start =  1)) %>%
     relocate(date, .before =  everything()) %>%
-    select(-rlang::enexpr(year)) %>%
     tsibble::as_tsibble(index = date)
 }
 

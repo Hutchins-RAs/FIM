@@ -7,7 +7,7 @@ get_overrides <- function(df){
     str_remove('_override')
   df %>%  
     mutate(dplyover::over(all_of(variables),
-                          ~ coalesce(.('{.x}_override'), .('{.x}'))
+                          ~ .('{.x}_override') + .('{.x}')
     )
     )
 }
