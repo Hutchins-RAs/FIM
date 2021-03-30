@@ -21,9 +21,9 @@ mpc_social_benefits = function(x){
 #' @examples
 mpc_unemployment_insurance <- function(x){
   mpc <- 0.9
-  weights <- c(rep(0.05, 2), rep(0.1, 2), rep(0.35, 2))
+  weights <- c(0.35, 0.3, rep(0.1, 2), rep(0.05, 2))
   mpc * roll::roll_sum(x, width = length(weights), 
-                       weights = weights, online = FALSE)
+                       weights = rev(weights), online = FALSE)
 }
 #' Title
 #'
