@@ -115,7 +115,7 @@ tar_plan(
   levels =
     fim %>% 
       filter_index('2019 Q2' ~ '2022 Q4') %>% 
-      select(date, id, fiscal_impact, federal_social_benefits,
+      select(date, id,   federal_social_benefits,
              federal_health_outlays, federal_subsidies,
             federal_ui, rebate_checks, consumption_grants, federal_purchases)
 )
