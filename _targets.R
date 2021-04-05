@@ -1,3 +1,4 @@
+
 library(targets)
 library('tarchetypes')
 library('tsibble')
@@ -6,26 +7,12 @@ library('tsibble')
 source("R/packages.R")
 library('lubridate')
 source("R/functions.R")
-
 # Build workflow plan data frame.
 
 options(tidyverse.quiet = TRUE)
 options(crayon.enabled = FALSE)
-
-
-# This is an example _targets.R file. Every
-# {targets} pipeline needs one.
-# Use tar_script() to create _targets.R and tar_edit()
-# to open it again for editing.
-# Then, run tar_make() to run the pipeline
-# and tar_read(summary) to view the results.
-
-# Define custom functions and other global objects.
-# This is where you write source(\"R/functions.R\")
-# if you keep your functions in external scripts.
-
-# Set target-specific options such as packages.
 tar_option_set(error = "workspace")
+
 get_historical_data <- function(){
   readRDS('data/historical.rds') %>%
     mutate(id = 'historical') %>%
@@ -52,8 +39,7 @@ tar_plan(
     project_state_taxes() %>%
     create_projections() %>%
     medicaid_reallocation(),
-  proj2 = projections %>% project_state_taxes(),
-  fim = fim_create(proj2) %>%
+  fim = fim_create(projections) %>%
     add_factors(last_date = last_hist_date) %>%
     override_projections() %>%
     mutate(
