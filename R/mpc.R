@@ -23,7 +23,7 @@ mpc_coronavirus_relief_fund = function(df){
   weights <- c(0.06, 0.08, rep(0.1, 2), rep(0.08, 8))
   
   df %>% 
-    mutate(coronavirus_relief_fund = mpc * roll::roll_sum(coronavirus_relief_fund, width = length(weights), weights = rev(weights), online = FALSE))
+    mutate(coronavirus_relief_fund = mpc * roll::roll_sum(coronavirus_relief_fund, width = length(weights), weights = rev(weights), online = FALSE, min_obs = 1))
 
 }
 

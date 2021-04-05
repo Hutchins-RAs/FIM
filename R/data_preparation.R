@@ -40,7 +40,9 @@ define_variables <- function(df){
               investment_grants = gfeigx,
               coronavirus_relief_fund = gfegc, 
               education_stabilization_fund = gfege,
+              # Half of  hospitals are non-profits
               provider_relief_fund = gfegv / 2,
+              
               
               # SUBSIDIES
               subsidies = gsub,
@@ -122,22 +124,45 @@ define_variables <- function(df){
   
 }
 
-reallocations <- function(df){
+
+
+reallocations <- function(df) {
   df %>%
-    mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
-           grants = consumption_grants + investment_grants,
-           
-           health_outlays = medicare + medicaid,
-           federal_health_outlays = medicare + medicaid_grants,
-           state_health_outlays = medicaid - medicaid_grants,
-           
-          
-           # Social Benefits with Health
-           social_benefits_gross = social_benefits,
-           federal_social_benefits_gross = federal_social_benefits,
-           state_social_benefits_gross = state_social_benefits,
-           
-           federal_social_benefits = federal_social_benefits - state_ui + medicaid_grants,
-           state_social_benefits = state_social_benefits + state_ui - medicaid_grants,
- + state_social_benefits)
+    mutate(
+      # Reallocate Consumption Grants
+      consumption_grants = gross_consumption_grants - medicaid_grants - coronavirus_relief_fund - education_stabilization_fund - provider_relief_fund,
+      grants = consumption_grants + investment_grants,
+      
+      health_outlays = medicare + medicaid,
+      federal_health_outlays = medicare + medicaid_grants,
+      state_health_outlays = medicaid - medicaid_grants,
+      
+      # Reallocate Subsidies
+      federal_subsidies = federal_subsidies - ppp - aviation - paid_sick_leave - employee_retention,
+      subsidies = federal_subsidies + state_subsidies,
+      # Social Benefits
+      social_benefits_gross = social_benefits,
+      federal_social_benefits_gross = federal_social_benefits,
+      state_social_benefits_gross = state_social_benefits,
+      
+      federal_social_benefits = federal_social_benefits - federal_ui - medicare - rebate_checks - nonprofit_provider_relief_fund - nonprofit_ppp ,
+      state_social_benefits = state_social_benefits - medicaid
+    )
+}
+
+
+reallocate_legislation <- function(.data){
+  .data %>% 
+    mutate(
+      # Reallocate Consumption Grants
+      consumption_grants = gross_consumption_grants - medicaid_grants - coronavirus_relief_fund - education_stabilization_fund - provider_relief_fund,
+      grants = consumption_grants + investment_grants,
+      # Reallocate Subsidies
+      federal_subsidies = federal_subsidies - ppp - aviation - paid_sick_leave - employee_retention,
+      subsidies = federal_subsidies + state_subsidies,
+      # Reallocate social benefits
+      federal_social_benefits = federal_social_benefits - federal_ui - medicare - rebate_checks - nonprofit_provider_relief_fund - nonprofit_ppp,
+      state_social_benefits = state_social_benefits - medicaid - state_ui,
+      social_benefits = federal_social_benefits + state_social_benefits
+    ) 
 }
