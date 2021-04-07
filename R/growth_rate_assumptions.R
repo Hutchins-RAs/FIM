@@ -1,3 +1,4 @@
+
 #' Subsidies growth rate assumptions 
 #' 
 #' Grow subsidies with real potential  GDP
@@ -76,7 +77,7 @@ grants_growth <- function(df){
   df %>%
     mutate(
       # Aid to S&L grow with federal purchases
-      gfeg_g = gf_g, 
+      grants_growth = federal_purchases_growth, 
       # Capital grants to state and local gov'ts grow with federal purchases
       gfeigx_g = gf_g
     )
@@ -97,6 +98,21 @@ deflators_growth <- function(df){
       jgse_g = jgs_g
     )
 }
+
+
+create_override <- function(df, var, start, end, values){
+  start <- yearquarter(start)
+  end <- yearquarter(end)
+  override <- 
+    tibble(date = df %>%
+            filter_index(start ~ end) %>% 
+             pull(date),
+           '{{var}}' := values
+    )
+  df %>%
+    rows_update(override, by = 'date')
+}
+
 #' All growth assumptions
 #'
 #' @param df 
@@ -106,14 +122,34 @@ deflators_growth <- function(df){
 #'
 #' @examples
 growth_assumptions <- function(df){
-  df %>%
-    purchases_growth() %>%
-    transfers_growth() %>%
-    health_growth() %>%
-    subsidies_growth() %>%
-    grants_growth() %>%
-    deflators_growth()
+
   
+  
+
+  cap_expiration <- yearquarter('2021 Q3')
+  df %>%
+    mutate(subsidies_growth = real_potential_gdp_growth,
+           federal_subsidies_growth = real_potential_gdp_growth,
+           state_subsidies_growth = real_potential_gdp_growth,
+           
+           federal_purchases_growth = if_else(date > cap_expiration,
+                                              real_potential_gdp_growth + gdp_deflator_growth,
+                                              federal_purchases_growth),
+           
+           
+           
+           federal_social_benefits_growth = federal_social_benefits_growth,
+           state_social_benefits_growth = state_purchases_growth,
+           
+           health_grants_growth = medicaid_growth,
+           medicaid_grants_growth = medicaid_growth,
+           
+           grants_growth = federal_purchases_growth,
+           investment_grants_growth = federal_purchases_growth,
+           consumption_grants_growth  =  federal_purchases_growth,
+           
+           consumption_grants_deflator_growth = state_purchases_deflator_growth,
+           investment_grants_deflator_growth = state_purchases_deflator_growth)
 }
 #' Override state purchases
 #'

@@ -4,7 +4,7 @@
 \alias{mpc_rebate_checks}
 \title{Title}
 \usage{
-mpc_rebate_checks(x)
+mpc_rebate_checks(df)
 }
 \arguments{
 \item{x}{}

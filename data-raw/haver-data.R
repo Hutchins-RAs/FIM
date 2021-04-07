@@ -14,3 +14,6 @@ haver <- left_join(national_accounts,
   mutate(date = as.Date(date))
 # Save data
 usethis::use_data(haver, overwrite = TRUE)
+# 
+# 
+# saveRDS(national_accounts, 'data/historical.rds')

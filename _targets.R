@@ -1,112 +1,101 @@
-library(targets)
-library('tarchetypes')
-library('tsibble')
+librarian::shelf('tidyverse', 'zoo', 'TTR', 'tsibble', 'targets', 'tarchetypes', 'lubridate',
+                 'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover', 'tsibble')
 
+devtools::load_all()
 
-source("R/packages.R")
-library('lubridate')
-source("R/functions.R")
-
+conflicted::conflict_prefer('filter', 'dplyr') 
+conflicted::conflict_prefer('lag', 'dplyr')
 # Build workflow plan data frame.
 
 options(tidyverse.quiet = TRUE)
 options(crayon.enabled = FALSE)
 
 
-# This is an example _targets.R file. Every
-# {targets} pipeline needs one.
-# Use tar_script() to create _targets.R and tar_edit()
-# to open it again for editing.
-# Then, run tar_make() to run the pipeline
-# and tar_read(summary) to view the results.
-
-# Define custom functions and other global objects.
-# This is where you write source(\"R/functions.R\")
-# if you keep your functions in external scripts.
 
 # Set target-specific options such as packages.
 tar_option_set(error = "workspace")
-get_historical_data <- function(){
-  readRDS('data/historical.rds') %>%
-    mutate(id = 'historical') %>%
-    millions_to_billions() %>%
-    rename(cpiu = ui) 
-}
+
 
 
 # End this file with a list of target objects.
-last_hist_date <- '2020-12-31'
 tar_plan(
   projections = 
     read_data() %>%
-    cola_adjustment() %>%
-    growth_rates() %>%
-    project_state_taxes() %>%
-    unemployment_insurance_reallocation() %>%
-    fmap_share_old() %>%
-    override_state_purchases_growth_rate() %>%
-    components_growth_rates() %>%
-    group_by(id) %>%
-    mutate(forecast_period = if_else(date <= last_hist_date, 0, 1)) %>%
-    mutate(historical = if_else(date > last_hist_date, 0, 1)) %>%
-    project_state_taxes() %>%
-    create_projections() %>%
-    medicaid_reallocation(),
-  proj2 = projections %>% project_state_taxes(),
-  fim = fim_create(proj2) %>%
-    add_factors(last_date = last_hist_date) %>%
-    override_projections() %>%
+    define_variables() %>%
+
+    #  Override growth rates
+    create_override(
+      var = state_purchases_growth,
+      start = yearquarter('2020 Q4'),
+      end = yearquarter('2022 Q1'),
+      values = c(rep(0.0025, 3), 0.005, 0.0075, 0.01)
+    )  %>%
+    create_override(
+      var = federal_social_benefits_growth,
+      start = yearquarter('2021 Q1'),
+      end = yearquarter('2022 Q3'),
+      values = c(rep(-0.0075, 3), rep(0.015,4))
+    ) %>% 
+    growth_assumptions() %>%
+    reallocate_legislation() %>%  
     mutate(
-      federal_cgrants = if_else(date == '2020-12-31', 303.95, federal_cgrants)
+      across(c(ppp, aviation, paid_sick_leave, employee_retention),
+             ~ coalesce(.x, 0)),
+      federal_subsidies = federal_subsidies - ppp - aviation - paid_sick_leave - employee_retention,
+      subsidies = federal_subsidies + state_subsidies
+    ) %>% 
+    forecast() %>%
+    ungroup() %>% 
+    mutate(# Health outlays reattribution
+           health_outlays = medicare + medicaid,
+           federal_health_outlays = medicare + medicaid_grants,
+           state_health_outlays = medicaid - medicaid_grants,
+           # Aggregate taxes
+           corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
+           payroll_taxes = federal_payroll_taxes + state_payroll_taxes,
+           production_taxes = federal_production_taxes + state_production_taxes,
+           personal_taxes = federal_personal_taxes + state_personal_taxes,
+           # Coalesce NA's to 0
+           across(where(is.numeric),
+                  ~ coalesce(.x, 0))) %>% 
+    get_non_corporate_taxes(),
+  
+  fim = 
+    projections %>%
+    
+    mutate(
+      consumption_grants = consumption_grants + education_stabilization_fund + provider_relief_fund + coronavirus_relief_fund,
+      federal_social_benefits = federal_social_benefits + nonprofit_provider_relief_fund + nonprofit_ppp ,
+      federal_subsidies = federal_subsidies + aviation + ppp + employee_retention + paid_sick_leave ,
+      subsidies = federal_subsidies + state_subsidies,
+      grants = consumption_grants + investment_grants,
+      across(
+        .cols = ends_with('deflator') | ends_with('real_potential_gdp'),
+        .fns = ~ q_g(.x),
+        .names = '{.col}_growth'
+      )
     ) %>%
-    fill_overrides() %>%
-    contributions_purchases_grants() %>%
-    total_purchases() %>%
-    mutate(federal_cont = federal_cont - federal_grants_cont,
-           state_local_cont = state_local_cont + federal_grants_cont) %>%
-    remove_social_benefit_components() %>%
+    purchases_contributions() %>%
     taxes_transfers_minus_neutral() %>%
-    calculate_mpc('subsidies') %>%
-    calculate_mpc('health_outlays') %>%
-    calculate_mpc('social_benefits') %>%
-    calculate_mpc('unemployment_insurance') %>%
-    calculate_mpc('rebate_checks') %>%
-    calculate_mpc('noncorp_taxes') %>%
-    calculate_mpc('corporate_taxes') %>%
+    mpc_taxes_transfers() %>%
     taxes_contributions() %>%
     sum_taxes_contributions() %>%
     transfers_contributions() %>%
     sum_transfers_contributions() %>%
     sum_taxes_transfers() %>%
-    add_social_benefit_components() %>%
-    get_fiscal_impact() %>%
-    arrange(
-      date,
-      recession,
-      fiscal_impact,
-      fiscal_impact_moving_average,
-      federal_cont,
-      state_local_cont,
-      taxes_transfers_cont,
-      federal_taxes_transfers_cont,
-      state_taxes_transfers_cont
-    ),
-  contributions = fim %>%
-    filter(date >= '1999-12-31') %>%
-    select(ends_with('cont')),
-  fimbar1 = fim %>% plot_fiscal_impact(),
-  fimbar2 = fim %>% plot_fiscal_impact_components(),
-  tar_render(report, "Fiscal-Impact.Rmd")
+    get_fiscal_impact() %>% 
+  as_tsibble(index = date),
+  summary = 
+    fim %>% 
+      filter_index('2020 Q1' ~ '2021 Q1') %>% 
+      select(date, id, fiscal_impact, federal_contribution, 
+             state_contribution, grants_contribution, social_benefits_contribution,
+             health_outlays_contribution, subsidies_contribution,
+             ui_contribution, rebate_checks_contribution),
+  levels =
+    fim %>% 
+      filter_index('2019 Q2' ~ '2022 Q4') %>% 
+      select(date, id,   federal_social_benefits,
+             federal_health_outlays, federal_subsidies,
+            federal_ui, rebate_checks, consumption_grants, federal_purchases)
 )
-# 
-# 
-# library(validate)
-# 
-# 
-# rules <- validator(
-# fiscal_impact == federal_cont + state_local_cont + taxes_transfers_cont,
-# taxes_cont == federal_taxes_cont + state_taxes_cont,
-# trasfers_cont  == unemployment_insurance_cont + social_benefits_cont + subsidies_cont + rebate_checks_cont)
-# 
-# out <- confront(fim, rules)
-# summary(out)

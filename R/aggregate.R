@@ -25,12 +25,12 @@ sum_projections <- function(df, total, federal, state){
 #'
 #' @examples
 sum_taxes_contributions <- function(df){
-  taxes <- c('noncorp_taxes', 'corporate_taxes')
+  taxes <- c('non_corporate_taxes', 'corporate_taxes')
   df %>%
     mutate(
-      taxes_cont = rowSums(select(., .dots = all_of(str_glue('{taxes}_cont')))),
-      federal_taxes_cont = rowSums(select(., .dots = all_of(str_glue('federal_{taxes}_cont')))),
-      state_taxes_cont = rowSums(select(., .dots = all_of(str_glue('state_{taxes}_cont'))))
+      federal_taxes_contribution = federal_corporate_taxes_contribution + federal_non_corporate_taxes_contribution,
+      state_taxes_contribution = state_corporate_taxes_contribution + state_non_corporate_taxes_contribution,
+      taxes_contribution = federal_taxes_contribution + state_taxes_contribution
     )
 }
 #' Title
@@ -43,13 +43,13 @@ sum_taxes_contributions <- function(df){
 #' @examples
 sum_transfers_contributions <- function(df){
   transfers <- c('social_benefits',  'health_outlays', 'subsidies',
-                 'unemployment_insurance', 'rebate_checks')
+                 'ui', 'rebate_checks')
   df %>%
     mutate(
-      transfers_cont = rowSums(select(., .dots = all_of(str_glue('{transfers}_cont'))), na.rm = TRUE),
-      federal_transfers_cont = rowSums(select(., .dots = all_of(str_glue('federal_{transfers}_cont'))), na.rm = TRUE),
-      state_transfers_cont = rowSums(select(., .dots = all_of(str_glue('state_{transfers}_cont'))), na.rm = TRUE)
-    )
+    
+      federal_transfers_contribution = federal_social_benefits_contribution + federal_health_outlays_contribution + federal_subsidies_contribution + federal_ui_contribution + rebate_checks_contribution,
+      state_transfers_contribution = state_social_benefits_contribution + state_health_outlays_contribution + state_ui_contribution + state_subsidies_contribution,
+      transfers_contribution = federal_transfers_contribution + state_transfers_contribution)
 }
 #' Title
 #'
@@ -62,9 +62,19 @@ sum_transfers_contributions <- function(df){
 sum_taxes_transfers <- function(df){
   df %>%
     mutate(
-      taxes_transfers_cont = taxes_cont + transfers_cont,
-      federal_taxes_transfers_cont = federal_taxes_cont + federal_transfers_cont,
-      state_taxes_transfers_cont = state_taxes_cont + state_transfers_cont,
+      federal_taxes_transfers_contribution = federal_taxes_contribution + federal_transfers_contribution,
+      state_taxes_transfers_contribution = state_taxes_contribution + state_transfers_contribution,
+      taxes_transfers_contribution = federal_taxes_transfers_contribution + state_taxes_transfers_contribution
+    )
+}
+
+get_non_corporate_taxes <- function(df){
+  df %>% 
+    mutate(
+      
+      federal_non_corporate_taxes = federal_payroll_taxes + federal_personal_taxes + federal_production_taxes,
+      state_non_corporate_taxes = state_payroll_taxes + state_personal_taxes + state_production_taxes,
+      non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes
     )
 }
 

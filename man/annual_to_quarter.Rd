@@ -4,7 +4,7 @@
 \alias{annual_to_quarter}
 \title{Convert annual data to quarterly}
 \usage{
-annual_to_quarter(df, var)
+annual_to_quarter(df)
 }
 \arguments{
 \item{df}{}

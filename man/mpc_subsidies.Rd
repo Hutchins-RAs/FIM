@@ -2,16 +2,16 @@
 % Please edit documentation in R/mpc.R
 \name{mpc_subsidies}
 \alias{mpc_subsidies}
-\title{Title}
+\title{Marginal propensity to consume for Subsidies}
 \usage{
-mpc_subsidies(x)
+mpc_subsidies(df)
 }
 \arguments{
-\item{x}{}
+\item{df}{}
 }
 \value{
 
 }
 \description{
-Title
+Marginal propensity to consume for Subsidies
 }
