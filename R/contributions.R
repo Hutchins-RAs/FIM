@@ -1,3 +1,28 @@
+#' Title
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+purchases_contributions <- function(df){
+  df %>%
+    mutate(over(c('federal_purchases', 
+                  'state_purchases', 
+                  'consumption_grants', 
+                  'investment_grants'),
+                
+                .fn =  ~ 400 * (.("{.x}") - lag(.("{.x}")) * (1 + .("{.x}_deflator_growth") + real_potential_gdp_growth)) 
+                / lag(gdp),
+                
+                .names = "{x}_contribution"),
+           grants_contribution = consumption_grants_contribution + investment_grants_contribution,
+           federal_contribution = federal_purchases_contribution + grants_contribution,
+           state_contribution = state_purchases_contribution  - grants_contribution)
+  
+}
+
 #' Calculate contributions of grants and purchases
 #'
 #' @param df 
@@ -42,14 +67,15 @@ total_purchases <- function(df){
 #'
 #' @examples
 neutral <- function(.data, var){
-  dplyr::lag(x) * (1 + fim$gdppoth + fim$pi_pce)
+  dplyr::lag(x) * (1 + fim$gdppoth + fim$consumption_deflator_growth)
 }
 all_taxes_transfers <- function(){
   taxes_transfers <- c("subsidies","health_outlays", "social_benefits",
-                       "noncorp_taxes", "corporate_taxes", 'rebate_checks', 
-                       'unemployment_insurance')
-  government_level <- c('federal', 'state')
-  all_taxes_transfers <- c(glue::glue('{taxes_transfers}'), glue::glue('federal_{taxes_transfers}'),
+                       "non_corporate_taxes", "corporate_taxes",  
+                       'ui')
+
+  
+  all_taxes_transfers <- c(glue::glue('{taxes_transfers}'), glue::glue('federal_{taxes_transfers}'),'rebate_checks',
                            glue::glue('state_{taxes_transfers}'))
   return(all_taxes_transfers)
 }
@@ -66,13 +92,17 @@ all_taxes_transfers <- function(){
 #'
 #' @examples
 taxes_transfers_minus_neutral <- function(df){
+  taxes = all_levels('corporate_taxes', 'non_corporate_taxes')
+  transfers = all_levels('social_benefits', 'health_outlays', 'subsidies', 'ui', 'rebate_checks')
   df %>%
     dplyr::mutate(
-      dplyr::across(.cols = all_of(all_taxes_transfers()),
-             .fns = ~ . - dplyr::lag(.) * (1 + gdppoth + pi_pce),
+      dplyr::across(.cols = any_of(all_levels(taxes, transfers)),
+             .fns = ~ . - dplyr::lag(.) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
              .names = '{.col}_minus_neutral')
     )
 }
+
+
 
 
 #' Apply mpcs to taxes and transfers 
@@ -86,17 +116,16 @@ taxes_transfers_minus_neutral <- function(df){
 #' @examples
 
 taxes_contributions <- function(df){
-  taxes <- c('noncorp_taxes_post_mpc', 'corporate_taxes_post_mpc')
-  all_taxes <- c(glue('{taxes}'), glue('federal_{taxes}'), glue('state_{taxes}')) 
+  taxes <- all_levels(c('non_corporate_taxes_post_mpc', 'corporate_taxes_post_mpc'))
   df %>%
     mutate(
       across(
-        .cols  = all_of(all_taxes),
+        .cols  = all_of(taxes),
         .fns = ~ 400 * .x / lag(gdp),
-        .names = "{.col}_cont"
+        .names = "{.col}_contribution"
       )
     ) %>%
-    rename_with(~ gsub('post_mpc_cont', 'cont', .x))
+    rename_with(~ gsub('post_mpc_contribution', 'contribution', .x))
   
 }
 
@@ -110,17 +139,18 @@ taxes_contributions <- function(df){
 #' @examples
 transfers_contributions <- function(df){
   transfers <- c('social_benefits', 'health_outlays', 'subsidies',
-                 'unemployment_insurance', 'rebate_checks') %>%
-    paste0('_post_mpc')
-  all_transfers <- c(glue('{transfers}'), glue('federal_{transfers}'), glue('state_{transfers}')) 
+                 'ui','rebate_checks') %>%
+    paste0('_post_mpc') %>% 
+    fim::all_levels()
+  
   df %>%
     mutate(
       across(
-        .cols  = all_of(all_transfers),
+        .cols  = any_of(transfers),
         .fns = ~ 400 * .x / lag(gdp),
-        .names = "{.col}_cont"
+        .names = "{.col}_contribution"
       )
     ) %>%
-    rename_with(~ gsub('post_mpc_cont', 'cont', .x))
+    rename_with(~ gsub('post_mpc_contribution', 'contribution', .x))
 }
 

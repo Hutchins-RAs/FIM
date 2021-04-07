@@ -4,7 +4,7 @@
 \alias{mpc_corporate_taxes}
 \title{Title}
 \usage{
-mpc_corporate_taxes(x)
+mpc_corporate_taxes(df)
 }
 \arguments{
 \item{x}{}

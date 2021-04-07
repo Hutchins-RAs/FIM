@@ -1,44 +1,27 @@
 
-#' Cola adjustment 
-#' Adjust transfers for their cola related bump
-#' @param df 
-#' Cbo projections
-#' @return
-#' @export
-#'
-#' @examples
-  cola_adjustment <- function(df) {
+cola_adjustment <- function(df){
+  
+  get_cola_rate <- function(df){
     df %>%
       mutate(cpiu_g = q_a(cpiu) / 100,
-             cola_rate = if_else(month(date) == 3,
-                                 lag(cpiu_g, 2),
-                                 NULL) 
-      ) %>%
-      fill(cola_rate) %>%
-      mutate(
-        gftfp_before_cola = gftfp,
-        health_ui = SMA(yptmd + yptmr + yptu, n = 4),
-        gftfp_noCOLA = SMA((gftfp - health_ui)*(1-cola_rate), n = 4),
-        gftfp =  gftfp_noCOLA * (1 + cola_rate)  + health_ui,
-      ) 
-  } 
-#' Smooth budget series
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-  smooth_budget_series <- function(df){
-    # smooth all budget series except total social transfers, which we did above
-    df %>%
-      mutate(
-        across(.cols = c("gfrpt",  "gfrpri",  "gfrcp",  "gfrs", "yptmr",  "yptmd"),
-               .fns = ~ rollapply(.x, width = 4, mean, fill = NA, align =  'right')
-        ) 
-      )
+             cola_rate = if_else(quarter(date) == 1,
+                                 lag(cpiu_g, 2), 
+                                 NULL)) %>%
+      fill(cola_rate)
   }
+  smooth_transfers_net_health_ui <- function(df){
+    df %>%
+      mutate(gftfp_unadj = gftfp,
+             health_ui = TTR::SMA(yptmd + yptmr + yptu, n = 4),
+             smooth_gftfp_minus_health_ui = TTR::SMA((gftfp - health_ui) * (1 - cola_rate), n =4),
+             gftfp = smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui)
+  }
+  df %>%
+    get_cola_rate() %>%
+    smooth_transfers_net_health_ui()
+  
+}
+
 #' Alternative tax scenario
 #'
 #' @param df 
@@ -50,20 +33,19 @@
   alternative_tax_scenario <- function(df){
     # Construct alternative scenario for personal current taxes, under which the TCJA provisions for income taxes don't
     # expire in 2025
-    expdate <- "2025-12-30"
-    predate <- "2025-09-30"
+    expdate <- yearquarter('2025 Q3')
     
     df %>%
       mutate(gfrptCurrentLaw = gfrpt,
-             gfrptCurrentLaw_g = gfrpt_g,
-             gfrpt_g =
-               if_else(date >= expdate,
-                       lag(gfrpt_g),
-                       gfrpt_g,
+             gfrptCurrentLaw_growth = gfrpt_growth,
+             gfrpt_growth =
+               if_else(date > expdate,
+                       lag(gfrpt_growth),
+                       gfrpt_growth,
                        missing = NULL
                ),
-             gfrpt  = if_else(date >= predate,
-                              lag(gfrpt) * (1 + gfrpt_g / 400),
+             gfrpt  = if_else(date >= expdate,
+                              lag(gfrpt) * (1 + gfrpt_growth / 400),
                               gfrpt))
   }
 #' Implicit price deflators
@@ -114,13 +96,14 @@
     df %>%
       mutate(
         across(
-          .cols = where(is.numeric),
+          .cols = where(is.numeric) & !ends_with('_growth'),
           .fns = ~ q_g(.),
-          .names = "{.col}_g"
+          .names = "{.col}_growth"
         ) 
       )
   }
- 
+
+
 #' Get growth rates of federal transfers
 #'
 #' @param df 
@@ -154,7 +137,16 @@ health_outlays_growth_rates <- function(df){
       across(
         .cols = c("yptmr",  "yptmd" ),
         .fns = ~ q_g(.x),
-        .names = "{.col}_g"
+        .names = "{.col}_growth"
       )
     ) 
+}
+
+smooth_budget_series <- function(df) {
+  federal_taxes <- c('gfrpt', 'gfrpri', 'gfrcp', 'gfrs')
+  health_outlays <- c('yptmd', 'yptmr')
+  unemployment_insurance <- 'yptu'
+  df %>%
+    mutate(across(all_of(c(federal_taxes, health_outlays, unemployment_insurance)),
+                  ~ rollapply(.x, width = 4, mean, fill = NA, align = 'right')))
 }

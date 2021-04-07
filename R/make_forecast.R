@@ -103,3 +103,74 @@ df %>%
   ) %>%
   ungroup()
 }
+forecast <- function(df){
+  gdp <- c('gdp', 'real_gdp', 'gdp_deflator',
+                 'real_potential_gdp', 'consumption', 'consumption_deflator')
+  purchases <- c('purchases', 'federal_purchases', 'state_purchases',
+                  'federal_purchases_deflator', 'state_purchases_deflator')
+  grants  <- c('health_grants', 'medicaid_grants', 'investment_grants', 'consumption_grants',
+                'consumption_grants_deflator', 'investment_grants_deflator')
+  health <- c('medicaid', 'medicare')
+  transfers <- c('social_benefits', 'subsidies')  %>% government_levels()
+  taxes <- c('personal_taxes', 'production_taxes', 'payroll_taxes', 'corporate_taxes')
+  federal_taxes <- taxes  %>% as_federal()
+  state_taxes <- taxes %>% as_state()
+  variables <- c(gdp, purchases, grants,  health, transfers, federal_taxes) 
+  
+  df %>%
+    dplyr::mutate(
+      dplyr::across(
+        all_of(variables),
+        ~if_else(id == 'projection', 
+                 NA_real_,
+                 .x)
+      )
+    ) %>% 
+    tidyr::fill(variables) %>%
+    dplyr::group_by(id) %>%
+    dplyr::mutate(dplyr::across(all_of(glue::glue('{variables}_growth')),
+                  ~  get_cumulative_growth(.x),
+                  .names = "{.col}_cumulative"
+                  )) %>%
+    ungroup() %>%
+    mutate(
+           dplyover::over(all_of(variables),
+                ~ if_else(id == 'projection', 
+                          .("{.x}") * (.("{.x}_growth_cumulative")),
+                          .("{.x}"))
+           )
+    ) %>%
+    mutate(
+           across(all_of(state_taxes),
+                  ~ if_else(id == 'projection',
+                            zoo::na.locf(. / gdp) * gdp,
+                            .)
+                  )
+    ) %>% 
+    mutate(federal_health_outlays = medicare + medicaid_grants,
+           state_health_outlays = medicaid - medicaid_grants)
+    
+}
+
+
+
+
+get_cumulative_growth <- function(x){
+  
+  x <- cumprod(1 + x)
+  return(x)
+}
+
+government_levels <- function(x){
+  c(glue::glue('federal_{x}'), glue::glue('state_{x}'))
+}
+
+as_federal <- function(x){
+  x <- glue::glue('federal_{x}')
+  return(x)
+}
+
+as_state <- function(x){
+  x <- glue::glue('state_{x}')
+  return(x)
+}

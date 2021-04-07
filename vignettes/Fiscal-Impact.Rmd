@@ -1,0 +1,189 @@
+---
+title: "Fiscal Impact Measure"
+author: "Manuel Alcalá Kovalski"
+date: "4/6/2021"
+output: pdf_document
+---
+---
+header-includes:
+- \usepackage{dcolumn}
+- \usepackage{rotating}
+- \usepackage{graphicx}
+- \usepackage{float}
+
+output: pdf_document
+mainfont: Arial 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, results = 'asis', fig.align = "center")
+
+```
+
+```{r libraries, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis', include = FALSE}
+librarian::shelf('targets', "tidyverse", "magrittr", "ggthemes", "ggtext", "tinytex", "ggthemes", "gridExtra", "fim", "glue", "lubridate", "gghutchins",
+"conflicted", "tsibble")
+
+theme_set(theme_hutchins())
+conflict_prefer('geom_bar', 'ggplot2')
+conflict_prefer('geom_line', 'ggplot2')
+conflict_prefer('geom_point', 'ggplot2')
+```
+
+```{r data, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
+fim <- tar_read(fim) %>% 
+ tsibble::filter_index('1999 Q4' ~ '2022 Q4')
+```
+
+```{r constants, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
+total_pink <- rgb(231, 97, 159, maxColorValue = 255)
+state_local_purple = rgb(174, 104, 169,  maxColorValue = 255)
+federal_blue = rgb(33, 152, 199,  maxColorValue = 255)
+taxes_transfers_green = rgb(27, 149, 83,  maxColorValue = 255)
+
+  max_y <-
+    fim %>%
+    pull(fiscal_impact) %>%
+    max() %>%
+    ceiling() + 1
+
+recession_shade <- 
+    geom_rect(data = fim::recessions, aes(xmin = start, xmax = end, ymin=-Inf, ymax=+Inf),
+              fill = 'grey', alpha = 0.3)
+
+
+end <- lubridate::as_date("2022-12-31")
+
+guidez <- guides(
+fill = guide_legend(keywidth = unit(0.8, "cm"),
+                    keyheight = unit(0.4, "cm"), 
+                    ncol = 1),
+colour = guide_legend(keywidth = unit(0.8, "cm"),
+                      keyheight = unit(0.05, "cm"), 
+                      ncol = 1)
+)
+
+
+```
+
+
+
+```{r}
+
+ 
+recessions[3, 'end'] <- lubridate::as_date('2020-12-31')
+
+recession_shade <-
+  geom_rect(data = recessions, aes(xmin = recession_start, xmax = recession_end, ymin=-Inf, ymax=+Inf),
+            fill = 'grey', alpha = 0.05)
+```
+
+```{r}
+conflict_prefer("geom_col", "ggplot2")
+fim %>% 
+  select(date, fiscal_impact, fiscal_impact_moving_average) %>% pivot_longer(fiscal_impact) %>% 
+    ggplot() +
+      geom_bar(aes(x = date, y = value, fill = name),
+               stat = 'identity', width = 50) +
+      geom_line(
+        aes(x = date,
+            y = fiscal_impact_moving_average,
+            colour = "4-quarter moving-average")
+      ) +
+      geom_point(
+        aes(x = date,
+            y = fiscal_impact_moving_average,
+            colour = "4-quarter moving-average"), size = 1
+      ) +
+  labs(
+        title = glue("**Hutchins Center Fiscal Impact Measure: Total**"),
+        x = '',
+        y = '',
+        subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
+        caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
+        and Congressional Budget Office data; grey shaded areas indicate recessions 
+        and yellow shaded areas indicate projection.") +
+      geom_richtext(aes(x = Sys.Date()+350,
+                        y = 16), 
+                    label = "Projection",
+                    cex = 2, 
+                    fill = NA, label.color = NA, # remove background and outline
+      ) +
+   scale_fill_manual(labels = " Quarterly fiscal impact",
+                    values = total_pink) +
+  fim_theme() +
+  guidez +
+  scale_color_manual(" ", 
+                         values=c("4-quarter moving-average" ="black",
+                                  "4-quarter moving-average" ="black")) +
+      uni.theme() 
+
+```
+
+```{r impact-expanded, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
+projection_start <- 
+  fim %>% 
+  dplyr::filter(id == 'projection') %>%
+  slice(1) %>%
+  pull(date)
+fim %>%
+  select(
+    date,
+    federal_contribution,
+    state_contribution,
+    taxes_transfers_contribution,
+    fiscal_impact_moving_average
+  ) %>%
+  pivot_longer(cols = ends_with('contribution'),
+               names_to = 'variable') %>%
+  ggplot() +
+      geom_bar(aes(x = date, y = value, fill = variable),
+               stat = 'identity', width = 50) +
+      geom_line(
+        aes(x = date,
+            y = fiscal_impact_moving_average,
+            colour = "4-quarter moving-average")
+      ) +
+      geom_point(
+        aes(x = date,
+            y = fiscal_impact_moving_average,
+            colour = "4-quarter moving-average"), size = 1
+      ) +
+      labs(
+        title = glue("**Hutchins Center Fiscal Impact Measure: Components**"),
+        x = '',
+        y = '',
+        subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
+        caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
+        and Congressional Budget Office data; grey shaded areas indicate recessions 
+        and yellow shaded areas indicate projection.") +
+      geom_richtext(aes(x = Sys.Date()+350,
+                        y = 16), 
+                    label = "Projection",
+                    cex = 2, 
+                    fill = NA, label.color = NA, # remove background and outline
+      ) +
+      annotate("rect", xmin = projection_start, xmax = lubridate::as_date('2022-12-31'),
+               ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
+      scale_x_yearquarter(breaks = 0, date_breaks = "2 years", date_labels = '%Y Q%q',
+                   expand = c(0,0)) + 
+      scale_color_manual(" ", 
+                         values=c("4-quarter moving-average" ="black",
+                                  "4-quarter moving-average" ="black")) +
+      uni.theme() +
+  scale_fill_manual(labels = c(
+      " Federal Purchases",
+      " State & Local Purchases",
+      " Taxes, Transfers, & Subsidies"
+    ),
+     values =  c(federal_blue, state_local_purple, taxes_transfers_green)) + 
+ fim_theme() + 
+  guidez 
+
+```
+
+
+```{r, echo=FALSE, message=F, warning=FALSE, out.width = "25%", fig.align = "right"}
+#knitr::include_graphics(path = 'images/HC_NEW_BROOKINGS_RGB.jpg', error = FALSE)
+knitr::include_graphics(file.path(here::here(),"images","HC_NEW_BROOKINGS_RGB.jpg"))
+```
