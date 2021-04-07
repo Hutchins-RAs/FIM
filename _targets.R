@@ -22,6 +22,7 @@ tar_plan(
   projections = 
     read_data() %>%
     define_variables() %>%
+
     #  Override growth rates
     create_override(
       var = state_purchases_growth,
@@ -37,6 +38,12 @@ tar_plan(
     ) %>% 
     growth_assumptions() %>%
     reallocate_legislation() %>%  
+    mutate(
+      across(c(ppp, aviation, paid_sick_leave, employee_retention),
+             ~ coalesce(.x, 0)),
+      federal_subsidies = federal_subsidies - ppp - aviation - paid_sick_leave - employee_retention,
+      subsidies = federal_subsidies + state_subsidies
+    ) %>% 
     forecast() %>%
     ungroup() %>% 
     mutate(# Health outlays reattribution

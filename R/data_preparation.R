@@ -17,6 +17,7 @@ define_variables <- function(df){
               consumption_deflator = jc,
               consumption_deflator_growth  = q_g(jc),
               cpiu,
+              recession = recessq,
               
               # PURCHASES
               purchases = g, 
@@ -58,7 +59,8 @@ define_variables <- function(df){
               
               # Transfers
               social_benefits = gtfp,
-              federal_social_benefits = gftfp,
+              federal_social_benefits_gross = gftfp,
+              federal_social_benefits = gftfp - yptu,
               state_social_benefits = gstfp,
               medicare = yptmr,
               medicaid = yptmd,
@@ -158,11 +160,11 @@ reallocate_legislation <- function(.data){
       consumption_grants = gross_consumption_grants - medicaid_grants - coronavirus_relief_fund - education_stabilization_fund - provider_relief_fund,
       grants = consumption_grants + investment_grants,
       # Reallocate Subsidies
-      federal_subsidies = federal_subsidies - ppp - aviation - paid_sick_leave - employee_retention,
-      subsidies = federal_subsidies + state_subsidies,
+      # federal_subsidies = federal_subsidies - ppp - aviation - paid_sick_leave - employee_retention,
+      # subsidies = federal_subsidies + state_subsidies,
       # Reallocate social benefits
-      federal_social_benefits = federal_social_benefits - federal_ui - medicare - rebate_checks - nonprofit_provider_relief_fund - nonprofit_ppp,
-      state_social_benefits = state_social_benefits - medicaid - state_ui,
+      federal_social_benefits = federal_social_benefits -  medicare - rebate_checks - nonprofit_provider_relief_fund - nonprofit_ppp,
+      state_social_benefits = state_social_benefits - medicaid ,
       social_benefits = federal_social_benefits + state_social_benefits
     ) 
 }
