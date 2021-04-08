@@ -99,20 +99,7 @@ max_y <- function(df){
     ceiling() + 1  
 }
 
-#' Skim contributions
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-skim_contributions <- function(df){
-  df %>%
-    select(date, ends_with('cont')) %>% 
-    filter(date > '2019-12-31') %>%
-    skimr::skim()
-}
+
 
 
 

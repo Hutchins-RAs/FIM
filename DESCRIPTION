@@ -18,7 +18,8 @@ Suggests:
     knitr,
     rmarkdown,
     devtools,
-    git2r
+    git2r,
+    drake
 Depends:
     R (>= 2.10)
 Imports:
@@ -30,17 +31,13 @@ Imports:
     zoo,
     glue,
     tsibble,
-    dplyr,
     here,
     readxl,
     roll,
-    skimr,
     tidyr,
     tidyselect,
     magrittr,
-    drake,
     ggplot2,
-    bookdown,
     targets,
     tarchetypes,
     dplyover

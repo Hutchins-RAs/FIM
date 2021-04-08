@@ -62,6 +62,7 @@ tar_plan(
   
   fim = 
     projections %>%
+    mpc_coronavirus_relief_fund() %>% 
     
     mutate(
       consumption_grants = consumption_grants + education_stabilization_fund + provider_relief_fund + coronavirus_relief_fund,
