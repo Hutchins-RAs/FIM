@@ -1,0 +1,75 @@
+---
+title: "Your Document Title"
+author: "Document Author"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+---
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE,
+  results = 'asis'
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r packages}
+librarian::shelf('tidyverse', 'zoo', 'TTR', 'tsibble', 'targets', 'tarchetypes', 'lubridate', "moodymudskipper/safejoin",
+                 'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover', 'tsibble', 'gt')
+```
+
+```{r load}
+rra_raw <- read_xlsx('inst/extdata/pandemic_legislation.xlsx',
+                     sheet = 'RRA')
+rra_raw %>% 
+  gt()
+```
+
+```{r}
+rra <-
+  rra_raw %>% 
+  group_by(component) %>% 
+  nest(category, name, total) %>% 
+  mutate(total = purrr::map_dbl(data, ~sum(.x$total))) 
+  
+  rra %>% 
+  map_df(data, ~slice(rep(1:n(), 4)))
+  
+rra %>% 
+  pluck("data", 6) %>% 
+  slice(rep(1:n(), 3))
+select(-data) %>% 
+  pivot_wider(names_from = component, values_from = total) %>% 
+  mutate(date = 2021) %>% 
+  as_tsibble(index = date) %>% 
+  annual_to_quarter() 
+
+```
+
+```{r}
+tar_load(fim)
+
+rra %<>% 
+  select(-data) %>% 
+  pivot_wider(names_from = c(component, legislation), values_from = total) %>% 
+  mutate(date = yearquarter('2021 Q1'), .before = everything()) %>% 
+  as_tsibble(index = date) 
+
+dates <- tibble(date =  yearquarter('2021 Q1') + 0:12)
+
+
+mpc_grants_rra <- mpc_generic(1, c(rep(1/12, 12)))
+mpc_subsidies_rra <- mpc_generic(1, rep(1/8, 8))
+mpc_purchases_rra <- mpc_generic(1, c(0.35, 0.35, 0.15, 0.15))
+
+rra %>% full_join(dates, by ='date') %>% 
+  mutate(across(ends_with('rra'),
+                ~ mpc_rra(.x))) 
+```
+

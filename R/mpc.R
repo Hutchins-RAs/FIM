@@ -17,7 +17,16 @@ mpc_social_benefits = function(df){
       )
     ) 
 }
+mpc_generic <- function(mpc, timing){
+  force(mpc)
+  force(timing)
+  function(x){
+    mpc  * roll::roll_sum(x, width = length(timing), weights  = rev(timing), 
+                   online = FALSE, min_obs  = 1)
+  }
+}
 
+mpc_covid <- mpc_generic(mpc  = 1, timing = c(0.06, 0.08, rep(0.1, 2), rep(0.08, 8)))
 mpc_coronavirus_relief_fund = function(df){
   mpc <- 1
   weights <- c(0.06, 0.08, rep(0.1, 2), rep(0.08, 8))

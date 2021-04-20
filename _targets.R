@@ -10,12 +10,8 @@ conflicted::conflict_prefer('lag', 'dplyr')
 options(tidyverse.quiet = TRUE)
 options(crayon.enabled = FALSE)
 
-
-
 # Set target-specific options such as packages.
 tar_option_set(error = "workspace")
-
-
 
 # End this file with a list of target objects.
 tar_plan(
