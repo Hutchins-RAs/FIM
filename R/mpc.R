@@ -25,8 +25,27 @@ mpc_generic <- function(mpc, timing){
                    online = FALSE, min_obs  = 1)
   }
 }
+power <- function(exponent) {
+  new_function(
+    exprs(x = ), 
+    expr({
+      x ^ !!exponent
+    }), 
+    caller_env()
+  )
+}
 
-mpc_covid <- mpc_generic(mpc  = 1, timing = c(0.06, 0.08, rep(0.1, 2), rep(0.08, 8)))
+mpc  <- function(mpc =  1, timing){
+  rlang::new_function(
+    rlang::exprs(x = ),
+    rlang::expr({
+      !!mpc  * roll::roll_sum(x, width = length(!!timing), weights = rev(!!timing),
+                              online = FALSE, min_obs = 1)
+    }),
+    rlang::caller_env()
+  )
+}
+mpc_covid <- mpc(timing = c(0.06, 0.08, rep(0.1, 2), rep(0.08, 8)))
 mpc_coronavirus_relief_fund = function(df){
   mpc <- 1
   weights <- c(0.06, 0.08, rep(0.1, 2), rep(0.08, 8))
