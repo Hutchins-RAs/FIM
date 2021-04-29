@@ -30,3 +30,4 @@ recessions <-
 
 
 usethis::use_data(recessions, overwrite = TRUE)
+

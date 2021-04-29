@@ -1,20 +1,9 @@
 ---
-title: "NIPA Consistent Fiscal Impact Measure Walkthrough"
-author: "Manuel Alcala Kovalski"
-date: "`r Sys.Date()`"
-output:
-  word_document:
-  prettydoc::html_pretty:
-    theme: cayman
-    toc: true
-    highlight: vignette
-    df_print: paged
+title: "Untitled"
+author: "Manuel Alcalá Kovalski"
+date: "4/21/2021"
+output: word_document
 always_allow_html: true
-toc-title: "Table of Contents"
-vignette: >
-  %\VignetteIndexEntry{Creating Pretty Documents from R Markdown - The Architect Theme}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}

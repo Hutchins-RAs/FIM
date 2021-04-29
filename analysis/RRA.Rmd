@@ -21,55 +21,156 @@ knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 
 ```{r packages}
 librarian::shelf('tidyverse', 'zoo', 'TTR', 'tsibble', 'targets', 'tarchetypes', 'lubridate', "moodymudskipper/safejoin",
-                 'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover', 'tsibble', 'gt')
+                 'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover', 'tsibble', 'gt', 'readxl')
 ```
 
 ```{r load}
 rra_raw <- read_xlsx('inst/extdata/pandemic_legislation.xlsx',
                      sheet = 'RRA')
-rra_raw %>% 
-  gt()
-```
 
-```{r}
+
 rra <-
   rra_raw %>% 
   group_by(component) %>% 
   nest(category, name, total) %>% 
   mutate(total = purrr::map_dbl(data, ~sum(.x$total))) 
   
+```
+
+
+
+```{r}
+(rra <- 
   rra %>% 
-  map_df(data, ~slice(rep(1:n(), 4)))
+  select(-data) %>% 
+  pivot_wider(names_from = c(component, legislation), values_from = total) %>% 
+  mutate(date = yearquarter('2021 Q1'), .before = everything()) %>% 
+  as_tsibble(index = date) )
+
+dates <- tibble(date =  yearquarter('2021 Q1') + 0:12)
+mpc_consumption_grants_rra <- mpc(timing = rep(1/12, 12))
+mpc_ppp_rra <- mpc(timing = c(0.5, 0.5))
+mpc_aviation_rra <- mpc(timing = rep(1/3, 3))
+mpc_employee_retention_credit_rra <- mpc(timing = rep(1/4, 4))
+mpc_snap_rra <- mpc(timing = c(0.5, 0.5))
+mpc_subsidies_rra <- mpc(timing = rep(1/8, 8))
+mpc_federal_health_outlays_rra <- mpc(timing = rep(1/12, 12))
+
+mpc_grants_rra <- mpc_generic(1, c(rep(1/12, 12)))
+mpc_federal_purchases <- mpc(timing = c(0.35, 0.35, 0.15, 0.15))
+mpc_purchases_rra <- mpc_generic(1, c(0.35, 0.35, 0.15, 0.15))
+mpc_social_benefits_rra <- mpc(timing = rep(1/4, 4))
+
+rra_projection <-
+  rra %>% full_join(dates, by ='date') %>% 
+  mutate(consumption_grants_rra = mpc_consumption_grants_rra(consumption_grants_rra),
+         ppp_rra = mpc_ppp_rra(ppp_rra),
+         aviation_rra = mpc_aviation_rra(aviation_rra),
+         employee_retention_credit_rra = mpc_employee_retention_credit_rra(employee_retention_credit_rra),
+         subsidies_rra = mpc_subsidies_rra(subsidies_rra),
+         snap_rra = mpc_snap_rra(snap_rra),
+         social_benefits_rra = mpc_social_benefits_rra(social_benefits_rra)) %>% 
+  mutate(federal_purchases_rra = mpc_federal_purchases_rra(federal_purchases_rra),
+         federal_health_outlays_rra = mpc_federal_health_outlays_rra(federal_health_outlays_rra)) %>% 
+  mutate(across(where(is.numeric),
+                ~ .x * 4),
+         across(where(is.numeric),
+                ~ coalesce(.x, 0)))
+```
+
+```{r}
+rra_projection <-
+  rra_projection %>% 
+  pivot_longer(-date) %>% 
+  mutate(component = recode(name, 
+                            ppp_rra = 'subsidies_rra',
+                            aviation_rra = 'subsidies_rra',
+                            employee_retention_credit_rra = 'subsidies_rra',
+                            subsidies_rra = 'subsidies_rra',
+                          
+                            snap_rra = 'federal_social_benefits_rra',
+                            social_benefits_rra = 'federal_social_benefits_rra',
+                              rebate_checks_rra = 'rebate_checks_rra',
+                            federal_ui_rra = 'federal_ui_rra',
+                            consumption_grants_rra = 'consumption_grants_rra',
+                            federal_purchases_rra = 'federal_purchases_rra',
+                            federal_health_outlays_rra = 'federal_health_outlays_rra')) %>% 
+  group_by(component) %>% 
+  nest(name, value) %>% 
+   mutate(total = purrr::map_dbl(data, ~sum(.x$value))) %>% 
+  select(-data) %>% 
+  pivot_wider(date, names_from = component, values_from = total)
+```
+
+```{r}
+library('gghutchins')
+theme_set(theme_hutchins())
+rra_projection %>% 
+  pivot_longer(-date) %>% 
+  filter(name %in% c( 
+                     "federal_ui_rra", "rebate_checks_rra", "subsidies_rra")) %>% 
+  ggplot(aes(x = date, y = value, fill = name, color = name)) +
+   geom_line() + geom_point() +
+  scale_color_hutchins()
   
-rra %>% 
-  pluck("data", 6) %>% 
-  slice(rep(1:n(), 3))
-select(-data) %>% 
-  pivot_wider(names_from = component, values_from = total) %>% 
-  mutate(date = 2021) %>% 
-  as_tsibble(index = date) %>% 
-  annual_to_quarter() 
+
+rra_projection %>% 
+  pivot_longer(-date) %>% 
+  filter(name %in% c( 
+                     "federal_social_benefits_rra", "federal_health_outlays_rra")) %>% 
+  ggplot(aes(x = date, y = value, fill = name, color = name)) +
+   geom_line() + geom_point() +
+  scale_color_hutchins()
+  
+
+rra_projection %>% 
+  pivot_longer(-date) %>% 
+  filter(name %in% c( 
+                     "consumption_grants_rra", "federal_purchases_rra")) %>% 
+  ggplot(aes(x = date, y = value, fill = name, color = name)) +
+  geom_line() + geom_point() +
+  scale_color_hutchins()
+  
+```
+
+```{r}
+tar_load(fim) 
 
 ```
 
 ```{r}
-tar_load(fim)
-
-rra %<>% 
-  select(-data) %>% 
-  pivot_wider(names_from = c(component, legislation), values_from = total) %>% 
-  mutate(date = yearquarter('2021 Q1'), .before = everything()) %>% 
-  as_tsibble(index = date) 
-
-dates <- tibble(date =  yearquarter('2021 Q1') + 0:12)
-
-
-mpc_grants_rra <- mpc_generic(1, c(rep(1/12, 12)))
-mpc_subsidies_rra <- mpc_generic(1, rep(1/8, 8))
-mpc_purchases_rra <- mpc_generic(1, c(0.35, 0.35, 0.15, 0.15))
-
-rra %>% full_join(dates, by ='date') %>% 
+rra <- fim::rra
+rra_cont <- 
+  rra %>% 
+  full_join(fim %>% select(date, real_potential_gdp_growth, consumption_deflator_growth, gdp), by = 'date') %>% 
+  mutate(across(ends_with('rra'), ~ coalesce(.x, 0))) %>% 
   mutate(across(ends_with('rra'),
-                ~ mpc_rra(.x))) 
+                ~  .x - dplyr::lag(.x, default = 0) * (1 + real_potential_gdp_growth + consumption_deflator_growth))) %>% 
+  mutate(subsidies_rra_post_mpc = mpc_subsidies_rra(subsidies_rra),
+         
+         federal_social_benefits_rra_post_mpc = mpc_social_benefits(federal_social_benefits_rra),
+         rebate_checks_rra_post_mpc = mpc_rebate_checks(rebate_checks_rra),
+         federal_ui_rra_post_mpc = mpc_ui(federal_ui_rra),
+         federal_health_outlays_rra_post_mpc = mpc_health_outlays(federal_health_outlays_rra)) %>% 
+  mutate(across(ends_with('post_mpc'), ~ 100 * . / lag(gdp), .names = '{.col}_contribution'))  %>% 
+  filter_index('2020 Q4' ~ '2023 Q4')  %>% 
+  select(date, ends_with('contribution'))
+```
+
+```{r}
+library('gghutchins')
+theme_set(theme_hutchins())
+rra_cont %>% 
+  pivot_longer(-date) %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line() +
+  geom_point() +
+  gghutchins::scale_color_hutchins()
+
+rra_cont %>% 
+  pivot_longer(-date) %>% 
+  ggplot(aes(x = date, y = value, fill = name)) +
+  geom_col(width = 50) +
+  gghutchins::scale_fill_hutchins()
 ```
 

@@ -1,7 +1,7 @@
 librarian::shelf('tidyverse', 'zoo', 'TTR', 'tsibble', 'targets', 'tarchetypes', 'lubridate',
-                 'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover', 'tsibble')
+                 'alistaire47/pipecleaner', 'glue', 'validate', 'fim', 'dplyover', 'tsibble',
+                 'magrittr')
 
-devtools::load_all()
 
 conflicted::conflict_prefer('filter', 'dplyr') 
 conflicted::conflict_prefer('lag', 'dplyr')
@@ -18,8 +18,6 @@ tar_plan(
   projections = 
     read_data() %>%
     define_variables() %>%
-
-    #  Override growth rates
     create_override(
       var = state_purchases_growth,
       start = yearquarter('2020 Q4'),
@@ -58,9 +56,8 @@ tar_plan(
   
   fim = 
     projections %>%
-    mpc_coronavirus_relief_fund() %>% 
-    
     mutate(
+      coronavirus_relief_fund = mpc_coronavirus_relief_fund(coronavirus_relief_fund),
       consumption_grants = consumption_grants + education_stabilization_fund + provider_relief_fund + coronavirus_relief_fund,
       federal_social_benefits = federal_social_benefits + nonprofit_provider_relief_fund + nonprofit_ppp ,
       federal_subsidies = federal_subsidies + aviation + ppp + employee_retention + paid_sick_leave ,
@@ -73,26 +70,33 @@ tar_plan(
       )
     ) %>%
     purchases_contributions() %>%
-    taxes_transfers_minus_neutral() %>%
-    mpc_taxes_transfers() %>%
+    taxes_transfers_minus_neutral() %>% 
+    calculate_mpc('social_benefits') %>% 
+    calculate_mpc('ui') %>%  
+    calculate_mpc('rebate_checks') %>% 
+    calculate_mpc('subsidies') %>% 
+    calculate_mpc('health_outlays') %>% 
+    calculate_mpc('corporate_taxes') %>% 
+    calculate_mpc('non_corporate_taxes') %>% 
+
     taxes_contributions() %>%
     sum_taxes_contributions() %>%
     transfers_contributions() %>%
     sum_transfers_contributions() %>%
     sum_taxes_transfers() %>%
-    get_fiscal_impact() %>% 
-  as_tsibble(index = date),
-  summary = 
-    fim %>% 
-      filter_index('2020 Q1' ~ '2021 Q1') %>% 
-      select(date, id, fiscal_impact, federal_contribution, 
-             state_contribution, grants_contribution, social_benefits_contribution,
-             health_outlays_contribution, subsidies_contribution,
-             ui_contribution, rebate_checks_contribution),
-  levels =
-    fim %>% 
-      filter_index('2019 Q2' ~ '2022 Q4') %>% 
-      select(date, id,   federal_social_benefits,
-             federal_health_outlays, federal_subsidies,
-            federal_ui, rebate_checks, consumption_grants, federal_purchases)
+    get_fiscal_impact() %>%
+  as_tsibble(index = date)
+  # summary = 
+  #   fim %>% 
+  #     filter_index('2020 Q1' ~ '2021 Q1') %>% 
+  #     select(date, id, fiscal_impact, federal_contribution, 
+  #            state_contribution, grants_contribution, social_benefits_contribution,
+  #            health_outlays_contribution, subsidies_contribution,
+  #            ui_contribution, rebate_checks_contribution),
+  # levels =
+  #   fim %>% 
+  #     filter_index('2019 Q2' ~ '2022 Q4') %>% 
+  #     select(date, id,   federal_social_benefits,
+  #            federal_health_outlays, federal_subsidies,
+  #           federal_ui, rebate_checks, consumption_grants, federal_purchases)
 )
