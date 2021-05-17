@@ -98,7 +98,7 @@ mpc_social_benefits <- mpc(0.9, timing = rep(1/4, 4))
 mpc_coronavirus_relief_fund <- mpc(timing = c(0.06, 0.08, rep(0.1, 2), rep(0.08, 8)))
 
 #' @rdname consumption
-mpc_rebate_checks <- mpc(0.7, c(rep(0.08, 6), 0.15, 0.35))
+mpc_rebate_checks <- mpc(0.7, c(0.35, 0.15, rep(0.08, 6)))
 
 #' @rdname consumption
 mpc_health_outlays <- mpc(0.9, rep(1/4, 4))
