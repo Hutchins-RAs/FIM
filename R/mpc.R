@@ -124,7 +124,7 @@ mpc_subsidies_second_draw <- function(x){
 mpc_subsidies_rra <- mpc(0.525, timing = c(0.1125, 0.1, 0.0875, rep(0.075, 4), rep(0.0625, 4)))
 
 #' @rdname consumption 
-mpc_ui <- mpc(0.9, timing = c(rep(0.35, 2), rep(0.1, 2), rep(0.05, 2)))
+mpc_ui <- mpc(0.9, timing = c(rep(0.35, 1), 0.3, rep(0.1, 2), rep(0.05, 2)))
 
 #' Rename mpc 
 #' Ad hoc function to rename column from 'minus_neutral' to 'post_mpc'

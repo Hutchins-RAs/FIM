@@ -39,7 +39,7 @@ usna_processed <-
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
          grants = consumption_grants + investment_grants,
          federal_social_benefits = federal_social_benefits - medicare,
-         state_social_benefits =  state_social_benefits - medicaid + state_ui,
+         state_social_benefits =  state_social_benefits - medicaid  ,
          social_benefits = federal_social_benefits + state_social_benefits) 
 
 
