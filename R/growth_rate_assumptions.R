@@ -101,8 +101,8 @@ deflators_growth <- function(df){
 
 
 create_override <- function(df, var, start, end, values){
-  start <- yearquarter(start)
-  end <- yearquarter(end)
+  start <- tsibble::yearquarter(start)
+  end <- tsibble::yearquarter(end)
   override <- 
     tibble(date = df %>%
             filter_index(start ~ end) %>% 
@@ -126,7 +126,7 @@ growth_assumptions <- function(df){
   
   
 
-  cap_expiration <- yearquarter('2021 Q3')
+  cap_expiration <- tsibble::yearquarter('2021 Q3')
   df %>%
     mutate(subsidies_growth = real_potential_gdp_growth,
            federal_subsidies_growth = real_potential_gdp_growth,
@@ -147,9 +147,9 @@ growth_assumptions <- function(df){
            grants_growth = federal_purchases_growth,
            investment_grants_growth = federal_purchases_growth,
            consumption_grants_growth  =  federal_purchases_growth,
-           
-           consumption_grants_deflator_growth = state_purchases_deflator_growth,
-           investment_grants_deflator_growth = state_purchases_deflator_growth)
+           consumption_deflator_growth = q_g(consumption_deflator),
+           consumption_grants_deflator_growth = q_g(consumption_grants_deflator),
+           investment_grants_deflator_growth = q_g(investment_grants_deflator))
 }
 #' Override state purchases
 #'

@@ -8,27 +8,20 @@
 #' @examples
 prepare_interactive <- function(df){
   df %>% 
-    dplyr::filter(date >= "1999-12-31") %>% 
+    tsibble::filter_index("1999 Q4" ~ .) %>% 
     dplyr::mutate(
-      yrq = zoo::as.yearqtr(date),
-      projection = dplyr::if_else(historical == 1,
+      yrq = date,
+      projection = dplyr::if_else(id == "historical",
                            0,
-                           1),
-      taxes_transfers_subsidies_cont = taxes_transfers_cont
+                           1)
     ) %>%
     tidyr::separate(yrq, c("year", "quarter")) %>%
-    dplyr::select(year, quarter, fim_bars_ma, recession,
-           fim_bars, 
-           federal_cont, state_local_cont,
-           taxes_transfers_subsidies_cont,
+    dplyr::select(year, quarter, impact = fiscal_impact_moving_average, recession,
+           total = fiscal_impact, 
+           federal  = federal_contribution, 
+           state_local = state_contribution,
+           consumption = taxes_transfers_contribution,
            projection) %>%
-    dplyr::rename(
-      "total" = fim_bars,
-      "impact" = fim_bars_ma,
-      "federal" = federal_cont,
-      "state_local" = state_local_cont,
-      "consumption" = taxes_transfers_subsidies_cont
-    ) %>% 
     dplyr::mutate(recession = dplyr::if_else(is.na(recession),
                                0,
                                recession))

@@ -35,3 +35,23 @@ forecast2  <- function(.data, ...){
     coalesce_join(.data, by = 'date')
 }
 
+
+#' Project series  with a growth rate
+#'
+#' @param .data 
+#' @param ... 
+#' @param with 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+project <- function(.data, ..., with){
+  vars <- enquos(...)
+  with <- enquo(with)
+  .data %>% 
+    dplyr::mutate(dplyr::across(c(!!!vars),
+                                ~ dplyr::coalesce(.x, 1 + {{ with }}))) %>% 
+    dplyr::filter(dplyr::between(dplyr::row_number(), dplyr::last(which(id == 'historical')), n())) %>% 
+    dplyr::mutate(dplyr::across(c(!!!vars),  ~ purrr::accumulate(.x, `*`))) 
+}

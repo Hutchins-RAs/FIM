@@ -14,6 +14,7 @@ budget_projections <- readxl::read_xlsx('inst/extdata/projections.xlsx', sheet =
                                        date == yearquarter('2021 Q2') ~ 0.275,
                                        date == yearquarter('2021 Q3') ~ 0,
                                        TRUE ~  1),
+         federal_ui = yptu - state_ui,
          federal_ui = if_else(date >= yearquarter('2020 Q4') & date <= yearquarter('2021 Q3'),
                               4 * federal_ui_timing * federal_ui,
                               federal_ui))

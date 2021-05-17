@@ -33,7 +33,7 @@ cola_adjustment <- function(df){
   alternative_tax_scenario <- function(df){
     # Construct alternative scenario for personal current taxes, under which the TCJA provisions for income taxes don't
     # expire in 2025
-    expdate <- yearquarter('2025 Q3')
+    expdate <- tsibble::yearquarter('2025 Q3')
     
     df %>%
       mutate(gfrptCurrentLaw = gfrpt,
@@ -148,5 +148,5 @@ smooth_budget_series <- function(df) {
   unemployment_insurance <- 'yptu'
   df %>%
     mutate(across(all_of(c(federal_taxes, health_outlays, unemployment_insurance)),
-                  ~ rollapply(.x, width = 4, mean, fill = NA, align = 'right')))
+                  ~ rollapply(.x, width = 4, mean, fill = NA,min_obs = 1, align = 'right')))
 }

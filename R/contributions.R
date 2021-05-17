@@ -103,7 +103,46 @@ taxes_transfers_minus_neutral <- function(df){
 }
 
 
+#' Counterfactual spending
+#' 
+#' @param .data 
+#' @param ... 
+#'
+#' @return
+#' @import dplyr
+#' @export
+#'
+#' @examples
+counterfactual <- function(.data, ...){
+  vars  <- enquos(...)
+  
+  
+  .data %>% 
+    mutate(across(.cols  = c(!!!vars),
+                  .fns = ~ lag(.x) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
+                  .names = "{.col}_counterfactual"),
+           .after = 'date')
+}
 
+#' Contribution to GDP 
+#'
+#' @param .data 
+#' @param ... 
+#'
+#' @return
+#' @import dplyr
+#' @export
+#'
+#' @examples
+contribution <- function(.data, ...){
+  
+  vars <- enquos(...)
+  
+  .data %>% 
+    mutate(across(.cols = c(!!!vars),
+                  .fns = ~ 400 * (.x  - get(paste0(cur_column(), "_counterfactual")))/ lag(gdp)),
+           .names = "{.col}_contribution")
+}
 
 #' Apply mpcs to taxes and transfers 
 #'

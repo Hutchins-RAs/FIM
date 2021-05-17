@@ -1,0 +1,147 @@
+---
+title: "Untitled"
+author: "Manuel Alcalá Kovalski"
+date: "5/9/2021"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Setup -------------------------------------------------------------------
+librarian::shelf(
+  'tidyverse',
+  "shiny",
+  'zoo',
+  'TTR',
+  'tsibble',
+  'targets',
+  'tarchetypes',
+  'lubridate',
+  'alistaire47/pipecleaner',
+  'glue',
+  'validate',
+  'fim',
+  'dplyover',
+  'tsibble',
+  'magrittr',
+  'feasts',
+  'fable'
+)
+devtools::load_all()
+# Baseline projections ----------------------------------------------------
+
+baseline_projections <-
+  read_data() %>%
+  define_variables() %>%
+  as_tsibble(key = id, index = date) %>% 
+  create_override(
+    var = state_purchases_growth,
+    start = yearquarter('2020 Q4'),
+    end = yearquarter('2022 Q1'),
+    values = c(rep(0.0025, 3), 0.005, 0.0075, 0.01)
+  )  %>% 
+  growth_assumptions() %>%
+  reallocate_legislation() %>% 
+  mutate(
+    across(c(ppp, aviation, paid_sick_leave, employee_retention),
+           ~ coalesce(.x, 0)),
+    federal_subsidies = federal_subsidies - ppp - aviation - paid_sick_leave - employee_retention,
+    subsidies = federal_subsidies + state_subsidies
+  ) %>% 
+  
+  ungroup() %>% 
+  forecast2(gdp, federal_purchases, state_purchases) %>% 
+  mutate(# Health outlays reattribution
+    health_outlays = medicare + medicaid,
+    federal_health_outlays = medicare + medicaid_grants,
+    state_health_outlays = medicaid - medicaid_grants,
+    # Aggregate taxes
+    corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
+    payroll_taxes = federal_payroll_taxes + state_payroll_taxes,
+    production_taxes = federal_production_taxes + state_production_taxes,
+    personal_taxes = federal_personal_taxes + state_personal_taxes,
+    # Coalesce NA's to 0
+    across(where(is.numeric),
+           ~ coalesce(.x, 0))) %>% 
+  get_non_corporate_taxes() %>% 
+  as_tsibble(key = id, index = date)
+# Rectangle data ----------------------------------------------------------
+baseline_projections <- baseline_projections %>%  
+  select(date,federal_social_benefits, state_social_benefits, federal_health_outlays, state_health_outlays, federal_subsidies, state_subsidies, federal_ui, state_ui, federal_corporate_taxes, state_corporate_taxes, gdp, real_potential_gdp_growth, medicaid_growth, federal_purchases, state_purchases, federal_consumption_grants = consumption_grants, federal_investment_grants = investment_grants) %>%
+
+  pivot_longer(starts_with(c('federal', 'state')),
+               names_to = c('government', 'variable'),
+              names_pattern = '(federal|state)_(.*)',
+              values_to = 'values') %>% 
+  mutate(component = case_when(variable %in% c( 'social_benefits', 'subsidies', 'health_outlays', 'ui' ) ~ 'transfers',
+                               variable %in% c('corporate_taxes') ~ 'taxes',
+                               variable %in% c('purchases', 'consumption_grants', 'investment_grants') ~ 'government')) 
+  
+```
+
+This R Markdown document is made interactive using Shiny. Unlike the more traditional workflow of creating static reports, you can now create documents that allow your readers to change the assumptions underlying your analysis and see the results immediately. 
+
+To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
+
+## Inputs and Outputs
+
+You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+
+```{r eruptions, echo=FALSE}
+inputPanel(
+  
+  sliderInput("mpc", label = "Marginal propensity to consume:",
+              min = 0, max = 1, value = 0.5, step = 0.1),
+  
+      selectizeInput(
+        "vec1"
+        , "Enter a vector"
+        , choices = NULL
+        , multiple = TRUE
+        , options = list(create = TRUE)
+      )
+
+    )
+
+  
+
+
+renderPlot({
+  baseline_projections %>%
+    filter(variable== "social_benefits") %>% 
+    filter(date %in% seq(yearquarter("2010 Q1"), length.out = length(input$vec1), by = 1) ) %>% 
+    mutate(
+              consumption =input$mpc *  roll::rollsum(values, width = length(input$vec1), weights = rev(input$vec1), min_obs = 1, online = FALSE)) %>%
+    ggplot(aes(x = date, y=consumption, fill= variable )) +
+    geom_col()
+    
+})
+
+```
+
+## Embedded Application
+
+It's also possible to embed an entire Shiny application within an R Markdown document using the `shinyAppDir` function. This example embeds a Shiny application located in another directory:
+
+```{r tabsets, echo=FALSE}
+shinyAppDir(
+  system.file("examples/06_tabsets", package = "shiny"),
+  options = list(
+    width = "100%", height = 550
+  )
+)
+```
+
+Note the use of the `height` parameter to determine how much vertical space the embedded application should occupy.
+
+You can also use the `shinyApp` function to define an application inline rather then in an external directory.
+
+In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
+
+
+
