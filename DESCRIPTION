@@ -36,6 +36,7 @@ Imports:
     tidyselect,
     magrittr,
     ggplot2,
-    dplyover
+    dplyover,
+    dplyr
 VignetteBuilder: knitr
 URL: https://fim.org, https://github.com/malcalakovalski/fim

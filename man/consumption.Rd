@@ -23,6 +23,11 @@
 \alias{mpc_subsidies_second_draw}
 \alias{mpc_subsidies_rra}
 \alias{mpc_ui}
+\alias{mpc_vulnerable_arp}
+\alias{mpc_direct_aid_arp}
+\alias{mpc_small_businesses_arp}
+\alias{mpc_ui_arp}
+\alias{mpc_non_health_grants_arp}
 \title{Get dollars of consumptions}
 \usage{
 mpc(mpc = 1, timing)
@@ -70,6 +75,16 @@ mpc_subsidies_second_draw(x)
 mpc_subsidies_rra(x)
 
 mpc_ui(x)
+
+mpc_vulnerable_arp(x)
+
+mpc_direct_aid_arp(x)
+
+mpc_small_businesses_arp(x)
+
+mpc_ui_arp(x)
+
+mpc_non_health_grants_arp(x)
 }
 \arguments{
 \item{mpc}{numeric}
