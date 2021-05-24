@@ -1,13 +1,21 @@
 
+#' Title
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 cola_adjustment <- function(df){
-  
+
   get_cola_rate <- function(df){
     df %>%
-      mutate(cpiu_g = q_a(cpiu) / 100,
+      mutate(cpiu_g = fim::q_a(cpiu) / 100,
              cola_rate = if_else(quarter(date) == 1,
-                                 lag(cpiu_g, 2), 
+                                 lag(cpiu_g, 2),
                                  NULL)) %>%
-      fill(cola_rate)
+      tidyr::fill(cola_rate)
   }
   smooth_transfers_net_health_ui <- function(df){
     df %>%
@@ -21,6 +29,7 @@ cola_adjustment <- function(df){
     smooth_transfers_net_health_ui()
   
 }
+
 
 #' Alternative tax scenario
 #'

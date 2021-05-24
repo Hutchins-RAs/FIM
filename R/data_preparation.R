@@ -15,7 +15,7 @@ define_variables <- function(df){
               consumption = c,
               real_consumption = ch,
               consumption_deflator = jc,
-              consumption_deflator_growth  = q_g(jc),
+              consumption_deflator_growth  = jc_growth,
               cpiu,
               recession = recessq,
               
@@ -30,6 +30,7 @@ define_variables <- function(df){
               consumption_grants_deflator = jgse,
               consumption_grants_deflator_growth = q_g(consumption_grants_deflator),
               investment_grants_deflator = jgsi,
+              investment_grants_deflator_growth = q_g(jgsi),
               real_state_purchases = gsh,
               state_purchases_deflator = jgs,
               state_purchases_deflator_growth = jgs_growth,
@@ -49,7 +50,7 @@ define_variables <- function(df){
               subsidies = gsub,
               federal_subsidies = gfsub,
               state_subsidies = gssub,
-              ppp =gfsubp, ppp,
+              ppp =gfsubp, 
               coronavirus_food_assistance = gfsubf,
               employee_retention = gfsube,
               paid_sick_leave = gfsubk,
@@ -59,8 +60,7 @@ define_variables <- function(df){
               
               # Transfers
               social_benefits = gtfp,
-              federal_social_benefits_gross = gftfp,
-              federal_social_benefits = gftfp - yptu,
+              federal_social_benefits = gftfp,
               state_social_benefits = gstfp,
               medicare = yptmr,
               medicaid = yptmd,
@@ -69,8 +69,8 @@ define_variables <- function(df){
               peuc = yptue,
               pua = yptup,
               puc = yptuc, 
-              wages_lost_assistance = yptolm,
-              federal_ui = coalesce(ui_expansion, 0),
+              wages_lost_assistance = coalesce(yptolm, 0),
+              federal_ui = coalesce(ui_expansion, 0) +  wages_lost_assistance,
               state_ui = ui - federal_ui,
               rebate_checks = gftfpe,
               nonprofit_ppp = gftfpp,
@@ -105,7 +105,7 @@ define_variables <- function(df){
               # GROWTH
               consumption_growth = c_growth,
               real_consumption_growth = ch_growth,
-              consumption_deflator_growth =  dc_growth,
+              #consumption_deflator_growth =  dc_growth,
               
               federal_social_benefits_growth = gftfp_growth,
               federal_personal_taxes_growth = gfrpt_growth,

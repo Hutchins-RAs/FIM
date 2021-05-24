@@ -1,13 +1,13 @@
 
 get_cbo_projections <- function(){
   fim::projections %>% 
-    smooth_budget_series() %>%
     cola_adjustment() %>%
+    smooth_budget_series() %>%
     implicit_price_deflators() %>%
     growth_rates() %>%
     alternative_tax_scenario() %>%
     format_tsibble() %>% 
-    select(id, date, gdp, gdppothq, gdppotq, starts_with('j'), dc, ends_with('growth'), cpiu, federal_ui, state_ui)
+    select(id, date, gdp, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui)
 }
 
 safe_quarter  <- function(df){

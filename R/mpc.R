@@ -19,78 +19,6 @@ mpc  <- function(mpc =  1, timing){
   )
 }
 
-#' Marginal Propensity to Consume Benefits in American Rescue Plan for Vulnerable Households
-#' Includes UI, Snap, Housing assistance, TANIF, WIC, Cobra Subsidies, etc
-#' We assume a cumulative MPC of 0.9. Our timing assumption is that 14% goes out in Q1 and Q2 respectively, 20% in Q3 and Q4 respectively, 9% in Q5, 5% in Q6 and Q7, and 4% in Q8
-#' @param x 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-
-mpc_vulnerable_arp <- mpc(0.45, timing = c(rep(0.14, 2), rep(0.2, 2), 0.09, rep(0.05, 2), 0.04)) 
-
-
-mpc_direct_aid_arp <- mpc(timing = c(0.18, rep(0.09, 2), rep(0.05, 7), 0.03))
-# 
-# mpc_direct_aid_arp <- function(x){
-#   
-#   mpc <- 1
-#   weights <- c(rep(1/8, 8)) 
-#   mpc * roll::roll_sum(x, width = length(weights), weights = rev(weights), 
-#                        online = FALSE, min_obs = 1)
-#   
-# }
-mpc_small_businesses_arp<- function(x){
-  
-  mpc <- 1
-  weights <- c(rep(0.04, 2), rep(0.017, 10))
-  mpc * roll::roll_sum(x, width = length(weights), weights = rev(weights), 
-                       online = FALSE, min_obs = 1)
-  
-}
-
-# mpc_small_businesses_arp <- function(x){
-#   
-#   mpc <- 1
-#   weights <- c(rep(1/8, 8))
-#   mpc * roll::roll_sum(x, width = length(weights), weights = rev(weights), 
-#                        online = FALSE, min_obs = 1)
-#   
-# }
-
-
-
-
-mpc_ui_arp <- function(x){
-  
-  mpc <- 1 
-  weights <- c(rep(0.253, 2), rep(0.161, 2), 0.075, 0.05, 0.025, 0.022)
-  mpc * roll::roll_sum(x, width = length(weights), weights = rev(weights), 
-                       online = FALSE)
-  
-}
-
-#' Non-health grants to S&L governments in the American Rescue Plan 
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-mpc_arp_non_health_grants<- function(df){
-  mpc <- 1
-  weights <- c(rep(0.07, 2),
-               rep(0.049, 10),
-               rep(0.0475, 7),
-               0.0375)
-  
-  df %>% 
-    mutate(non_health_grants_post_mpc = mpc * roll::roll_sum(non_health_grants, width = length(weights), weights = rev(weights), online = FALSE, min_obs = 1))
-  
-}
 #' @rdname consumption
 mpc_social_benefits <- mpc(0.9, timing = rep(1/4, 4))
 
@@ -123,8 +51,10 @@ mpc_subsidies_second_draw <- function(x){
 #' @rdname consumption 
 mpc_subsidies_rra <- mpc(0.525, timing = c(0.1125, 0.1, 0.0875, rep(0.075, 4), rep(0.0625, 4)))
 
+#During laast updatee (APRIL  2021) ui mpc was 0.35 for two quarters
+# Previously it was 0.35 then 0.3
 #' @rdname consumption 
-mpc_ui <- mpc(0.9, timing = c(rep(0.35, 1), 0.3, rep(0.1, 2), rep(0.05, 2)))
+mpc_ui <- mpc(0.9, timing = c(rep(0.35, 1), 0.35, rep(0.1, 2), rep(0.05, 2)))
 
 #' Rename mpc 
 #' Ad hoc function to rename column from 'minus_neutral' to 'post_mpc'
@@ -215,3 +145,31 @@ calculate_mpc <- function(df, taxes_transfers){
 }
 
 
+#' @rdname consumption
+mpc_vulnerable_arp <- mpc(timing =  c(rep(0.14, 2), rep(0.2, 2), 0.09, rep(0.05, 2), 0.04))
+#' @rdname consumption
+mpc_direct_aid_arp <- mpc(timing = c(0.18, rep(0.09, 2), rep(0.05, 7), 0.03))
+#' @rdname consumption
+mpc_small_businesses_arp <- mpc(timing =  c(rep(0.04, 2), rep(0.017, 10)))
+#' @rdname consumption
+mpc_ui_arp <- mpc(timing = c(rep(0.253, 2), rep(0.161, 2), 0.075, 0.05, 0.025, 0.022))
+#' @rdname consumption
+mpc_non_health_grants_arp <- mpc(timing = c(rep(0.07, 2),
+                                   rep(0.049, 10),
+                                   rep(0.0475, 7),
+                                   0.0375))
+
+
+
+  mpc_arp_non_health_grants_dos<- function(x){
+    mpc <- 1
+    weights <- c(rep(0.07, 2),
+                 rep(0.049, 10),
+                 rep(0.0475, 7),
+                 0.0375)
+    
+    mpc * roll::roll_sum(x, width = length(weights),
+                         weights = rev(weights), online = FALSE,  min_obs = 1)
+  }
+ 
+ 

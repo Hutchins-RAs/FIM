@@ -1,22 +1,22 @@
 # Setup -------------------------------------------------------------------
-  librarian::shelf(
-    "tidyverse",
-    "zoo",
-    "TTR",
-    "tsibble",
-    "targets",
-    "tarchetypes",
-    "lubridate",
-    "alistaire47/pipecleaner",
-    "glue",
-    "validate",
-    "fim",
-    "dplyover",
-    "tsibble",
-    "magrittr",
-    "feasts",
-    "fable"
-  )
+librarian::shelf(
+  "tidyverse",
+  "zoo",
+  "TTR",
+  "tsibble",
+  "targets",
+  "tarchetypes",
+  "lubridate",
+  "alistaire47/pipecleaner",
+  "glue",
+  "validate",
+  "fim",
+  "dplyover",
+  "tsibble",
+  "magrittr",
+  "feasts",
+  "fable"
+)
 
 
 
@@ -46,12 +46,12 @@ usna <-
       0.013475174,
       0.012272234,
       0.012272234
-
+      
     )
   ) %>% 
   growth_assumptions() %>%
   ungroup() %>% 
- 
+  
   mutate(real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
   mutate(federal_social_benefits = federal_social_benefits - ui - rebate_checks,
          # state_social_benefits = state_social_benefits + state_ui,
@@ -69,7 +69,7 @@ usna_processed <-
   mutate(across(.cols = contains('arp'),
                 .fns = ~ coalesce(.x, 0))) %>% 
   rename(rebate_checks_arp = federal_rebate_checks_arp) %>% 
-
+  
   mutate_where(
     id == "historical",
     # federal_social_benefits = federal_social_benefits -  state_ui_arp -  federal_other_direct_aid_arp - federal_other_vulnerable_arp - federal_health_grants_arp,
@@ -95,34 +95,34 @@ baseline_projections <-
   usna_processed %>% 
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants) %>% 
   forecast() %>% 
-
-ungroup() %>% 
+  
+  ungroup() %>% 
   mutate(
-         grants = consumption_grants + investment_grants,
+    grants = consumption_grants + investment_grants,
     
-         state_social_benefits =  state_social_benefits - medicaid,
-         federal_social_benefits = federal_social_benefits - medicare,
-         social_benefits = federal_social_benefits +  state_social_benefits
+    state_social_benefits =  state_social_benefits - medicaid,
+    federal_social_benefits = federal_social_benefits - medicare,
+    social_benefits = federal_social_benefits +  state_social_benefits
   ) %>%
-mutate(# Health outlays reattribution
-  health_outlays = medicare + medicaid,
-  federal_health_outlays = medicare + medicaid_grants,
-  state_health_outlays = medicaid - medicaid_grants,
-  
+  mutate(# Health outlays reattribution
+    health_outlays = medicare + medicaid,
+    federal_health_outlays = medicare + medicaid_grants,
+    state_health_outlays = medicaid - medicaid_grants,
+    
+    
+    # Aggregate taxes
+    corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
+    payroll_taxes = federal_payroll_taxes + state_payroll_taxes,
+    production_taxes = federal_production_taxes + state_production_taxes,
+    personal_taxes = federal_personal_taxes + state_personal_taxes,
+    federal_non_corporate_taxes = federal_payroll_taxes + federal_personal_taxes + federal_production_taxes,
+    state_non_corporate_taxes = state_payroll_taxes + state_personal_taxes + state_production_taxes,
+    non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes,
+    
+    # Coalesce NA's to 0
+    across(where(is.numeric),
+           ~ coalesce(.x, 0))) 
 
-  # Aggregate taxes
-  corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
-  payroll_taxes = federal_payroll_taxes + state_payroll_taxes,
-  production_taxes = federal_production_taxes + state_production_taxes,
-  personal_taxes = federal_personal_taxes + state_personal_taxes,
-  federal_non_corporate_taxes = federal_payroll_taxes + federal_personal_taxes + federal_production_taxes,
-  state_non_corporate_taxes = state_payroll_taxes + state_personal_taxes + state_production_taxes,
-  non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes,
-  
-  # Coalesce NA's to 0
-  across(where(is.numeric),
-         ~ coalesce(.x, 0))) 
-  
 
 baseline_projections %>% 
   filter_index("2020 Q1" ~ .) %>% 
@@ -136,7 +136,7 @@ baseline_projections %>%
          federal_social_benefits,
          federal_subsidies,
          consumption_grants) %>% 
- 
+  
   pivot_longer(-date) %>% 
   pivot_wider(names_from = date,
               values_from = value) %>% 
@@ -156,15 +156,15 @@ projections <-
                                  0,
                                  .x)))  %>% 
   mutate(across(c(
-                  federal_purchases,
-                  state_purchases,
-                  federal_social_benefits,
-                  state_social_benefits,
-                  
-                  federal_subsidies,
-                  federal_health_outlays,
-                  state_health_outlays),
-                ~ .x + get(paste0('add_', cur_column())))) %>% 
+    federal_purchases,
+    state_purchases,
+    federal_social_benefits,
+    state_social_benefits,
+    
+    federal_subsidies,
+    federal_health_outlays,
+    state_health_outlays),
+    ~ .x + get(paste0('add_', cur_column())))) %>% 
   mutate(consumption_grants = if_else(date >= yearquarter('2020 Q2'),
                                       consumption_grants_override,
                                       consumption_grants)) %>% 
@@ -383,12 +383,12 @@ contribution %>%
   select(
     state_social_benefits,
     state_social_benefits_contribution,
-state_ui,
+    state_ui,
     state_ui_contribution) %>% 
   filter_index("2020 Q1" ~ "2021 Q1") %>% 
   pivot_longer(-c(date, id)) %>% 
   left_join(march_transfers, by = c("date", "name")) 
-  
+
 april <- readxl::read_xlsx("results/4-2021/fim-4-2021.xlsx") %>% 
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>% 
@@ -405,16 +405,16 @@ april <- readxl::read_xlsx("results/4-2021/fim-4-2021.xlsx") %>%
          ui = unemployment_insurance,
          ui_minus_neutral = unemployment_insurance_minus_neutral,
          ui_post_mpc = unemployment_insurance_post_mpc) 
-  
+
 april_transfers <-
   april %>% 
-
+  
   select(date,
-        
-        
-        federal_contribution,
-        state_contribution =  state_local_contribution
-          ) %>% 
+         
+         
+         federal_contribution,
+         state_contribution =  state_local_contribution
+  ) %>% 
   
   filter_index("2021 Q1" ~ "2022 Q1") %>% 
   pivot_longer(-date,
@@ -465,8 +465,8 @@ previous_long <-
                            `noncorp_taxes` = "non_corporate_taxes",
                            `local_nom` = "purchases",
                            
-                           ))
- 
+  ))
+
 usna_processed %>% 
   filter_index("2018 Q4" ~ "2019 Q4") %>% 
   select(date, gdp, real_potential_gdp_growth, 
@@ -475,14 +475,14 @@ usna_processed %>%
          
          consumption_grants_counterfactual = lag(consumption_grants) * (1 + consumption_grants_deflator_growth + real_potential_gdp_growth),
          investment_grants_counterfactual = lag(investment_grants) * (1 + investment_grants_deflator_growth + real_potential_gdp_growth),
-         ) %>% 
+  ) %>% 
   mutate(federal_nipa_contribution = 400 * (federal_purchases - federal_purchases_counterfactual) / lag(gdp),
          consumption_grants_contribution =
            400 * (consumption_grants - consumption_grants_counterfactual) / lag(gdp),
          investment_grants_contribution = 
            400 * (investment_grants - investment_grants_counterfactual) / lag(gdp),
          
-         ) %>% 
+  ) %>% 
   select(date, ends_with("contribution")) %>% 
   drop_na() %>% 
   mutate(federal = federal_nipa_contribution + consumption_grants_contribution + investment_grants_contribution)
@@ -493,7 +493,7 @@ usna_processed %>%
 
 `%notin%` <- Negate(`%in%`)
 contribution_long<-
-usna_processed %>% 
+  usna_processed %>% 
   filter_index("2019 Q1" ~ "2019 Q4") %>% 
   select(-ends_with(c("post_mpc", "growth", "arp", "cont", "pi", "minus_neutral", "override", "ex_grants", "deflator", "cumulative", "contribution" ))) %>% 
   select(date, starts_with(c("federal" ,"state")),  federal_consumption_grants = consumption_grants, federal_investment_grants = investment_grants, federal_rebate_checks = rebate_checks) %>% 
@@ -514,7 +514,7 @@ usna_processed %>%
 contribution %>% 
   filter_index("2019 Q1" ~ "2019 Q4") %>% 
   prepare_interactive() 
-  
+
 
 previous %>% 
   select(date,
@@ -529,19 +529,19 @@ baseline_projections %>%
   select(date, federal_purchases, state_purchases, consumption_grants, investment_grants, real_potential_gdp_growth,
          federal_purchases_deflator_growth, state_purchases_deflator_growth,
          consumption_deflator_growth, investment_grants_deflator_growth) 
-  pivot_longer(-date,
-               names_to = c(".value", "deflator"),
-               names_pattern = '(.)(.)') 
-  pivot_longer(ends_with(c('purchases', 'grants')),
-               names_to = 'variable') %>% 
+pivot_longer(-date,
+             names_to = c(".value", "deflator"),
+             names_pattern = '(.)(.)') 
+pivot_longer(ends_with(c('purchases', 'grants')),
+             names_to = 'variable') %>% 
   pivot_longer(ends_with('deflator_growth'),
                names_to = 'variable',
                values_to = 'deflator')
-  
-  baseline_projections_long <-
-    baseline_projections %>% 
-    filter_index("2018 Q4" ~ "2019 Q4")%>% 
-    as_tibble() %>% 
+
+baseline_projections_long <-
+  baseline_projections %>% 
+  filter_index("2018 Q4" ~ "2019 Q4")%>% 
+  as_tibble() %>% 
   select(date, gdp,federal_purchases_level = federal_purchases, state_purchases_level = state_purchases, gdp, real_potential_gdp_growth,
          federal_purchases_deflator_growth, state_purchases_deflator_growth,
          federal_consumption_grants_level = consumption_grants, 
@@ -549,22 +549,22 @@ baseline_projections %>%
          federal_consumption_grants_deflator_growth = consumption_grants_deflator_growth, 
          federal_investment_grants_deflator_growth = investment_grants_deflator_growth
          
-         ) %>% 
+  ) %>% 
   pivot_longer(starts_with(c('federal', 'state')),
                names_to = c('government', 'variable', '.value'),
                names_pattern = '(federal|state)_(purchases|consumption_grants|investment_grants)_(.*)',
                values_to = 'current') 
-  
-  baseline_projections_long %>% 
-    group_by(government, variable) %>% 
-    summarise(date, level,
-              counterfactual = lag(level) * (1 + deflator_growth + real_potential_gdp_growth),
-              contribution = 400 * (level - counterfactual) / lag(gdp)) %>% 
-    drop_na()
-  
-  pivot_longer(-c(date, real_potential_gdp_growth), 
-         names_pattern = '(.)(_level|_growth)',
-         names_to = c('variable', '.value'))
-  pivot_longer(ends_with('deflator_growth'),
-               values_to = 'deflator') %>% 
+
+baseline_projections_long %>% 
+  group_by(government, variable) %>% 
+  summarise(date, level,
+            counterfactual = lag(level) * (1 + deflator_growth + real_potential_gdp_growth),
+            contribution = 400 * (level - counterfactual) / lag(gdp)) %>% 
+  drop_na()
+
+pivot_longer(-c(date, real_potential_gdp_growth), 
+             names_pattern = '(.)(_level|_growth)',
+             names_to = c('variable', '.value'))
+pivot_longer(ends_with('deflator_growth'),
+             values_to = 'deflator') %>% 
   select(-name)

@@ -147,9 +147,9 @@ growth_assumptions <- function(df){
            grants_growth = federal_purchases_growth,
            investment_grants_growth = federal_purchases_growth,
            consumption_grants_growth  =  federal_purchases_growth,
-           consumption_deflator_growth = q_g(consumption_deflator),
-           consumption_grants_deflator_growth = q_g(consumption_grants_deflator),
-           investment_grants_deflator_growth = q_g(investment_grants_deflator))
+           consumption_deflator_growth = consumption_deflator_growth,
+           consumption_grants_deflator_growth = coalesce(consumption_grants_deflator_growth, state_purchases_deflator_growth), 
+           investment_grants_deflator_growth = coalesce(investment_grants_deflator_growth, state_purchases_deflator_growth))
 }
 #' Override state purchases
 #'

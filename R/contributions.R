@@ -144,6 +144,17 @@ contribution <- function(.data, ...){
            .names = "{.col}_contribution")
 }
 
+
+scale_by_gdp <- function(.data, ...){
+  
+  vars <- enquos(...)
+  
+  .data %>% 
+    mutate(across(.cols = c(!!!vars),
+                  .fns = ~ 400 * .x / lag(gdp)),
+           .names = "{.col}_contribution")
+}
+
 #' Apply mpcs to taxes and transfers 
 #'
 #' @param df 
