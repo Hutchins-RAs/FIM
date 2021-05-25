@@ -324,3 +324,6 @@ contribution <-
 
 contribution %>% 
   prepare_interactive() %>% View()
+
+
+  openxlsx::write.xlsx(contribution, 'results/5-2021/fim-5-2021.xlsx')
