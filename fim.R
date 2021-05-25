@@ -15,6 +15,8 @@ librarian::shelf(
   "tsibble",
   "magrittr"
 )
+options(digits = 4)
+options(scipen = 20)
 
 # Wrangle data ------------------------------------------------------------
 usna <-
@@ -40,12 +42,13 @@ usna <-
   ) %>%
   growth_assumptions() %>%
   ungroup() %>%
-  mutate(real_potential_gdp_growth = q_g(real_potential_gdp)) %>%
+  mutate_where(id == 'historical',
+               real_potential_gdp_growth = q_g(real_potential_gdp))
+  
   mutate(
     federal_social_benefits = federal_social_benefits - ui - rebate_checks,
     social_benefits = federal_social_benefits + state_social_benefits
   )
-
 
 ## Remove ARP from USNA
 arp <- readxl::read_xlsx("data/arp_summary.xlsx") %>%
@@ -320,10 +323,57 @@ contribution <-
   get_fiscal_impact()
 
 
-
+saveRDS(contribution, file = 'data/contribution.RDS')
 
 contribution %>% 
   prepare_interactive() %>% View()
 
 
   openxlsx::write.xlsx(contribution, 'results/5-2021/fim-5-2021.xlsx')
+
+  fim_long <-
+    contribution %>% 
+    select(
+      date,
+      federal_social_benefits,
+      state_social_benefits,
+      federal_health_outlays,
+      state_health_outlays,
+      federal_subsidies,
+      state_subsidies,
+      federal_ui,
+      state_ui,
+      federal_corporate_taxes,
+      state_corporate_taxes,
+      gdp,
+      real_potential_gdp_growth,
+      
+      federal_purchases,
+      state_purchases,
+      federal_consumption_grants = consumption_grants,
+      federal_investment_grants = investment_grants
+    ) %>% 
+    pivot_longer(
+      starts_with(c('federal', 'state')),
+      names_to = c('government', 'variable'),
+      names_pattern = '(federal|state)_(.*)',
+      values_to = 'values'
+    ) %>%
+    mutate(
+      component = case_when(
+        variable %in% c('social_benefits', 'subsidies', 'health_outlays', 'ui') ~ 'transfers',
+        variable %in% c('corporate_taxes') ~ 'taxes',
+        variable %in% c('purchases', 'consumption_grants', 'investment_grants') ~ 'government'
+      )
+    ) %>% 
+    relocate(government, component, .after = date) %>% 
+    arrange(government, component, variable, date)
+    
+  
+  
+  
+  fim_long %>% 
+    rename_with(.fn = ~snakecase::to_title_case(.),
+                .cols = everything()) %>% 
+    openxlsx::write.xlsx("results/5-2021/fim_long.xlsx")
+  

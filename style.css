@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,300i,400,400i,600,600i,700,700i');
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,600,600i,700,700i');
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro:400,500,600');
+
+h1, h2, h3 {
+  font-family: 'Josefin Sans', serif;
+  font-weight: normal;
+}
+
+body {
+  font-family: 'Fira Sans', serif;
+}
+
+.remark-code, .remark-inline-code { 
+  font-family: 'Source Code Pro', monospace;
+}
