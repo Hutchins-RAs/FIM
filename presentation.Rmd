@@ -1,0 +1,72 @@
+---
+title: "Fiscal Impact Comparison"
+
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/be/Sharingan_triple.svg)
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+source('errors_and_comparison.R')
+```
+
+???
+
+Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sharingan_triple.svg)
+
+---
+class: center, middle
+
+# xaringan
+
+### /ʃaː.'riŋ.ɡan/
+
+ld not be spaces after the opening `$` or before the closing `$`.
+
+1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
+
+
+---
+
+# Headline FIM errors
+
+Last time, we had that fiscal impact in Q1 2021 was `r errors$fiscal_impact[202]`
+```{r cars, fig.height=4, dev='svg'}
+error_plots$fiscal_impact
+```
+
+---
+
+# Tables
+
+If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
+
+```{r}
+knitr::kable(head(iris), format = 'html')
+```
+
+---
+
+# HTML Widgets
+
+I have not thoroughly tested HTML widgets against **xaringan**. Some may work well, and some may not. It is a little tricky.
+
+Similarly, the Shiny mode (`runtime: shiny`) does not work. I might get these issues fixed in the future, but these are not of high priority to me. I never turn my presentation into a Shiny app. When I need to demonstrate more complicated examples, I just launch them separately. It is convenient to share slides with other people when they are plain HTML/JS applications.
+
+See the next page for two HTML widgets.
+
+---
+
+```{r out.width='100%', fig.height=6, eval=require('leaflet')}
+library(leaflet)
+leaflet() %>% addTiles() %>% setView(-93.65, 42.0285, zoom = 17)
+```
+
+---

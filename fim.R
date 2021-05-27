@@ -43,7 +43,7 @@ usna <-
   growth_assumptions() %>%
   ungroup() %>%
   mutate_where(id == 'historical',
-               real_potential_gdp_growth = q_g(real_potential_gdp))
+               real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
   
   mutate(
     federal_social_benefits = federal_social_benefits - ui - rebate_checks,

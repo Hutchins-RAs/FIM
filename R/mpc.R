@@ -41,12 +41,13 @@ mpc_non_corporate_taxes <- mpc(-0.6, c(rep(0.2, 2), rep(0.1, 6)))
 mpc_subsidies <- mpc(0.45, timing = c(0.11, 0.095, 0.09, 0.085, rep(0.08, 4), rep(0.075, 4)))
 
 #' @rdname consumption 
-mpc_subsidies_second_draw <- function(x){
-  mpc <- 0.525
-  weights <- c(rep(0.0625, 4), rep(0.0750, 4), 0.0875, 0.1, 0.1125, 0.15)
-  mpc * roll::roll_sum(x, width = length(weights),
-                       weights = weights, online = FALSE)
-}
+mpc_subsidies_second_draw <- mpc_subsidies
+# mpc_subsidies_second_draw <- function(x){
+#   mpc <- 0.525
+#   weights <- c(rep(0.0625, 4), rep(0.0750, 4), 0.0875, 0.1, 0.1125, 0.15)
+#   mpc * roll::roll_sum(x, width = length(weights),
+#                        weights = weights, online = FALSE)
+# }
 
 #' @rdname consumption 
 mpc_subsidies_rra <- mpc(0.525, timing = c(0.1125, 0.1, 0.0875, rep(0.075, 4), rep(0.0625, 4)))
@@ -147,8 +148,11 @@ calculate_mpc <- function(df, taxes_transfers){
 
 #' @rdname consumption
 mpc_vulnerable_arp <- mpc(timing =  c(rep(0.14, 2), rep(0.2, 2), 0.09, rep(0.05, 2), 0.04))
+
+# In april we had this mpc for rebate checks
+# mpc_direct_aid_arp <- mpc(timing = c(0.18, rep(0.09, 2), rep(0.05, 7), 0.03))
 #' @rdname consumption
-mpc_direct_aid_arp <- mpc(timing = c(0.18, rep(0.09, 2), rep(0.05, 7), 0.03))
+mpc_direct_aid_arp <- mpc(timing = c(rep(0.12, 2), rep(0.1, 1), rep(0.05, 7), 0.05))
 #' @rdname consumption
 mpc_small_businesses_arp <- mpc(timing =  c(rep(0.04, 2), rep(0.017, 10)))
 #' @rdname consumption

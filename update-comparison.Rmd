@@ -36,13 +36,15 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
-```{r source, cache= TRUE}
+```{r source}
 librarian::shelf(
   'tidyverse',
   'purrr',
   'tsibble',
   'lubridate',
   'glue',
+  'ggiraph',
+  'plotly'
 )
 comparison_plot <- function(.data, variable){
   
@@ -50,8 +52,9 @@ comparison_plot <- function(.data, variable){
   plot <- .data %>% 
     filter(variable == {{ variable }}) %>% 
     ggplot(aes(x = date,  y =  value, fill = source)) +
+    #geom_col(position=position_dodge2(reverse = TRUE)) +
     geom_col(position=position_dodge2(reverse = TRUE)) +
-    labs(title = paste0("Variable: ", variable),
+    labs(title = glue::glue("{snakecase::to_title_case(variable)}"),
          x = NULL,
          y = NULL) +
     ggthemes::theme_hc() +
@@ -86,41 +89,19 @@ comparison_plot <- function(.data, variable){
   
 }
 
+```
 
-previous <- readxl::read_xlsx('results/4-2021/fim-4-2021.xlsx') %>% 
+```{r}
+
+# Load previous months results
+previous <- 
+  readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>% 
   mutate(date = yearquarter(date)) %>% 
   drop_na(date) %>% 
   as_tsibble(index = date) %>% 
-  filter_index("2020 Q2" ~ "2023 Q1") %>% 
-  rename_with(~paste0(.x, 'ribution'), ends_with("cont")) %>% 
-  rename_with(~stringr::str_replace(.x, pattern = 'unemployment_insurance',
-                                    replacement = 'ui'), 
-              contains('unemployment_insurance')) %>% 
-  rename_with(~stringr::str_replace(.x, pattern = 'nom',
-                                    replacement = 'purchases'), 
-              contains('nom')) %>% 
-  rename_with(~stringr::str_replace(.x, pattern = 'pi',
-                                    replacement = 'deflator_growth'), 
-              contains('pi')) %>% 
-  rename_with(~stringr::str_replace(.x, pattern = 'noncorp',
-                                    replacement = 'non_corporate'), 
-              contains('noncorp')) %>% 
-  rename_with(~stringr::str_replace(.x, pattern = 'federal_cgrants',
-                                    replacement = 'consumption_grants'), 
-              contains('cgrants')) %>% 
-  rename_with(~stringr::str_replace(.x, pattern = 'federal_igrants',
-                                    replacement = 'investment_grants'), 
-              contains('igrants')) %>% 
-  rename_with(~stringr::str_replace(.x, pattern = 'state_local',
-                                    replacement = 'state'), 
-              contains('state_local')) %>% 
-  
-  rename(
-    federal_aid_to_small_businesses_arp = aid_to_small_businesses,
-    federal_non_health_grants_arp_contribution = non_health_grants_contribution
-  ) %>% 
-  select(-date.y)
-
+  filter_index("2020 Q2" ~ "2023 Q1") 
+ 
+# 
 current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
   mutate(date = yearquarter(date)) %>% 
   drop_na(date) %>% 
@@ -150,17 +131,24 @@ comparison_nested <-
 plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
 ```
 
+
 ```{r fiscal_impact}
 plots$fiscal_impact
 ```
 
+
 # Purchases {.tabset .tabset-pills}
 ## Contributions
 
+"Within state and local government spending, the revision reflected a downward revision to structures investment, based on new March and revised January and February VPIP data. Compensation was also revised down, based on revised Bureau of Labor Statistics (BLS) Current Employment Statistics data on employment."
+
+Therefore, our contribution for State purchases in Q1 2021 is lower.
 ```{r}
 plots$federal_purchases_contribution
 plots$state_purchases_contribution
 ```
+
+
 
 ## Levels 
 
@@ -172,6 +160,8 @@ plots$state_purchases
 
 
 # Grants {.tabset .tabset-pills}
+
+We couldn't find documentation in the BEA on why investment grants were revised downwards. We assume it's because they're small anwyay.
 ## Contributions
 
 ```{r grants}
@@ -199,11 +189,6 @@ plots$federal_taxes_contribution
 plots$state_taxes_contribution
 ```
 
-### Levels
-
-```{r tts}
-
-```
 
 ## Corporate taxes {.tabset .tabset-pills}
 
@@ -223,6 +208,10 @@ plots$state_corporate_taxes
 
 ## Non-corporate taxes {.tabset .tabset-pills}
 
+"Updates to Fourth-Quarter Wages and Salaries
+In addition to presenting updated estimates for the first quarter, today's release presents revised estimates of fourth-quarter wages and salaries, personal taxes, and contributions for government social insurance based on updated data from the BLS Quarterly Census of Employment and Wages program. Wages and salaries are now estimated to have increased $360.5 billion in the fourth quarter of 2020, an upward revision of $157.8 billion. The revision to fourth-quarter wages and salaries resulted in a revision to GDI; real GDI increased 19.4 percent (annual rate) in the fourth quarter, an upward revision of 3.7 percentage points from the previously published estimate."
+
+Our forecast is taking these revisions until the end of the forecast period. So these revisions lead to lower contributions than last time in the forecast period.
 ### Contributions
 
 ```{r}
@@ -259,6 +248,9 @@ plots$state_transfers_contribution
 ```
 
 ## Health Outlays {.tabset .tabset-pills}
+State health outlays was revised up 7.1 billion from 164.14 to 171.21 billion
+
+Federal health outlways was revised downward by 0.0
 
 ### Contributions
 
@@ -293,7 +285,11 @@ plots$subsidies
 ```
 
 ## Unemployment Insurance {.tabset .tabset-pills}
+As of today, 24 states have decided to pull out of the federal unemployment insurance expansion. Therefore, we should revise our forecast for federal ui downwards. 
 
+Also, the federal ui program ends on September 6th, 2021 but we have it ending in Q2 2021. 
+
+Revise Q3 2021 to be 350 instead of 425
 ### Contributions
 
 ```{r unemployment insurance}
@@ -326,3 +322,31 @@ plots$rebate_checks_arp_contribution
 plots$rebate_checks
 plots$rebate_checks_arp
 ```
+
+## Social Benefits Remainder {.tabset .tabset-pills}
+
+Level and impact of social benefits net of health outlays, rebate checks, and unemployment insurance.
+
+The social benefits remainder came in 3.6 billion lower than we had last time. Almost half of this is due to Federal UI which came in 1.63 billion lower.
+
+### Contribution
+```{r}
+plots$federal_social_benefits_contribution
+plots$state_social_benefits_contribution
+```
+
+### Level
+```{r}
+
+plots$federal_social_benefits
+plots$state_social_benefits
+```
+
+```{r}
+plots$federal_non_corporate_taxes_contribution
+```
+
+Look at PPP with subsidies mpc
+
+Shave down arp mpc for rebate checks. Put money from first quartre into second  (0.12, .12 and difference at the end)
+

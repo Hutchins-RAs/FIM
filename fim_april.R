@@ -56,6 +56,7 @@ usna <-
   mutate(federal_social_benefits = federal_social_benefits - ui - rebate_checks,
          # state_social_benefits = state_social_benefits + state_ui,
          social_benefits = federal_social_benefits + state_social_benefits) %>% 
+  
   mutate(federal_ui = federal_ui - wages_lost_assistance)
 
 
