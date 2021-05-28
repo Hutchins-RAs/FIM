@@ -19,6 +19,8 @@ options(digits = 4)
 options(scipen = 20)
 
 # Wrangle data ------------------------------------------------------------
+
+# Check whether growth rates are quarterly or not.
 usna <-
   read_data() %>%
   # Don't sneak in ui reallocation here.
@@ -128,6 +130,28 @@ baseline_projections %>%
     values_from = value
   ) %>%
   openxlsx::write.xlsx("data/baseline_projections.xlsx")
+
+
+projections %>%
+  filter_index("2020 Q1" ~ .) %>%
+  as_tibble() %>%
+  select(
+    date,
+    state_health_outlays,
+    state_social_benefits,
+    state_non_corporate_taxes,
+    state_corporate_taxes,
+    federal_health_outlays,
+    federal_social_benefits,
+    federal_subsidies,
+    consumption_grants
+  ) %>%
+  pivot_longer(-date) %>%
+  pivot_wider(
+    names_from = date,
+    values_from = value
+  ) %>%
+  openxlsx::write.xlsx("data/projections_output.xlsx")
 
 # Add factors -------------------------------------------------------------
 add_factors <-
@@ -376,4 +400,47 @@ contribution %>%
     rename_with(.fn = ~snakecase::to_title_case(.),
                 .cols = everything()) %>% 
     openxlsx::write.xlsx("results/5-2021/fim_long.xlsx")
+  
+  
+
+# Comparison --------------------------------------------------------------
+
+  
+  # Load previous months results
+  previous <- 
+    readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>% 
+    mutate(date = yearquarter(date)) %>% 
+    drop_na(date) %>% 
+    as_tsibble(index = date) %>% 
+    filter_index("2020 Q2" ~ "2023 Q1") 
+  
+  # 
+  current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
+    mutate(date = yearquarter(date)) %>% 
+    drop_na(date) %>% 
+    as_tsibble(index = date) %>% 
+    filter_index("2020 Q2" ~ "2023 Q1")
+  
+  previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+  current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+  
+  comparison <- inner_join(previous_long, 
+                           current_long,
+                           by = c('date', 'name', 'id')) %>% 
+    pivot_longer(c(previous, current),
+                 names_to = 'source') %>% 
+    rename(variable = name)
+  
+  comparison_nested <-
+    comparison %>% 
+    group_by(variable) %>% 
+    nest() %>% 
+    mutate(plot = map2(.x = variable,
+                       .y = data,
+                       .f = ~comparison_plot(.data = .y, 
+                                             variable = .x)))
+  
+  
+  plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)  
+  rmarkdown::render('update-comparison.Rmd')
   

@@ -92,43 +92,43 @@ comparison_plot <- function(.data, variable){
 ```
 
 ```{r}
-
-# Load previous months results
-previous <- 
-  readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>% 
-  mutate(date = yearquarter(date)) %>% 
-  drop_na(date) %>% 
-  as_tsibble(index = date) %>% 
-  filter_index("2020 Q2" ~ "2023 Q1") 
- 
 # 
-current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
-  mutate(date = yearquarter(date)) %>% 
-  drop_na(date) %>% 
-  as_tsibble(index = date) %>% 
-  filter_index("2020 Q2" ~ "2023 Q1")
-
-previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
-current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
-
-comparison <- inner_join(previous_long, 
-                         current_long,
-                         by = c('date', 'name', 'id')) %>% 
-  pivot_longer(c(previous, current),
-               names_to = 'source') %>% 
-  rename(variable = name)
-
-comparison_nested <-
-  comparison %>% 
-  group_by(variable) %>% 
-  nest() %>% 
-  mutate(plot = map2(.x = variable,
-                     .y = data,
-                     .f = ~comparison_plot(.data = .y, 
-                                  variable = .x)))
-
-
-plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
+# # Load previous months results
+# previous <- 
+#   readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>% 
+#   mutate(date = yearquarter(date)) %>% 
+#   drop_na(date) %>% 
+#   as_tsibble(index = date) %>% 
+#   filter_index("2020 Q2" ~ "2023 Q1") 
+#  
+# # 
+# current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
+#   mutate(date = yearquarter(date)) %>% 
+#   drop_na(date) %>% 
+#   as_tsibble(index = date) %>% 
+#   filter_index("2020 Q2" ~ "2023 Q1")
+# 
+# previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+# current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+# 
+# comparison <- inner_join(previous_long, 
+#                          current_long,
+#                          by = c('date', 'name', 'id')) %>% 
+#   pivot_longer(c(previous, current),
+#                names_to = 'source') %>% 
+#   rename(variable = name)
+# 
+# comparison_nested <-
+#   comparison %>% 
+#   group_by(variable) %>% 
+#   nest() %>% 
+#   mutate(plot = map2(.x = variable,
+#                      .y = data,
+#                      .f = ~comparison_plot(.data = .y, 
+#                                   variable = .x)))
+# 
+# 
+# plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
 ```
 
 
@@ -138,6 +138,7 @@ plots$fiscal_impact
 
 
 # Purchases {.tabset .tabset-pills}
+
 ## Contributions
 
 "Within state and local government spending, the revision reflected a downward revision to structures investment, based on new March and revised January and February VPIP data. Compensation was also revised down, based on revised Bureau of Labor Statistics (BLS) Current Employment Statistics data on employment."
@@ -162,6 +163,7 @@ plots$state_purchases
 # Grants {.tabset .tabset-pills}
 
 We couldn't find documentation in the BEA on why investment grants were revised downwards. We assume it's because they're small anwyay.
+
 ## Contributions
 
 ```{r grants}
@@ -212,6 +214,7 @@ plots$state_corporate_taxes
 In addition to presenting updated estimates for the first quarter, today's release presents revised estimates of fourth-quarter wages and salaries, personal taxes, and contributions for government social insurance based on updated data from the BLS Quarterly Census of Employment and Wages program. Wages and salaries are now estimated to have increased $360.5 billion in the fourth quarter of 2020, an upward revision of $157.8 billion. The revision to fourth-quarter wages and salaries resulted in a revision to GDI; real GDI increased 19.4 percent (annual rate) in the fourth quarter, an upward revision of 3.7 percentage points from the previously published estimate."
 
 Our forecast is taking these revisions until the end of the forecast period. So these revisions lead to lower contributions than last time in the forecast period.
+
 ### Contributions
 
 ```{r}
@@ -230,6 +233,7 @@ plots$state_non_corporate_taxes
 # Transfers
 
 ## Total {.tabset .tabset-pills}
+
 ### Contributions
 
 ```{r transfers}
@@ -290,6 +294,7 @@ As of today, 24 states have decided to pull out of the federal unemployment insu
 Also, the federal ui program ends on September 6th, 2021 but we have it ending in Q2 2021. 
 
 Revise Q3 2021 to be 350 instead of 425
+
 ### Contributions
 
 ```{r unemployment insurance}
