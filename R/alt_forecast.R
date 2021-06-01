@@ -53,5 +53,5 @@ project <- function(.data, ..., with){
     dplyr::mutate(dplyr::across(c(!!!vars),
                                 ~ dplyr::coalesce(.x, 1 + {{ with }}))) %>% 
     dplyr::filter(dplyr::between(dplyr::row_number(), dplyr::last(which(id == 'historical')), n())) %>% 
-    dplyr::mutate(dplyr::across(c(!!!vars),  ~ purrr::accumulate(.x, `*`))) 
+    dplyr::mutate(dplyr::across(c(!!!vars),  ~ purrr::accumulate(.x, `*`)))
 }

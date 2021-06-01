@@ -19,7 +19,21 @@ options(digits = 4)
 options(scipen = 20)
 
 # Wrangle data ------------------------------------------------------------
-
+medicaid_forecast <-
+  readxl::read_xlsx('inst/extdata/projections.xlsx', sheet = 'budget') %>% 
+  as_tsibble(index = fy) %>% 
+  mutate(federal_medicaid = yptmd, .after = 'fy') %>% 
+  left_join(fmap, by = 'fy') %>% 
+  relocate(fmap) %>% 
+  mutate(medicaid = if_else(!is.na(fmap), federal_medicaid / fmap, federal_medicaid), .before = 'federal_medicaid') %>% 
+  mutate(medicaid_growth = (medicaid / lag(medicaid))^0.25 - 1, .after = 'fy') %>% 
+  select(-fmap) %>% 
+  as_tsibble(index = fy) %>% 
+  annual_to_quarter() %>% 
+  fiscal_to_calendar() %>% 
+  left_join(fmap_quarterly, by = 'date') %>% 
+  filter_index("2020 Q4" ~ .) %>% 
+  mutate(state_medicaid = medicaid - federal_medicaid, .after = 'federal_medicaid')
 # Check whether growth rates are quarterly or not.
 usna <-
   read_data() %>%
@@ -52,6 +66,9 @@ usna <-
     social_benefits = federal_social_benefits + state_social_benefits
   )
 
+
+
+
 ## Remove ARP from USNA
 arp <- readxl::read_xlsx("data/arp_summary.xlsx") %>%
   mutate(date = yearquarter(date))
@@ -70,7 +87,12 @@ usna_processed <-
     federal_ui_arp = 0,
     state_ui_arp = 0,
   ) %>%
-  mutate(social_benefits = federal_social_benefits + state_social_benefits)
+  mutate(social_benefits = federal_social_benefits + state_social_benefits) %>% 
+  select(-medicaid_growth) %>% 
+  left_join(medicaid_forecast %>% select(date, medicaid_growth, fmap), by = 'date') 
+
+
+  
 
 
 
@@ -86,7 +108,10 @@ baseline_projections <-
     federal_social_benefits = federal_social_benefits - medicare,
     social_benefits = federal_social_benefits + state_social_benefits
   ) %>%
+  mutate_where(id == 'projection',
+               medicaid_grants = medicaid * fmap) %>% 
   mutate( # Health outlays reattribution
+    
     health_outlays = medicare + medicaid,
     federal_health_outlays = medicare + medicaid_grants,
     state_health_outlays = medicaid - medicaid_grants,
@@ -395,7 +420,6 @@ contribution %>%
                 .cols = everything()) %>% 
     openxlsx::write.xlsx("results/5-2021/fim_long.xlsx")
   
-  contribution2<-contribution %>% filter_index("2020 Q1" ~ "2023 Q4")
   
   contribution2 %>% 
     pivot_longer(where(is.numeric),

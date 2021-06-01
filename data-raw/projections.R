@@ -40,8 +40,12 @@ combined <-
   rename(medicaid = yptmd) %>% 
   select(date, medicaid) %>% 
   left_join(medicaid_forecast %>% select(date, medicaid_growth, fmap), by = 'date') %>% 
-  filter_index("2020 Q4" ~ .)
+  filter_index("2020 Q4" ~ .) %>% 
+  project(medicaid, with = medicaid_growth) %>% 
+  mutate(federal_medicaid = medicaid * fmap,
+         state_medicaid = medicaid - federal_medicaid)
 
+combined
 for(i in 3:nrow(combined)){
   combined[i, 'medicaid'] = combined[i-1, 'medicaid'] * (1 + combined[i, 'medicaid_growth'])
 }
