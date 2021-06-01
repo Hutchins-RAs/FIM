@@ -88,6 +88,14 @@ published <-
   ) %>% 
   select(-date.y)
 
+contribution_long <- contribution %>% pivot_longer(where(is.numeric), values_to = 'may')
+published_long <- pivot_longer(published, cols = where(is.numeric), values_to = 'published')
+
+comparison <- left_join(contribution_long, published_long, 
+                        by = c('date', 'name', 'id')) %>% 
+  filter_index("2020 Q2" ~ "2023 Q1")
+comparison %>% 
+  openxlsx::write.xlsx('update_comparison.xlsx')
 # 
 no_errors <- readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>% 
   mutate(date = yearquarter(date)) %>% 

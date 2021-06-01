@@ -55,7 +55,7 @@ mpc_subsidies_rra <- mpc(0.525, timing = c(0.1125, 0.1, 0.0875, rep(0.075, 4), r
 #During laast updatee (APRIL  2021) ui mpc was 0.35 for two quarters
 # Previously it was 0.35 then 0.3
 #' @rdname consumption 
-mpc_ui <- mpc(0.9, timing = c(rep(0.35, 1), 0.35, rep(0.1, 2), rep(0.05, 2)))
+mpc_ui <- mpc(0.9, timing = c(rep(0.35, 2), rep(0.1, 2), rep(0.05, 2)))
 
 #' Rename mpc 
 #' Ad hoc function to rename column from 'minus_neutral' to 'post_mpc'
@@ -152,7 +152,8 @@ mpc_vulnerable_arp <- mpc(timing =  c(rep(0.14, 2), rep(0.2, 2), 0.09, rep(0.05,
 # In april we had this mpc for rebate checks
 # mpc_direct_aid_arp <- mpc(timing = c(0.18, rep(0.09, 2), rep(0.05, 7), 0.03))
 #' @rdname consumption
-mpc_direct_aid_arp <- mpc(timing = c(rep(0.12, 2), rep(0.1, 1), rep(0.05, 7), 0.05))
+#' 
+mpc_direct_aid_arp <- mpc(timing = c(rep(0.14, 1), rep(0.1, 2), rep(0.05, 7), 0.05))
 #' @rdname consumption
 mpc_small_businesses_arp <- mpc(timing =  c(rep(0.04, 2), rep(0.017, 10)))
 #' @rdname consumption

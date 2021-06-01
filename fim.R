@@ -63,7 +63,6 @@ usna_processed <-
     .cols = contains("arp"),
     .fns = ~ coalesce(.x, 0)
   )) %>%
-  rename(rebate_checks_arp = federal_rebate_checks_arp) %>%
   mutate_where(
     id == "historical",
     federal_subsidies = federal_subsidies - federal_aid_to_small_businesses_arp,
@@ -132,26 +131,7 @@ baseline_projections %>%
   openxlsx::write.xlsx("data/baseline_projections.xlsx")
 
 
-projections %>%
-  filter_index("2020 Q1" ~ .) %>%
-  as_tibble() %>%
-  select(
-    date,
-    state_health_outlays,
-    state_social_benefits,
-    state_non_corporate_taxes,
-    state_corporate_taxes,
-    federal_health_outlays,
-    federal_social_benefits,
-    federal_subsidies,
-    consumption_grants
-  ) %>%
-  pivot_longer(-date) %>%
-  pivot_wider(
-    names_from = date,
-    values_from = value
-  ) %>%
-  openxlsx::write.xlsx("data/projections_output.xlsx")
+
 
 # Add factors -------------------------------------------------------------
 add_factors <-
@@ -191,22 +171,34 @@ projections <-
     ui = ui_override
   ) %>%
   mutate_where(date == yearquarter("2021 Q1"),
-    ppp = 639.2,
-    federal_subsidies = 753,
-    subsidies = federal_subsidies + state_subsidies
-  )
+    # Boosted PPP to account for the fact that BEA
+    # smooths it over six months.
+    # 
+    # For Q1 2021, BEA wrote 184.6 which only included round 1 of PPP
+    # For Q2 and Q3 2021, PPP should be 650. Which is 325*4/2
+    # Just read in BEA numbers for Q1
+   # ppp = 639.2,
+  #  federal_subsidies = 753,
+  #  subsidies = federal_subsidies + state_subsidies,
+    
+    # 203 from emergency rental assistance
+    # Effects of Selected Federal Pandemic Response Programs on Federal Government Receipts, Expenditures, and Saving, 2021Q1 Second
+    # Line 61
+    # https://www.bea.gov/sites/default/files/2021-05/effects-of-selected-federal-pandemic-response-programs-on-federal-government-receipts-expenditures-and-saving-2021q1-2nd.pdf
+    federal_social_benefits = federal_social_benefits + 203
+  ) 
 
 # American Rescue Plan ----------------------------------------------------
 arp_contribution <-
   readxl::read_xlsx("data/arp_summary.xlsx") %>%
   mutate(date = yearquarter(date)) %>%
   as_tsibble(index = date) %>%
+
   append_row(-1) %>%
   mutate(across(where(is.numeric), ~ coalesce(.x, 0))) %>%
   full_join(baseline_projections %>% filter_index("2020 Q4" ~ .) %>% select(date, real_potential_gdp_growth, consumption_deflator_growth, consumption_grants_deflator_growth, gdp),
     by = "date"
   ) %>%
-  rename(rebate_checks_arp = federal_rebate_checks_arp) %>%
   mutate_where(date == yearquarter("2021 Q1"),
     federal_ui_arp = 0,
     state_ui_arp = 0
@@ -304,6 +296,7 @@ consumption <-
   calculate_mpc("corporate_taxes") %>%
   calculate_mpc("non_corporate_taxes")
 
+
 # Contribution ------------------------------------------------------------
 
 # Without add factors or ARP ---------
@@ -350,7 +343,8 @@ contribution <-
 saveRDS(contribution, file = 'data/contribution.RDS')
 
 contribution %>% 
-  prepare_interactive() %>% View()
+  prepare_interactive() %>% 
+  openxlsx::write.xlsx('interactive.xlsx')
 
 
   openxlsx::write.xlsx(contribution, 'results/5-2021/fim-5-2021.xlsx')
@@ -401,7 +395,22 @@ contribution %>%
                 .cols = everything()) %>% 
     openxlsx::write.xlsx("results/5-2021/fim_long.xlsx")
   
+  contribution2<-contribution %>% filter_index("2020 Q1" ~ "2023 Q4")
   
+  contribution2 %>% 
+    pivot_longer(where(is.numeric),
+                 names_to = 'variable') %>% 
+    as_tibble() %>% 
+    select(-id) %>% 
+    pivot_wider(
+      names_from = date,
+      values_from = value
+    ) %>% 
+    mutate(variable = snakecase::to_title_case(variable)) %>% 
+
+    arrange(variable) %>% 
+    openxlsx::write.xlsx('fim_output.xlsx')
+
 
 # Comparison --------------------------------------------------------------
 
@@ -444,3 +453,35 @@ contribution %>%
   plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)  
   rmarkdown::render('update-comparison.Rmd')
   
+  
+contribution %>% 
+  filter_index("2020 Q1" ~ .) %>%
+  pivot_longer(where(is.numeric),
+               names_to = 'variable') %>% 
+  as_tibble() %>% 
+  select(-id) %>% 
+  pivot_wider(
+    names_from = date,
+    values_from = value
+  ) %>% 
+  mutate(variable = snakecase::to_title_case(variable)) %>% 
+  
+  arrange(variable) %>% 
+  openxlsx::write.xlsx('fim_output.xlsx')
+
+arp %>% 
+  
+  pivot_longer(where(is.numeric),
+               names_to = 'variable') %>% 
+  as_tibble() %>% 
+  
+  pivot_wider(
+    names_from = date,
+    values_from = value
+  ) %>% 
+  mutate(variable = snakecase::to_title_case(variable)) %>% 
+  
+  arrange(variable) %>% 
+  openxlsx::write.xlsx('arp_output.xlsx')
+  
+

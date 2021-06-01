@@ -19,6 +19,57 @@ budget_projections <- readxl::read_xlsx('inst/extdata/projections.xlsx', sheet =
                               4 * federal_ui_timing * federal_ui,
                               federal_ui))
 
+medicaid_forecast <-
+  readxl::read_xlsx('inst/extdata/projections.xlsx', sheet = 'budget') %>% 
+  as_tsibble(index = fy) %>% 
+  mutate(federal_medicaid = yptmd, .after = 'fy') %>% 
+  left_join(fmap, by = 'fy') %>% 
+  relocate(fmap) %>% 
+  mutate(medicaid = if_else(!is.na(fmap), federal_medicaid / fmap, federal_medicaid), .before = 'federal_medicaid') %>% 
+  mutate(medicaid_growth = (medicaid / lag(medicaid))^0.25 - 1, .after = 'fy') %>% 
+  select(-fmap) %>% 
+  as_tsibble(index = fy) %>% 
+  annual_to_quarter() %>% 
+  fiscal_to_calendar() %>% 
+  left_join(fmap_quarterly, by = 'date') %>% 
+  filter_index("2020 Q4" ~ .) %>% 
+  mutate(state_medicaid = medicaid - federal_medicaid, .after = 'federal_medicaid')
+
+combined <-
+  read_data() %>% 
+  rename(medicaid = yptmd) %>% 
+  select(date, medicaid) %>% 
+  left_join(medicaid_forecast %>% select(date, medicaid_growth, fmap), by = 'date') %>% 
+  filter_index("2020 Q4" ~ .)
+
+for(i in 3:nrow(combined)){
+  combined[i, 'medicaid'] = combined[i-1, 'medicaid'] * (1 + combined[i, 'medicaid_growth'])
+}
+  
+combined %>% 
+  mutate(federal_medicaid = fmap * medicaid,
+         state_medicaid = medicaid - federal_medicaid)
+fmap <- readxl::read_xlsx('inst/extdata/projections.xlsx', 
+                          sheet = 'annual fmap') 
+
+fmap_quarterly <- readxl::read_xlsx('inst/extdata/projections.xlsx',
+                                    sheet = 'quarterly fmap') %>% 
+  mutate(date = yearquarter(date))
+  # mutate(date = yearquarter(date)) %>% 
+  # separate(date, into = c('year', 'quarter'), sep = ' ') %>% mutate(fy = lead(year))
+budget_projections %>% 
+  mutate(federal_medicaid = yptmd, .after = 'date') %>% 
+  left_join(fmap, by = 'fy') %>% 
+  relocate(fmap) 
+  mutate(medicaid = if_else(!is.na(fmap), federal_medicaid / fmap, federal_medicaid), .before = 'federal_medicaid') %>% 
+  mutate(state_medicaid = medicaid - federal_medicaid, .after = 'federal_medicaid') %>% 
+  mutate(across(all_of(contains('medicaid')),
+                ~ zoo::rollapply(.x, width = 4, mean, fill = NA,min_obs = 1, align = 'right'))) %>% 
+  mutate(across(contains('medicaid'), 
+                ~ q_g(.x),
+                .names = '{.col}_growth'), .after = 'state_medicaid') %>% 
+  openxlsx::write.xlsx('medicaid_projections.xlsx')
+
 cares <- readxl::read_xlsx('inst/extdata/projections.xlsx', sheet = 'CARES') %>% 
   summarize(date, cares_other_federal_social_benefits = nonprofit_ppp + nonprofit_provider_relief_fund,
             cares_other_subsidies = provider_relief_fund)
