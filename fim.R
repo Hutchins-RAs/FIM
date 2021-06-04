@@ -19,12 +19,18 @@ options(digits = 4)
 options(scipen = 20)
 
 # Wrangle data ------------------------------------------------------------
+fmap <- readxl::read_xlsx('inst/extdata/projections.xlsx', 
+                          sheet = 'annual fmap') 
+
+fmap_quarterly <- readxl::read_xlsx('inst/extdata/projections.xlsx',
+                                    sheet = 'quarterly fmap') %>% 
+  mutate(date = yearquarter(date))
 medicaid_forecast <-
   readxl::read_xlsx('inst/extdata/projections.xlsx', sheet = 'budget') %>% 
   as_tsibble(index = fy) %>% 
   mutate(federal_medicaid = yptmd, .after = 'fy') %>% 
   left_join(fmap, by = 'fy') %>% 
-  relocate(fmap) %>% 
+  relocate(fmap, .after = 'fy') %>% 
   mutate(medicaid = if_else(!is.na(fmap), federal_medicaid / fmap, federal_medicaid), .before = 'federal_medicaid') %>% 
   mutate(medicaid_growth = (medicaid / lag(medicaid))^0.25 - 1, .after = 'fy') %>% 
   select(-fmap) %>% 
@@ -368,8 +374,10 @@ contribution <-
 saveRDS(contribution, file = 'data/contribution.RDS')
 
 contribution %>% 
+  filter_index("1999 Q4" ~ "2023 Q1") %>% 
   prepare_interactive() %>% 
-  openxlsx::write.xlsx('interactive.xlsx')
+  mutate(recession = if_else(recession == -1, 0, recession)) %>% 
+ writexl::write_xlsx('results/5-2021/interactive-5-2021.xlsx')
 
 
   openxlsx::write.xlsx(contribution, 'results/5-2021/fim-5-2021.xlsx')
@@ -421,7 +429,7 @@ contribution %>%
     openxlsx::write.xlsx("results/5-2021/fim_long.xlsx")
   
   
-  contribution2 %>% 
+  contribution %>% 
     pivot_longer(where(is.numeric),
                  names_to = 'variable') %>% 
     as_tibble() %>% 
@@ -441,7 +449,7 @@ contribution %>%
   
   # Load previous months results
   previous <- 
-    readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>% 
+    readxl::read_xlsx('results/4-2021/fim-4-2021-published.xlsx') %>% 
     mutate(date = yearquarter(date)) %>% 
     drop_na(date) %>% 
     as_tsibble(index = date) %>% 
@@ -460,8 +468,6 @@ contribution %>%
   comparison <- inner_join(previous_long, 
                            current_long,
                            by = c('date', 'name', 'id')) %>% 
-    pivot_longer(c(previous, current),
-                 names_to = 'source') %>% 
     rename(variable = name)
   
   comparison_nested <-
@@ -508,4 +514,24 @@ arp %>%
   arrange(variable) %>% 
   openxlsx::write.xlsx('arp_output.xlsx')
   
+
+
+contribution %>% 
+  select(date, ends_with('contribution')) %>% 
+  filter_index("2020 Q1" ~ "2023 Q1") %>% 
+  
+  pivot_longer(where(is.numeric),
+               names_to = 'variable') %>% 
+  as_tibble() %>% 
+  select(-id) %>% 
+  pivot_wider(
+    names_from = date,
+    values_from = value
+  ) %>% 
+  mutate(variable = snakecase::to_title_case(variable)) %>% 
+  
+  arrange(variable) %>% 
+  openxlsx::write.xlsx('contributions.xlsx')
+  
+april_published <- readxl::read_xlsx('results/4-2021/fim_published.xlsx')
 

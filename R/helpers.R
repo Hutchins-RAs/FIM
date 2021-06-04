@@ -1,4 +1,12 @@
 
+#' Title
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 format_tsibble <- function(df){
   df %>%
     mutate(date = tsibble::yearquarter(date)) %>%

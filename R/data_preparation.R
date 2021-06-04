@@ -18,6 +18,7 @@ define_variables <- function(df){
               consumption_deflator_growth  = jc_growth,
               cpiu,
               recession = recessq,
+              unemployment_rate,
               
               # PURCHASES
               purchases = g, 
@@ -66,6 +67,7 @@ define_variables <- function(df){
               medicaid = yptmd,
               ui = yptu,
               ui_expansion = gftfpu, 
+              ui_extended_benefits = yptubm,
               peuc = yptue,
               pua = yptup,
               puc = yptuc, 
