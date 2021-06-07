@@ -161,6 +161,14 @@ baseline_projections %>%
   ) %>%
   openxlsx::write.xlsx("data/baseline_projections.xlsx")
 
+fim::arp %>% 
+  as_tibble() %>% 
+  pivot_longer(-date) %>% 
+  pivot_wider(
+    names_from = date,
+    values_from = value
+  ) %>% 
+  openxlsx::write.xlsx("data/arp_wide.xlsx")
 
 
 
