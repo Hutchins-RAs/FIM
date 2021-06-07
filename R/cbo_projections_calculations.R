@@ -12,7 +12,7 @@ cola_adjustment <- function(df){
   get_cola_rate <- function(df){
     df %>%
       mutate(cpiu_g = fim::q_a(cpiu) / 100,
-             cola_rate = if_else(quarter(date) == 1,
+             cola_rate = if_else(lubridate::quarter(date) == 1,
                                  lag(cpiu_g, 2),
                                  NULL)) %>%
       tidyr::fill(cola_rate)
@@ -157,5 +157,5 @@ smooth_budget_series <- function(df) {
   unemployment_insurance <- 'yptu'
   df %>%
     mutate(across(all_of(c(federal_taxes, health_outlays, unemployment_insurance)),
-                  ~ rollapply(.x, width = 4, mean, fill = NA,min_obs = 1, align = 'right')))
+                  ~ zoo::rollapply(.x, width = 4, mean, fill = NA,min_obs = 1, align = 'right')))
 }

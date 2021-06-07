@@ -5,7 +5,7 @@
 #' @param ... 
 #'
 #' @return
-#' @export
+#' 
 #'
 #' @examples
 coalesce_growth<-function(.data,...){
@@ -37,7 +37,7 @@ forecast2  <- function(.data, ...){
 
 
 #' Project series  with a growth rate
-#'
+#' 
 #' @param .data 
 #' @param ... 
 #' @param with 
@@ -50,8 +50,13 @@ project <- function(.data, ..., with){
   vars <- enquos(...)
   with <- enquo(with)
   .data %>% 
+    dplyr::mutate(dplyr::across(c(!!!vars), 
+                  ~ dplyr::if_else(id == 'projection',
+                            NA_real_,
+                            .x))) %>% 
     dplyr::mutate(dplyr::across(c(!!!vars),
                                 ~ dplyr::coalesce(.x, 1 + {{ with }}))) %>% 
     dplyr::filter(dplyr::between(dplyr::row_number(), dplyr::last(which(id == 'historical')), n())) %>% 
-    dplyr::mutate(dplyr::across(c(!!!vars),  ~ purrr::accumulate(.x, `*`)))
+    dplyr::mutate(dplyr::across(c(!!!vars),  ~ purrr::accumulate(.x, `*`))) %>% 
+    coalesce_join(.data, by = c('date', 'id'))
 }

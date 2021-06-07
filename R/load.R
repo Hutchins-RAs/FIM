@@ -7,7 +7,7 @@ get_cbo_projections <- function(){
     growth_rates() %>%
     alternative_tax_scenario() %>%
     format_tsibble() %>% 
-    select(id, date, gdp, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui)
+    select(id, date, gdp, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, unemployment_rate)
 }
 
 safe_quarter  <- function(df){

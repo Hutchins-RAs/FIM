@@ -1,5 +1,5 @@
 #' Get dollars of consumptions
-#'
+#'  In order to capture the effect of taxes and transfers to GDP we need to translate government expenditures into dollars of consumption. 
 #' @param mpc numeric
 #' @param timing numeric
 #' @name consumption
