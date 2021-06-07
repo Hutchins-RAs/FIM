@@ -7,7 +7,22 @@ library('writexl')
 library('tsibble')
 
 source('src/functions.R')
-
+monthly_to_quarterly <- function(df){
+  df %>%
+    mutate(yq = tsibble::yearquarter(date)) %>%
+    as_tsibble(index = date) %>%
+    select(date, yq, everything()) %>%
+    index_by(yq) %>%
+    mutate(
+      across(
+        .cols = where(is.numeric), 
+        .fns = ~ mean(.x, na.rm = TRUE)
+      )
+    ) %>%
+    filter(row_number()== n()) %>%
+    ungroup() %>%
+    select(-yq)
+}
 
 # 0.1 Pull Raw Data---------------------------------------------------------------
 
@@ -16,7 +31,7 @@ START <- "01-01-1970"
 # Quarterly -------------------------------------------------------------------------------------------------------
 haver.path("//ESDATA01/DLX/DATA/")
 # BEA NIPAs 
-names_usna <- read_excel("data/haver_names.xlsx")
+names_usna <- read_excel("data/auxilliary/haver_names.xlsx")
 
 
 
@@ -36,11 +51,12 @@ cpi <-
 
 
 
-wla <- pull_data('YPTOL',
+wla <- pull_data('YPTOLM',
                  'usna',
-                 frequency = 'quarterly',
+                 frequency = 'monthly',
                  start.date = START) %>%
-  mutate(yptolm = na_if(yptol, 'NaN'))
+  monthly_to_quarterly() %>%
+  mutate(yptolm = na_if(yptolm, 'NaN'))
 data1 <-
   pull_data(names_usna$code,
             "usna",
@@ -69,10 +85,11 @@ haver_raw_list <-
 
 # Write haver data to raw folder ------------------------------------------
 saveRDS(data1, 'data/raw/historical.rds')
+write_xlsx(data1, 'data/raw/historical.xlsx')
 
 ## Exporting csv with the desired file names and into the right path
 output_xlsx <- function(data, names){ 
-  folder_path <- "inst/extdata/"
+  folder_path <- "data/raw/haver/"
   write_xlsx(data, paste0(folder_path, names, ".xlsx"))
 }
 

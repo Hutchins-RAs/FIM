@@ -23,5 +23,4 @@ national_accounts <-
 usethis::use_data(national_accounts, overwrite = TRUE)
 
 
-write.xlsx(national_accounts, file = "data/forecast_06_2021.xlsx", sheetName="Haver", append=TRUE)
-
+writexl::write.xlsx(national_accounts, file = "data/forecast_06_2021.xlsx", sheetName="Haver", 'append')
