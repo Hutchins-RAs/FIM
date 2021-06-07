@@ -1,0 +1,201 @@
+---
+title: 'Fiscal Impact Update'
+subtitle: 'Changes in contributions relative to previous update'
+author: ' Manuel Alcala Kovalski, Sophia Campbell, and Tyler Powell'
+date: "`r Sys.Date()`"
+header-includes:
+   - \usepackage[default]{sourcesanspro}
+   - \usepackage[T1]{fontenc}
+mainfont: SourceSansPro
+output:
+  html_document:
+    toc: true # table of content true
+    toc_float: true
+    toc_depth: 2
+    number_sections: false 
+    theme: united
+    highlight: zenburn 
+    hig.retina: 3
+    self_contained: yes
+    css: [style.css]
+vignette: |
+  %\VignetteIndexEntry{Vignette Title} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>", 
+  echo = FALSE,
+  fig.align = 'center',
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+ 
+
+```{r source}
+librarian::shelf(
+  'tidyverse',
+  'purrr',
+  'tsibble',
+  'lubridate',
+  'glue',
+  #'ggiraph',
+  #  'plotly'
+)
+comparison_plot <- function(.data, variable){
+  
+  
+  plot <- .data %>% 
+    filter(variable == {{ variable }}) %>% 
+    ggplot(aes(x = date,  y =  value, fill = source)) +
+    #geom_col(position=position_dodge2(reverse = TRUE)) +
+    geom_col(position=position_dodge2(reverse = TRUE)) +
+    labs(title = glue::glue("{snakecase::to_title_case(variable)}"),
+         x = NULL,
+         y = NULL) +
+    ggthemes::theme_hc() +
+    gghutchins::scale_fill_hutchins(
+      name = "",
+      labels = c('Updated', 'Previous'),
+      pal = 'qual',
+      rev = FALSE
+    ) +
+    scale_x_yearquarter(breaks = waiver(),
+                        date_breaks = '3 months',
+                        date_labels = "Q%q") +
+    facet_grid( ~ year(date),
+                space = "free_x",
+                scales = "free_x",
+                switch = "x")  +
+    theme(legend.position = 'top') +
+    guides(fill = guide_legend(reverse = TRUE)) 
+  
+  
+  variable_name <- rlang::as_name(rlang::ensym(variable))
+  
+  if(str_ends(variable_name, 'contribution')){
+    plot + 
+      scale_y_continuous(name = '', 
+                         labels = scales::label_percent(scale = 1))
+  } else {
+    plot +
+      scale_y_continuous(name = '', 
+                         labels = scales::label_comma())
+  }
+  
+}
+
+
+```{r}
+# 
+# # Load previous months results
+# previous <- 
+#   readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>% 
+#   mutate(date = yearquarter(date)) %>% 
+#   drop_na(date) %>% 
+#   as_tsibble(index = date) %>% 
+#   filter_index("2020 Q2" ~ "2023 Q1") 
+#  
+# # 
+# current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
+#   mutate(date = yearquarter(date)) %>% 
+#   drop_na(date) %>% 
+#   as_tsibble(index = date) %>% 
+#   filter_index("2020 Q2" ~ "2023 Q1")
+# 
+# previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+# current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+# 
+# comparison <- inner_join(previous_long, 
+#                          current_long,
+#                          by = c('date', 'name', 'id')) %>% 
+#   pivot_longer(c(previous, current),
+#                names_to = 'source') %>% 
+#   rename(variable = name)
+# 
+# comparison_nested <-
+#   comparison %>% 
+#   group_by(variable) %>% 
+#   nest() %>% 
+#   mutate(plot = map2(.x = variable,
+#                      .y = data,
+#                      .f = ~comparison_plot(.data = .y, 
+#                                   variable = .x)))
+# 
+# 
+# plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
+```
+
+#Headline FIM
+
+```{r fiscal_impact}
+plots$fiscal_impact
+```
+
+
+#Federal Purchases/Grants Contribution
+
+##Total Federal
+```{r}
+plots$federal_contribution
+```
+##Federal Purchases/Grants Components
+```{r}
+plots$federal_purchases_contribution
+plots$consumption_grants_contribution
+plots$federal_non_health_grants_arp_contribution
+plots$investment_grants_contribution
+```
+#State Purchases/Grants Contribution 
+```{r}
+plots$state_contribution
+```
+##State Purchases/Grants Components (State Contribution = State Purchases - CGrants - IGrants - ARP CGrants) **NOTE: IN THE CODE THAT I CURRENTLY HAVE, WE DON'T REATTRIBUTE ARP CGRANTS AWAY FROM STATES-- CONFIRMING WE SHOULD DO THIS/REMINDER TO DISCUSS?
+```{r}
+plots$state_purchases_contribution
+plots$consumption_grants_contribution
+plots$federal_non_health_grants_arp_contribution
+plots$investment_grants_contribution
+```
+
+#Transfers Contributions
+##Total Federal
+
+```{r}
+plots$federal_transfers_contribution
+```
+##Federal Transfers Components
+```{r}
+plots$federal_transfers_nonarp_contribution
+plots$federal_transfers_arp_contribution
+```
+##Total State
+```{r}
+plots$state_transfers_contribution
+```
+##State Transfers Components
+```{r}
+plot$state_transfers_nonarp_contribution
+plots$state_transfers_arp_contribution
+```
+
+#Taxes Contributions
+
+##Total
+
+```{r}
+plots$taxes_contribution
+```
+##Components
+
+```{r}
+plots$federal_taxes_contribution
+plots$state_taxes_contribution
+```

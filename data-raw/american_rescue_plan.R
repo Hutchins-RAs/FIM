@@ -88,6 +88,8 @@ arp_quarterly <-
                federal_ui_arp = 350)
 
 openxlsx::write.xlsx(arp_quarterly, 'data/arp_summary.xlsx')
+arp <- arp_quarterly
+usethis::use_data(arp)
 
 # arp_quarterly %>% 
 #   mpc_arp_non_health_grants() %>% 

@@ -1,5 +1,8 @@
 ## code to prepare `historical` dataset goes here
-
+library("writexl")
+library("xlsx")
+library("magrittr")
+library("tidyverse")
 national_accounts <- 
   
   readxl::read_xlsx('inst/extdata/national_accounts.xlsx') %>% 
@@ -18,4 +21,7 @@ national_accounts <-
   format_tsibble()
 
 usethis::use_data(national_accounts, overwrite = TRUE)
+
+
+write.xlsx(national_accounts, file = "data/forecast_06_2021.xlsx", sheetName="Haver", append=TRUE)
 
