@@ -67,7 +67,7 @@ define_variables <- function(df){
               medicaid = yptmd,
               ui = yptu,
               ui_expansion = gftfpu, 
-              ui_extended_benefits = yptubm,
+              ui_extended_benefits = yptub,
               peuc = yptue,
               pua = yptup,
               puc = yptuc, 

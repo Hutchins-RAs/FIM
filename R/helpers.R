@@ -65,3 +65,12 @@ monthly_to_quarterly <- function(df){
     ungroup() %>%
     select(-yq)
 }
+
+`%||%` <- function(lhs, rhs) {
+  if (!is.null(lhs)) {
+    lhs
+  } else {
+    rhs
+  }
+}
+

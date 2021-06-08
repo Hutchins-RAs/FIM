@@ -60,3 +60,25 @@ project <- function(.data, ..., with){
     dplyr::mutate(dplyr::across(c(!!!vars),  ~ purrr::accumulate(.x, `*`))) %>% 
     coalesce_join(.data, by = c('date', 'id'))
 }
+
+project2 <- function(.data, ..., with = NULL, from = NULL){
+  
+  
+  ### Setup
+  from <- from %||% (yearquarter(Sys.Date()) - 1)
+  from <- yearquarter(from)
+  vars <- enquos(...)
+  with <- enquo(with) %||% purrr::modify(cols, ~glue::glue('{.x}_growth')) 
+  key  <- tsibble::key_vars(.data)
+  
+  ### Ensure that forecast period is filled with NA's  and then the desired growth rate
+  .data %>% 
+    dplyr::mutate(dplyr::across(c(!!!vars), 
+                                ~ dplyr::if_else(date > from,
+                                                 NA_real_,
+                                                 .x))) %>% 
+    dplyr::filter(date >= from)  %>% 
+    ### Forecast 
+    dplyr::mutate(dplyr::across(c(!!!vars), ~ purrr::accumulate(.x, `*`))) %>% 
+    coalesce_join(.data, by = c('date', key))
+}
