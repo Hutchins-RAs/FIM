@@ -19,8 +19,7 @@ devtools::load_all()
 ui <- read_data() %>% 
   define_variables() %>% 
   slice(205:210) %>% 
-  left_join(arp %>% select(date, federal_ui_arp, state_ui_arp) %>% 
-              filter_index("2021 Q2" ~ .)) %>% 
+  left_join(arp %>% select(date, federal_ui_arp, state_ui_arp))  %>%
   as_tibble() %>% 
   summarise(date, id,
          unemployment_rate = unemployment_rate / 100 ,
@@ -31,46 +30,15 @@ ui <- read_data() %>%
          pua,
          puc,
          peuc,
-         ui_extended_benefits,
           federal_ui_arp = coalesce(federal_ui_arp, 0),
          state_ui_arp = coalesce(state_ui_arp, 0),
-         federal_legislation_ui = pua + puc + peuc + wages_lost_assistance + ui_extended_benefits,
-         federal_legislation_ui = coalesce(federal_legislation_ui, federal_ui_arp),
-         ) 
-  
-
-  
-
-```
-```{r}
-ui %>% 
-    mutate(
-      ui = ui + wages_lost_assistance,
+         federal_legislation_ui = pua + puc + peuc + wages_lost_assistance + ui_extended_benefits + federal_ui_arp,
+         ui = ui + wages_lost_assistance,
          federal_ui = federal_regular_ui + federal_legislation_ui,
          state_ui = ui - federal_ui,
-         ui = federal_ui + state_ui) %>% 
-  project(state_ui, federal_regular_ui, with = unemployment_rate_growth) %>% 
-mutate(federal_ui = federal_regular_ui + federal_legislation_ui) %>% 
-  mutate(ui = federal_ui + state_ui) %>% 
-  relocate(date, id, ui, federal_ui, state_ui,federal_regular_ui, federal_legislation_ui, federal_ui_arp)
-```
-
-```{r}
-ui <- read_data() %>% 
-  define_variables() %>% 
-  filter_index("2019 Q4" ~ .) %>% 
-  left_join(arp %>% select(date, federal_ui_arp, state_ui_arp)) %>% 
-  as_tibble() %>% 
-  mutate(unemployment_rate_growth = unemployment_rate / lag(unemployment_rate) - 1) %>% 
-  select(date, unemployment_rate_growth, ui, ui_extended_benefits, peuc, pua, puc, wages_lost_assistance, federal_ui_arp, state_ui_arp)
+         ) 
   
-```
-
-```{r}
 ui
-```
-
-```{r}
 
 ```
 
