@@ -46,22 +46,22 @@ forecast2  <- function(.data, ...){
 #' @export
 #'
 #' @examples
-project <- function(.data, ..., with){
-  vars <- enquos(...)
-  with <- enquo(with)
-  .data %>% 
-    dplyr::mutate(dplyr::across(c(!!!vars), 
-                  ~ dplyr::if_else(id == 'projection',
-                            NA_real_,
-                            .x))) %>% 
-    dplyr::mutate(dplyr::across(c(!!!vars),
-                                ~ dplyr::coalesce(.x, 1 + {{ with }}))) %>% 
-    dplyr::filter(dplyr::between(dplyr::row_number(), dplyr::last(which(id == 'historical')), n())) %>% 
-    dplyr::mutate(dplyr::across(c(!!!vars),  ~ purrr::accumulate(.x, `*`))) %>% 
-    coalesce_join(.data, by = c('date', 'id'))
-}
+# project <- function(.data, ..., with){
+#   vars <- enquos(...)
+#   with <- enquo(with)
+#   .data %>% 
+#     dplyr::mutate(dplyr::across(c(!!!vars), 
+#                   ~ dplyr::if_else(id == 'projection',
+#                             NA_real_,
+#                             .x))) %>% 
+#     dplyr::mutate(dplyr::across(c(!!!vars),
+#                                 ~ dplyr::coalesce(.x, 1 + {{ with }}))) %>% 
+#     dplyr::filter(dplyr::between(dplyr::row_number(), dplyr::last(which(id == 'historical')), n())) %>% 
+#     dplyr::mutate(dplyr::across(c(!!!vars),  ~ purrr::accumulate(.x, `*`))) %>% 
+#     coalesce_join(.data, by = c('date', 'id'))
+# }
 
-project2 <- function(.data, ..., with = NULL, from = NULL){
+project <- function(.data, ..., with = NULL, from = NULL){
   
   
   ### Setup
@@ -82,3 +82,5 @@ project2 <- function(.data, ..., with = NULL, from = NULL){
     dplyr::mutate(dplyr::across(c(!!!vars), ~ purrr::accumulate(.x, `*`))) %>% 
     coalesce_join(.data, by = c('date', key))
 }
+
+

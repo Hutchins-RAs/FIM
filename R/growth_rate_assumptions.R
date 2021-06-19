@@ -131,12 +131,12 @@ growth_assumptions <- function(df){
     mutate(subsidies_growth = real_potential_gdp_growth,
            federal_subsidies_growth = real_potential_gdp_growth,
            state_subsidies_growth = real_potential_gdp_growth,
-           
+           # Past cap expiration dates, CBO assumes that fed purchases just grow with inflation. we want to assume they grow with
+           # nominal potential (zero impact, essentially)
            federal_purchases_growth = if_else(date > cap_expiration,
                                               real_potential_gdp_growth + gdp_deflator_growth,
                                               federal_purchases_growth),
-           
-           
+
            
            federal_social_benefits_growth = federal_social_benefits_growth,
            state_social_benefits_growth = state_purchases_growth,

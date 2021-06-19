@@ -137,6 +137,6 @@ state_purchases %>%
 ```{r}
 state_purchases %>% 
   left_join(baseline_purchases, by = 'date') %>% 
-  project2(state_purchases, with = state_purchases_growth, from = )
+  project2(state_purchases, )
 ```
 

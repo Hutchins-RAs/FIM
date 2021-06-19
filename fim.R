@@ -66,7 +66,6 @@ usna <-
   ungroup() %>%
   mutate_where(id == 'historical',
                real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
-  
   mutate(
     federal_social_benefits = federal_social_benefits - ui - rebate_checks,
     social_benefits = federal_social_benefits + state_social_benefits
@@ -98,15 +97,21 @@ usna_processed <-
   left_join(medicaid_forecast %>% select(date, medicaid_growth, fmap), by = 'date') 
 
 
-  
-
-
+usna_processed %>%
+  mutate(consumption_grants = gross_consumption_grants - medicaid_grants) %>%
+  fim::forecast() %>% 
+  select(date, federal_purchases, federal_purchases_growth) %>% 
+  filter_index("2020 Q4" ~ .)
+read_data() %>% 
+  define_variables() %>% 
+  select(date, federal_purchases) %>% 
+  filter(id == 'projection')
 
 # Forecast ----------------------------------------------------------------
 baseline_projections <-
   usna_processed %>%
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants) %>%
-  forecast() %>%
+  fim::forecast() %>%
   ungroup() %>%
   mutate(
     grants = consumption_grants + investment_grants,

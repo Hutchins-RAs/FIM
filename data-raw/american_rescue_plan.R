@@ -59,18 +59,38 @@ arp_quarterly <-
   
             non_health_grants = coronavirus_relief_fund +
               human_services_and_community_supports_minus_childcare_policies + provider_relief + title_9_other + education + covid_containment_vaccination + other_state_and_local + grants_to_tribal_governments + commerce_and_science_federal_spending +  other_transportation + child_care_and_development_block_grant_program + va +  mental_health + medical_supplies + homeland_security_grants + environment_grants + foreign_aid + miscellaneous_from_t9,
-            consumption_grants_arp = coronavirus_relief_fund + provider_relief + education,
+            consumption_grants_arp = coronavirus_relief_fund + provider_relief + education + grants_to_tribal_governments + other_state_and_local,
             federal_purchases_arp = non_health_grants - consumption_grants_arp,
             other_vulnerable = housing_assistance + food + emergency_assistance + cobra + premium_tax_credits + ratepayer_protection + assistance_for_older_americans,
             state_ui,
             federal_ui = pua + puc + peuc + ui_tax_suspension + other_ui,
-            aid_to_small_businesses = ppp + child_care_stabilization + grants_to_small_businesses + small_business_credit_initiative + paid_sick_leave + employee_retention + pensions + transit_and_aviation_support) %>% 
+            aid_to_small_businesses = ppp + child_care_stabilization + grants_to_small_businesses + small_business_credit_initiative + paid_sick_leave + employee_retention + pensions + transit_and_aviation_support,
+            ppp,
+            child_care_stabilization,  
+            grants_to_small_businesses,
+            small_business_credit_initiative,
+            paid_sick_leave,
+            employee_retention,
+            pensions,
+            coronavirus_relief_fund, 
+            provider_relief,
+            education,
+            small_business_credit_initiative,
+            other_state_and_local, 
+            transit_and_aviation_support,
+            grants_to_tribal_governments,
+            .keep = '.used')  %>% 
   left_join(arp_timing, by = 'date') %>% 
   summarize(rebate_checks_arp = 4 * rebate_checks * rebate_checks_timing,
             other_direct_aid = 4 *other_direct_aid * other_direct_aid_timing,
             health_grants = 4 * health_grants * health_grants_timing,
             consumption_grants_arp = 4 * consumption_grants_arp * grants_timing,
-            
+
+            across(c(coronavirus_relief_fund, provider_relief, education,
+                     other_state_and_local, grants_to_tribal_governments),
+.fns = ~ 4 * .x * grants_timing                 ),
+across(c(ppp, child_care_stabilization, grants_to_small_businesses, small_business_credit_initiative, paid_sick_leave, employee_retention, pensions, transit_and_aviation_support),
+       ~ 4 * .x * aid_to_small_businesses_timing),
             non_health_grants = 4 * non_health_grants * grants_timing, 
             other_vulnerable = 4 * other_vulnerable * other_vulnerable_timing, 
             federal_ui_arp = 4 * federal_ui * ui_timing,
@@ -89,7 +109,7 @@ arp_quarterly <-
 
 openxlsx::write.xlsx(arp_quarterly, 'data/arp_summary.xlsx')
 arp <- arp_quarterly
-usethis::use_data(arp)
+usethis::use_data(arp, overwrite = TRUE)
 
 # arp_quarterly %>% 
 #   mpc_arp_non_health_grants() %>% 
@@ -108,10 +128,39 @@ usethis::use_data(arp)
 
 
 
+arp %>%
+  summarise(date,
+         total = coronavirus_relief_fund + education + provider_relief +
+           grants_to_tribal_governments + other_state_and_local,
+         coronavirus_relief_fund,
+         education,
+         provider_relief,
+         grants_to_tribal_governments,
+         other_state_and_local) %>%
+  mutate(across(-date,
+                ~ mpc_non_health_grants_arp(.x),
+                .names = '{.col}_spending')) %>%
+  select(date, ends_with('spending')) %>%
+  pivot_longer(-date) %>%
+  as_tibble() %>% 
+  pivot_wider(names_from = date,
+               values_from = value) 
+#   openxlsx::write.xlsx('grants_spending_arp.xlsx')
+# 
+# 
 
-
-
-
+arp %>% 
+  select(date, ppp, child_care_stabilization,grants_to_small_businesses,
+         small_business_credit_initiative,
+         paid_sick_leave,
+         employee_retention,
+         pensions,
+         transit_and_aviation_support) %>% 
+  as_tibble() %>% 
+  pivot_longer(-date) %>% 
+  pivot_wider(names_from = date,
+              values_from = value) %>% 
+  openxlsx::write.xlsx('subsidies_arp.xlsx')
 
 
 
