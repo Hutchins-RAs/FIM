@@ -18,6 +18,8 @@ librarian::shelf(
 options(digits = 4)
 options(scipen = 20)
 
+
+
 # Wrangle data ------------------------------------------------------------
 fmap <- readxl::read_xlsx('inst/extdata/projections.xlsx', 
                           sheet = 'annual fmap') 
@@ -385,166 +387,166 @@ contribution <-
 
 
 saveRDS(contribution, file = 'data/contribution.RDS')
-
-contribution %>% 
-  filter_index("1999 Q4" ~ "2023 Q1") %>% 
-  prepare_interactive() %>% 
-  mutate(recession = if_else(recession == -1, 0, recession)) %>% 
- writexl::write_xlsx('results/5-2021/interactive-5-2021.xlsx')
-
-
-  openxlsx::write.xlsx(contribution, 'results/5-2021/fim-5-2021.xlsx')
-
-  fim_long <-
-    contribution %>% 
-    select(
-      date,
-      federal_social_benefits,
-      state_social_benefits,
-      federal_health_outlays,
-      state_health_outlays,
-      federal_subsidies,
-      state_subsidies,
-      federal_ui,
-      state_ui,
-      federal_corporate_taxes,
-      state_corporate_taxes,
-      gdp,
-      real_potential_gdp_growth,
-      
-      federal_purchases,
-      state_purchases,
-      federal_consumption_grants = consumption_grants,
-      federal_investment_grants = investment_grants
-    ) %>% 
-    pivot_longer(
-      starts_with(c('federal', 'state')),
-      names_to = c('government', 'variable'),
-      names_pattern = '(federal|state)_(.*)',
-      values_to = 'values'
-    ) %>%
-    mutate(
-      component = case_when(
-        variable %in% c('social_benefits', 'subsidies', 'health_outlays', 'ui') ~ 'transfers',
-        variable %in% c('corporate_taxes') ~ 'taxes',
-        variable %in% c('purchases', 'consumption_grants', 'investment_grants') ~ 'government'
-      )
-    ) %>% 
-    relocate(government, component, .after = date) %>% 
-    arrange(government, component, variable, date)
-    
-  
-  
-  
-  fim_long %>% 
-    rename_with(.fn = ~snakecase::to_title_case(.),
-                .cols = everything()) %>% 
-    openxlsx::write.xlsx("results/5-2021/fim_long.xlsx")
-  
-  
-  contribution %>% 
-    pivot_longer(where(is.numeric),
-                 names_to = 'variable') %>% 
-    as_tibble() %>% 
-    select(-id) %>% 
-    pivot_wider(
-      names_from = date,
-      values_from = value
-    ) %>% 
-    mutate(variable = snakecase::to_title_case(variable)) %>% 
-
-    arrange(variable) %>% 
-    openxlsx::write.xlsx('fim_output.xlsx')
-
-
-# Comparison --------------------------------------------------------------
-
-  
-  # Load previous months results
-  previous <- 
-    readxl::read_xlsx('results/4-2021/fim-4-2021-published.xlsx') %>% 
-    mutate(date = yearquarter(date)) %>% 
-    drop_na(date) %>% 
-    as_tsibble(index = date) %>% 
-    filter_index("2020 Q2" ~ "2023 Q1") 
-  
-  # 
-  current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
-    mutate(date = yearquarter(date)) %>% 
-    drop_na(date) %>% 
-    as_tsibble(index = date) %>% 
-    filter_index("2020 Q2" ~ "2023 Q1")
-  
-  previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
-  current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
-  
-  comparison <- inner_join(previous_long, 
-                           current_long,
-                           by = c('date', 'name', 'id')) %>% 
-    rename(variable = name)
-  
-  comparison_nested <-
-    comparison %>% 
-    group_by(variable) %>% 
-    nest() %>% 
-    mutate(plot = map2(.x = variable,
-                       .y = data,
-                       .f = ~comparison_plot(.data = .y, 
-                                             variable = .x)))
-  
-  
-  plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)  
-  rmarkdown::render('update-comparison.Rmd')
-  
-  
-contribution %>% 
-  filter_index("2020 Q1" ~ .) %>%
-  pivot_longer(where(is.numeric),
-               names_to = 'variable') %>% 
-  as_tibble() %>% 
-  select(-id) %>% 
-  pivot_wider(
-    names_from = date,
-    values_from = value
-  ) %>% 
-  mutate(variable = snakecase::to_title_case(variable)) %>% 
-  
-  arrange(variable) %>% 
-  openxlsx::write.xlsx('fim_output.xlsx')
-
-arp %>% 
-  
-  pivot_longer(where(is.numeric),
-               names_to = 'variable') %>% 
-  as_tibble() %>% 
-  
-  pivot_wider(
-    names_from = date,
-    values_from = value
-  ) %>% 
-  mutate(variable = snakecase::to_title_case(variable)) %>% 
-  
-  arrange(variable) %>% 
-  openxlsx::write.xlsx('arp_output.xlsx')
-  
-
-
-contribution %>% 
-  select(date, ends_with('contribution')) %>% 
-  filter_index("2020 Q1" ~ "2023 Q1") %>% 
-  
-  pivot_longer(where(is.numeric),
-               names_to = 'variable') %>% 
-  as_tibble() %>% 
-  select(-id) %>% 
-  pivot_wider(
-    names_from = date,
-    values_from = value
-  ) %>% 
-  mutate(variable = snakecase::to_title_case(variable)) %>% 
-  
-  arrange(variable) %>% 
-  openxlsx::write.xlsx('contributions.xlsx')
-  
-april_published <- readxl::read_xlsx('results/4-2021/fim_published.xlsx')
-
+# 
+# contribution %>% 
+#   filter_index("1999 Q4" ~ "2023 Q1") %>% 
+#   prepare_interactive() %>% 
+#   mutate(recession = if_else(recession == -1, 0, recession)) %>% 
+#  writexl::write_xlsx('results/5-2021/interactive-5-2021.xlsx')
+# 
+# 
+#   openxlsx::write.xlsx(contribution, 'results/5-2021/fim-5-2021.xlsx')
+# 
+#   fim_long <-
+#     contribution %>% 
+#     select(
+#       date,
+#       federal_social_benefits,
+#       state_social_benefits,
+#       federal_health_outlays,
+#       state_health_outlays,
+#       federal_subsidies,
+#       state_subsidies,
+#       federal_ui,
+#       state_ui,
+#       federal_corporate_taxes,
+#       state_corporate_taxes,
+#       gdp,
+#       real_potential_gdp_growth,
+#       
+#       federal_purchases,
+#       state_purchases,
+#       federal_consumption_grants = consumption_grants,
+#       federal_investment_grants = investment_grants
+#     ) %>% 
+#     pivot_longer(
+#       starts_with(c('federal', 'state')),
+#       names_to = c('government', 'variable'),
+#       names_pattern = '(federal|state)_(.*)',
+#       values_to = 'values'
+#     ) %>%
+#     mutate(
+#       component = case_when(
+#         variable %in% c('social_benefits', 'subsidies', 'health_outlays', 'ui') ~ 'transfers',
+#         variable %in% c('corporate_taxes') ~ 'taxes',
+#         variable %in% c('purchases', 'consumption_grants', 'investment_grants') ~ 'government'
+#       )
+#     ) %>% 
+#     relocate(government, component, .after = date) %>% 
+#     arrange(government, component, variable, date)
+#     
+#   
+#   
+#   
+#   fim_long %>% 
+#     rename_with(.fn = ~snakecase::to_title_case(.),
+#                 .cols = everything()) %>% 
+#     openxlsx::write.xlsx("results/5-2021/fim_long.xlsx")
+#   
+#   
+#   contribution %>% 
+#     pivot_longer(where(is.numeric),
+#                  names_to = 'variable') %>% 
+#     as_tibble() %>% 
+#     select(-id) %>% 
+#     pivot_wider(
+#       names_from = date,
+#       values_from = value
+#     ) %>% 
+#     mutate(variable = snakecase::to_title_case(variable)) %>% 
+# 
+#     arrange(variable) %>% 
+#     openxlsx::write.xlsx('fim_output.xlsx')
+# 
+# 
+# # Comparison --------------------------------------------------------------
+# 
+#   
+#   # Load previous months results
+#   previous <- 
+#     readxl::read_xlsx('results/4-2021/fim-4-2021-published.xlsx') %>% 
+#     mutate(date = yearquarter(date)) %>% 
+#     drop_na(date) %>% 
+#     as_tsibble(index = date) %>% 
+#     filter_index("2020 Q2" ~ "2023 Q1") 
+#   
+#   # 
+#   current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
+#     mutate(date = yearquarter(date)) %>% 
+#     drop_na(date) %>% 
+#     as_tsibble(index = date) %>% 
+#     filter_index("2020 Q2" ~ "2023 Q1")
+#   
+#   previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+#   current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+#   
+#   comparison <- inner_join(previous_long, 
+#                            current_long,
+#                            by = c('date', 'name', 'id')) %>% 
+#     rename(variable = name)
+#   
+#   comparison_nested <-
+#     comparison %>% 
+#     group_by(variable) %>% 
+#     nest() %>% 
+#     mutate(plot = map2(.x = variable,
+#                        .y = data,
+#                        .f = ~comparison_plot(.data = .y, 
+#                                              variable = .x)))
+#   
+#   
+#   plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)  
+#   rmarkdown::render('update-comparison.Rmd')
+#   
+#   
+# contribution %>% 
+#   filter_index("2020 Q1" ~ .) %>%
+#   pivot_longer(where(is.numeric),
+#                names_to = 'variable') %>% 
+#   as_tibble() %>% 
+#   select(-id) %>% 
+#   pivot_wider(
+#     names_from = date,
+#     values_from = value
+#   ) %>% 
+#   mutate(variable = snakecase::to_title_case(variable)) %>% 
+#   
+#   arrange(variable) %>% 
+#   openxlsx::write.xlsx('fim_output.xlsx')
+# 
+# arp %>% 
+#   
+#   pivot_longer(where(is.numeric),
+#                names_to = 'variable') %>% 
+#   as_tibble() %>% 
+#   
+#   pivot_wider(
+#     names_from = date,
+#     values_from = value
+#   ) %>% 
+#   mutate(variable = snakecase::to_title_case(variable)) %>% 
+#   
+#   arrange(variable) %>% 
+#   openxlsx::write.xlsx('arp_output.xlsx')
+#   
+# 
+# 
+# contribution %>% 
+#   select(date, ends_with('contribution')) %>% 
+#   filter_index("2020 Q1" ~ "2023 Q1") %>% 
+#   
+#   pivot_longer(where(is.numeric),
+#                names_to = 'variable') %>% 
+#   as_tibble() %>% 
+#   select(-id) %>% 
+#   pivot_wider(
+#     names_from = date,
+#     values_from = value
+#   ) %>% 
+#   mutate(variable = snakecase::to_title_case(variable)) %>% 
+#   
+#   arrange(variable) %>% 
+#   openxlsx::write.xlsx('contributions.xlsx')
+#   
+# april_published <- readxl::read_xlsx('results/4-2021/fim_published.xlsx')
+# 

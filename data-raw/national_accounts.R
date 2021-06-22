@@ -1,6 +1,6 @@
 ## code to prepare `historical` dataset goes here
 library("writexl")
-library("xlsx")
+library("openxlsx")
 library("magrittr")
 library("tidyverse")
 national_accounts <- 
@@ -23,4 +23,4 @@ national_accounts <-
 usethis::use_data(national_accounts, overwrite = TRUE)
 
 
-writexl::write.xlsx(national_accounts, file = "data/forecast_06_2021.xlsx", sheetName="Haver", 'append')
+#writexl::write.xlsx(national_accounts, file = "data/forecast_06_2021.xlsx", sheetName="Haver", 'append')
