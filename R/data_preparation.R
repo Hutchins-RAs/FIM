@@ -44,7 +44,7 @@ define_variables <- function(df){
               coronavirus_relief_fund = gfegc, 
               education_stabilization_fund = gfege,
               # Half of  hospitals are non-profits
-              provider_relief_fund = gfegv / 2,
+              provider_relief_fund = gfegv,
               
               
               # SUBSIDIES
@@ -67,11 +67,11 @@ define_variables <- function(df){
               medicaid = yptmd,
               ui = yptu,
               ui_expansion = gftfpu, 
-              ui_extended_benefits = yptubm,
+              ui_extended_benefits = yptub,
               peuc = yptue,
               pua = yptup,
               puc = yptuc, 
-              wages_lost_assistance = coalesce(yptolm, 0),
+              wages_lost_assistance = coalesce(yptol, 0),
               federal_ui = coalesce(ui_expansion, 0) +  wages_lost_assistance,
               state_ui = ui - federal_ui,
               rebate_checks = gftfpe,

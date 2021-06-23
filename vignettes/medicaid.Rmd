@@ -1,0 +1,137 @@
+---
+title: "Medicaid"
+author: "Manuel Alcalá Kovalski"
+date: "6/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library('tidyverse')
+library('tsibble')
+devtools::load_all()
+
+```
+
+## Medicaid
+
+This document will outline all the things you should be aware of when forecasting medicaid.
+Hopefully, it will give you a step by step guide to our process.
+
+### Outline
+
+-   Construct an annual and quarterly fmap projection.
+
+-   We get our historical quarterly fmap using Haver data on medicaid grants and total medicaid spending
+
+-   In the projection period from 2021 Q2 to 2022 Q3 (when we assume that the enhanced fmap from the CARES act will turn off) we use the average FMAP from 2020 Q4 and 2021 Q1.
+    After we just project foreword the 2019 average (it goes back to normal)
+
+-   We use the quarterly fmap to construct the annual.
+
+-   We use CBO projections on federal medicaid and the annual fmap to construct a total medicaid forecast.
+    We do this by dividing federal medicaid over the annual fmap.
+    Once the total medicaid level is computed we calculate the annual growth rate.
+
+-   Next, we deannualize the growth rates by taking them to the 1/4 power and use this to forecast quarterly total medicaid.
+
+-   Using the quarterly fmap projection, we split the forecast into federal and state.
+
+-   Finally, subtract federal from total to get state
+
+### Code
+
+Construct quarterly and annual fmap
+
+```{r data, echo=FALSE}
+
+bea  <- fim::national_accounts %>% 
+  select(date,
+         medicaid  = yptmd,
+         medicaid_grants = gfeghdx) %>% 
+  filter_index("2019 Q1" ~ .) 
+
+bea <- bea %>% 
+  mutate(fmap_quarterly = medicaid_grants / medicaid) %>% 
+  #separate(date, into = c('year', 'quarter'), sep = ' ') %>% 
+  group_by(year=  year(date)) %>% 
+  mutate(fmap_annual = mean(fmap_quarterly)) %>% 
+  ungroup()
+
+
+fmap <- readxl::read_xlsx('inst/extdata/projections.xlsx', 
+                          sheet = 'annual fmap') 
+
+fmap_quarterly <- readxl::read_xlsx('inst/extdata/projections.xlsx',
+                                    sheet = 'quarterly fmap') %>% 
+  mutate(date = yearquarter(date))
+cbo_projections <-
+  readxl::read_xlsx('inst/extdata/projections.xlsx', sheet = 'budget') %>% 
+  as_tsibble(index = fy) 
+
+```
+
+Take the CBO projection and
+
+```{r, }
+medicaid_forecast <- cbo_projections %>% 
+  mutate(federal_medicaid = yptmd, .after = 'fy') %>% 
+  left_join(fmap, by = 'fy') %>% 
+  relocate(fmap, .after = 'fy') %>% 
+  mutate(medicaid = if_else(!is.na(fmap), federal_medicaid / fmap, federal_medicaid), .before = 'federal_medicaid') %>% 
+  #  Deannualize annual  growth rate
+  mutate(medicaid_growth = (medicaid / lag(medicaid))^0.25 - 1, .after = 'fy') %>% 
+  select(-fmap) %>% 
+  as_tsibble(index = fy) %>% 
+  annual_to_quarter() %>% 
+  fiscal_to_calendar() %>% 
+  left_join(fmap_quarterly, by = 'date') %>% 
+  filter_index("2020 Q4" ~ .) %>% 
+  mutate(state_medicaid = medicaid - federal_medicaid, .after = 'federal_medicaid')
+
+
+```
+
+```{r}
+medicaid_forecast <-
+  readxl::read_xlsx('inst/extdata/projections.xlsx', sheet = 'budget') %>% 
+  as_tsibble(index = fy) %>% 
+  mutate(federal_medicaid = yptmd, .after = 'fy') %>% 
+  left_join(fmap, by = 'fy') %>% 
+  relocate(fmap, .after = 'fy') %>% 
+  mutate(medicaid = if_else(!is.na(fmap), federal_medicaid / fmap, federal_medicaid), .before = 'federal_medicaid') %>% 
+  mutate(medicaid_growth = (medicaid / lag(medicaid))^0.25 - 1, .after = 'fy') %>% 
+  select(-fmap) %>% 
+  as_tsibble(index = fy) %>% 
+  annual_to_quarter() %>% 
+  fiscal_to_calendar() %>% 
+  left_join(fmap_quarterly, by = 'date') %>% 
+  filter_index("2020 Q4" ~ .) %>% 
+  mutate(state_medicaid = medicaid - federal_medicaid, .after = 'federal_medicaid') %>% 
+  select(date, medicaid_growth, fmap)
+```
+
+```{r}
+
+read_data() %>% 
+  define_variables() %>% 
+  select(-medicaid_growth) %>% 
+  left_join(medicaid_forecast %>% 
+              select(date, fmap, medicaid_growth), by = 'date') %>% 
+  select(date, id,  medicaid,  federal_medicaid  =  medicaid_grants,
+         medicaid_growth, fmap) %>% 
+  mutate(state_mediciad  = medicaid - federal_medicaid) %>% 
+  filter_index("2020  Q4" ~ .) %>% 
+  key_vars()
+  
+```
+```{r}
+
+contribution %>% 
+  summarise(date,fmap,  medicaid,fed = medicaid *  fmap, federal_medicaid = medicaid_grants, state_medicaid = medicaid - federal_medicaid) %>% 
+  filter_index("2021 Q1" ~ . )
+```
+

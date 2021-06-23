@@ -1,6 +1,6 @@
 ---
 title: "test"
-author: "Manuel Alcalá Kovalski"
+author: "Manuel Alcalá Kovalski assisted by Dan Levy"
 date: "5/27/2021"
 output: html_document
 ---

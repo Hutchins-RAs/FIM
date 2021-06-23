@@ -92,43 +92,43 @@ comparison_plot <- function(.data, variable){
 ```
 
 ```{r}
-# 
-# # Load previous months results
-# previous <- 
-#   readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>% 
-#   mutate(date = yearquarter(date)) %>% 
-#   drop_na(date) %>% 
-#   as_tsibble(index = date) %>% 
-#   filter_index("2020 Q2" ~ "2023 Q1") 
-#  
-# # 
-# current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
-#   mutate(date = yearquarter(date)) %>% 
-#   drop_na(date) %>% 
-#   as_tsibble(index = date) %>% 
-#   filter_index("2020 Q2" ~ "2023 Q1")
-# 
-# previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
-# current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
-# 
-# comparison <- inner_join(previous_long, 
-#                          current_long,
-#                          by = c('date', 'name', 'id')) %>% 
-#   pivot_longer(c(previous, current),
-#                names_to = 'source') %>% 
-#   rename(variable = name)
-# 
-# comparison_nested <-
-#   comparison %>% 
-#   group_by(variable) %>% 
-#   nest() %>% 
-#   mutate(plot = map2(.x = variable,
-#                      .y = data,
-#                      .f = ~comparison_plot(.data = .y, 
-#                                   variable = .x)))
-# 
-# 
-# plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
+
+# Load previous months results
+previous <-
+  readxl::read_xlsx('results/4-2021/fim-4-2021-without-errors.xlsx') %>%
+  mutate(date = yearquarter(date)) %>%
+  drop_na(date) %>%
+  as_tsibble(index = date) %>%
+  filter_index("2020 Q2" ~ "2023 Q1")
+
+#
+current <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>%
+  mutate(date = yearquarter(date)) %>%
+  drop_na(date) %>%
+  as_tsibble(index = date) %>%
+  filter_index("2020 Q2" ~ "2023 Q1")
+
+previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+
+comparison <- inner_join(previous_long,
+                         current_long,
+                         by = c('date', 'name', 'id')) %>%
+  pivot_longer(c(previous, current),
+               names_to = 'source') %>%
+  rename(variable = name)
+
+comparison_nested <-
+  comparison %>%
+  group_by(variable) %>%
+  nest() %>%
+  mutate(plot = map2(.x = variable,
+                     .y = data,
+                     .f = ~comparison_plot(.data = .y,
+                                  variable = .x)))
+
+
+plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
 ```
 
 

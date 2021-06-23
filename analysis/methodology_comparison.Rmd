@@ -1,0 +1,206 @@
+---
+title: 'Fiscal Impact Update Prep'
+subtitle: 'Changes in levels due to methodology'
+author: ' Manuel Alcala Kovalski, Sophia Campbell, and Tyler Powell'
+date: "`r Sys.Date()`"
+header-includes:
+   - \usepackage[default]{sourcesanspro}
+   - \usepackage[T1]{fontenc}
+mainfont: SourceSansPro
+output:
+  html_document:
+    toc: true # table of content true
+    toc_float: true
+    toc_depth: 2
+    number_sections: false 
+    theme: united
+    highlight: zenburn 
+    hig.retina: 3
+    self_contained: yes
+    css: [../style.css]
+vignette: |
+  %\VignetteIndexEntry{Vignette Title} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>", 
+  echo = FALSE,
+  fig.align = 'center',
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE 
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r, eval=FALSE, echo=FALSE}
+librarian::shelf(tidyverse, fim, tsibble, purrr, lubridate)
+devtools::load_all()
+
+# Load previous months results
+previous <-
+  readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>%
+  mutate(date = yearquarter(date)) %>%
+  drop_na(date) %>%
+  as_tsibble(index = date) %>%
+  filter_index("2020 Q2" ~ "2023 Q1") %>% 
+  mutate(federal_non_health_grants_arp = mpc_non_health_grants_arp(federal_non_health_grants_arp)) %>% 
+  mutate(federal_purchases = federal_purchases + federal_non_health_grants_arp,
+         federal_purchases_contribution = federal_purchases_contribution + federal_non_health_grants_arp_contribution) %>% 
+  mutate(federal_ui = federal_ui,
+         federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
+  mutate(federal_ui = federal_ui + federal_ui_arp,
+         federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
+  mutate(federal_health_outlays= federal_health_outlays + federal_health_grants_arp,
+         federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution)
+
+
+forecast <- readxl::read_xlsx('data/forecast_06_2021.xlsx',
+                              sheet = 'forecast') %>% 
+  select(-name) %>% 
+  pivot_longer(-variable) %>% 
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  rename(date = name) %>% 
+  mutate(date = yearquarter(date))
+
+
+current <- readRDS('data/contributions.RDS') %>%
+  mutate(date = yearquarter(date)) %>%
+  drop_na(date) %>%
+  as_tsibble(index = date) %>%
+  filter_index("2020 Q2" ~ "2023 Q1")
+
+previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+
+comparison <- inner_join(previous_long,
+                         current_long,
+                         by = c('date', 'name', 'id')) %>%
+  rename(variable = name) %>% 
+  pivot_longer(c(previous, current),
+               values_to = 'value',
+               names_to = 'source')
+
+inner_join(previous_long,
+          current_long,
+          by = c('date', 'name', 'id')) %>%
+  rename(variable = name) %>% 
+  filter(variable %in% names(forecast[-1])) %>% 
+  openxlsx::write.xlsx('comparison_levels.xlsx')
+
+comparison_nested <-
+  comparison %>%
+  group_by(variable) %>%
+  nest() %>%
+  mutate(plot = purrr::map2(.x = variable,
+                     .y = data,
+                     .f = ~fim::comparison_plot(.data = .y,
+                                           variable = .x)))
+
+# 
+plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)  
+```
+
+## Purchases & Grants
+
+
+During the last update, we were counting all of the grants and purchases from the American Rescue Plan as federal purchases. Hence, of the  $`r previous %>% filter_index('2021 Q2') %>% pull(federal_purchases)`
+billion in federal purchases in 2021 Q2, $`r previous %>% filter_index('2021 Q2') %>% pull(federal_non_health_grants_arp)`
+were from the American Rescue Plan. In 2021 Q3, federal purchases were  $`r previous %>% filter_index('2021 Q2') %>% pull(federal_purchases)` of which
+$`r previous %>% filter_index('2021 Q2') %>% pull(federal_non_health_grants_arp)` were from the American Rescue Plan. 
+
+However, the federal purchases portion from ARP was actually lower last time since we applied an MPC to it. Now, we only apply that MPC to the portion that we put into consumption grants. Therefore, our federal purchases are `r  current$federal_purchases[5] - previous$federal_purchases[5]` billion higher this time.
+```{r}
+plots$federal_purchases
+```
+
+
+Likewise, consumption grants are higher now given that we reattributed some of the ARP grants away from federal purchases.
+
+```{r}
+plots$consumption_grants
+```
+
+State purchases have been unaffected by any of our changes
+```{r}
+plots$state_purchases
+```
+
+## Taxes
+
+## Transfers
+
+Last time, we forgot to include the rebate checks from ARP that will go out in the next tax year.
+```{r}
+plots$rebate_checks
+plots$rebate_checks_arp
+```
+
+### Health outlays
+
+While our total medicaid forecast is unchanged, we bumped up our forecast for the federal portion of medicaid (Medicaid grants) to reflect the increased FMAP due to the ARP. This increases federal health outlays and decreases state health outlays a litte bit.
+```{r}
+plots$medicaid
+plots$medicaid_grants
+```
+
+Our medicare forecast is unchanged. The difference of `r current$medicare[5] - previous$medicare[5]` is due to the Medicare sequester which we previously included in our federal health outlays add factor instead of directly into our Medicare forecast.
+```{r}
+plots$medicare
+
+```
+
+Finally, the bulk of the difference in federal health outlays comes from double counting revenues from Medicaid, Medicare, and CHIP in CBO's ARP score. We had previously said that health grants from the ARP in Q2 2021 and Q3 2021 were `r previous$federal_health_grants_arp[5]`. Afterwards, we had `r previous$federal_health_grants_arp[7]` for 4 quarters. Since the MPC for health outlays is high (90% over four quarters), this overestimated the contribution of federal health outlays considerably.
+
+```{r}
+plots$federal_health_outlays
+plots$state_health_outlays
+
+```
+
+### Unemployment Insurance
+
+Previously, we guessed that regular federal UI would be $20 billion and that the ARP UI was 
+`r previous$federal_ui_arp[5]`. Since our ARP score was based on an outdated unemployment rate forecast from CBO, we changed it to reflect higher employment growth due to reopenings.
+
+```{r}
+plots$federal_ui
+plots$state_ui
+```
+
+### Subsidies
+
+We took out the business meals deductions from subsidies since we believe they're actually a tax break instead. Moreover, we changed our PPP forecast to more accurately predict the timing of how BEA will write PPP disbursements down. In particular, we had $568 billion in PPP for Q2 2021 and Q3 2021 previously and now we have 488, 322 and 32 in Q1 through Q3 of 2021.
+
+Otherwise, our forecast is the same (nothing from the ARP changed)
+
+```{r}
+plots$federal_subsidies
+plots$federal_aid_to_small_businesses_arp
+
+```
+
+## Other direct aid ARP
+
+Unchanged
+```{r}
+plots$federal_other_direct_aid_arp
+```
+
+## Other vulnerable ARP
+Not sure why this is different. ASK LOUISE
+```{r}
+plots$federal_other_vulnerable_arp
+```
+
+## Social benefits remainder (Net of Medicare, Medicaid, UI, and Rebate checks)
+
+
+```{r}
+plots$federal_social_benefits
+```
+

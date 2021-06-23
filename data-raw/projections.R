@@ -108,4 +108,9 @@ projections <-
   mutate(id = 'projection')
   
 
+
 usethis::use_data(projections, overwrite = TRUE)
+
+get_cbo_projections() %>% 
+  select(date,federal_social_benefits)
+
