@@ -1,0 +1,142 @@
+---
+title: "Purchases"
+author: "Manuel Alcalá Kovalski"
+date: "6/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Federal purchases
+
+```{r cars}
+purchases <-
+  read_data() %>% 
+  define_variables() %>% 
+  select(date, federal_purchases, federal_purchases_growth, state_purchases, state_purchases_growth) %>% 
+  filter_index("2020 Q1" ~ "2023 Q1") %>% 
+  project(federal_purchases, with = federal_purchases_growth) %>% 
+  left_join(arp %>% select(date, federal_non_health_grants_arp)) %>% 
+  mutate(fedral_purchases_fim  = federal_purchases + federal_non_health_grants_arp)
+```
+
+
+
+```{r pressure, echo=FALSE}
+purchases
+```
+
+```{r}
+purchases %>% 
+  pivot_longer(c(federal_purchases, federal_non_health_grants_arp, fedral_purchases_fim)) %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line()
+```
+
+## State purchases
+
+```{r}
+state_purchases <- purchases %>% 
+  select(date, state_purchases, cbo_growth = state_purchases_growth) %>% 
+  mutate(fim_growth = cbo_growth) %>% 
+  relocate(id) %>% 
+    create_override(
+    var = fim_growth,
+    start = yearquarter("2021 Q2"),
+    end = yearquarter("2023 Q1"),
+    values = c(
+      0.024113689,
+      0.019426547,
+      0.015868285,
+      0.015868285,
+      0.015868285,
+      0.014673846,
+      0.013475174,
+      0.012272234
+    )
+  ) %>%
+  mutate(state_purchases_fim = state_purchases,
+         state_purchases_cbo = state_purchases) %>% 
+  select(-state_purchases) %>% 
+  project(state_purchases_fim, with = fim_growth) %>% 
+  project(state_purchases_cbo, with = cbo_growth) 
+  
+```
+
+
+
+
+```{r}
+
+read_data() %>% 
+  define_variables() %>% 
+  select(date, federal_purchases, federal_purchases_growth, state_purchases, state_purchases_growth) %>% 
+  filter_index("2020 Q1" ~ "2023 Q1") %>% 
+  select(date, state_purchases, cbo_growth = state_purchases_growth) %>% 
+  mutate(fim_growth = cbo_growth) %>% 
+  relocate(id) %>% 
+    create_override(
+    var = fim_growth,
+    start = yearquarter("2021 Q2"),
+    end = yearquarter("2023 Q1"),
+    values = c(
+      0.024113689,
+      0.019426547,
+      0.015868285,
+      0.015868285,
+      0.015868285,
+      0.014673846,
+      0.013475174,
+      0.012272234
+    )
+  ) %>%
+  mutate(state_purchases_fim = state_purchases,
+         state_purchases_cbo = state_purchases) %>% 
+
+  project(state_purchases, with = state_purchases_baseline_growth)
+```
+
+```{r}
+
+baseline_purchases <-
+  read_data() %>% 
+  select(date, state_purchases = gs) %>% 
+  filter_index("2020 Q1" ~ .) %>% 
+  left_join(pre_pandemic_baseline) %>% 
+  mutate(id = if_else(date >  yearquarter("2020 Q1"), 
+                      "projection", 
+                      "historical")) %>% 
+  mutate_where(id == 'projection', 
+               state_purchases = NA) %>% 
+  project(state_purchases, with = state_purchases_growth) %>% 
+    as_tibble() %>% 
+  select(-id) 
+
+```
+
+```{r}
+
+state_purchases %>% 
+  left_join(baseline_purchases, by = 'date') %>% 
+  rename(state_purchases_pre_pandemic =  state_purchases) %>% 
+  pivot_longer(c(state_purchases_cbo, state_purchases_fim, state_purchases_pre_pandemic)) %>% 
+  ggplot(aes(x = date, y = value, color = name))  +
+  geom_line(size = 1.3) +
+  gghutchins::theme_hutchins()+
+  gghutchins::scale_color_hutchins() +
+  theme(legend.position = 'none') + 
+  directlabels::geom_dl(aes(label = snakecase::to_title_case(name)), method = 'smart.grid') +
+  scale_y_continuous(labels = scales::label_dollar(suffix = ' B'),
+                     name = '')  +
+  labs(title = 'State purchases projections')
+```
+
+
+```{r}
+state_purchases %>% 
+  left_join(baseline_purchases, by = 'date') %>% 
+  project2(state_purchases, with = state_purchases_growth, from = )
+```
+
