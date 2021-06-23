@@ -277,7 +277,17 @@ previous <-
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2020 Q2" ~ "2023 Q1")
+  filter_index("2020 Q2" ~ "2023 Q1") %>% 
+  mutate(federal_non_health_grants_arp = mpc_non_health_grants_arp(federal_non_health_grants_arp)) %>% 
+  mutate(federal_purchases = federal_purchases + federal_non_health_grants_arp,
+         federal_purchases_contribution = federal_purchases_contribution + federal_non_health_grants_arp_contribution) %>% 
+  mutate(federal_ui = federal_ui + federal_ui_arp,
+         federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
+  mutate(federal_ui = federal_ui + federal_ui_arp,
+         federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
+  mutate(federal_health_outlays= federal_health_outlays + federal_health_grants_arp,
+         federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution)
+
 
 #
 current <- contributions %>%
@@ -296,6 +306,13 @@ comparison <- inner_join(previous_long,
   pivot_longer(c(previous, current),
                values_to = 'value',
                names_to = 'source')
+
+inner_join(previous_long,
+          current_long,
+          by = c('date', 'name', 'id')) %>%
+  rename(variable = name) %>% 
+  filter(variable %in% names(forecast[-1])) %>% 
+  openxlsx::write.xlsx('comparison_levels.xlsx')
 
 comparison_nested <-
   comparison %>%
