@@ -130,6 +130,11 @@ State purchases have been unaffected by any of our changes
 plots$state_purchases
 ```
 
+
+```{r}
+
+```
+
 ## Taxes
 
 ## Transfers
@@ -202,5 +207,17 @@ plots$federal_other_vulnerable_arp
 
 ```{r}
 plots$federal_social_benefits
+```
+
+## Taxes
+
+```{r}
+plots$federal_non_corporate_taxes
+plots$state_non_corporate_taxes
+```
+
+```{r}
+plots$federal_corporate_taxes
+plots$state_corporate_taxes
 ```
 
