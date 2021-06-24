@@ -83,14 +83,14 @@ list(data = haver_raw_list,
      names = names(haver_raw_list)) %>% 
   purrr::pmap(output_xlsx) 
 
-df = usna
-
-df = df %>%
-  set_names(
-    names_usna %>% 
-      pull(reference) %>% 
-      magrittr::extract(
-        names(df) %>% 
-          match(names_usna$code)
-      )
-  )
+# df = usna
+# 
+# df = df %>%
+#   set_names(
+#     names_usna %>% 
+#       pull(reference) %>% 
+#       magrittr::extract(
+#         names(df) %>% 
+#           match(names_usna$code)
+#       )
+#   )
