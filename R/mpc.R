@@ -147,17 +147,17 @@ calculate_mpc <- function(df, taxes_transfers){
 
 
 #' @rdname consumption
-mpc_vulnerable_arp <- mpc(timing =  c(rep(0.17, 4), 0.09, rep(0.05, 2), 0.04))
+mpc_vulnerable_arp <-  mpc(timing =  c(0.2, 0.17, 0.16, 0.15,  0.09, rep(0.05, 2), 0.04))
 
 # In april we had this mpc for rebate checks
 # mpc_direct_aid_arp <- mpc(timing = c(0.18, rep(0.09, 2), rep(0.05, 7), 0.03))
 #' @rdname consumption
 #' 
-mpc_direct_aid_arp <- mpc(timing = c(rep(0.14, 1), rep(0.1, 2), rep(0.05, 7), 0.05))
+mpc_direct_aid_arp <- mpc(timing = c(0.14, 0.10, 0.1,  rep(0.05, 6)))
 #' @rdname consumption
 mpc_small_businesses_arp <- mpc(timing =  c(rep(0.04, 2), rep(0.017, 10)))
 #' @rdname consumption
-mpc_ui_arp <-  mpc(timing =  c(rep(0.17, 4), 0.09, rep(0.05, 2), 0.04))
+mpc_ui_arp <-  mpc(timing =  c(0.2, 0.17, 0.16, 0.15,  0.09, rep(0.05, 2), 0.04))
 #' @rdname consumption
 mpc_non_health_grants_arp <- mpc(timing = c(rep(0.07, 2),
                                    rep(0.049, 10),

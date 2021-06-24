@@ -120,30 +120,30 @@ The timing of federal purchases seems strange. Why does it go down so much in Q3
 The timing sheet in the spreadsheet adds up to 105%.
 
 ```{r}
-plots$federal_purchases
-
-previous_purchases <-
-  previous %>% 
-  select(date, federal_purchases, state_purchases, consumption_grants, investment_grants) %>% 
-  mutate(federal_purchases_fim = federal_purchases + consumption_grants + investment_grants, 
-         state_purchases_fim = state_purchases - consumption_grants - investment_grants) %>% 
-  
-  as_tibble() %>% 
-  pivot_longer(-date)
-
-current_purchases <-
-  current %>% 
-  select(date, federal_purchases, state_purchases, consumption_grants, investment_grants) %>% 
-  mutate(federal_purchases_fim = federal_purchases + consumption_grants + investment_grants, 
-         state_purchases_fim = state_purchases - consumption_grants - investment_grants) %>% 
-  
-  as_tibble() %>% 
-  select(-id) %>% 
-  pivot_longer(-date)
-
-left_join(current_purchases, previous_purchases, by = c('date', 'name'),
-          suffix = c('_current', '_previous')) %>% 
-  filter_index("2021 Q2" ~ .)
+ plots$federal_purchases
+# 
+# previous_purchases <-
+#   previous %>% 
+#   select(date, federal_purchases, state_purchases, consumption_grants, investment_grants) %>% 
+#   mutate(federal_purchases_fim = federal_purchases + consumption_grants + investment_grants, 
+#          state_purchases_fim = state_purchases - consumption_grants - investment_grants) %>% 
+#   
+#   as_tibble() %>% 
+#   pivot_longer(-date)
+# 
+# current_purchases <-
+#   current %>% 
+#   select(date, federal_purchases, state_purchases, consumption_grants, investment_grants) %>% 
+#   mutate(federal_purchases_fim = federal_purchases + consumption_grants + investment_grants, 
+#          state_purchases_fim = state_purchases - consumption_grants - investment_grants) %>% 
+#   
+#   as_tibble() %>% 
+#   select(-id) %>% 
+#   pivot_longer(-date)
+# 
+# left_join(current_purchases, previous_purchases, by = c('date', 'name'),
+#           suffix = c('_current', '_previous')) %>% 
+#   filter_index("2021 Q2" ~ .)
 plots$state_purchases
 plots$consumption_grants
 
@@ -161,7 +161,7 @@ plots$consumption_grants
 
 State purchases have been unaffected by any of our changes
 ```{r}
-plots$state_purchases
+plots$state_contribution
 ```
 
 
