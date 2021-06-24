@@ -114,8 +114,42 @@ were from the American Rescue Plan. In 2021 Q3, federal purchases were  $`r prev
 $`r previous %>% filter_index('2021 Q2') %>% pull(federal_non_health_grants_arp)` were from the American Rescue Plan. 
 
 However, the federal purchases portion from ARP was actually lower last time since we applied an MPC to it. Now, we only apply that MPC to the portion that we put into consumption grants. Therefore, our federal purchases are `r  current$federal_purchases[5] - previous$federal_purchases[5]` billion higher this time.
+
+The timing of federal purchases seems strange. Why does it go down so much in Q3 but then up in Q4?
+
+The timing sheet in the spreadsheet adds up to 105%.
+
 ```{r}
 plots$federal_purchases
+
+previous_purchases <-
+  previous %>% 
+  select(date, federal_purchases, state_purchases, consumption_grants, investment_grants) %>% 
+  mutate(federal_purchases_fim = federal_purchases + consumption_grants + investment_grants, 
+         state_purchases_fim = state_purchases - consumption_grants - investment_grants) %>% 
+  
+  as_tibble() %>% 
+  pivot_longer(-date)
+
+current_purchases <-
+  current %>% 
+  select(date, federal_purchases, state_purchases, consumption_grants, investment_grants) %>% 
+  mutate(federal_purchases_fim = federal_purchases + consumption_grants + investment_grants, 
+         state_purchases_fim = state_purchases - consumption_grants - investment_grants) %>% 
+  
+  as_tibble() %>% 
+  select(-id) %>% 
+  pivot_longer(-date)
+
+left_join(current_purchases, previous_purchases, by = c('date', 'name'),
+          suffix = c('_current', '_previous')) %>% 
+  filter_index("2021 Q2" ~ .)
+plots$state_purchases
+plots$consumption_grants
+
+
+plots$federal_contribution
+plots$fiscal_impact
 ```
 
 
@@ -131,9 +165,6 @@ plots$state_purchases
 ```
 
 
-```{r}
-
-```
 
 ## Taxes
 
@@ -148,6 +179,8 @@ plots$rebate_checks_arp
 ### Health outlays
 
 While our total medicaid forecast is unchanged, we bumped up our forecast for the federal portion of medicaid (Medicaid grants) to reflect the increased FMAP due to the ARP. This increases federal health outlays and decreases state health outlays a litte bit.
+
+Why do we fall of one quarter sooner? Is it because we estimate that the pandemic will end in 2022 Q3?
 ```{r}
 plots$medicaid
 plots$medicaid_grants
@@ -165,6 +198,7 @@ Finally, the bulk of the difference in federal health outlays comes from double 
 plots$federal_health_outlays
 plots$state_health_outlays
 
+
 ```
 
 ### Unemployment Insurance
@@ -174,12 +208,14 @@ Previously, we guessed that regular federal UI would be $20 billion and that the
 
 ```{r}
 plots$federal_ui
+
+
 plots$state_ui
 ```
 
 ### Subsidies
 
-We took out the business meals deductions from subsidies since we believe they're actually a tax break instead. Moreover, we changed our PPP forecast to more accurately predict the timing of how BEA will write PPP disbursements down. In particular, we had $568 billion in PPP for Q2 2021 and Q3 2021 previously and now we have 488, 322 and 32 in Q1 through Q3 of 2021.
+We took out the business meals deductions from subsidies since we believe they're actually a tax break instead. Moreover, we changed our PPP forecast to more accurately predict the timing of how BEA will write PPP disbursements down. In particular, we had $568 billion in PPP for Q2 2021 and Q3 2021 previously and now we have 488, 322 and 32 in Q1 through Q3 of 2021. Hence, oour PPP forecast is 294 lower.
 
 Otherwise, our forecast is the same (nothing from the ARP changed)
 
@@ -219,5 +255,29 @@ plots$state_non_corporate_taxes
 ```{r}
 plots$federal_corporate_taxes
 plots$state_corporate_taxes
+```
+
+```{r}
+plots$federal_corporate_taxes_contribution
+```
+
+# contributions
+
+```{r}
+plots$federal_social_benefits
+```
+
+
+```{r}
+plots$rebate_checks_contribution
+plots$rebate_checks_arp_contribution
+```
+
+```{r}
+
+```
+
+```{r}
+plots$federal_purchases_contribution
 ```
 

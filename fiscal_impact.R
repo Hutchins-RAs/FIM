@@ -175,6 +175,7 @@ consumption %>%
   ) %>% 
   mutate(social_benefits_contribution = federal_social_benefits_contribution + state_social_benefits_contribution) %>% 
   mutate(non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution) %>% 
+  mutate(taxes_contribution = non_corporate_taxes_contribution + corporate_taxes_contribution) %>% 
   mutate(transfers_contribution = federal_social_benefits_contribution + state_social_benefits_contribution +
            rebate_checks_contribution + rebate_checks_arp_contribution + federal_ui_contribution + state_ui_contribution +
            federal_subsidies_contribution + federal_aid_to_small_businesses_arp_contribution +  state_subsidies_contribution + federal_health_outlays_contribution +
@@ -195,7 +196,7 @@ contributions %>% select(date,fiscal_impact, ends_with('contribution')) %>%
 # 
 # 
 # 
-# saveRDS(contribution, file = 'data/contribution.RDS')
+ saveRDS(contributions, file = 'data/contributions.RDS')
 # 
 # contribution %>% 
 #   filter_index("1999 Q4" ~ "2023 Q1") %>% 
@@ -278,16 +279,28 @@ previous <-
   drop_na(date) %>%
   as_tsibble(index = date) %>%
   filter_index("2020 Q2" ~ "2023 Q1") %>% 
-  mutate(federal_non_health_grants_arp = mpc_non_health_grants_arp(federal_non_health_grants_arp)) %>% 
-  mutate(federal_purchases = federal_purchases + federal_non_health_grants_arp,
-         federal_purchases_contribution = federal_purchases_contribution + federal_non_health_grants_arp_contribution) %>% 
-  mutate(federal_ui = federal_ui + federal_ui_arp,
+  mutate(federal_non_health_grants_arp = mpc_non_health_grants_arp(federal_non_health_grants_arp)) %>%
+  mutate(federal_ui = federal_ui,
          federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
   mutate(federal_ui = federal_ui + federal_ui_arp,
          federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
   mutate(federal_health_outlays= federal_health_outlays + federal_health_grants_arp,
-         federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution)
+         federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution) %>% 
+  select(date, fiscal_impact, federal_contribution, federal_corporate_taxes_contribution,
+         federal_non_corporate_taxes_contribution, federal_health_outlays_contribution,
+         federal_ui_contribution, rebate_checks_contribution, rebate_checks_arp_contribution,
+         federal_other_vulnerable_arp_contribution, federal_other_direct_aid_arp_contribution,
+         federal_social_benefits_contribution, federal_subsidies_contribution, federal_aid_to_small_businesses_arp_contribution,
+         
+         state_contribution, state_corporate_taxes_contribution, state_non_corporate_taxes_contribution,
+         state_health_outlays_contribution, state_ui_contribution, state_subsidies_contribution) 
 
+previous %>% 
+
+previous %>% 
+  select()
+previous %>% 
+openxlsx::write.xlsx('temp.xlsx')
 
 #
 current <- contributions %>%
@@ -306,6 +319,14 @@ comparison <- inner_join(previous_long,
   pivot_longer(c(previous, current),
                values_to = 'value',
                names_to = 'source')
+
+inner_join(previous_long,
+           current_long,
+           by = c('date', 'name', 'id')) %>%
+  rename(variable = name) %>% 
+  filter(variable %in% names(forecast)[-1]) %>% 
+  mutate(difference = current - previous) %>% 
+  openxlsx::write.xlsx('results/comparison_levels.xlsx')
 
 inner_join(previous_long,
           current_long,
