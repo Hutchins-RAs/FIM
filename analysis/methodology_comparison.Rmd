@@ -277,3 +277,7 @@ plots$rebate_checks_arp_contribution
 
 ```
 
+```{r}
+plots$federal_purchases_contribution
+```
+
