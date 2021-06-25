@@ -267,6 +267,7 @@ comparison <- inner_join(previous_long,
 comparison %>% 
   filter(name == 'fiscal_impact')
 
+openxlsx::write.xlsx(contributions, 'results/06-2021/fim-06-2021.xlsx')
 
 # 
 # contribution %>% 
