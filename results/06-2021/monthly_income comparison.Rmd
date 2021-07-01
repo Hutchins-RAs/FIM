@@ -1,0 +1,145 @@
+---
+title: 'Fiscal Impact Update Prep'
+subtitle: 'Changes in levels due to methodology'
+author: ' Manuel Alcala Kovalski, Sophia Campbell, and Tyler Powell'
+date: "`r Sys.Date()`"
+header-includes:
+   - \usepackage[default]{sourcesanspro}
+   - \usepackage[T1]{fontenc}
+mainfont: SourceSansPro
+output:
+  html_document:
+    toc: true # table of content true
+    toc_float: true
+    toc_depth: 2
+    number_sections: false 
+    theme: united
+    highlight: zenburn 
+    hig.retina: 3
+    self_contained: yes
+    css: [../style.css]
+vignette: |
+  %\VignetteIndexEntry{Vignette Title} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>", 
+  echo = FALSE,
+  fig.align = 'center',
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE,
+  fig.path = "results/06-2021/figures"
+)
+
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+
+```{r, eval=FALSE, echo=FALSE}
+librarian::shelf(tidyverse, fim, tsibble, purrr, lubridate)
+devtools::load_all()
+
+# Load previous months results
+previous <-
+  readxl::read_xlsx('results/06-2021/fim-pre-monthly-income.xlsx') %>%
+  mutate(date = yearquarter(date)) %>%
+  drop_na(date) %>%
+  as_tsibble(index = date) %>%
+  filter_index("2020 Q2" ~ "2023 Q1") %>% 
+  as_tibble()
+
+current <- readRDS('data/contributions.RDS') %>%
+  mutate(date = yearquarter(date)) %>%
+  drop_na(date) %>%
+  as_tsibble(index = date) %>%
+  filter_index("2020 Q2" ~ "2023 Q1")
+
+previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+
+comparison <- inner_join(previous_long,
+                         current_long,
+                         by = c('date', 'name')) %>%
+  rename(variable = name) %>% 
+  pivot_longer(c(previous, current),
+               values_to = 'value',
+               names_to = 'source')
+
+# inner_join(previous_long,
+#           current_long,
+#           by = c('date', 'name')) %>%
+#   rename(variable = name) %>% 
+#   filter(variable %in% names(forecast[-1])) %>% 
+#   openxlsx::write.xlsx('comparison_levels.xlsx')
+
+comparison_nested <-
+  comparison %>%
+  group_by(variable) %>%
+  nest() %>%
+  mutate(plot = purrr::map2(.x = variable,
+                     .y = data,
+                     .f = ~fim::comparison_plot(.data = .y,
+                                           variable = .x)))
+
+# 
+plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)  
+```
+
+## Purchases & Grants
+
+
+During the last update, we were counting all of the grants and purchases from the American Rescue Plan as federal purchases. Hence, of the  $`r previous %>% filter_index('2021 Q2') %>% pull(federal_purchases)`
+billion in federal purchases in 2021 Q2, $`r previous %>% filter_index('2021 Q2') %>% pull(federal_non_health_grants_arp)`
+were from the American Rescue Plan. In 2021 Q3, federal purchases were  $`r previous %>% filter_index('2021 Q2') %>% pull(federal_purchases)` of which
+$`r previous %>% filter_index('2021 Q2') %>% pull(federal_non_health_grants_arp)` were from the American Rescue Plan. 
+
+However, the federal purchases portion from ARP was actually lower last time since we applied an MPC to it. Now, we only apply that MPC to the portion that we put into consumption grants. Therefore, our federal purchases are `r  current$federal_purchases[5] - previous$federal_purchases[5]` billion higher this time.
+
+The timing of federal purchases seems strange. Why does it go down so much in Q3 but then up in Q4?
+
+The timing sheet in the spreadsheet adds up to 105%.
+
+```{r}
+ plots$federal_purchases
+# 
+# previous_purchases <-
+#   previous %>% 
+#   select(date, federal_purchases, state_purchases, consumption_grants, investment_grants) %>% 
+#   mutate(federal_purchases_fim = federal_purchases + consumption_grants + investment_grants, 
+#          state_purchases_fim = state_purchases - consumption_grants - investment_grants) %>% 
+#   
+#   as_tibble() %>% 
+#   pivot_longer(-date)
+# 
+# current_purchases <-
+#   current %>% 
+#   select(date, federal_purchases, state_purchases, consumption_grants, investment_grants) %>% 
+#   mutate(federal_purchases_fim = federal_purchases + consumption_grants + investment_grants, 
+#          state_purchases_fim = state_purchases - consumption_grants - investment_grants) %>% 
+#   
+#   as_tibble() %>% 
+#   select(-id) %>% 
+#   pivot_longer(-date)
+# 
+# left_join(current_purchases, previous_purchases, by = c('date', 'name'),
+#           suffix = c('_current', '_previous')) %>% 
+#   filter_index("2021 Q2" ~ .)
+
+```
+
+```{r}
+plots$fiscal_impact
+```
+
+```{r}
+plots$transfers_contribution
+```
+
+```{r}
+plots$subsidies_contribution
+plo
+```
+
+

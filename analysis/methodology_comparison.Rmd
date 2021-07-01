@@ -36,7 +36,7 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
-```{r, eval=FALSE, echo=FALSE}
+```{r,  echo=FALSE}
 librarian::shelf(tidyverse, fim, tsibble, purrr, lubridate)
 devtools::load_all()
 
@@ -85,6 +85,8 @@ comparison <- inner_join(previous_long,
                values_to = 'value',
                names_to = 'source')
 
+
+
 inner_join(previous_long,
           current_long,
           by = c('date', 'name', 'id')) %>%
@@ -120,7 +122,18 @@ The timing of federal purchases seems strange. Why does it go down so much in Q3
 The timing sheet in the spreadsheet adds up to 105%.
 
 ```{r}
- plots$federal_purchases
+ggsave('results/06-2021/transfers_contribution.png', plots$transfers_contribution)
+ggsave('results/06-2021/taxes_contribution.png', plots$taxes_contribution)
+ggsave('results/06-2021/subsidies_contribution.png', plots$subsidies_contribution)
+ggsave('results/06-2021/federal_purchases_contribution.png', plots$federal_contribution)
+ggsave('results/06-2021/state_purchases_contribution.png', plots$state_contribution)
+ggsave('results/06-2021/fiscal_impact.png', plots$fiscal_impact)
+plots$taxes_contribution
+
+plots$subsidies_contribution
+
+plots$federal_contribution
+plots$state_contribution
 # 
 # previous_purchases <-
 #   previous %>% 

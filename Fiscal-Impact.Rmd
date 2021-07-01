@@ -21,10 +21,10 @@ librarian::shelf('targets', "tidyverse", "magrittr", "ggthemes", "ggtext", "tiny
 ```
 
 ```{r data, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
-fim <- readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>% 
+fim <- readxl::read_xlsx('results/06-2021/fim-06-2021.xlsx') %>% 
   mutate(date = tsibble::yearquarter(date)) %>% 
   as_tsibble(index = date) %>% 
- tsibble::filter_index('1999 Q4' ~ '2022 Q4')
+ tsibble::filter_index('1999 Q4' ~ '2023 Q1')
 ```
 
 ```{r constants, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
@@ -182,11 +182,12 @@ projection_start <-
   pull(date)
 
 fim%>%
-  select(
+  summarise(
     date,
     federal_contribution,
     state_contribution,
-    taxes_transfers_contribution,
+    taxes_transfers_contribution = transfers_contribution + federal_corporate_taxes_contribution +
+      federal_non_corporate_taxes_contribution + state_corporate_taxes_contribution + state_non_corporate_taxes_contribution,
     fiscal_impact_moving_average
   ) %>%
   pivot_longer(cols = ends_with('contribution'),

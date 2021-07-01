@@ -88,20 +88,18 @@ forecast <- readxl::read_xlsx('data/forecast_06_2021.xlsx',
   mutate(date = yearquarter(date))
 
 
+
 projections <- coalesce_join(usna, forecast, by = 'date') %>%
   
+  mutate(# Coalesce NA's to 0
+    across(where(is.numeric),
+           ~ coalesce(.x, 0))) %>%
   mutate(
-    
-    # Coalesce NA's to 0
-    across(
-      where(is.numeric),
-      ~ coalesce(.x, 0)
-    )
-  ) %>% 
-  mutate(    health_outlays = medicare + medicaid,
-             federal_health_outlays = medicare + medicaid_grants,
-             state_health_outlays = medicaid - medicaid_grants)
-  
+    health_outlays = medicare + medicaid,
+    federal_health_outlays = medicare + medicaid_grants,
+    state_health_outlays = medicaid - medicaid_grants
+  )
+
 
 
 
@@ -172,17 +170,19 @@ consumption %>%
     grants_contribution = consumption_grants_contribution + investment_grants_contribution,
     federal_contribution = federal_purchases_contribution + grants_contribution,
     state_contribution = state_purchases_contribution - grants_contribution
-  ) %>% 
-  mutate(social_benefits_contribution = federal_social_benefits_contribution + state_social_benefits_contribution) %>% 
-  mutate(non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution) %>% 
-  mutate(taxes_contribution = non_corporate_taxes_contribution + corporate_taxes_contribution) %>% 
-  mutate(transfers_contribution = federal_social_benefits_contribution + state_social_benefits_contribution +
-           rebate_checks_contribution + rebate_checks_arp_contribution + federal_ui_contribution + state_ui_contribution +
-           federal_subsidies_contribution + federal_aid_to_small_businesses_arp_contribution +  state_subsidies_contribution + federal_health_outlays_contribution +
-           state_health_outlays_contribution + federal_other_direct_aid_arp_contribution + federal_other_vulnerable_arp_contribution,
-         taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution +
-           federal_corporate_taxes_contribution + state_corporate_taxes_contribution) %>% 
-  #sum_taxes_contributions() %>% 
+  ) %>%
+  mutate(social_benefits_contribution = federal_social_benefits_contribution + state_social_benefits_contribution) %>%
+  mutate(non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution) %>%
+  mutate(taxes_contribution = non_corporate_taxes_contribution + corporate_taxes_contribution) %>%
+  mutate(
+    transfers_contribution = federal_social_benefits_contribution + state_social_benefits_contribution +
+      rebate_checks_contribution + rebate_checks_arp_contribution + federal_ui_contribution + state_ui_contribution +
+      federal_subsidies_contribution + federal_aid_to_small_businesses_arp_contribution +  state_subsidies_contribution + federal_health_outlays_contribution +
+      state_health_outlays_contribution + federal_other_direct_aid_arp_contribution + federal_other_vulnerable_arp_contribution,
+    taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution +
+      federal_corporate_taxes_contribution + state_corporate_taxes_contribution
+  ) %>%
+  #sum_taxes_contributions() %>%
   get_fiscal_impact()
 
 contributions %>% select(date,fiscal_impact, ends_with('contribution')) %>% 
@@ -206,7 +206,7 @@ previous <-
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2021 Q1" ~ "2023 Q1") %>% 
+  filter_index("2020 Q1" ~ "2023 Q1") %>% 
   mutate(federal_non_health_grants_arp = mpc_non_health_grants_arp(federal_non_health_grants_arp)) %>% 
   # mutate(federal_purchases = federal_purchases + federal_non_health_grants_arp,
   #        federal_purchases_contribution = federal_purchases_contribution + federal_non_health_grants_arp_contribution) %>% 
@@ -215,7 +215,7 @@ previous <-
   mutate(federal_health_outlays= federal_health_outlays + federal_health_grants_arp,
          federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution) %>%
   as_tibble() %>%
-  select(date, fiscal_impact, federal_contribution, federal_corporate_taxes_contribution,
+  select(date, fiscal_impact, federal_contribution, grants_contribution,federal_corporate_taxes_contribution,
          federal_non_corporate_taxes_contribution, federal_health_outlays_contribution,
          federal_ui_contribution,  rebate_checks_contribution, rebate_checks_arp_contribution,
          federal_other_vulnerable_arp_contribution, federal_other_direct_aid_arp_contribution,
@@ -228,19 +228,15 @@ previous <-
 
 
 
-previous %>% 
-  openxlsx::write.xlsx('temp.xlsx')
-
-
 
 #
 current <- contributions %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2021 Q1" ~ "2023 Q4") %>% 
+  filter_index("2020 Q1" ~ "2023 Q4") %>% 
   as_tibble() %>% 
-  select(date, fiscal_impact, federal_contribution, federal_corporate_taxes_contribution,
+  select(date, fiscal_impact, federal_contribution, grants_contribution,  federal_corporate_taxes_contribution,
          federal_non_corporate_taxes_contribution, federal_health_outlays_contribution,
          federal_ui_contribution, rebate_checks_contribution, rebate_checks_arp_contribution,
          federal_other_vulnerable_arp_contribution, federal_other_direct_aid_arp_contribution,
@@ -265,9 +261,18 @@ comparison <- inner_join(previous_long,
                          by = c('date', 'name'))
 
 comparison %>% 
-  filter(name == 'fiscal_impact')
+  filter(date >= yearquarter("2021 Q1")) %>% 
+  pivot_longer(where(is.numeric),
+               names_to = 'source') %>% 
+  arrange(source) %>% 
+ pivot_wider(names_from = date,
+             values_from = value) %>% 
+  mutate(name = snakecase::to_title_case(name)) %>% 
+  openxlsx::write.xlsx('results/06-2021/contributions_comparison.xlsx')
 
 openxlsx::write.xlsx(contributions, 'results/06-2021/fim-06-2021.xlsx')
+contributions %>% mutate(taxes_transfers_contribution = taxes_contribution + transfers_contribution) %>% prepare_interactive() %>% 
+  openxlsx::write.xlsx('results/06-2021/interactive-6-2021.xlsx')
 
 # 
 # contribution %>% 
@@ -367,13 +372,6 @@ previous <-
          state_contribution, state_corporate_taxes_contribution, state_non_corporate_taxes_contribution,
          state_health_outlays_contribution, state_ui_contribution, state_subsidies_contribution) 
 
-previous %>% 
-
-previous %>% 
-  select()
-previous %>% 
-openxlsx::write.xlsx('temp.xlsx')
-
 #
 current <- contributions %>%
   mutate(date = yearquarter(date)) %>%
@@ -386,7 +384,7 @@ current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'cur
 
 comparison <- inner_join(previous_long,
                          current_long,
-                         by = c('date', 'name', 'id')) %>%
+                         by = c('date', 'name')) %>%
   rename(variable = name) %>% 
   pivot_longer(c(previous, current),
                values_to = 'value',
