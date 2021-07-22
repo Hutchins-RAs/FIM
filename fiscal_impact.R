@@ -10,13 +10,10 @@ librarian::shelf(
   "fim",
   "dplyover"
 )
-
 options(digits = 4)
 options(scipen = 20)
 devtools::load_all()
-
 # Wrangle data ------------------------------------------------------------
-
 overrides <- readxl::read_xlsx('data/forecast_06_2021.xlsx',
                                sheet = 'historical overrides') %>% 
   select(-name) %>% 
@@ -207,7 +204,13 @@ current <- contributions %>%
          federal_social_benefits_contribution, federal_subsidies_contribution, federal_aid_to_small_businesses_arp_contribution,
          
          state_contribution, state_corporate_taxes_contribution, state_non_corporate_taxes_contribution,
-         state_health_outlays_contribution, state_ui_contribution, state_subsidies_contribution, state_social_benefits
+         state_health_outlays_contribution, state_ui_contribution, state_subsidies_contribution, state_social_benefits,
+         gdp, 
+         real_potential_gdp_growth,
+         federal_purchases_deflator_growth,
+         state_purchases_deflator_growth,
+         cpiu,
+         consumption_deflator_growth
   )
 
 # Pivot both longer
@@ -240,6 +243,8 @@ openxlsx::write.xlsx(contributions, 'results/07-2021/fim-07-2021.xlsx')
 contributions %>% mutate(taxes_transfers_contribution = taxes_contribution + transfers_contribution) %>% prepare_interactive() %>% 
   openxlsx::write.xlsx('results/07-2021/interactive-07-2021.xlsx')
 
+
+# Misc --------------------------------------------------------------------
 # 
 # contribution %>% 
 #   filter_index("1999 Q4" ~ "2023 Q1") %>% 
@@ -312,9 +317,6 @@ contributions %>% mutate(taxes_transfers_contribution = taxes_contribution + tra
 #   openxlsx::write.xlsx('fim_output.xlsx')
 # 
 # 
-# # Comparison --------------------------------------------------------------
-
-
 # Load previous months results
 # previous <-
 #   readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>%
