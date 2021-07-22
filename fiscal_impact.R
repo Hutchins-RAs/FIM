@@ -185,17 +185,7 @@ consumption %>%
   get_fiscal_impact()
 
 # Contribution ------------------------------------------------------------
-
-# Without add factors or ARP ---------
-
-# ------
-# 
-# 
-# 
  saveRDS(contributions, file = 'data/contributions_cbo_update.RDS')
-
-
-
 # Load previous months results
 previous <-
   readxl::read_xlsx('results/06-2021/fim-06-2021.xlsx') %>%
@@ -203,12 +193,7 @@ previous <-
   drop_na(date) %>%
   as_tsibble(index = date) %>%
   filter_index("2020 Q1" ~ "2023 Q1")
-
-
-
-
-
-#
+# Select current results
 current <- contributions %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
@@ -225,23 +210,31 @@ current <- contributions %>%
          state_health_outlays_contribution, state_ui_contribution, state_subsidies_contribution, state_social_benefits
   )
 
-
+# Pivot both longer
 previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
 current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
-
+# Merge and compare
 comparison <- inner_join(previous_long,
                          current_long,
-                         by = c('date', 'name'))
-
-comparison %>% 
+                         by = c('date', 'name')) %>% 
   filter(date >= yearquarter("2021 Q1")) %>% 
+  ungroup() %>% 
+  as_tibble() %>% 
+  mutate(difference = current - previous,
+         across(where(is.numeric),
+                round,
+                digits = 4)) %>% 
   pivot_longer(where(is.numeric),
                names_to = 'source') %>% 
   arrange(source) %>% 
+  select(-id) %>% 
  pivot_wider(names_from = date,
-             values_from = value) %>% 
-  mutate(name = snakecase::to_title_case(name)) %>% 
-  openxlsx::write.xlsx('results/07-2021/contributions_comparison.xlsx')
+             values_from = value) %>%
+  mutate(name = snakecase::to_title_case(name)) 
+
+
+  openxlsx::write.xlsx(x = comparison,
+                       file = 'results/07-2021/contributions_cbo_update_comparison.xlsx')
 
 openxlsx::write.xlsx(contributions, 'results/07-2021/fim-07-2021.xlsx')
 contributions %>% mutate(taxes_transfers_contribution = taxes_contribution + transfers_contribution) %>% prepare_interactive() %>% 
