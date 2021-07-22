@@ -24,3 +24,47 @@ growth_rate <- function(x, period) {
   }
   return(rate)
 }
+
+#' @title Quarterly annualized growth rate
+#' @description Calculate quarterly annualized growth rates
+#' @param x A quarterly time series object
+#' @return Annualized quarterly growth
+#' @details DETAILS
+#' @examples 
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname q_a
+#' @export 
+q_a <- function(x) {
+  j = c()
+  for (i in 2:length(x)) {
+    j[i] = (((x[i] / x[i - 1]) ^ 4) - 1) * 100
+  }
+  j[1] = 0
+  j
+}
+
+#' @title Quarter over quarter growth rate
+#' @description Calculates quarter over quarter growth rate.
+#' @param x PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples 
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname q_g
+#' @export 
+q_g = function(x) {
+  j = c()
+  for (i in 2:length(x)) {
+    j[i] = (((x[i]/x[i - 1])) - 1)
+  }
+  j[1] = j[2]
+  j
+}

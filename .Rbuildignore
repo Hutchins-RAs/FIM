@@ -4,5 +4,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
-^\.github$
+^github$
 analysis
+^vignettes$
+^data$
