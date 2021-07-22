@@ -1,5 +1,5 @@
 ## code to prepare `projections` dataset goes here
-
+librarian::shelf(tidyverse, tsibble)
 economic_projections <- readxl::read_xlsx('inst/extdata/projections.xlsx', sheet = 'economic') %>% 
   mutate(date = tsibble::yearquarter(date)) %>%
   as_tsibble(index = date)
@@ -111,6 +111,4 @@ projections <-
 
 usethis::use_data(projections, overwrite = TRUE)
 
-get_cbo_projections() %>% 
-  select(date,federal_social_benefits)
 
