@@ -4,7 +4,7 @@
 \alias{project}
 \title{Project series  with a growth rate}
 \usage{
-project(.data, ..., with = NULL, from = NULL)
+project(.data, ..., with)
 }
 \arguments{
 \item{.data}{}
