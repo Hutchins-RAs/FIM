@@ -1,6 +1,6 @@
 ---
 title: 'Fiscal Impact Update'
-subtitle: 'Q3 2021 Advanced Estimate'
+subtitle: 'Q2 2021 Third GDP Revision'
 author: ' Manuel Alcala Kovalski'
 date: "`r Sys.Date()`"
 header-includes:
@@ -49,6 +49,8 @@ librarian::shelf(
   
 )
 comparison_plot <- function(.data, variable){
+  
+  
   plot <- .data %>% 
     filter(variable == {{ variable }}) %>% 
     ggplot(aes(x = date,  y =  value, fill = source)) +
@@ -95,11 +97,11 @@ comparison_plot <- function(.data, variable){
 
 # Load previous months results
 previous <-
-  readxl::read_xlsx('results/06-2021/fim-06-2021.xlsx') %>%
+  readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2020 Q3" ~ "2023 Q2") %>% 
+  filter_index("2020 Q2" ~ "2023 Q1") %>% 
   mutate(federal_non_health_grants_arp = mpc_non_health_grants_arp(federal_non_health_grants_arp)) %>% 
   mutate(federal_purchases = federal_purchases + federal_non_health_grants_arp,
          federal_purchases_contribution = federal_purchases_contribution + federal_non_health_grants_arp_contribution) %>% 
@@ -111,7 +113,7 @@ previous <-
          federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution)
 
 
-forecast <- readxl::read_xlsx('data/forecast_07_2021.xlsx',
+forecast <- readxl::read_xlsx('data/forecast_06_2021.xlsx',
                               sheet = 'forecast') %>% 
   select(-name) %>% 
   pivot_longer(-variable) %>% 
@@ -125,7 +127,7 @@ current <- readRDS('data/contributions.RDS') %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2020 Q3" ~ "2023 Q2")
+  filter_index("2020 Q2" ~ "2023 Q1")
 
 previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
 current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
