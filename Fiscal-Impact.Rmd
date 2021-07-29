@@ -11,49 +11,31 @@ mainfont: Arial
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, results = 'asis', fig.align = "center")
-
 ```
 
 ```{r libraries, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis', include = FALSE}
-librarian::shelf('targets', "tidyverse", "magrittr", "ggthemes", "ggtext", "tinytex", "ggthemes", "gridExtra",  "glue", "lubridate", 'fim',
-"conflicted", "tsibble")
+librarian::shelf("tidyverse",
+                  "ggtext",
+                  "tinytex",
+                   "glue", 
+                  "lubridate", 
+                 "tsibble")
+devtools::load_all()
 
 ```
 
 ```{r data, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
-fim <- readxl::read_xlsx('results/06-2021/fim-06-2021.xlsx') %>% 
-  mutate(date = tsibble::yearquarter(date)) %>% 
-  as_tsibble(index = date) %>% 
- tsibble::filter_index('1999 Q4' ~ '2023 Q1')
+fim <- 
+ readr::read_rds('data/contributions.RDS') %>% 
+ tsibble::filter_index('1999 Q4' ~ '2023 Q2')
 ```
 
 ```{r constants, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
-total_pink <- rgb(231, 97, 159, maxColorValue = 255)
-state_local_purple = rgb(174, 104, 169,  maxColorValue = 255)
-federal_blue = rgb(33, 152, 199,  maxColorValue = 255)
-taxes_transfers_green = rgb(27, 149, 83,  maxColorValue = 255)
-
-max_y <-
-  fim %>%
-  pull(fiscal_impact) %>%
-  max() %>%
-  ceiling() + 1
-
-recession_shade <-
-  geom_rect(
-    data = fim::recessions,
-    aes(
-      xmin = start,
-      xmax = end,
-      ymin = -Inf,
-      ymax = +Inf
-    ),
-    fill = 'grey',
-    alpha = 0.3
-  )
 
 
-end <- lubridate::as_date("2022-12-31")
+
+
+
 
 guidez <- guides(
   fill = guide_legend(
@@ -68,104 +50,78 @@ guidez <- guides(
   )
 )
 
-uni.theme <- function() {
-  theme_bw() +
-    theme(legend.position = "bottom", 
-          panel.grid.minor.x=element_blank(),
-          panel.grid.major.x=element_blank(),
-          plot.margin=unit(c(1.2,.5,.5,.5),"cm"),
-          plot.title = element_markdown(size=12),
-          plot.subtitle = element_markdown(size=10) , 
-          plot.caption = 
-            element_textbox_simple(size = 9,
-                                   lineheight = 1,
-                                   padding = margin(5.5, 5.5, 5.5, 5.5),
-                                   margin = margin(0, 0, 5.5, 0)),
-          legend.text=element_markdown(size=10), 
-          legend.title=element_blank(),
-          legend.spacing.y = unit(2, 'cm')
-    ) # , legend.margin = unit(c(rep(-.8, 4)),"cm")
-}
+
 
 
 ```
 
 
 
-```{r}
-
-recession_shade <-
-  geom_rect(
-    data = recessions,
-    aes(
-      xmin = recession_start,
-      xmax = recession_end,
-      ymin = -Inf,
-      ymax = +Inf
-    ),
-    fill = 'grey',
-    alpha = 0.2
-  )
-```
 
 ```{r}
 
-fim %>%
+headline <-
+  fim %>%
   select(date, fiscal_impact, fiscal_impact_moving_average) %>%
-  pivot_longer(fiscal_impact) %>%
-  ggplot() +
-  geom_bar(aes(x = date, y = value, fill = name),
-    stat = "identity", width = 50
-  ) +
-  geom_line(
-    aes(
-      x = date,
-      y = fiscal_impact_moving_average,
-      colour = "4-quarter moving-average"
-    )
-  ) +
-  geom_point(
-    aes(
-      x = date,
-      y = fiscal_impact_moving_average,
-      colour = "4-quarter moving-average"
-    ),
-    size = 1
-  ) +
-  labs(
-    title = glue("**Hutchins Center Fiscal Impact Measure: Total**"),
-    x = "",
-    y = "",
-    subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
-    caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
-        and Congressional Budget Office data; grey shaded areas indicate recessions 
-        and yellow shaded areas indicate projection."
-  ) +
-  geom_richtext(aes(
-    x = Sys.Date() + 350,
-    y = 16
-  ),
-  label = "Projection",
-  cex = 2,
-  fill = NA, label.color = NA, # remove background and outline
-  ) +
-  annotate("rect", xmin = yearquarter('2021 Q1'), xmax = yearquarter('2023 Q1'),
-           ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
-  scale_fill_manual(
-    labels = " Quarterly fiscal impact",
-    values = total_pink
-  ) +
-  fim_theme() +
-  guidez +
+  pivot_longer(fiscal_impact) 
+
+headline_plot <-
+  ggplot(data = headline) +
+  geom_col(aes(x = date, y = value, fill = name),
+           width = 50) +
+  geom_line(aes(x = date, 
+                y = fiscal_impact_moving_average,
+                colour = "4-quarter moving-average")) +
+  geom_point(aes(x = date,
+                 y = fiscal_impact_moving_average,
+                 colour = "4-quarter moving-average"),
+             size = 1) +
+  geom_rect(data = fim::recessions %>% 
+            filter(recession_start > yearquarter('1999 Q4')),
+            aes(xmin = recession_start, 
+              xmax = recession_end, 
+              ymin=-Inf,
+              ymax=+Inf),
+              fill = 'grey',
+              alpha = 0.2) +
+  ggtext::geom_richtext(aes(x = yearquarter(today()) + 4,
+                            y = 16),
+                        label = "Projection",
+                        cex = 2,
+                        fill = NA, 
+                        label.color = NA) +
+  fim::scale_fill_fim(palette = 'headline',
+                 labels = " Quarterly fiscal impact")  +
   scale_color_manual(" ",
-    values = c(
-      "4-quarter moving-average" = "black",
-      "4-quarter moving-average" = "black"
-    )
-  )+
-   geom_rect(data = fim::recessions %>% slice(5:7), aes(xmin = recession_start, xmax = recession_end, ymin=-Inf, ymax=+Inf),
-            fill = 'grey', alpha = 0.2)
-   
+                     values = c("4-quarter moving-average" = "black")) +
+  annotate("rect", xmin = yearquarter('2021 Q3'), xmax = yearquarter('2023 Q2'),
+           ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
+  guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
+                             keyheight = unit(0.4, "cm"),
+                             ncol = 1),
+         colour = guide_legend(keywidth = unit(0.8, "cm"),
+         keyheight = unit(0.05, "cm"),
+         ncol = 1)) +
+  fim::fim_theme() +
+  guides(
+  fill = guide_legend(
+    keywidth = unit(0.8, "cm"),
+    keyheight = unit(0.4, "cm"),
+    ncol = 1
+  ),
+  colour = guide_legend(
+    keywidth = unit(0.8, "cm"),
+    keyheight = unit(0.05, "cm"),
+    ncol = 1
+  ))+
+  labs(title = glue("**Hutchins Center Fiscal Impact Measure: Total**"),
+       x = NULL,
+       y = NULL,
+       subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
+       caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
+        and Congressional Budget Office data; grey shaded areas indicate recessions 
+        and yellow shaded areas indicate projection.") 
+headline_plot 
 ```
 
 
@@ -181,7 +137,8 @@ projection_start <-
   slice(1) %>%
   pull(date)
 
-fim%>%
+expanded <-
+  fim %>%
   summarise(
     date,
     federal_contribution,
@@ -191,118 +148,133 @@ fim%>%
     fiscal_impact_moving_average
   ) %>%
   pivot_longer(cols = ends_with('contribution'),
-               names_to = 'variable') %>%
-  ggplot() +
-      geom_bar(aes(x = date, y = value, fill = variable),
-               stat = 'identity', width = 50) +
-      geom_line(
-        aes(x = date,
-            y = fiscal_impact_moving_average,
-            colour = "4-quarter moving-average")
-      ) +
-      geom_point(
-        aes(x = date,
-            y = fiscal_impact_moving_average,
-            colour = "4-quarter moving-average"), size = 1
-      ) +
-      labs(
-        title = glue("**Hutchins Center Fiscal Impact Measure: Components**"),
-        x = '',
-        y = '',
-        subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
-        caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
-        and Congressional Budget Office data; grey shaded areas indicate recessions 
-        and yellow shaded areas indicate projection.") +
-      geom_richtext(aes(x = Sys.Date()+350,
+               names_to = 'variable')
+
+
+  ggplot(data = expanded) +
+      geom_col(aes(x = date, y = value, fill = variable),
+               width = 50) +
+      geom_line(aes(x = date,
+                    y = fiscal_impact_moving_average,
+                    colour = "4-quarter moving-average")) +
+      geom_point(aes(x = date,
+                     y = fiscal_impact_moving_average,
+                     colour = "4-quarter moving-average"),
+                size = 1) +
+      geom_richtext(aes(x = yearquarter(today()) + 4,
                         y = 16), 
                     label = "Projection",
                     cex = 2, 
                     fill = NA, label.color = NA, # remove background and outline
       ) +
-      annotate("rect", xmin = projection_start, xmax = lubridate::as_date('2022-12-31'),
+      geom_rect(data = fim::recessions %>% 
+            filter(recession_start > yearquarter('1999 Q4')),
+            aes(xmin = recession_start, 
+              xmax = recession_end, 
+              ymin=-Inf,
+              ymax=+Inf),
+              fill = 'grey',
+              alpha = 0.2) +
+    
+      scale_fill_fim(palette = 'expanded',
+                     labels = c(" Federal Purchases",
+                              " State & Local Purchases",
+                              " Taxes, Transfers, & Subsidies")) +
+     scale_color_manual(" ", 
+                        values=c("4-quarter moving-average" ="black")) +
+      annotate("rect", xmin = projection_start, xmax = yearquarter('2023 Q2'),
                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
       # scale_x_yearquarter(breaks = 0, date_breaks = "2 years", date_labels = '%Y Q%q',
       #              expand = c(0,0)) + 
-      
-      
-  scale_fill_manual(labels = c(
-      " Federal Purchases",
-      " State & Local Purchases",
-      " Taxes, Transfers, & Subsidies"
-    ),
-     values =  c(federal_blue, state_local_purple, taxes_transfers_green)) +
- fim_theme()+
-  guidez +
-  scale_color_manual(" ", 
-                         values=c("4-quarter moving-average" ="black",
-                                  "4-quarter moving-average" ="black")) +
-  geom_rect(data = fim::recessions %>% slice(5:7), aes(xmin = recession_start, xmax = recession_end, ymin=-Inf, ymax=+Inf),
-            fill = 'grey', alpha = 0.2)
+  
+   guides(
+  fill = guide_legend(
+    keywidth = unit(0.8, "cm"),
+    keyheight = unit(0.4, "cm"),
+    ncol = 1
+  ),
+  colour = guide_legend(
+    keywidth = unit(0.8, "cm"),
+    keyheight = unit(0.05, "cm"),
+    ncol = 1
+  )
+) +
+        fim::fim_theme() +
+         labs(title = glue("**Hutchins Center Fiscal Impact Measure: Components**"),
+       x = NULL,
+       y = NULL,
+       subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
+       caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
+        and Congressional Budget Office data; grey shaded areas indicate recessions 
+        and yellow shaded areas indicate projection.") 
+
 
 ```
 
 
+```{r, eval = FALSE, include = FALSE}
 
-```{r, eval= FALSE, include=FALSE}
-# p1 <- fim %>%
-#   select(
-#     date,
-#     federal_contribution,
-#     state_contribution,
-#     taxes_transfers_contribution,
-#     fiscal_impact_moving_average
-#   ) %>%
-#   pivot_longer(cols = ends_with('contribution'),
-#                names_to = 'variable') %>%
-#   ggplot() +
-#       geom_bar(aes(x = date, y = value, fill = variable),
-#                stat = 'identity', width = 50) +
-#       geom_line(
-#         aes(x = date,
-#             y = fiscal_impact_moving_average,
-#             colour = "4-quarter moving-average")
-#       ) +
-#       geom_point(
-#         aes(x = date,
-#             y = fiscal_impact_moving_average,
-#             colour = "4-quarter moving-average"), size = 1
-#       ) +
-#       labs(
-#         title = glue("**Hutchins Center Fiscal Impact Measure: Components**"),
-#         x = '',
-#         y = '',
-#         subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
-#         caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
-#         and Congressional Budget Office data; grey shaded areas indicate recessions 
-#         and yellow shaded areas indicate projection.") +
-# 
-# 
-#       geom_richtext(aes(x = Sys.Date()+350,
-#                         y = 16), 
-#                     label = "Projection",
-#                     cex = 2, 
-#                     fill = NA, label.color = NA, # remove background and outline
-#       ) +
-#       annotate("rect", xmin = projection_start, xmax = lubridate::as_date('2022-12-31'),
-#                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
-#       scale_x_yearquarter(breaks = 0, date_breaks = "2 years", date_labels = '%Y Q%q',
-#                    expand = c(0,0))  +
-#       
-#       
-#   scale_fill_manual(labels = c(
-#       " Federal Purchases",
-#       " State & Local Purchases",
-#       " Taxes, Transfers, & Subsidies"
-#     ),
-#      values =  c(federal_blue, state_local_purple, taxes_transfers_green)) +
-#  
-#   
-#   scale_color_manual(" ", 
-#                          values=c("4-quarter moving-average" ="black",
-#                                   "4-quarter moving-average" ="black"))  
-#   
-# p1 + 
-#     guidez
+template <- 
+  list(
+      geom_col(aes(x = date, y = value, fill = variable),
+               width = 50),
+      geom_line(aes(x = date,
+                    y = fiscal_impact_moving_average,
+                    colour = "4-quarter moving-average")),
+      geom_point(aes(x = date,
+                     y = fiscal_impact_moving_average,
+                     colour = "4-quarter moving-average"),
+                size = 1),
+      geom_richtext(aes(x = yearquarter(today()) + 1,
+                        y = 16), 
+                    label = "Projection",
+                    cex = 2, 
+                    fill = NA, label.color = NA, # remove background and outline
+      ),
+      geom_rect(data = fim::recessions %>% 
+            filter(recession_start > yearquarter('1999 Q4')),
+            aes(xmin = recession_start, 
+              xmax = recession_end, 
+              ymin=-Inf,
+              ymax=+Inf),
+              fill = 'grey',
+              alpha = 0.2),
+    
+     scale_color_manual(" ", 
+                        values=c("4-quarter moving-average" ="black")) ,
+      annotate("rect", xmin = projection_start, xmax = yearquarter('2023 Q2'),
+               ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow'),
+      # scale_x_yearquarter(breaks = 0, date_breaks = "2 years", date_labels = '%Y Q%q',
+      #              expand = c(0,0)) , 
+  
+   guides(
+  fill = guide_legend(
+    keywidth = unit(0.8, "cm"),
+    keyheight = unit(0.4, "cm"),
+    ncol = 1
+  ),
+  colour = guide_legend(
+    keywidth = unit(0.8, "cm"),
+    keyheight = unit(0.05, "cm"),
+    ncol = 1
+  )
+),
+        fim::fim_theme(),
+         labs(title = glue("**Hutchins Center Fiscal Impact Measure: Components**"),
+       x = NULL,
+       y = NULL,
+       subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
+       caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
+        and Congressional Budget Office data; grey shaded areas indicate recessions 
+        and yellow shaded areas indicate projection.") 
+)
+
+ggplot(expanded) +
+  template +
+        scale_fill_fim(palette = 'expanded',
+                     labels = c(" Federal Purchases",
+                              " State & Local Purchases",
+                              " Taxes, Transfers, & Subsidies"))
 ```
 
 
