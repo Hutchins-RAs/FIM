@@ -49,10 +49,8 @@ usna <-
             "usna",
             start.date = START) %>%
   as_tibble() %>% 
-  
-  # left_join(wla) %>%
   left_join(cpi) %>%
-  left_join(data2) %>% 
+  left_join(usecon) %>% 
   # Convert SNAP from millions to billions
   mutate(gftffx = gftffx / 1e3)
 
