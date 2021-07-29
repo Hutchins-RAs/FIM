@@ -1,6 +1,6 @@
 ---
 title: 'Fiscal Impact Update'
-subtitle: 'Q2 2021 Third GDP Revision'
+subtitle: 'Q3 2021 Advanced Estimate'
 author: ' Manuel Alcala Kovalski'
 date: "`r Sys.Date()`"
 header-includes:
@@ -36,7 +36,7 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
-```{r source}
+```{r source, include=FALSE, eval=FALSE}
 
 devtools::load_all()
 librarian::shelf(
@@ -49,8 +49,6 @@ librarian::shelf(
   
 )
 comparison_plot <- function(.data, variable){
-  
-  
   plot <- .data %>% 
     filter(variable == {{ variable }}) %>% 
     ggplot(aes(x = date,  y =  value, fill = source)) +
@@ -93,63 +91,52 @@ comparison_plot <- function(.data, variable){
 
 ```
 
-```{r}
-
-# Load previous months results
-previous <-
-  readxl::read_xlsx('results/5-2021/fim-5-2021.xlsx') %>%
-  mutate(date = yearquarter(date)) %>%
-  drop_na(date) %>%
-  as_tsibble(index = date) %>%
-  filter_index("2020 Q2" ~ "2023 Q1") %>% 
-  mutate(federal_non_health_grants_arp = mpc_non_health_grants_arp(federal_non_health_grants_arp)) %>% 
-  mutate(federal_purchases = federal_purchases + federal_non_health_grants_arp,
-         federal_purchases_contribution = federal_purchases_contribution + federal_non_health_grants_arp_contribution) %>% 
-  mutate(federal_ui = federal_ui,
-         federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
-  mutate(federal_ui = federal_ui + federal_ui_arp,
-         federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
-  mutate(federal_health_outlays= federal_health_outlays + federal_health_grants_arp,
-         federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution)
-
-
-forecast <- readxl::read_xlsx('data/forecast_06_2021.xlsx',
-                              sheet = 'forecast') %>% 
-  select(-name) %>% 
-  pivot_longer(-variable) %>% 
-  pivot_wider(names_from = 'variable',
-              values_from = 'value') %>% 
-  rename(date = name) %>% 
-  mutate(date = yearquarter(date))
-
-
-current <- readRDS('data/contributions.RDS') %>%
-  mutate(date = yearquarter(date)) %>%
-  drop_na(date) %>%
-  as_tsibble(index = date) %>%
-  filter_index("2020 Q2" ~ "2023 Q1")
-
-previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
-current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
-
-comparison <- inner_join(previous_long,
-                         current_long,
-                         by = c('date', 'name', 'id')) %>%
-  pivot_longer(c(previous, current),
-               names_to = 'source') %>%
-  rename(variable = name)
-
-comparison_nested <-
-  comparison %>%
-  group_by(variable) %>%
-  nest() %>%
-  mutate(plot = map2(.x = variable,
-                     .y = data,
-                     .f = ~comparison_plot(.data = .y,
-                                  variable = .x)))
-
-
-plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
+```{r, include=FALSE, eval=FALSE}
+# 
+# # Load previous months results
+# previous <-
+#   readxl::read_xlsx('results/06-2021/fim-06-2021.xlsx') %>%
+#   mutate(date = yearquarter(date)) %>%
+#   drop_na(date) %>%
+#   as_tsibble(index = date) %>%
+#   filter_index("2020 Q3" ~ "2023 Q2") #%>% 
+#   # mutate(federal_ui = federal_ui,
+#   #        federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
+#   # mutate(federal_ui = federal_ui + federal_ui_arp,
+#   #        federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
+#   # mutate(federal_health_outlays= federal_health_outlays + federal_health_grants_arp,
+#   #        federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution)
+# 
+# 
+# 
+# 
+# current <- readRDS('data/contributions.RDS') %>%
+#   mutate(date = yearquarter(date)) %>%
+#   drop_na(date) %>%
+#   as_tsibble(index = date) %>%
+#   filter_index("2020 Q3" ~ "2023 Q2")
+# 
+# previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+# current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+# 
+# comparison <- inner_join(previous_long,
+#                          current_long,
+#                          by = c('date', 'name', 'id')) %>%
+#   pivot_longer(c(previous, current),
+#                names_to = 'source') %>%
+#   rename(variable = name)
+# 
+# comparison_nested <-
+#   comparison %>%
+#   group_by(variable) %>%
+#   nest() %>%
+#   mutate(plot = map2(.x = variable,
+#                      .y = data,
+#                      .f = ~comparison_plot(.data = .y,
+#                                   variable = .x)))
+# 
+# 
+# plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
 ```
 
 
@@ -159,23 +146,15 @@ plots$fiscal_impact
 
 
 # NIPA Consistent Purchases {.tabset .tabset-pills}
-```{r}
-library('magrittr')
-library('tidyverse')
-```
 
-During the last update, we were counting all of the grants and purchases from the American Rescue Plan as federal purchases. Hence, of the  $`r previous %>% filter_index('2021 Q2') %>% pull(federal_purchases)`
-billion in federal purchases in 2021 Q2, $`r previous %>% filter_index('2021 Q2') %>% pull(federal_non_health_grants_arp)`
-were from the American Rescue Plan. In 2021 Q3, federal purchases were  $`r previous %>% filter_index('2021 Q2') %>% pull(federal_purchases)` of which
-$`r previous %>% filter_index('2021 Q2') %>% pull(federal_non_health_grants_arp)` were from the American Rescue Plan. 
 
-However, the federal purchases portion from ARP was actually lower last time since we applied an MPC to it. Now, we only apply that MPC to the portion that we put into consumption grants. Therefore, our federal purchases are `r  current$federal_purchases[5] - previous$federal_purchases[5]` billion higher this time.
+
 
 
 
 ## Contributions
 
-```{r}
+```{r nipa_purchases}
 plots$federal_purchases_contribution + labs(subtitle = "NIPA Consistent")
 plots$state_purchases_contribution +  labs(subtitle = "NIPA Consistent")
 ```
@@ -184,7 +163,7 @@ plots$state_purchases_contribution +  labs(subtitle = "NIPA Consistent")
 
 ## Levels 
 
-```{r}
+```{r nipa_purchases_levels}
 plots$federal_purchases  + labs(subtitle = "NIPA Consistent")
 plots$state_purchases + labs(subtitle = "NIPA Consistent")
 
@@ -204,19 +183,18 @@ plots$investment_grants_contribution
 
 ## Levels
 
-```{r}
+```{r grants_levels}
 plots$consumption_grants
 plots$investment_grants
-plots$federal_non_health_grants_arp
 ```
 
 # FIM Consistent Purchases 
 
 ## Contributions
 
-```{r}
-plots$federal_contribution + labs(subtitle = "NIPA Consistent")
-plots$state_contribution  + labs(subtitle = "NIPA Consistent")
+```{r fim_purchases}
+plots$federal_contribution + labs(subtitle = "FIM Consistent")
+plots$state_contribution  + labs(subtitle = "FIM Consistent")
 ```
 
 
@@ -227,35 +205,31 @@ plots$state_contribution  + labs(subtitle = "NIPA Consistent")
 
 ### Contributions
 
-```{r}
+```{r corp_contribution}
 plots$federal_corporate_taxes_contribution
 plots$state_corporate_taxes_contribution
 ```
 
 ### Levels
 
-```{r}
+```{r corp_lvl}
 plots$federal_corporate_taxes
 plots$state_corporate_taxes
 ```
 
 ## Non-corporate taxes {.tabset .tabset-pills}
 
-"Updates to Fourth-Quarter Wages and Salaries
-In addition to presenting updated estimates for the first quarter, today's release presents revised estimates of fourth-quarter wages and salaries, personal taxes, and contributions for government social insurance based on updated data from the BLS Quarterly Census of Employment and Wages program. Wages and salaries are now estimated to have increased $360.5 billion in the fourth quarter of 2020, an upward revision of $157.8 billion. The revision to fourth-quarter wages and salaries resulted in a revision to GDI; real GDI increased 19.4 percent (annual rate) in the fourth quarter, an upward revision of 3.7 percentage points from the previously published estimate."
-
-Our forecast is taking these revisions until the end of the forecast period. So these revisions lead to lower contributions than last time in the forecast period.
 
 ### Contributions
 
-```{r}
+```{r noncorp_cont}
 plots$federal_non_corporate_taxes_contribution
 plots$state_non_corporate_taxes_contribution
 ```
 
 ### Levels
 
-```{r noncorp-taxes}
+```{r noncorp_lvl}
 plots$federal_non_corporate_taxes
 plots$state_non_corporate_taxes
 
@@ -277,13 +251,6 @@ plots$state_transfers_contribution
 
 ## Health Outlays {.tabset .tabset-pills}
 
-While our total medicaid forecast is unchanged, we bumped up our forecast for the federal portion of medicaid (Medicaid grants) to reflect the increased FMAP due to the ARP. This increases federal health outlays and decreases state health outlays a litte bit.
-
-We assume that the pandemic will end in 2022 Q3.
-
-Moreover, our medicare forecast is unchanged. The difference of `r current$medicare[5] - previous$medicare[5]` is due to the Medicare sequester which we previously included in our federal health outlays add factor instead of directly into our Medicare forecast.
-
-Finally, the bulk of the difference in federal health outlays comes from double counting revenues from Medicaid, Medicare, and CHIP in CBO's ARP score. We had previously said that health grants from the ARP in Q2 2021 and Q3 2021 were `r previous$federal_health_grants_arp[5]`. Afterwards, we had `r previous$federal_health_grants_arp[7]` for 4 quarters. Since the MPC for health outlays is high (90% over four quarters), this overestimated the contribution of federal health outlays considerably.
 
 ### Contributions
 
@@ -295,7 +262,7 @@ plots$state_health_outlays_contribution
 
 ### Levels
 
-```{r}
+```{r health_lvl}
 
 plots$federal_health_outlays
 plots$state_health_outlays
@@ -303,16 +270,14 @@ plots$state_health_outlays
 
 ### Components
 
-```{r}
+```{r health_comp}
 plots$medicaid
 plots$medicaid_grants
 plots$medicare
 ```
 
 ## Subsidies (non-ARP) {.tabset .tabset-pills}
-We took out the business meals deductions from subsidies since we believe they're actually a tax break instead. Moreover, we changed our PPP forecast to more accurately predict the timing of how BEA will write PPP disbursements down. In particular, we had $568 billion in PPP for Q2 2021 and Q3 2021 previously and now we have 488, 322 and 32 in Q1 through Q3 of 2021. Hence, our PPP forecast is 294 lower.
 
-Otherwise, our forecast is the same (nothing from the ARP changed)
 ### Contributions
 
 ```{r subsidies}
@@ -322,7 +287,7 @@ plots$subsidies_contribution
 
 ### Levels
 
-```{r}
+```{r subsidies_lvl}
 
 plots$subsidies
 ```
@@ -346,19 +311,16 @@ plots$federal_aid_to_small_businesses_arp
 
 ## Unemployment Insurance {.tabset .tabset-pills}
 
-Previously, we guessed that regular federal UI would be $20 billion and that the ARP UI was 
-`r previous$federal_ui_arp[5]`. Since our ARP score was based on an outdated unemployment rate forecast from CBO, we changed it to reflect higher employment growth due to reopenings.
-
 ### Contributions
 
-```{r unemployment insurance}
+```{r ui_cont}
 plots$federal_ui_contribution
 plots$state_ui_contribution
 ```
 
 ### Levels
 
-```{r}
+```{r ui_lvl}
 
 plots$federal_ui
 plots$state_ui
@@ -367,13 +329,13 @@ plots$state_ui
 ## Other aid to vulnerable households {.tabset .tabset-pills}
  Premium Tax Credits, Ratepayer protection, Assistance for older Americans, COBRA, Emergency Assistance
 ### Contribution
-```{r}
+```{r vulnerable}
 plots$federal_other_vulnerable_arp_contribution
 ```
 
 ### Level
 
-```{r}
+```{r vulnerable_lvl}
 plots$federal_other_vulnerable_arp
 ```
 
@@ -381,14 +343,14 @@ plots$federal_other_vulnerable_arp
 
 ### Contribution
 
-```{r}
+```{r rebate_cont}
 plots$rebate_checks_contribution
 
 ```
 
 ### Level
 
-```{r}
+```{r rebate_lvl}
 plots$rebate_checks
 
 ```
@@ -397,14 +359,14 @@ plots$rebate_checks
 Last time, we forgot to include the rebate checks from ARP that will go out in the next tax year.
 ### Contribution
 
-```{r}
+```{r rebate_arp_cont}
 plots$rebate_checks_arp_contribution
 
 ```
 
 ### Level
 
-```{r}
+```{r rebate_arp_lvl}
 plots$rebate_checks_arp
 
 ```
@@ -413,13 +375,13 @@ plots$rebate_checks_arp
 Includes Child tax credit, EITC,  Childcare for workers,  Dependent  care for families
 ### Contribution
 
-```{r}
+```{r aid_cont}
 plots$federal_other_direct_aid_arp_contribution
 ```
 
 ### Level
 
-```{r}
+```{r aid_lvl}
 plots$federal_other_direct_aid_arp
 ```
 
@@ -430,13 +392,13 @@ Level and impact of social benefits net of health outlays, rebate checks, and un
 The social benefits remainder came in 3.6 billion lower than we had last time. Almost half of this is due to Federal UI which came in 1.63 billion lower.
 
 ### Contribution
-```{r}
+```{r soc_cont}
 plots$federal_social_benefits_contribution + labs(subtitle = "Remainder of social benefits")
 plots$state_social_benefits_contribution+ labs(subtitle = "Remainder of social benefits")
 ```
 
 ### Level
-```{r}
+```{r soc_lvl}
 
 plots$federal_social_benefits+ labs(subtitle = "Remainder of social benefits")
 plots$state_social_benefits+ labs(subtitle = "Remainder of social benefits")
