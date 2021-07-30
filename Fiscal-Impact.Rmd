@@ -65,6 +65,12 @@ headline <-
   select(date, fiscal_impact, fiscal_impact_moving_average) %>%
   pivot_longer(fiscal_impact) 
 
+recessions <-
+  recessions %>% 
+  mutate_where(recession_start == yearquarter("2019 Q4"),
+               recession_start = yearquarter("2020 Q1"),
+               recession_end = yearquarter("2020 Q2"))
+  
 headline_plot <-
   ggplot(data = headline) +
   geom_col(aes(x = date, y = value, fill = name),
@@ -76,7 +82,7 @@ headline_plot <-
                  y = fiscal_impact_moving_average,
                  colour = "4-quarter moving-average"),
              size = 1) +
-  geom_rect(data = fim::recessions %>% 
+  geom_rect(data = recessions %>% 
             filter(recession_start > yearquarter('1999 Q4')),
             aes(xmin = recession_start, 
               xmax = recession_end, 
@@ -167,7 +173,7 @@ expanded <-
                     cex = 2, 
                     fill = NA, label.color = NA, # remove background and outline
       ) +
-      geom_rect(data = fim::recessions %>% 
+      geom_rect(data = recessions %>% 
             filter(recession_start > yearquarter('1999 Q4')),
             aes(xmin = recession_start, 
               xmax = recession_end, 
