@@ -1,5 +1,5 @@
 ## code to prepare `recessions` dataset goes here
-conflict_prefer("filter", "dplyr")
+conflicted::conflict_prefer("filter", "dplyr")
 
 
 recessions <-

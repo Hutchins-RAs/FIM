@@ -30,64 +30,64 @@ knitr::opts_chunk$set(
   fig.align = 'center',
   warning = FALSE,
   message = FALSE,
-  cache = TRUE 
+  cache = FALSE 
 )
 
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
 ```{r source, include=FALSE, eval=FALSE}
-
-devtools::load_all()
-librarian::shelf(
-  'tidyverse',
-  'purrr',
-  'tsibble',
-  'lubridate',
-  'glue',
-  'magrittr'
-  
-)
-comparison_plot <- function(.data, variable){
-  plot <- .data %>% 
-    filter(variable == {{ variable }}) %>% 
-    ggplot(aes(x = date,  y =  value, fill = source)) +
-    #geom_col(position=position_dodge2(reverse = TRUE)) +
-    geom_col(position=position_dodge2(reverse = TRUE)) +
-    labs(title = glue::glue("{snakecase::to_title_case(variable)}"),
-         x = NULL,
-         y = NULL) +
-    ggthemes::theme_hc() +
-    gghutchins::scale_fill_hutchins(
-      name = "",
-      labels = c('Updated', 'Previous'),
-      pal = 'qual',
-      rev = FALSE
-    ) +
-    scale_x_yearquarter(breaks = waiver(),
-                        date_breaks = '3 months',
-                        date_labels = "Q%q") +
-    facet_grid( ~ year(date),
-                space = "free_x",
-                scales = "free_x",
-                switch = "x")  +
-    theme(legend.position = 'top') +
-    guides(fill = guide_legend(reverse = TRUE)) 
-  
-  
-  variable_name <- rlang::as_name(rlang::ensym(variable))
-  
-  if(str_ends(variable_name, 'contribution')){
-    plot + 
-      scale_y_continuous(name = '', 
-                         labels = scales::label_percent(scale = 1))
-  } else {
-    plot +
-      scale_y_continuous(name = '', 
-                         labels = scales::label_comma())
-  }
-  
-}
+# 
+# devtools::load_all()
+# librarian::shelf(
+#   'tidyverse',
+#   'purrr',
+#   'tsibble',
+#   'lubridate',
+#   'glue',
+#   'magrittr'
+#   
+# )
+# comparison_plot <- function(.data, variable){
+#   plot <- .data %>% 
+#     filter(variable == {{ variable }}) %>% 
+#     ggplot(aes(x = date,  y =  value, fill = source)) +
+#     #geom_col(position=position_dodge2(reverse = TRUE)) +
+#     geom_col(position=position_dodge2(reverse = TRUE)) +
+#     labs(title = glue::glue("{snakecase::to_title_case(variable)}"),
+#          x = NULL,
+#          y = NULL) +
+#     ggthemes::theme_hc() +
+#     gghutchins::scale_fill_hutchins(
+#       name = "",
+#       labels = c('Updated', 'Previous'),
+#       pal = 'qual',
+#       rev = FALSE
+#     ) +
+#     scale_x_yearquarter(breaks = waiver(),
+#                         date_breaks = '3 months',
+#                         date_labels = "Q%q") +
+#     facet_grid( ~ year(date),
+#                 space = "free_x",
+#                 scales = "free_x",
+#                 switch = "x")  +
+#     theme(legend.position = 'top') +
+#     guides(fill = guide_legend(reverse = TRUE)) 
+#   
+#   
+#   variable_name <- rlang::as_name(rlang::ensym(variable))
+#   
+#   if(str_ends(variable_name, 'contribution')){
+#     plot + 
+#       scale_y_continuous(name = '', 
+#                          labels = scales::label_percent(scale = 1))
+#   } else {
+#     plot +
+#       scale_y_continuous(name = '', 
+#                          labels = scales::label_comma())
+#   }
+#   
+# }
 
 ```
 
@@ -142,6 +142,12 @@ comparison_plot <- function(.data, variable){
 
 ```{r fiscal_impact}
 plots$fiscal_impact
+```
+
+```{r}
+library(gt)
+revisions_tbl
+summary_tbl
 ```
 
 
@@ -327,7 +333,9 @@ plots$state_ui
 ```
 
 ## Other aid to vulnerable households {.tabset .tabset-pills}
+
  Premium Tax Credits, Ratepayer protection, Assistance for older Americans, COBRA, Emergency Assistance
+ 
 ### Contribution
 ```{r vulnerable}
 plots$federal_other_vulnerable_arp_contribution
@@ -356,7 +364,9 @@ plots$rebate_checks
 ```
 
 ## Rebate Checks (ARP) {.tabset .tabset-pills}
+
 Last time, we forgot to include the rebate checks from ARP that will go out in the next tax year.
+
 ### Contribution
 
 ```{r rebate_arp_cont}
@@ -372,7 +382,9 @@ plots$rebate_checks_arp
 ```
 
 ## Direct aid to households {.tabset .tabset-pills}
+
 Includes Child tax credit, EITC,  Childcare for workers,  Dependent  care for families
+
 ### Contribution
 
 ```{r aid_cont}
@@ -402,4 +414,25 @@ plots$state_social_benefits_contribution+ labs(subtitle = "Remainder of social b
 
 plots$federal_social_benefits+ labs(subtitle = "Remainder of social benefits")
 plots$state_social_benefits+ labs(subtitle = "Remainder of social benefits")
+```
+
+
+
+
+# Deflators {.tabset .tabset-pills}
+
+## Delta
+```{r}
+diff_plot
+```
+
+## Current
+
+```{r}
+cur_plot
+```
+
+## Previous
+```{r}
+prev_plot
 ```
