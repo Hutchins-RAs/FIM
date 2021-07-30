@@ -1,48 +1,71 @@
 
 # Unexported mpc scratch functions ----------------------------------------
-
-library('tidyverse')
-library('tsibble')
-library('rlang')
-df %>% 
-  summarise(across(mpc_timing(health_outlays)))
-map2_dbl(fim, names(fim %>% select(social_benefits,  subsidies)), ~mpc_call(.x, .y))
-
-mpc_gen <-function(data, ...){
-  data <- data %>% select(...)
-  purrr::map_dbl(names(data), mpc_call)
-}
-mpc2(fim, "subsidies")
-sub <- fim %>% 
-  select(social_benefits,subsidies)
-
-mpc2(fim, field = 'social_benefits')
+librarian::shelf(tidyverse, rlang)
 
 
+timing <- read_excel("data/forecast.xlsx", 
+                       sheet = "mpc", range = "B2:N14") %>% 
+ pivot_longer(-variable,
+              names_to = 'lag') %>% 
+  pivot_wider(names_from = variable,
+              values_from = value) %>% 
+  select(-lag)
 
-fim %>% 
-  summarise(subsidies, mpc_subsidies(subsidies))
-timing <- function(x){
-  switch(x, 
-         health_outlays = rep(0.9 * 0.25, 4),
-         social_benefits =  rep(0.9 * 0.25, 4),
-         subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.08, 0.8, 
-                              0.08, 0.08, 0.075, 0.075, 0.075, 0.075))
-}
+contributions <- readr::read_rds('data/contributions.rds')
 
-timing2 <- function(field){
+mpc_with_data <- function(data, field){
   field <- enquo(field)
-  string <- rlang::as_label(field)
+  string <- as_label(field)
   
-  args <- switch(string, 
-                 health_outlays = rep(0.9 * 0.25, 4),
-                 social_benefits =  rep(0.9 * 0.25, 4),
-                 subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.08, 0.8, 
-                                      0.08, 0.08, 0.075, 0.075, 0.075, 0.075))
-  return(args)
+  args <- switch(as_label(field),
+                 # TRANSFERS
+                 
+                 health_outlays = timing$health_outlays,
+                 federal_health_outlays = ,
+                 state_health_outlays = ,
+                 
+                 social_benefits =  timing$social_benefits,
+                 federal_social_benefits = ,
+                 state_social_benefits = ,
+                 
+                 
+                 subsidies = timing$subsidies,
+                 federal_subsidies = ,
+                 state_subsidies = ,
+                 
+                 
+                 ui = timing$ui,
+                 federal_ui = ,
+                 state_ui = ,
+                 
+                 ui_arp = timing$ui_arp,
+                 federal_ui_arp = ,
+                 state_ui_arp = ,
+                 
+                 rebate_checks = timing$rebate_checks,
+                 rebate_checks_arp = timing$rebate_checks_arp,
+                 
+                 corporate_taxes = timing$corporate_taxes,
+                 federal_corporate_taxes = ,
+                 state_corporate_taxes = ,
+                 
+                 non_corporate_taxes = timing$non_corporate_taxes,
+                 federal_non_corporate_taxes = ,
+                 state_non_corporate_taxes = ,
+                 
+                 federal_aid_to_small_businesses_arp = timing$aid_to_small_businesses_arp,
+                 federal_other_direct_aid_arp = timing$other_direct_aid_arp,
+                 federal_other_vulnerable_arp = timing$other_vulnerable_arp,)
+  
+  function_call <- expr(roll::roll_sum({{field}}, weights = rev(args), width = length(weights), 
+                                       online = FALSE,
+                                       min_obs = 1))
+  eval_tidy(expr = function_call, data = data)
+  #return(function_call)
 }
 
-timing2(social_benefits)
+mpc_with_data(contributions,
+              federal_ui)
 mpc <- function(data, field){
   field <- enquo(field)
   string <- as_label(field)
@@ -80,7 +103,11 @@ mpc <- function(data, field){
    eval_tidy(expr = function_call, data = data)
   #return(function_call)
 }
+col_list <- c('ui', 'subsidies')
 
+for(col in col_list){
+  mpc_with_data(contributions, as_label(col))
+}
 
 df %>% 
   as_tibble() %>% 
