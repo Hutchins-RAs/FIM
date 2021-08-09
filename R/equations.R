@@ -24,7 +24,7 @@ scale <- function( var, by){
 #' @examples
 counterfactual <- function(var, deflator){
   equation <- rlang::expr(lag({{var}} * (1 + {{ deflator }} + real_potential_gdp_growth)))
-  rlang::eval_tidy(equation, env = caller_env())
+  rlang::eval_tidy(equation, env = rlang::caller_env())
 }
 
 
@@ -42,6 +42,6 @@ contribution <- function(var, deflator){
   
   counterfactual <- rlang::expr(400 * ( {{var}} - counterfactual({{var}}, {{deflator}})) / lag(gdp))
   
-  rlang::eval_tidy(counterfactual, env = caller_env())
+  rlang::eval_tidy(counterfactual, env = rlang::caller_env())
 }
 

@@ -1,23 +1,41 @@
+#' Title
+#'
+#' @param path 
+#' @param sheet 
+#' @param range 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+read_mpc_file <- function(path = 'data/forecast.xlsx', sheet = 'mpc', range = 'B2:N14'){
+  readxl::read_excel(path = path, 
+             sheet = sheet, range = range) %>% 
+    tidyr::pivot_longer(-variable,
+                 names_to = 'lag') %>% 
+    tidyr::pivot_wider(names_from = variable,
+                values_from = value) %>% 
+    dplyr::select(-lag)
+}
 
-# Unexported mpc scratch functions ----------------------------------------
-librarian::shelf(tidyverse, rlang)
 
 
-timing <- read_excel("data/forecast.xlsx", 
-                       sheet = "mpc", range = "B2:N14") %>% 
- pivot_longer(-variable,
-              names_to = 'lag') %>% 
-  pivot_wider(names_from = variable,
-              values_from = value) %>% 
-  select(-lag)
-
-contributions <- readr::read_rds('data/contributions.rds')
-
-mpc_with_data <- function(data, field){
-  field <- enquo(field)
-  string <- as_label(field)
+#' Title
+#'
+#' @param var 
+#' @param data 
+#'
+#' @return
+#' @export
+#' @importFrom rlang enquo as_label 
+#'
+#' @examples
+get_timing <- function(var, data = NULL){
+  timing <- data %||% read_mpc_file()
+  var <- enquo(var)
+  string <- as_label(var)
   
-  args <- switch(as_label(field),
+  args <- switch(as_label(var),
                  # TRANSFERS
                  
                  health_outlays = timing$health_outlays,
@@ -57,66 +75,35 @@ mpc_with_data <- function(data, field){
                  federal_other_direct_aid_arp = timing$other_direct_aid_arp,
                  federal_other_vulnerable_arp = timing$other_vulnerable_arp,)
   
-  function_call <- expr(roll::roll_sum({{field}}, weights = rev(args), width = length(weights), 
-                                       online = FALSE,
-                                       min_obs = 1))
-  eval_tidy(expr = function_call, data = data)
-  #return(function_call)
+  return(args)
 }
 
-mpc_with_data(contributions,
-              federal_ui)
-mpc <- function(data, field){
-  field <- enquo(field)
-  string <- as_label(field)
+#' Title
+#'
+#' @param data 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+mpc <- function(data, ...){
+  vars <- rlang::enquos(..., .named = TRUE)
+  vars <- purrr::map(vars,
+             function(var) {
+               rlang::eval_tidy(rlang::expr(roll::roll_sum(
+                 {{var}},
+                 weights = rev(get_timing({{var}})),
+                 width = length(get_timing({{var}})),
+                 online = FALSE,
+                 min_obs = 1
+               )),
+               data = data)
+             })
+  names(vars) <- paste0(names(vars), '_consumption')
+
+ data %>%
+   dplyr::mutate(!!!vars, .before = 'gdp')
  
-  args <- switch(as_label(field),
-                 # TRANSFERS
-                 
-                 
-                 health_outlays = rep(0.9 * 0.25, 4),
-                 social_benefits =  rep(0.9 * 0.25, 4),
-                 federal_subsidies = ,
-                 state_subsidies = ,
-                 subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.08, 0.8, 
-                                           0.08, 0.08, 0.075, 0.075, 0.075, 0.075),
-                 federal_ui = ,
-                 state_ui = ,
-                 ui = 0.9 * c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05),
-                 
-                 federal_ui_arp = ,
-                 state_ui_arp = ,
-                 ui_arp = c(0.253, 0.253, 0.161, 0.161, 0.075, 0.05, 0.025, 0.022),
-                 rebate_checks = 0.7 * c(0.35, 0.15, rep(0.08, 6)),
-                 
-                 
-                 
-                 # TAXES
-                 corporate_taxes = -0.4 * (rep(1/12, 12)),
-                 non_corporate_taxes = -0.6 * c(rep(0.2, 2), rep(0.1, 6)))
-  
-  function_call <- expr(roll::roll_sum({{field}}, weights = rev(args), width = length(weights), 
-                                       online = FALSE,
-                                       min_obs = 1))
-  # function_call$weights <- rev(timing(field))
-  # function_call$width <- length(timing(field))
-   eval_tidy(expr = function_call, data = data)
-  #return(function_call)
+ #rlang::eval_tidy(call, data = data)
 }
-col_list <- c('ui', 'subsidies')
-
-for(col in col_list){
-  mpc_with_data(contributions, as_label(col))
-}
-
-df %>% 
-  as_tibble() %>% 
-  mutate(across(c(social_benefits, subsidies, state_ui),
-                ~ mpc(df, .x),
-                .names = '{.col}_mpc')) %>% 
-  select(date, social_benefits, subsidies,
-         ends_with('mpc'))
-  summarise(date, social_benefits, mpc = mpc_timing(., social_benefits))
-mpc_timing(subsidies)
-df %>% 
-  mutate(mpc = roll::roll_sum("subsidies", width = 12, weights = mpc_timing("subsidies")))
