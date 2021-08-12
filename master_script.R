@@ -5,6 +5,12 @@ setwd("C:/Users/scampbell/Documents/GitHub/fim")
 #Pull the most recent changes from GitHub
 #________
 #Loading the FIM package
+librarian::shelf('gert')
+# Check whether any changes have been made
+git_fetch()
+# Pull those changes onto your computer
+git_pull()
+
 devtools::load_all(".")
 #Running the FIM calculations
 source('fiscal_impact.R')
