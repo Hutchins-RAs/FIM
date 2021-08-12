@@ -181,7 +181,10 @@ consumption %>%
   get_fiscal_impact()
 
 openxlsx::write.xlsx(contributions, file = "results/07-2021/fim-07-2021.xlsx")
-write_rds(contributions, file = 'data/contributions.rds')
+write_rds(contributions, path = 'data/contributions.rds')
+
+
+
 # Web materials  -------------------------------------------------------------
 
 # Interactive data
@@ -205,7 +208,7 @@ interactive <-
   separate(date, c('year', 'quarter'))
 
 month_year <- glue('{month(today())}-{year(today())}')
-readr::write_csv(interactive, file = glue('results/0{month_year}/interactive-{month_year}.csv'))
+readr::write_csv(interactive, path = glue('results/0{month_year}/interactive-{month_year}.csv'))
 
 # Figures for website
 rmarkdown::render('Fiscal-Impact.Rmd',
