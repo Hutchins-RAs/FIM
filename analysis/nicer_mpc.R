@@ -121,12 +121,22 @@ mpc_tidy <-function(data, timing_file = NULL, vars){
  
   #rlang::eval_tidy(call, data = data)
 }
+
+
 consumption <-
   projections %>% 
   mpc_tidy(mpc_data, 
                c(matches('corporate|non_corporate|social_benefits|health_outlays|rebate_checks|ui$|subsidies|aid_to_small_businesses|direct_aid|vulnerable') &
                !ends_with('growth') &
-               !starts_with('provider_relief'))) 
+               !starts_with('provider_relief')))
+
+consumption %>% 
+  filter_index('2018 Q1' ~ .) %>% 
+  select(date, ends_with('_consumption')) %>% 
+  ggplot(aes(x = date, y = rebate_checks_consumption)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  ggbrookings::theme_brookings()
 
 
   select(ends_with('contribution')) %>%
@@ -152,28 +162,7 @@ consumption <-
     #sum_taxes_contributions() %>%
     get_fiscal_impact() %>% 
   select(date, fiscal_impact)
-temp <-
-  projections %>% 
-  mpc_apply(timing_file = mpc_data,
-            federal_corporate_taxes, 
-            federal_non_corporate_taxes,
-            federal_social_benefits,
-            federal_health_outlays,
-            federal_ui,
-            rebate_checks,
-            rebate_checks_arp,
-            federal_subsidies,
-            federal_aid_to_small_businesses_arp,
-            federal_other_direct_aid_arp,
-            federal_other_vulnerable_arp,
-            
-            state_corporate_taxes, 
-            state_non_corporate_taxes,
-            state_social_benefits,
-            state_health_outlays,
-            state_ui,
-            state_subsidies,
-            ) 
+
 
 temp %>% 
   filter(if_any(-c(date, contains('taxes')), ~ .x < 0))

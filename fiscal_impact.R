@@ -14,6 +14,15 @@ librarian::shelf(
 options(digits = 4)
 options(scipen = 20)
 devtools::load_all()
+
+# Set dates for current and previous months
+month_year <- glue('{format.Date(today(), "%m")}-{year(today())}')
+last_month_year <- glue('{format.Date(today()-months(1), "%m")}-{year(today())}')
+
+if(!dir.exists(glue('results/{month_year}'))) {
+  dir.create(glue('results/{month_year}'))
+}
+
 # Wrangle data ------------------------------------------------------------
 
 # Since BEA put all CARES act grants to S&L in Q2 2020 we need to
@@ -71,8 +80,8 @@ usna <-
 
 # Forecast ----------------------------------------------------------------
 forecast <- 
-  readxl::read_xlsx('data/forecast_07_2021.xlsx',
-                              sheet = 'forecast') %>% 
+  readxl::read_xlsx('data/forecast.xlsx',
+                    sheet = 'forecast') %>% 
   select(-15:-17, -name) %>% 
   pivot_longer(-variable) %>% 
   pivot_wider(names_from = 'variable',
@@ -180,7 +189,9 @@ consumption %>%
   #sum_taxes_contributions() %>%
   get_fiscal_impact()
 
-openxlsx::write.xlsx(contributions, file = "results/07-2021/fim-07-2021.xlsx")
+
+openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'),
+                     overwrite = TRUE)
 write_rds(contributions, path = 'data/contributions.rds')
 
 
@@ -207,19 +218,17 @@ interactive <-
          projection = id) %>% 
   separate(date, c('year', 'quarter'))
 
-month_year <- glue('{month(today())}-{year(today())}')
-readr::write_csv(interactive, path = glue('results/0{month_year}/interactive-{month_year}.csv'))
+readr::write_csv(interactive, path = glue('results/{month_year}/interactive-{month_year}.csv'))
 
 # Figures for website
 rmarkdown::render('Fiscal-Impact.Rmd',
-                  output_file = glue::glue('results/0{month_year}/Fiscal-Impact-{month_year}'),
+                  output_file = glue::glue('results/{month_year}/Fiscal-Impact-{month_year}'),
                   clean = TRUE)
 # Comparison ------------------------------------------------------------
 
-last_month_year <- glue('{month(today())-1}-{year(today())}')
 # Load previous months results
 previous <-
-  readxl::read_xlsx(glue('results/0{last_month_year}/fim-0{last_month_year}.xlsx')) %>%
+  readxl::read_xlsx(glue('results/{last_month_year}/fim-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
@@ -324,17 +333,19 @@ comparison_deflators <-
   mutate(name = snakecase::to_title_case(name)) 
 
 openxlsx::write.xlsx(x = comparison_deflators,
-                     file = 'results/07-2021_comparison_deflators.xlsx')
-
-  openxlsx::write.xlsx(x = comparison_wide,
-                       file = 'results/07-2021/contributions_comparison.xlsx')
+                     file = glue('results/{month_year}/{month_year}_comparison_deflators.xlsx'),
+                     overwrite = TRUE)
+v
+openxlsx::write.xlsx(x = comparison_wide,
+                     file = glue('results/{month_year}/{month_year}/contributions_comparison.xlsx'),
+                     overwrite = TRUE)
   
 
 # Figures -----------------------------------------------------------------
 
   # Load previous months results
   previous <-
-    readxl::read_xlsx(glue('results/0{last_month_year}/fim-0{last_month_year}.xlsx')) %>%
+    readxl::read_xlsx(glue('results/{last_month_year}/fim-{last_month_year}.xlsx')) %>%
     mutate(date = yearquarter(date)) %>%
     drop_na(date) %>%
     as_tsibble(index = date) %>%
@@ -442,9 +453,9 @@ revisions_tbl <-
       cell_text(weight = "bold"))) %>%
   tab_options(
     column_labels.border.top.width = px(10),
-    column_labels.border.top.color = "transparent",
-    table.border.top.color = "transparent",
-    table.border.bottom.color = "transparent",
+    # column_labels.border.top.color = "transparent",
+    # table.border.top.color = "transparent",
+    # table.border.bottom.color = "transparent",
     heading.background.color = '#003A79',
     data_row.padding = px(10),
     source_notes.font.size = 14,
@@ -549,9 +560,9 @@ summary_tbl <-
       cell_text(weight = "bold"))) %>%
   tab_options(
     column_labels.border.top.width = px(10),
-    column_labels.border.top.color = "transparent",
-    table.border.top.color = "transparent",
-    table.border.bottom.color = "transparent",
+    # column_labels.border.top.color = "transparent",
+    # table.border.top.color = "transparent",
+    # table.border.bottom.color = "transparent",
     heading.background.color = '#003A79',
     data_row.padding = px(10),
     source_notes.font.size = 14,
@@ -561,8 +572,6 @@ summary_tbl <-
     cell_text(weight = "bold")
   ),
   locations = list(cells_body(rows = contribution == 'Impact')))
-
-gtsave(summary_tbl, glue::glue('results/0{month_year}/summary.png'))
 
 # Deflators ---------------------------------------------------------------
 
@@ -623,7 +632,7 @@ prev_plot <-
        y = NULL)
   
 rmarkdown::render(input = 'update-comparison.Rmd',
-                  output_dir = "results/08-2021/",
-                  output_file = 'update-comparison-08-2021',
+                  output_dir = glue("results/{month_year}/"),
+                  output_file = glue('update-comparison-{month_year}'),
                   clean = TRUE)
 

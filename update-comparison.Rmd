@@ -36,110 +36,6 @@ knitr::opts_chunk$set(
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
-```{r source, include=FALSE, eval=FALSE}
-# 
-# devtools::load_all()
-# librarian::shelf(
-#   'tidyverse',
-#   'purrr',
-#   'tsibble',
-#   'lubridate',
-#   'glue',
-#   'magrittr'
-#   
-# )
-# comparison_plot <- function(.data, variable){
-#   plot <- .data %>% 
-#     filter(variable == {{ variable }}) %>% 
-#     ggplot(aes(x = date,  y =  value, fill = source)) +
-#     #geom_col(position=position_dodge2(reverse = TRUE)) +
-#     geom_col(position=position_dodge2(reverse = TRUE)) +
-#     labs(title = glue::glue("{snakecase::to_title_case(variable)}"),
-#          x = NULL,
-#          y = NULL) +
-#     ggthemes::theme_hc() +
-#     gghutchins::scale_fill_hutchins(
-#       name = "",
-#       labels = c('Updated', 'Previous'),
-#       pal = 'qual',
-#       rev = FALSE
-#     ) +
-#     scale_x_yearquarter(breaks = waiver(),
-#                         date_breaks = '3 months',
-#                         date_labels = "Q%q") +
-#     facet_grid( ~ year(date),
-#                 space = "free_x",
-#                 scales = "free_x",
-#                 switch = "x")  +
-#     theme(legend.position = 'top') +
-#     guides(fill = guide_legend(reverse = TRUE)) 
-#   
-#   
-#   variable_name <- rlang::as_name(rlang::ensym(variable))
-#   
-#   if(str_ends(variable_name, 'contribution')){
-#     plot + 
-#       scale_y_continuous(name = '', 
-#                          labels = scales::label_percent(scale = 1))
-#   } else {
-#     plot +
-#       scale_y_continuous(name = '', 
-#                          labels = scales::label_comma())
-#   }
-#   
-# }
-
-```
-
-```{r, include=FALSE, eval=FALSE}
-# 
-# # Load previous months results
-# previous <-
-#   readxl::read_xlsx('results/06-2021/fim-06-2021.xlsx') %>%
-#   mutate(date = yearquarter(date)) %>%
-#   drop_na(date) %>%
-#   as_tsibble(index = date) %>%
-#   filter_index("2020 Q3" ~ "2023 Q2") #%>% 
-#   # mutate(federal_ui = federal_ui,
-#   #        federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
-#   # mutate(federal_ui = federal_ui + federal_ui_arp,
-#   #        federal_ui_contribution = federal_ui_contribution + federal_ui_arp_contribution) %>% 
-#   # mutate(federal_health_outlays= federal_health_outlays + federal_health_grants_arp,
-#   #        federal_health_outlays_contribution = federal_health_outlays_contribution + federal_health_grants_arp_contribution)
-# 
-# 
-# 
-# 
-# current <- readRDS('data/contributions.RDS') %>%
-#   mutate(date = yearquarter(date)) %>%
-#   drop_na(date) %>%
-#   as_tsibble(index = date) %>%
-#   filter_index("2020 Q3" ~ "2023 Q2")
-# 
-# previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
-# current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
-# 
-# comparison <- inner_join(previous_long,
-#                          current_long,
-#                          by = c('date', 'name', 'id')) %>%
-#   pivot_longer(c(previous, current),
-#                names_to = 'source') %>%
-#   rename(variable = name)
-# 
-# comparison_nested <-
-#   comparison %>%
-#   group_by(variable) %>%
-#   nest() %>%
-#   mutate(plot = map2(.x = variable,
-#                      .y = data,
-#                      .f = ~comparison_plot(.data = .y,
-#                                   variable = .x)))
-# 
-# 
-# plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
-```
-
-
 ```{r fiscal_impact}
 plots$fiscal_impact
 ```
@@ -152,10 +48,6 @@ summary_tbl
 
 
 # NIPA Consistent Purchases {.tabset .tabset-pills}
-
-
-
-
 
 
 ## Contributions
