@@ -19,7 +19,7 @@ devtools::load_all()
 # Since BEA put all CARES act grants to S&L in Q2 2020 we need to
 # override the historical data and spread it out based on our best guess
 # for when the money was spent.
-overrides <- readxl::read_xlsx('data/forecast_07_2021.xlsx',
+overrides <- readxl::read_xlsx('data/forecast.xlsx',
                                sheet = 'historical overrides') %>% 
   select(-name) %>% 
   pivot_longer(-variable) %>% 
@@ -623,7 +623,7 @@ prev_plot <-
        y = NULL)
   
 rmarkdown::render(input = 'update-comparison.Rmd',
-                  output_dir = "results/07-2021/",
-                  output_file = 'update-comparison-07-2021',
+                  output_dir = "results/08-2021/",
+                  output_file = 'update-comparison-08-2021',
                   clean = TRUE)
 
