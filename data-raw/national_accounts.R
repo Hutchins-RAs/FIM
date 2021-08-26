@@ -2,6 +2,7 @@
 library("writexl")
 library("openxlsx")
 library("magrittr")
+library('lubridate')
 library("tidyverse")
 national_accounts <- 
   
@@ -26,11 +27,6 @@ usethis::use_data(national_accounts, overwrite = TRUE)
 #writexl::write.xlsx(national_accounts, file = "data/forecast_06_2021.xlsx", sheetName="Haver", 'append')
 ## code to prepare `recessions` dataset goes here
 
-
-fim::national_accounts %>% 
-  as_tibble() %>% 
-  select(date, recession = recessq) %>% 
-  View()
 recessions <-
   fim::national_accounts %>% 
   as_tibble() %>% 

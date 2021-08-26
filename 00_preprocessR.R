@@ -95,8 +95,6 @@ df = df %>%
       )
   )
 
-source('data-raw/national_accounts.R')
-devtools::load_all()
 fim::national_accounts %>% 
   select(-id) %>% 
   pivot_longer(-date) %>% 
