@@ -335,7 +335,6 @@ comparison_deflators <-
 openxlsx::write.xlsx(x = comparison_deflators,
                      file = glue('results/{month_year}/{month_year}_comparison_deflators.xlsx'),
                      overwrite = TRUE)
-v
 openxlsx::write.xlsx(x = comparison_wide,
                      file = glue('results/{month_year}/{month_year}/contributions_comparison.xlsx'),
                      overwrite = TRUE)
