@@ -9,6 +9,7 @@ library('writexl')
 library('tsibble')
 library('purrr')
 haver.path("//ESDATA01/DLX/DATA/")
+devtools::load_all()
 
 # 0.1 Pull Raw Data---------------------------------------------------------------
 
@@ -52,7 +53,7 @@ usna <-
  
   # left_join(wla) %>%
   left_join(cpi) %>%
-  left_join(data2) %>% 
+  left_join(usecon) %>% 
   # Convert SNAP from millions to billions
   mutate(gftffx = gftffx / 1e3)
 
@@ -94,4 +95,3 @@ df = df %>%
           match(names_usna$code)
       )
   )
-d
