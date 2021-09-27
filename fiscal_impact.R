@@ -187,7 +187,7 @@ consumption %>%
 
 openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'),
                      overwrite = TRUE)
-write_rds(contributions, path = 'data/contributions.rds')
+write_rds(contributions, file = 'data/contributions.rds')
 
 
 # Web materials  -------------------------------------------------------------
@@ -212,7 +212,7 @@ interactive <-
          projection = id) %>% 
   separate(date, c('year', 'quarter'))
 
-readr::write_csv(interactive, path = glue('results/{month_year}/interactive-{month_year}.csv'))
+readr::write_csv(interactive,  file = glue('results/{month_year}/interactive-{month_year}.csv'))
 
 # Figures for website
 rmarkdown::render('Fiscal-Impact.Rmd',

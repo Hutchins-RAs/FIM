@@ -29,6 +29,7 @@ devtools::load_all()
 ```
 
 Prepare the FIM as usual.
+
 ```{r wrangling, echo = FALSE}
 
 # Read code until forecast object is created
@@ -499,7 +500,8 @@ transfers %>%
                category = "UI") %>% 
   ggplot(mapping = aes(x = date, y = net, color = category, lty = period)) +
   geom_line(data = . %>% filter(date <= yearquarter("2021 Q2'"))) +
-  geom_line(data = . %>% filter(date > yearquarter("2021 Q2"), mapping = aes(lty = "dashed line")))
+  geom_line(data = . %>% filter(date > yearquarter("2021 Q2"),
+                                mapping = aes(lty = "dashed line"))) 
   geom_label(data = . %>% arrange(date) %>% filter(date == last(date)),
              aes(label = category,
                  x = date ,
