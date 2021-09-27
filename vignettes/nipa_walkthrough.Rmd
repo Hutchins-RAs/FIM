@@ -39,7 +39,7 @@ librarian::shelf('readxl','tidyverse','dplyover', 'tsibble', 'janitor', 'snakeca
 
 The FIM is defined as the actual contributions of real government purchases and real consumption to GDP less the contributions that would have prevailed if real purchases, real taxes, and real transfers were growing with potential GDP.
 
-Define $G$ as nominal government purchases, $\pi_{G}$ as the inflation rate for government purchases, $C$ as nominal consumption, $C$ as nominal consumption, $T$ as nominal tax or transfer payments, $Y$ as nominal GDP, and $\mu$ as real potential output growth.
+Define $G$ as nominal government purchases, $\pi_{G}$ as the inflation rate for government purchases, $C$ as nominal consumption, $T$ as nominal tax or transfer payments, $Y$ as nominal GDP, and $\mu$ as real potential output growth.
 
 ## **Purchases**
 The contribution of real purchases to GDP is the growth rate of real government purchases times the share of government in GDP:

@@ -101,12 +101,7 @@ projections <- coalesce_join(usna, forecast, by = 'date') %>%
     state_health_outlays = medicaid - medicaid_grants
   )
 
-
-
-
-
 # Consumption -------------------------------------------------------------
-
 
 consumption <-
   projections %>%
@@ -195,7 +190,6 @@ openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month
 write_rds(contributions, path = 'data/contributions.rds')
 
 
-
 # Web materials  -------------------------------------------------------------
 
 # Interactive data
@@ -224,6 +218,7 @@ readr::write_csv(interactive, path = glue('results/{month_year}/interactive-{mon
 rmarkdown::render('Fiscal-Impact.Rmd',
                   output_file = glue::glue('results/{month_year}/Fiscal-Impact-{month_year}'),
                   clean = TRUE)
+
 # Comparison ------------------------------------------------------------
 
 # Load previous months results

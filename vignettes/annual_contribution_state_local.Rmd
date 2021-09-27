@@ -1,0 +1,68 @@
+---
+title: "Annual contribution of S&L purchases"
+author: "Manuel Alcalá Kovalski"
+date: "9/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+librarian::shelf(tidyverse, tsibble)
+devtools::load_all()
+```
+
+The purpose of this notebook is to calculate the annual impact on real GDP of state and local government spending on service and goods from 2008 to 2014 – for each year as requested by the White House ARP team on 09/13/2021.
+
+
+```{r}
+nipas <- 
+  read_data() %>% 
+  define_variables() %>% 
+  select(date, state_purchases, state_purchases_deflator, gdp, real_potential_gdp) %>% 
+  mutate(across(c(state_purchases_deflator, real_potential_gdp),
+                .fns = ~ (.x / lag(.x, 4)) - 1 ,
+                .names = "{.col}_growth")) %>% 
+  filter_index("2007 Q1" ~ "2014 Q4")
+
+nipas
+```
+
+
+## **Purchases**
+The contribution of real purchases to GDP is the growth rate of real government purchases times the share of government in GDP:
+
+$$
+\frac{G_t}{Y_{t-4}} - \frac{G_{t-4}}{Y_{t-4}} \times (1 + \pi_{G} ) = \frac{G_t - G_{t-4} \times (1 + \pi_{G})}{Y_{t-4}}
+$$
+
+In order to calculate the effects of government policy on the economy, it is necessary to specify a counterfactual; in other words, we need to know what the effects of a particular set of policies are compared to some alternative.
+
+The counterfactual assumed by the FIM is that taxes and spending rise with potential GDP---the gross domestic output that would be obtained if the economy were at full employment.
+
+$$
+\mu \frac{G_{t-4}}{Y_{t-4}}
+$$
+```{r}
+nipas <- 
+  nipas %>% 
+  mutate(state_purchases_counterfct = lag(state_purchases, 4) * (1 + real_potential_gdp_growth + state_purchases_deflator_growth))
+```
+
+Thus, the FIM for purchases is defined as
+
+$$
+\text{FIM}_{t}^{G} = \frac{G_t - G_{t-4} \times \left(1 + \pi_G + \mu \right)}{Y_{t-4}}
+$$
+
+
+
+
+```{r}
+nipas %>% 
+  mutate(state_purchases_counterfct = lag(state_purchases, 4) * (1 + real_potential_gdp_growth + state_purchases_deflator_growth)) %>% 
+  mutate(state_purchases_contribution = 100 * (state_purchases - state_purchases_counterfct) / lag(gdp, 4)) 
+```
+

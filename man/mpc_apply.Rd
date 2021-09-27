@@ -4,7 +4,7 @@
 \alias{mpc_apply}
 \title{Title}
 \usage{
-mpc_apply(data, ...)
+mpc_apply(data, timing_file = NULL, ...)
 }
 \arguments{
 \item{data}{}

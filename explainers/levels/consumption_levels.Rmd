@@ -1,0 +1,649 @@
+---
+title: "Consumption Levels"
+author: "Manuel Alcalá Kovalski"
+date: "8/30/2021"
+output: html_document
+---
+
+Note to self: Keep checking totals vs contributions. They're all slightly off. 
+
+09/08 Realized that for some reason the order of operation matters. Should be net then mpc, not mpc then net.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+# Setup -------------------------------------------------------------------
+librarian::shelf(
+  tidyverse,
+  tsibble,
+  fabletools,
+  lubridate,
+  glue,
+  fim,
+  ggbrookings,
+  dplyover,
+  gt,
+  gtExtras)
+
+devtools::load_all()
+```
+
+Prepare the FIM as usual.
+```{r wrangling, echo = FALSE}
+
+# Read code until forecast object is created
+# Setup -------------------------------------------------------------------
+Sys.setenv(TZ = 'UTC')
+librarian::shelf(
+  "tidyverse",
+  "zoo",
+  "TTR",
+  "tsibble",
+  "lubridate",
+  "glue",
+  "fim",
+  "dplyover",
+  gt
+)
+options(digits = 4)
+options(scipen = 20)
+devtools::load_all()
+
+# Set dates for current and previous months
+month_year <- glue('{format.Date(today(), "%m")}-{year(today())}')
+last_month_year <- glue('{format.Date(today()-months(1), "%m")}-{year(today())}')
+
+if(!dir.exists(glue('results/{month_year}'))) {
+  dir.create(glue('results/{month_year}'))
+}
+
+# Wrangle data ------------------------------------------------------------
+
+# Since BEA put all CARES act grants to S&L in Q2 2020 we need to
+# override the historical data and spread it out based on our best guess
+# for when the money was spent.
+overrides <- readxl::read_xlsx('data/forecast.xlsx',
+                               sheet = 'historical overrides') %>% 
+  select(-name) %>% 
+  pivot_longer(-variable) %>% 
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  rename(date = name) %>% 
+  mutate(date = yearquarter(date))
+
+# Load national accounts data from BEA
+usna <-
+  read_data() %>%
+  # Rename Haver codes for clarity
+  define_variables() %>%
+  # Specify time series structure:
+  # Key is historical or forecast period
+  # Indexed by date
+  as_tsibble(key = id, index = date) %>%
+  # Calculate GDP growth for data but take CBO for projection
+  mutate_where(id == 'historical',
+               real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
+  # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
+  mutate(
+    federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare,
+    state_social_benefits = state_social_benefits - medicaid,
+    social_benefits = federal_social_benefits + state_social_benefits,
+    consumption_grants = gross_consumption_grants - medicaid_grants,
+  ) %>% 
+  mutate(rebate_checks_arp = if_else(date == yearquarter("2021 Q1"),
+                                     1348.1,
+                                     0)) %>%
+  mutate_where(id == 'projection',
+               rebate_checks_arp = NA,
+               federal_ui = NA,
+               state_ui = NA) %>% 
+  mutate_where(date == yearquarter('2021 Q1'),
+               rebate_checks = rebate_checks - rebate_checks_arp,
+               federal_social_benefits = federal_social_benefits + 203
+            ) %>% 
+  mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
+  
+         # Aggregate taxes
+         corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
+         non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes) %>% 
+  mutate_where(id == 'projection',
+               consumption_grants_deflator_growth = state_purchases_deflator_growth,
+               investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
+  mutate_where(date >= yearquarter('2020 Q2') & date <= yearquarter('2021 Q2'),
+               consumption_grants = overrides$consumption_grants_override) 
+
+# Forecast ----------------------------------------------------------------
+forecast <- 
+  readxl::read_xlsx('data/forecast.xlsx',
+                    sheet = 'forecast') %>% 
+  select(-15:-17, -name) %>% 
+  pivot_longer(-variable) %>% 
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  rename(date = name) %>% 
+  mutate(date = yearquarter(date))
+
+
+projections <- coalesce_join(usna, forecast, by = 'date') %>%
+  
+  mutate(# Coalesce NA's to 0
+    across(where(is.numeric),
+           ~ coalesce(.x, 0))) %>%
+  mutate(
+    health_outlays = medicare + medicaid,
+    federal_health_outlays = medicare + medicaid_grants,
+    state_health_outlays = medicaid - medicaid_grants
+  )
+
+```
+
+New methodology to get the consumption levels and the counterfactual
+```{r, echo = FALSE}
+
+# Consumption levels ------------------------------------------------------
+mpc_data <- read_mpc_file()
+consumption <-
+  projections %>% 
+  rename(federal_rebate_checks = rebate_checks,
+         federal_rebate_checks_arp = rebate_checks_arp) %>% 
+  # Create counterfactual
+  mutate(
+    across(
+      c(matches('corporate|non_corporate|social_benefits|health_outlays|ui$|subsidies|aid_to_small_businesses|rebate_checks|direct_aid|vulnerable')) & !contains('provider_relief') & !ends_with('growth'),
+      ~ counterfactual(.x, consumption_deflator_growth),
+      .names = '{.col}_counterfactual'
+    )) %>% 
+  # ACTUAL CONSUMPTION
+  mpc_tidy(mpc_data,
+           c(matches('corporate|non_corporate|social_benefits|health_outlays|subsidies|aid_to_small_businesses|rebate_checks|direct_aid|vulnerable') &
+               !ends_with('growth') &
+               !starts_with('provider_relief')))  %>% 
+  # UI MPC depends on quarter so the code above won't help
+mutate(across(c(federal_ui, federal_ui_counterfactual,  state_ui, state_ui_counterfactual),
+              .fns = ~ if_else(date < yearquarter("2021 Q2"),
+                               mpc_ui(.x),
+                               mpc_ui_arp(.x)),
+              .names = '{.col}_consumption')) %>% 
+  mutate(across(c(federal_purchases, state_purchases, consumption_grants, investment_grants),
+                .names = '{.col}_consumption')) %>% 
+  # COUNTERFACTUAL CONSUMPTION FOR PURCHASES
+  mutate(
+    federal_purchases_counterfactual_consumption = counterfactual(federal_purchases_consumption, deflator = federal_purchases_deflator_growth),
+    state_purchases_counterfactual_consumption = counterfactual(state_purchases_consumption, deflator = state_purchases_deflator_growth),
+    consumption_grants_counterfactual_consumption = counterfactual(consumption_grants_consumption, consumption_grants_deflator_growth),
+    investment_grants_counterfactual_consumption = counterfactual(investment_grants_consumption, investment_grants_deflator_growth)
+  ) 
+```
+
+```{r, echo = FALSE}
+
+consumption_summary <-
+  consumption %>%
+   select(date,
+         gdp,
+         matches('federal|state') & matches('_consumption') | matches('consumption_grants_|investment_grants_')) %>% 
+  rename_with(
+    .cols = ends_with('counterfactual_consumption'),
+    .fn = ~ str_replace(
+      string = .x,
+      pattern = 'counterfactual_consumption',
+      replacement = "counterfactual"
+    )
+  ) %>% 
+  mutate(
+    federal_purchases_consumption = federal_purchases_consumption + consumption_grants_consumption + investment_grants_consumption,
+    federal_purchases_counterfactual = federal_purchases_counterfactual + consumption_grants_counterfactual + investment_grants_counterfactual,
+    state_purchases_consumption = state_purchases_consumption - consumption_grants_consumption - investment_grants_consumption,
+    state_purchases_counterfactual = state_purchases_counterfactual - consumption_grants_counterfactual - investment_grants_counterfactual
+  ) %>% 
+  select(-matches('consumption_grants_|investment_grants_')) %>% 
+  pivot_longer(
+    -c(date, id, gdp),
+    names_to = c('government', 'variable', 'level'),
+    names_pattern = '(federal|state)_(.*)_(.*)'
+  ) %>%
+  pivot_wider(names_from = 'level',
+              values_from = value) %>% 
+  mutate(net = consumption - counterfactual) %>% 
+  group_by(variable, government) %>% 
+  mutate(contribution = 400 * net / dplyr::lag(gdp)) %>% 
+  ungroup()
+```
+
+## Plots
+
+
+### Headline
+```{r}
+theme_set(theme_brookings())
+update_geom_defaults('line',
+                     list(size = 1.5))
+contributions <- read_rds('data/contributions.rds' )
+
+totals <-
+  consumption_summary %>% 
+  as_tsibble(index = date, key = c(government, variable)) %>% 
+  filter_index("2019 Q4" ~ "2023 Q1") %>% 
+  mutate(category = case_when(variable %in% c('rebate_checks', 'rebate_checks_arp') ~ 'rebate_checks',
+                              variable %in% c('ui') ~ 'unemployment_insurance',
+                              variable %in% c('subsidies', 'aid_to_small_businesses_arp') ~ 'subsidies',
+                              variable %in% c('social_benefits', 'other_direct_aid_arp', 'other_vulnerable_arp') ~ 'social_benefits',
+                              variable %in% c('corporate_taxes', 'non_corporate_taxes') ~ 'taxes',
+                              variable %in% c('purchases') ~ 'purchases',
+         TRUE ~ 'health_outlays')) %>% 
+    mutate(category = snakecase::to_title_case(category)) %>% 
+  as_tsibble(index = date, key = c(government, variable, category)) %>% 
+  aggregate_key(category, 
+                total = sum(consumption), counterfactual = sum(counterfactual), contribution = sum(contribution)) %>% 
+  slice(15:98) %>% 
+  as_tibble() %>% 
+  mutate(category = forcats::as_factor(as.character(category))) 
+  
+
+totals %>% 
+    left_join(contributions) %>%   
+    # Ungroup or `complete` won't work as expected
+  ggplot(aes(x = date, y = contribution,  fill = category, group = category)) +
+  geom_col(alpha = 0.5) +
+  geom_line(aes(x = date, y = fiscal_impact)) +
+  geom_point(aes(x = date, y = fiscal_impact), size = 2, show.legend = FALSE) +
+  scale_fill_brookings('categorical') +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1, scale = 1)) +
+  scale_x_yearquarter(breaks = '3 months') +
+  labs(title = 'Headline FIM by components <br>',
+       x = NULL,
+       y = NULL) +
+  geom_hline(yintercept = 0) +
+  theme(legend.key.height = unit(.5, 'lines'),
+        legend.key.width = unit(1.75, 'lines'),
+        legend.margin = margin(7, 0, 0, 0)) 
+
+ggsave(here::here('headline_pieces.png'),
+       width = 85 * (14 / 5),
+       height = 53 * (14 / 5),
+       units = 'mm',
+       device = ragg::agg_png(),
+       dpi = 300,
+       type = 'cairo',
+       bg = '#FAFAFA')
+
+```
+
+
+### Levels of consumption
+```{r}
+consumption_summary %>% 
+  as_tsibble(index = date, key = c(government, variable)) %>% 
+  filter_index("2018 Q4" ~ "2024 Q2") %>% 
+    mutate(variable = snakecase::to_title_case(variable)) %>% 
+  aggregate_key(  variable,total = sum(consumption), counterfactual = sum(counterfactual)) %>% 
+  
+  autoplot(show.legend = FALSE) +
+    facet_wrap(.~ variable, scales = 'free') +
+  ggbrookings::scale_color_brookings('misc') +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  labs(title = 'Consumption from transfers<br>',
+       x = NULL,
+       y = NULL) 
+ggsave(here::here('explainers/levels/consumption.png'),
+       width = 85 * (14 / 5),
+       height = 53 * (14 / 5),
+       units = 'mm',
+       device = ragg::agg_png(),
+       dpi = 300,
+       type = 'cairo',
+       bg = '#FAFAFA')
+
+totals %>% 
+  as_tsibble(index = date, key = c( category)) %>% 
+  filter_index("2018 Q4" ~ "2024 Q2") %>% 
+  autoplot(show.legend = FALSE) +
+  facet_wrap(. ~ category, scales = 'free') +
+  ggbrookings::scale_color_brookings('misc') +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  labs(title = 'Consumption from transfers<br>',
+       x = NULL,
+       y = NULL) 
+
+ggsave(here::here('explainers/levels/consumption_v2.png'),
+       width = 85 * (14 / 5),
+       height = 53 * (14 / 5),
+       units = 'mm',
+       device = ragg::agg_png(),
+       dpi = 300,
+       type = 'cairo',
+       bg = '#FAFAFA')
+
+```
+
+```{r}
+totals %>% 
+  group_by(category) %>% 
+  summarise(contribution_data = list(total), .groups = 'drop') %>% 
+  gt() %>% 
+  gt_theme_nytimes() %>% 
+  gt_kable_sparkline(contribution_data)
+```
+
+### Counterfactual GDP
+
+ Let $$ \text{counterfactualGDP}= real GDP_{t-1} * (real GDP growth_t - FIM_t)$$. That is,
+ 
+```{r}
+counterfct <-
+  contributions %>% 
+  select(date, real_gdp, real_gdp_growth, fiscal_impact) %>% 
+  mutate(fiscal_impact_quarterly = fiscal_impact / 400) %>% 
+  mutate(Counterfactual = lag(real_gdp) * ( 1 + real_gdp_growth - fiscal_impact_quarterly))
+```
+ 
+```{r, echo = FALSE}
+library('ggrepel')
+library('ggtext')
+library('ggannotate')
+counterfct_long <-
+  counterfct %>% 
+  rename(`Real GDP` = real_gdp) %>% 
+  pivot_longer(c(`Real GDP`, Counterfactual)) %>% 
+  filter_index("2019 Q4" ~ "2021 Q2")
+
+counterfct_long %>% 
+  pivot_wider(values_from = value)
+counterfct_long %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line(size = 1.5) +
+  geom_point(size = 5) +
+    coord_cartesian(clip = 'off') +
+  geom_label_repel(data = . %>% arrange(date) %>% filter(date == last(date)),
+             aes(label = name, 
+                 x = as_date(date) , 
+                 y = value - 50,
+                 color = name),
+             family = 'Roboto',
+             fontface = 'bold',
+             hjust = 1,
+             size = 5,
+             min.segment.length = unit(2000, 'lines'),
+             nudge_x = 100,
+             na.rm = TRUE) + 
+  scale_x_yearquarter(breaks = counterfct_long$date,
+                      expand = expansion(c(0, 0.29))) +
+  scale_y_continuous(labels = scales::label_dollar(),
+                     breaks = scales::pretty_breaks()) +
+  scale_color_brookings() +
+  labs(x = NULL,
+       y = NULL,
+       title = "<br><span style = 'color:#FF9E1B;'>Real GDP</span> vs <span style = 'color:#003A79;'>Counterfactual GDP</span> without Fiscal Policy",
+       subtitle = "Billions SAAR (Chained 2012 dollars)") +
+  theme(legend.position = 'none',
+        plot.title = element_textbox_simple(color = 'black',
+                                             hjust = 0,
+      size = rel(1),
+      vjust = 1,
+      margin = margin(b = 4)),
+        plot.margin = margin(0.1, 2.6, 0.1, 0.1, "cm")) +
+
+  geom_richtext(aes(label = "Positive<br>Fiscal Impact"), 
+                        x = as_date("2019/12/20"),
+                        y = 17000,
+                        family = 'Roboto',
+                        fontface = 'bold',
+                        color = brookings_colors['orange_60'],
+                        fill = NA, label.color = NA, # remove background and outline
+    label.padding = grid::unit(rep(0, 4), "pt"), # remove padding
+    size = 6,
+                        y = 18500) +
+    geom_richtext(aes(label = "Negative<br>Fiscal Impact"), 
+                        x = as_date("2020/09/20"),
+                        
+                        family = 'Roboto',
+                        fontface = 'bold',
+                        fill = NA, label.color = NA, # remove background and outline
+    label.padding = grid::unit(rep(0, 4), "pt"), # remove padding
+size = 6,
+                        y = 19500) +
+  # Negative impact
+    annotate(
+    geom = "curve", x = as_date("2020/10/01"), y = 18840, xend = as_date("2020/10/10"), yend = 19250, 
+    size = 1.5,
+    curvature =  -.1, arrow = arrow(length = unit(5, "mm"))
+  ) +
+  # Positive impact
+      annotate(
+    geom = "curve", x = as_date("2020/04/10"), y = 16900, xend = as_date("2020/02/15"), yend = 17100, 
+    size = 1.5,
+    curvature = .3, arrow = arrow(length = unit(5, "mm"))
+  )  
+  
+ggsave(here::here('explainers/levels/gdp_counterfactual.png'),
+       width = 85 * (14 / 5),
+       height = 53 * (14 / 5),
+       units = 'mm',
+       device = ragg::agg_png(),
+       dpi = 300,
+       type = 'cairo',
+       bg = '#FAFAFA')
+```
+
+```{r}
+aggregated <-
+  consumption_summary %>% 
+  as_tsibble(index = date, key = c(government, variable)) %>% 
+  filter_index("2018 Q4" ~ "2024 Q2")  
+  mutate(variable = snakecase::to_title_case(variable)) %>% 
+  aggregate_key(variable,total = sum(consumption), counterfactual = sum(counterfactual)) %>% 
+  filter(variable == '<aggregated>')
+
+left_join(aggregated, contributions %>% select(date, gdp)) %>% 
+  mutate(gdp_cfct = gdp - total) %>% 
+  pivot_longer(c(gdp, gdp_cfct)) %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line()
+```
+ 
+ What would transfers be if they had grown with potential since 2020 Q1
+```{r}
+options(scipen=999)
+transfers <- 
+  consumption_summary %>% 
+  left_join(contributions %>% select(date, real_potential_gdp_growth)) %>% 
+  filter_index("2020 Q1" ~ "2023 Q2") %>% 
+  mutate(period = if_else(date > yearquarter("2021 Q2"),
+                          "forecast",
+                          "history")) %>% 
+  arrange(variable, government) %>% 
+  mutate(counterfactual = if_else(date == min(date),
+                                  consumption,
+                                  1 + real_potential_gdp_growth)) %>% 
+  mutate(category = case_when(variable %in% c('rebate_checks', 'rebate_checks_arp') ~ 'rebate_checks',
+                              variable %in% c('ui') ~ 'unemployment_insurance',
+                              variable %in% c('subsidies', 'aid_to_small_businesses_arp') ~ 'subsidies',
+                              variable %in% c('social_benefits', 'other_direct_aid_arp', 'other_vulnerable_arp') ~ 'social_benefits',
+                              variable %in% c('purchases') ~ 'purchases',
+                              variable %in% c("corporate_taxes", "non_corporate_taxes") ~ "taxes",
+         TRUE ~ 'health_outlays')) %>% 
+  filter(category %in% c("rebate_checks", "unemployment_insurance", "subsidies", "social_benefits", "health_outlays")) %>% 
+  mutate(category = snakecase::to_title_case(category)) %>% 
+  as_tibble() %>% 
+  
+  group_by(category, date) %>% 
+  summarise(period, consumption = sum(consumption),
+            real_potential_gdp_growth) %>% 
+  distinct(date, period, consumption, real_potential_gdp_growth) %>% 
+  group_by(category) %>% 
+  mutate(counterfactual = if_else(date == min(date),
+                                  consumption,
+                                  1 + real_potential_gdp_growth),
+         counterfactual = purrr::accumulate(counterfactual, `*`)) 
+  
+  
+```
+ 
+```{r}
+transfers %>% 
+  pivot_longer(c(consumption, counterfactual)) %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line() +
+  facet_wrap(. ~ category, scales = "free") +
+  scale_color_brookings() +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  labs(title = "Consumption from transfers and counterfactual spending if they had grown with potential since Q1 2020<br>",
+       x = NULL,  
+       y = NULL)
+```
+ 
+```{r}
+transfers %>% 
+  mutate(net = consumption - counterfactual) %>% 
+  mutate_where(category == "Unemployment Insurance",
+               category = "UI") %>% 
+  ggplot(mapping = aes(x = date, y = net, color = category, lty = period)) +
+  geom_line(data = . %>% filter(date <= yearquarter("2021 Q2'"))) +
+  geom_line(data = . %>% filter(date > yearquarter("2021 Q2"), mapping = aes(lty = "dashed line")))
+  geom_label(data = . %>% arrange(date) %>% filter(date == last(date)),
+             aes(label = category,
+                 x = date ,
+                 y = net + 0.1,
+                 color = category),
+             family = 'Roboto',
+             fontface = 'bold',
+             nudge_x = 30,
+             size = 3.4) +
+  coord_cartesian(clip = "off") +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     
+                     labels = scales::label_dollar()) +
+  
+  scale_color_brookings('categorical') +
+  scale_linetype_manual(values = c("history" = "solid",  "forecast" = "dashed")) + 
+  theme(legend.position = "none") +
+  labs(title = "Government transfers minus what they would be if they had grown with potential since Q1 2020<br>",
+       x = NULL,
+       y = NULL)
+```
+ 
+```{r}
+transfers %>% 
+  mutate(net = consumption - counterfactual) %>% 
+
+  ggplot(., (aes(lty = period))) +
+  geom_line(data = . %>% filter(date <= yearquarter("2021 Q2'")),
+            mapping = aes(x = date, y = net, color = category)) +
+  geom_line(data = . %>% filter(date >= yearquarter("2021 Q2")),
+            mapping = aes(x = date, y = net, color = category),  lty = "dashed") +
+   geom_label_repel(data = . %>% arrange(date) %>% filter(date == last(date)),
+             aes(label = category,
+                 x = as_date(date) + month(10),
+                 y = net + 1,
+                 color = category),
+             family = 'Roboto',
+             fontface = 'bold',
+             nudge_x = 500,
+             hjust = 1,
+             
+             size = 3.4) +
+  coord_cartesian(clip = "off") +
+  scale_x_yearquarter(expand = expansion(0.1, 100),
+                      breaks = yearquarter(seq(as.Date("2020-01-01"), as.Date("2023-06-30"), by = "2 quarter"))) +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     
+                     labels = scales::label_dollar()) +
+  
+  scale_color_brookings('categorical') +
+  theme(legend.position = 'none')+
+  scale_linetype_manual(values = c("history" = "solid",  "forecast" = "dashed")) + 
+  labs(title = "Government transfers minus what they would be if they had grown with potential since Q1 2020<br>",
+       x = NULL,
+       y = NULL)
+```
+ 
+```{r}
+transfers %>% 
+ mutate(net = consumption - counterfactual) %>% 
+  group_by(date) %>% 
+  summarise(net = sum(net)) %>% 
+  left_join(contributions %>% select(date, gdp), by = 'date') %>% 
+  mutate(gdp_cfct = gdp - net) %>% 
+  pivot_longer(c(gdp, gdp_cfct)) %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line(alpha = 0.7) +
+  geom_point(size = 3.5) +
+  geom_label_repel(data = . %>% arrange(date) %>% filter(date == last(date)),
+             aes(label = c("GDP", "Counterfactual\nGDP"),
+                 x = date ,
+                 y = value + 0.1,
+                 color = name),
+             family = 'Roboto',
+             fontface = 'bold',
+             nudge_x = 35,
+             size = 3.4) +
+  coord_cartesian(clip = "off") +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     
+                     labels = scales::label_dollar()) +
+  
+  scale_color_brookings('categorical') +
+  theme(legend.position = "none") +
+    scale_x_yearquarter(expand = expansion(0.1, 100),
+                      breaks = yearquarter(seq(as.Date("2020-01-01"), as.Date("2023-06-30"), by = "2 quarter"))) +
+  labs(title = "Actual GDP and counterfactual GDP without fiscal policy",
+       x = NULL,
+       y = NULL) +
+        geom_richtext(aes(x = yearquarter(today()) + 1, y = 25000), 
+                    label = "Projection",
+                    size = 4,
+                    cex = 2, 
+                    color = 'black',
+                    family = 'Roboto',
+                    fill = NA, label.color = NA, # remove background and outline
+      ) +
+ annotate("rect", xmin = yearquarter("2021 Q3"), xmax = yearquarter('2024 Q1'),
+               ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') 
+```
+
+```{r}
+
+fim <-
+  consumption_summary %>% 
+  as_tsibble(index = date, key = c(government, variable)) %>% 
+  filter_index("2019 Q4" ~ "2023 Q1") %>% 
+  mutate(category = case_when(variable %in% c('rebate_checks', 'rebate_checks_arp') ~ 'rebate_checks',
+                              variable %in% c('ui') ~ 'unemployment_insurance',
+                              variable %in% c('subsidies', 'aid_to_small_businesses_arp') ~ 'subsidies',
+                              variable %in% c('social_benefits', 'other_direct_aid_arp', 'other_vulnerable_arp', 'corporate_taxes', 'non_corporate_taxes') ~ 'other',
+                              variable %in% c('purchases') ~ 'purchases',
+         TRUE ~ 'health_outlays')) %>% 
+    mutate(category = snakecase::to_title_case(category)) %>% 
+  as_tsibble(index = date, key = c(government, variable, category)) %>% 
+  aggregate_key(category, 
+                total = sum(consumption), counterfactual = sum(counterfactual), contribution = sum(contribution)) %>% 
+  slice(15:98) %>% 
+  as_tibble() %>% 
+  mutate(category = forcats::as_factor(as.character(category))) 
+
+totals %>% 
+  filter(date >= yearquarter("2019 Q4"),
+         date <= yearquarter("2021 Q2")) %>% 
+  mutate(net = total - counterfactual) %>% 
+  group_by(date) %>% 
+  summarise(net = sum(net)) %>% 
+  left_join(contributions %>% select(date, gdp), by = 'date') %>% 
+  mutate(gdp_cfct = gdp - net) %>% 
+   pivot_longer(c(gdp, gdp_cfct)) %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line() +
+  geom_point(size = 3.5) +
+  coord_cartesian(clip = "off") +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     
+                     labels = scales::label_dollar()) +
+  scale_x_yearquarter(breaks = scales::pretty_breaks()) +
+  
+  scale_color_brookings('brand1',
+                        labels = c("GDP", "Counterfactual GDP")) +
+  labs(title = "Actual GDP and counterfactual GDP used in the FIM",
+       x = NULL,
+       y = NULL)
+
+```
+

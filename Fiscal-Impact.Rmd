@@ -73,6 +73,14 @@ recessions <-
   
 headline_plot <-
   ggplot(data = headline) +
+    geom_rect(data = recessions %>% 
+            filter(recession_start > yearquarter('1999 Q4')),
+            aes(xmin = recession_start, 
+              xmax = recession_end, 
+              ymin=-Inf,
+              ymax=+Inf),
+              fill = 'grey',
+              alpha = 0.5) +
   geom_col(aes(x = date, y = value, fill = name),
            width = 50) +
   geom_line(aes(x = date, 
@@ -82,14 +90,6 @@ headline_plot <-
                  y = fiscal_impact_moving_average,
                  colour = "4-quarter moving-average"),
              size = 1) +
-  geom_rect(data = recessions %>% 
-            filter(recession_start > yearquarter('1999 Q4')),
-            aes(xmin = recession_start, 
-              xmax = recession_end, 
-              ymin=-Inf,
-              ymax=+Inf),
-              fill = 'grey',
-              alpha = 0.2) +
   ggtext::geom_richtext(aes(x = yearquarter(today()) + 4,
                             y = 16),
                         label = "Projection",
@@ -109,12 +109,9 @@ headline_plot <-
          keyheight = unit(0.05, "cm"),
          ncol = 1)) +
   fim::fim_theme() +
-  guides(
-  fill = guide_legend(
-    keywidth = unit(0.8, "cm"),
-    keyheight = unit(0.4, "cm"),
-    ncol = 1
-  ),
+  guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
+                             keyheight = unit(0.4, "cm"),
+                             ncol = 1),
   colour = guide_legend(
     keywidth = unit(0.8, "cm"),
     keyheight = unit(0.05, "cm"),
@@ -158,6 +155,14 @@ expanded <-
 
 
   ggplot(data = expanded) +
+     geom_rect(data = recessions %>% 
+            filter(recession_start > yearquarter('1999 Q4')),
+            aes(xmin = recession_start, 
+              xmax = recession_end, 
+              ymin=-Inf,
+              ymax=+Inf),
+              fill = 'grey',
+              alpha = 0.5) +
       geom_col(aes(x = date, y = value, fill = variable),
                width = 50) +
       geom_line(aes(x = date,
@@ -173,14 +178,7 @@ expanded <-
                     cex = 2, 
                     fill = NA, label.color = NA, # remove background and outline
       ) +
-      geom_rect(data = recessions %>% 
-            filter(recession_start > yearquarter('1999 Q4')),
-            aes(xmin = recession_start, 
-              xmax = recession_end, 
-              ymin=-Inf,
-              ymax=+Inf),
-              fill = 'grey',
-              alpha = 0.2) +
+    
     
       scale_fill_fim(palette = 'expanded',
                      labels = c(" Federal Purchases",
