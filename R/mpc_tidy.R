@@ -36,6 +36,22 @@ get_timing <- function(timing, var){
   string <- as_label(var)
   
   args <- switch(as_label(var),
+                 
+                 # PURCHASES
+                 purchases = 1,
+                 real_federal_purchases = 1,
+                 federal_purchases = 1,
+                 federal_purchases_counterfactual = 1,
+                 real_state_purchases = 1,
+                 state_purchases = 1,
+                 state_purchases_counterfactual = 1,
+                 
+                 
+                 gross_consumption_grants = 1,
+                 consumption_grants = 1,
+                 consumption_grants_counterfactual = 1,
+                 investment_grants = 1,
+                 investment_grants_counterfactual = 1,
                  # TRANSFERS
                  
                  health_outlays = ,

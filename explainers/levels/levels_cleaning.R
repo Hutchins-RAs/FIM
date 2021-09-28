@@ -177,6 +177,8 @@ consumption_summary <-
   ungroup()
 
 
+
+
 # Counterfactual ----------------------------------------------------------
 
 options(scipen=999)

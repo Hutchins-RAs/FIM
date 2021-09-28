@@ -317,14 +317,6 @@ ggsave(here::here('explainers/levels/consumption_v2.png'),
 
 ```
 
-```{r}
-totals %>% 
-  group_by(category) %>% 
-  summarise(contribution_data = list(total), .groups = 'drop') %>% 
-  gt() %>% 
-  gt_theme_nytimes() %>% 
-  gt_kable_sparkline(contribution_data)
-```
 
 ### Counterfactual GDP
 
