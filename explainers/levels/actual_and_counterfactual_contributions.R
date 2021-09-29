@@ -228,3 +228,16 @@ levels %>%
        y = 'Billions',
        x = NULL,
        caption = "**Note:** The counterfactual is the contribution that would have prevailed if real purchases, real taxes, and real transfers were growing with potential GDP.") 
+
+
+levels %>% 
+  filter(date >= yearquarter("2020 Q1") & date < yearquarter("2023 Q3")) %>% 
+  select(date,
+         gdp,
+         gdp_delta, 
+         fiscal_impact = fi,
+         actual_contribution,
+         counterfactual_contribution = cfct_contribution,
+         actual_contribution_level = actual_contribution_lvl,
+         counterfactual_contribution_level = cfct_contribution_lvl) %>% 
+  openxlsx::write.xlsx('explainers/levels/levels.xlsx')

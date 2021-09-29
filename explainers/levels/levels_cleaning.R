@@ -180,36 +180,123 @@ consumption_summary <-
 
 
 # Counterfactual ----------------------------------------------------------
-
+deflators <- projections %>% 
+  select(date, consumption_deflator_growth, )
 options(scipen=999)
+
 transfers <- 
   consumption_summary %>% 
-  left_join(contributions %>% select(date, real_potential_gdp_growth)) %>% 
+  left_join(contributions %>% select(date, real_potential_gdp_growth, consumption_deflator_growth, federal_purchases_deflator_growth, state_purchases_deflator_growth)) %>% 
   filter_index("2020 Q1" ~ "2023 Q2") %>% 
   mutate(period = if_else(date > yearquarter("2021 Q2"),
                           "forecast",
                           "history")) %>% 
   arrange(variable, government) %>% 
-  mutate(counterfactual = if_else(date == min(date),
-                                  consumption,
-                                  1 + real_potential_gdp_growth)) %>% 
-  mutate(category = case_when(variable %in% c('rebate_checks', 'rebate_checks_arp') ~ 'rebate_checks',
-                              variable %in% c('ui') ~ 'unemployment_insurance',
-                              variable %in% c('subsidies', 'aid_to_small_businesses_arp') ~ 'subsidies',
-                              variable %in% c('social_benefits', 'other_direct_aid_arp', 'other_vulnerable_arp') ~ 'social_benefits',
-                              variable %in% c('purchases') ~ 'purchases',
-                              variable %in% c("corporate_taxes", "non_corporate_taxes") ~ "taxes",
-                              TRUE ~ 'health_outlays')) %>% 
-  filter(category %in% c("rebate_checks", "unemployment_insurance", "subsidies", "social_benefits", "health_outlays")) %>% 
-  mutate(category = snakecase::to_title_case(category)) %>% 
+  mutate(counterfactual = case_when(date == min(date) ~ consumption,
+                                  variable == 'purchases' & government == 'federal' ~ 1 + real_potential_gdp_growth + federal_purchases_deflator_growth,
+                                  variable == 'purchases' & government == 'state' ~ 1 + real_potential_gdp_growth + state_purchases_deflator_growth,
+                                  TRUE ~ 1 + real_potential_gdp_growth + consumption_deflator_growth)) %>% 
+  ungroup() %>% 
+  group_by(variable, government) %>% 
+  mutate(counterfactual = purrr::accumulate(counterfactual, `*`)) %>% 
+  ungroup() %>% 
   as_tibble() %>% 
+  group_by(date) %>% 
+  summarise(consumption = sum(consumption),
+            counterfactual = sum(counterfactual))
+
+counterfactual_start <- yearquarter("2020 Q1")
+
+consumption_alt <- 
+  projections %>% 
+  rename(federal_rebate_checks = rebate_checks,
+         federal_rebate_checks_arp = rebate_checks_arp) %>% 
+    select(date,
+           real_potential_gdp_growth,
+           federal_purchases_deflator_growth,
+           state_purchases_deflator_growth,
+           consumption_grants, 
+           consumption_grants_deflator_growth,
+           investment_grants, 
+           investment_grants_deflator_growth,
+           consumption_deflator_growth, 
+           gdp,
+           matches('federal|state')) %>% 
+    mutate(
+      across(
+        c(matches('corporate|non_corporate|social_benefits|health_outlays|ui$|subsidies|aid_to_small_businesses|rebate_checks|direct_aid|vulnerable')) & !contains('provider_relief') & !ends_with('growth'),
+        ~ case_when(date < counterfactual_start ~ counterfactual(.x, consumption_deflator_growth),
+                    date > counterfactual_start ~ 1.02,
+                    date == counterfactual_start ~ .x),
+        .names = '{.col}_counterfactual'
+      )) %>% 
+    mutate(
+      federal_purchases_counterfactual =  case_when(
+        date < counterfactual_start ~ counterfactual(federal_purchases,
+                                                     federal_purchases_deflator_growth),
+        date == counterfactual_start ~ federal_purchases,
+        date > counterfactual_start ~ 1.02
+      ),
+      state_purchases_counterfactual =  case_when(
+        date < counterfactual_start ~ counterfactual(state_purchases,
+                                                     state_purchases_deflator_growth),
+        date == counterfactual_start ~ state_purchases,
+        date > counterfactual_start ~ 1.02
+    )) %>% 
+  mutate(
+    consumption_grants_counterfactual =  case_when(
+      date < counterfactual_start ~ counterfactual(consumption_grants,
+                                                   consumption_grants_deflator_growth),
+      date == counterfactual_start ~ consumption_grants,
+      date > counterfactual_start ~ 1.02
+    ),
+    investment_grants_counterfactual =  case_when(
+      date < counterfactual_start ~ counterfactual(investment_grants,
+                                                   investment_grants_deflator_growth),
+      date == counterfactual_start ~ investment_grants,
+      date > counterfactual_start ~ 1.02)
+  ) %>% 
+    mutate_where(date >= counterfactual_start, 
+                 across(ends_with('counterfactual'),
+                        ~ purrr::accumulate(.x, `*`))) %>% 
+      mutate(
+        federal_purchases = federal_purchases + consumption_grants + investment_grants,
+        federal_purchases_counterfactual = federal_purchases_counterfactual + consumption_grants_counterfactual + investment_grants_counterfactual,
+        state_purchases = state_purchases - consumption_grants - investment_grants,
+        state_purchases_counterfactual = state_purchases_counterfactual - consumption_grants_counterfactual - investment_grants_counterfactual
+      ) %>% 
+    # ACTUAL CONSUMPTION
+    mpc_tidy(mpc_data,
+             c(matches('corporate|non_corporate|social_benefits|health_outlays|subsidies|aid_to_small_businesses|rebate_checks|direct_aid|vulnerable') &
+                 !ends_with('growth') &
+                 !starts_with('provider_relief')))
   
-  group_by(category, date) %>% 
-  summarise(period, consumption = sum(consumption),
-            real_potential_gdp_growth) %>% 
-  distinct(date, period, consumption, real_potential_gdp_growth) %>% 
-  group_by(category) %>% 
-  mutate(counterfactual = if_else(date == min(date),
-                                  consumption,
-                                  1 + real_potential_gdp_growth),
-         counterfactual = purrr::accumulate(counterfactual, `*`))
+net_alt <-
+  consumption_alt %>% 
+  select(date,
+        gdp,
+        federal_purchases_consumption = federal_purchases,
+        federal_purchases_counterfactual,
+        state_purchases_consumption = state_purchases, 
+        state_purchases_counterfactual,
+        matches('federal|state') & matches('_consumption')) %>% 
+  rename_with(
+    .cols = ends_with('counterfactual_consumption'),
+    .fn = ~ str_replace(
+      string = .x,
+      pattern = 'counterfactual_consumption',
+      replacement = "counterfactual"
+    )
+  ) %>% 
+  pivot_longer(
+    -c(date, id, gdp),
+    names_to = c('government', 'variable', 'level'),
+    names_pattern = '(federal|state)_(.*)_(.*)'
+  ) %>%
+  pivot_wider(names_from = 'level',
+              values_from = value) %>% 
+  mutate(net = consumption - counterfactual) %>% 
+  group_by(variable, government) %>% 
+  mutate(contribution = 400 * net / dplyr::lag(gdp)) %>% 
+  ungroup()
+

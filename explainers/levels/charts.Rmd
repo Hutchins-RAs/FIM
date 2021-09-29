@@ -20,6 +20,8 @@ knitr::opts_chunk$set(fig.path = 'figures/',
 contributions <- readr::read_rds(here::here("data/contributions.rds"))
 path <- here::here("explainers/levels/levels_cleaning.R")
 source(path)
+
+librarian::shelf(ggbrookings, ggrepel, ggtext)
 ```
 
 ## Headline
@@ -125,8 +127,9 @@ transfers %>%
 
 ```{r gdp}
 
-transfers %>% 
- mutate(net = consumption - counterfactual) %>% 
+net_alt %>% 
+  filter_index("2020 Q1" ~ "2023 Q2") %>% 
+  as_tibble() %>%
   group_by(date) %>% 
   summarise(net = sum(net)) %>% 
   left_join(contributions %>% select(date, gdp), by = 'date') %>% 

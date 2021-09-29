@@ -555,8 +555,8 @@ transfers %>%
 transfers %>% 
  mutate(net = consumption - counterfactual) %>% 
   group_by(date) %>% 
-  summarise(net = sum(net)) %>% 
-  left_join(contributions %>% select(date, gdp), by = 'date') %>% 
+  summarise(net = sum(net)) %>%  
+  left_join(contributions %>% select(date, gdp, real_gdp), by = 'date') %>% 
   mutate(gdp_cfct = gdp - net) %>% 
   pivot_longer(c(gdp, gdp_cfct)) %>% 
   ggplot(aes(x = date, y = value, color = name)) +
