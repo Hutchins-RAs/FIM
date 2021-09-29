@@ -127,7 +127,7 @@ transfers %>%
 
 ```{r gdp}
 
-net_alt %>% 
+consumption_alt_long %>% 
   filter_index("2020 Q1" ~ "2023 Q2") %>% 
   as_tibble() %>%
   group_by(date) %>% 

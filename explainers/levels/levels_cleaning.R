@@ -1,6 +1,7 @@
 
 # Read code until forecast object is created
 # Setup -------------------------------------------------------------------
+
 Sys.setenv(TZ = 'UTC')
 librarian::shelf(
   "tidyverse",
@@ -27,7 +28,9 @@ if(!dir.exists(glue('results/{month_year}'))) {
 }
 
 # Wrangle data ------------------------------------------------------------
-
+# Prepare the FIM data as usual.
+# 
+# 
 # Since BEA put all CARES act grants to S&L in Q2 2020 we need to
 # override the historical data and spread it out based on our best guess
 # for when the money was spent.
@@ -176,10 +179,6 @@ consumption_summary <-
   mutate(contribution = 400 * net / dplyr::lag(gdp)) %>% 
   ungroup()
 
-
-
-
-# Counterfactual ----------------------------------------------------------
 deflators <- projections %>% 
   select(date, consumption_deflator_growth, )
 options(scipen=999)
@@ -193,9 +192,9 @@ transfers <-
                           "history")) %>% 
   arrange(variable, government) %>% 
   mutate(counterfactual = case_when(date == min(date) ~ consumption,
-                                  variable == 'purchases' & government == 'federal' ~ 1 + real_potential_gdp_growth + federal_purchases_deflator_growth,
-                                  variable == 'purchases' & government == 'state' ~ 1 + real_potential_gdp_growth + state_purchases_deflator_growth,
-                                  TRUE ~ 1 + real_potential_gdp_growth + consumption_deflator_growth)) %>% 
+                                    variable == 'purchases' & government == 'federal' ~ 1 + real_potential_gdp_growth + federal_purchases_deflator_growth,
+                                    variable == 'purchases' & government == 'state' ~ 1 + real_potential_gdp_growth + state_purchases_deflator_growth,
+                                    TRUE ~ 1 + real_potential_gdp_growth + consumption_deflator_growth)) %>% 
   ungroup() %>% 
   group_by(variable, government) %>% 
   mutate(counterfactual = purrr::accumulate(counterfactual, `*`)) %>% 
@@ -205,7 +204,13 @@ transfers <-
   summarise(consumption = sum(consumption),
             counterfactual = sum(counterfactual))
 
+# Counterfactual ----------------------------------------------------------
+# 
+# Code to prepare alternative counterfactual in which purchases and transfers grow at a 2% annualized growth rate starting Q1 2020. 
+
 counterfactual_start <- yearquarter("2020 Q1")
+rate <- (1.02) ^ (0.25)
+
 
 consumption_alt <- 
   projections %>% 
@@ -226,7 +231,7 @@ consumption_alt <-
       across(
         c(matches('corporate|non_corporate|social_benefits|health_outlays|ui$|subsidies|aid_to_small_businesses|rebate_checks|direct_aid|vulnerable')) & !contains('provider_relief') & !ends_with('growth'),
         ~ case_when(date < counterfactual_start ~ counterfactual(.x, consumption_deflator_growth),
-                    date > counterfactual_start ~ 1.02,
+                    date > counterfactual_start ~ rate,
                     date == counterfactual_start ~ .x),
         .names = '{.col}_counterfactual'
       )) %>% 
@@ -235,26 +240,26 @@ consumption_alt <-
         date < counterfactual_start ~ counterfactual(federal_purchases,
                                                      federal_purchases_deflator_growth),
         date == counterfactual_start ~ federal_purchases,
-        date > counterfactual_start ~ 1.02
+        date > counterfactual_start ~ rate
       ),
       state_purchases_counterfactual =  case_when(
         date < counterfactual_start ~ counterfactual(state_purchases,
                                                      state_purchases_deflator_growth),
         date == counterfactual_start ~ state_purchases,
-        date > counterfactual_start ~ 1.02
+        date > counterfactual_start ~ rate
     )) %>% 
   mutate(
     consumption_grants_counterfactual =  case_when(
       date < counterfactual_start ~ counterfactual(consumption_grants,
                                                    consumption_grants_deflator_growth),
       date == counterfactual_start ~ consumption_grants,
-      date > counterfactual_start ~ 1.02
+      date > counterfactual_start ~ rate
     ),
     investment_grants_counterfactual =  case_when(
       date < counterfactual_start ~ counterfactual(investment_grants,
                                                    investment_grants_deflator_growth),
       date == counterfactual_start ~ investment_grants,
-      date > counterfactual_start ~ 1.02)
+      date > counterfactual_start ~ rate)
   ) %>% 
     mutate_where(date >= counterfactual_start, 
                  across(ends_with('counterfactual'),
@@ -271,7 +276,8 @@ consumption_alt <-
                  !ends_with('growth') &
                  !starts_with('provider_relief')))
   
-net_alt <-
+# Put data in long format and calculate net purchases, taxes, and transfers.
+consumption_alt_long <-
   consumption_alt %>% 
   select(date,
         gdp,
@@ -295,8 +301,5 @@ net_alt <-
   ) %>%
   pivot_wider(names_from = 'level',
               values_from = value) %>% 
-  mutate(net = consumption - counterfactual) %>% 
-  group_by(variable, government) %>% 
-  mutate(contribution = 400 * net / dplyr::lag(gdp)) %>% 
-  ungroup()
+  mutate(net = consumption - counterfactual)
 
