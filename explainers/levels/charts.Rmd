@@ -1,0 +1,175 @@
+---
+title: "Levels"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+---
+
+```{r}
+knitr::opts_chunk$set(fig.path = 'figures/',
+                  fig.width = 1200 / 96, 
+                  fig.height = 700 / 96,
+                  dpi = 96)
+```
+
+## Setup
+
+```{r}
+contributions <- readr::read_rds(here::here("data/contributions.rds"))
+path <- here::here("explainers/levels/levels_cleaning.R")
+source(path)
+
+librarian::shelf(ggbrookings, ggrepel, ggtext)
+```
+
+## Headline
+
+```{r headline}
+
+theme_set(theme_brookings())
+update_geom_defaults('line',
+                     list(size = 1.5))
+contributions <- read_rds('data/contributions.rds' )
+
+totals <-
+  consumption_summary %>% 
+  as_tsibble(index = date, key = c(government, variable)) %>% 
+  filter_index("2019 Q4" ~ "2023 Q1") %>% 
+  mutate(category = case_when(variable %in% c('rebate_checks', 'rebate_checks_arp') ~ 'rebate_checks',
+                              variable %in% c('ui') ~ 'unemployment_insurance',
+                              variable %in% c('subsidies', 'aid_to_small_businesses_arp') ~ 'subsidies',
+                              variable %in% c('social_benefits', 'other_direct_aid_arp', 'other_vulnerable_arp') ~ 'social_benefits',
+                              variable %in% c('corporate_taxes', 'non_corporate_taxes') ~ 'taxes',
+                              variable %in% c('purchases') ~ 'purchases',
+         TRUE ~ 'health_outlays')) %>% 
+    mutate(category = snakecase::to_title_case(category)) %>% 
+  as_tsibble(index = date, key = c(government, variable, category)) %>% 
+  aggregate_key(category, 
+                total = sum(consumption), counterfactual = sum(counterfactual), contribution = sum(contribution)) %>% 
+  slice(15:98) %>% 
+  as_tibble() %>% 
+  mutate(category = forcats::as_factor(as.character(category))) 
+  
+
+totals %>% 
+    left_join(contributions) %>%   
+    # Ungroup or `complete` won't work as expected
+  ggplot(aes(x = date, y = contribution,  fill = category, group = category)) +
+  geom_col(alpha = 0.5) +
+  geom_line(aes(x = date, y = fiscal_impact)) +
+  geom_point(aes(x = date, y = fiscal_impact), size = 2, show.legend = FALSE) +
+  scale_fill_brookings('categorical') +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1, scale = 1)) +
+  scale_x_yearquarter(breaks = '3 months') +
+  labs(title = 'Headline FIM by components <br>',
+       x = NULL,
+       y = NULL) +
+  geom_hline(yintercept = 0) +
+  theme(legend.key.height = unit(.5, 'lines'),
+        legend.key.width = unit(1.75, 'lines'),
+        legend.margin = margin(7, 0, 0, 0)) 
+
+```
+
+## Transfers
+
+```{r net-transfers}
+librarian::shelf(ggbrookings, ggrepel, ggtext)
+theme_set(theme_brookings())
+update_geom_defaults('line',
+                     list(size = 1.5))
+transfers %>% 
+  mutate(net = consumption - counterfactual) %>% 
+  ggplot(mapping = aes(x = date, y = net, color = category)) +
+  geom_line(data = . %>% filter(date >= yearquarter("2021 Q2")),
+                                lty = 'dashed') +
+  geom_line(data = . %>% filter(date <= yearquarter("2021 Q2'"))) +
+  geom_label_repel(data = . %>% arrange(date) %>% filter(date == last(date)),
+             aes(label = category,
+                 x = date ,
+                 y = net ,
+                 color = category),
+             family = 'Roboto',
+             direction = "y",
+             fontface = 'bold',
+             hjust = 1,
+             nudge_x = 1,
+             nudge_y = -1,
+             size = 3.5) +
+    geom_vline(xintercept = lubridate::as_date("2021-04-25"),
+             size = 0.8) +
+   geom_richtext(aes(x = lubridate::as_date("2021-07-01"), y = 500), 
+                    label = "Projection",
+                    size = 4.5,
+                    cex = 2, 
+                    color = 'black',
+                    family = 'Roboto',
+                    fill = NA, label.color = NA, # remove background and outline
+      ) +
+  coord_cartesian(clip = "off") +
+  scale_x_yearquarter(date_breaks = "3 months") +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     
+                     labels = scales::label_dollar()) +
+  
+  scale_color_brookings('categorical') +
+  scale_linetype_manual(values = c("history" = "solid",  "forecast" = "dashed")) + 
+  theme(legend.position = "none") +
+  labs(title = "Government transfers minus what they would be if they had grown with potential since Q1 2020<br>",
+       x = NULL,
+       y = NULL,
+       caption = "<br><br>")
+```
+
+## GDP
+
+```{r gdp}
+
+consumption_alt_long %>% 
+  filter_index("2020 Q1" ~ "2023 Q2") %>% 
+  as_tibble() %>%
+  group_by(date) %>% 
+  summarise(net = sum(net)) %>% 
+  left_join(contributions %>% select(date, gdp), by = 'date') %>% 
+  mutate(gdp_cfct = gdp - net) %>% 
+  pivot_longer(c(gdp, gdp_cfct)) %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  geom_line(data = . %>% filter(date >= yearquarter("2021 Q2")),
+                                lty = 'dashed', alpha = 0.7) +
+  geom_line(data = . %>% filter(date <= yearquarter("2021 Q2'")),
+            alpha = 0.7) +
+  geom_vline(xintercept = lubridate::as_date("2021-05-08"),
+             size = 0.8) +
+  geom_label_repel(data = . %>% arrange(date) %>% filter(date == last(date)),
+             aes(label = c("GDP", "Counterfactual\nGDP"),
+                 x = date ,
+                 y = value + 0.1,
+                 color = name),
+             family = 'Roboto',
+             fontface = 'bold',
+             nudge_x = 35,
+             size = 3.4) +
+  coord_cartesian(clip = "off") +
+  scale_y_continuous(breaks = scales::pretty_breaks(),
+                     
+                     labels = scales::label_dollar()) +
+  
+  scale_color_brookings('categorical') +
+  theme(legend.position = "none") +
+    scale_x_yearquarter(expand = expansion(0.1, 100),
+                      breaks = yearquarter(seq(as.Date("2020-01-01"), as.Date("2023-06-30"), by = "1 quarter"))) +
+  labs(title = "Actual GDP and counterfactual GDP without fiscal policy",
+       x = NULL,
+       y = NULL,
+       caption = "<br><br>") +
+        geom_richtext(aes(x = lubridate::as_date("2021-08-01"), y = 25000), 
+                    label = "Projection",
+                    size = 4.5,
+                    cex = 2, 
+                    color = 'black',
+                    family = 'Roboto',
+                    fill = NA, label.color = NA, # remove background and outline
+      ) 
+```

@@ -36,44 +36,60 @@ get_timing <- function(timing, var){
   string <- as_label(var)
   
   args <- switch(as_label(var),
+                 
+                 # PURCHASES
+                 purchases = 1,
+                 real_federal_purchases = 1,
+                 federal_purchases = 1,
+                 federal_purchases_counterfactual = 1,
+                 real_state_purchases = 1,
+                 state_purchases = 1,
+                 state_purchases_counterfactual = 1,
+                 
+                 
+                 gross_consumption_grants = 1,
+                 consumption_grants = 1,
+                 consumption_grants_counterfactual = 1,
+                 investment_grants = 1,
+                 investment_grants_counterfactual = 1,
                  # TRANSFERS
                  
-                 health_outlays = timing$health_outlays,
+                 health_outlays = ,
                  federal_health_outlays = ,
                  state_health_outlays = ,
                  health_outlays_counterfactual = ,
                  federal_health_outlays_counterfactual = ,
-                 state_health_outlays_counterfactual = ,
+                 state_health_outlays_counterfactual = timing$health_outlays,
                  
-                 social_benefits =  timing$social_benefits,
+                 social_benefits = ,
                  federal_social_benefits = ,
                  state_social_benefits = ,
-                 social_benefits_counterfactual =  timing$social_benefits,
+                 social_benefits_counterfactual =  ,
                  federal_social_benefits_counterfactual = ,
-                 state_social_benefits_counterfactual = ,
+                 state_social_benefits_counterfactual =  timing$social_benefits,
                  
                  
-                 subsidies = timing$subsidies,
+                 subsidies = ,
                  federal_subsidies = ,
                  state_subsidies = ,
-                 subsidies_counterfactual = timing$subsidies,
+                 subsidies_counterfactual = ,
                  federal_subsidies_counterfactual = ,
-                 state_subsidies_counterfactual = ,
+                 state_subsidies_counterfactual = timing$subsidies,
                  
                  
-                 ui = timing$ui,
+                 ui = ,
                  federal_ui = ,
                  state_ui = ,
                  ui_counterfactual = ,
                  federal_ui_counterfactual = ,
-                 state_ui_counterfactual = ,
+                 state_ui_counterfactual = timing$ui,
                  
-                 ui_arp = timing$ui_arp,
+                 ui_arp = ,
                  federal_ui_arp = ,
                  state_ui_arp = ,
                  ui_arp_counterfactual = timing$ui_arp,
                  federal_ui_arp_counterfactual = ,
-                 state_ui_arp_counterfactual = ,
+                 state_ui_arp_counterfactual = timing$ui_arp,
                  
                  
                  rebate_checks = timing$rebate_checks,
@@ -86,19 +102,19 @@ get_timing <- function(timing, var){
                  federal_rebate_checks_counterfactual = timing$rebate_checks,
                  federal_rebate_checks_arp_counterfactual = timing$rebate_checks_arp,
                  
-                 corporate_taxes = timing$corporate_taxes,
+                 corporate_taxes = ,
                  federal_corporate_taxes = ,
                  state_corporate_taxes = ,
-                 corporate_taxes_counterfactual = timing$corporate_taxes,
+                 corporate_taxes_counterfactual = ,
                  federal_corporate_taxes_counterfactual = ,
-                 state_corporate_taxes_counterfactual = ,
+                 state_corporate_taxes_counterfactual = timing$corporate_taxes,
                  
-                 non_corporate_taxes = timing$non_corporate_taxes,
+                 non_corporate_taxes = ,
                  federal_non_corporate_taxes = ,
                  state_non_corporate_taxes = ,
-                 non_corporate_taxes_counterfactual = timing$non_corporate_taxes,
+                 non_corporate_taxes_counterfactual = ,
                  federal_non_corporate_taxes_counterfactual = ,
-                 state_non_corporate_taxes_counterfactual = ,
+                 state_non_corporate_taxes_counterfactual = timing$non_corporate_taxes,
                  
                  federal_aid_to_small_businesses_arp = timing$aid_to_small_businesses_arp,
                  federal_other_direct_aid_arp = timing$other_direct_aid_arp,
@@ -123,7 +139,8 @@ get_timing <- function(timing, var){
 mpc_tidy <-function(data, timing_file = NULL, vars){
   
   timing <- timing_file %||% read_mpc_file()
-  
+ 
+   
   mutate(data, 
          across({{vars}},
                 ~ roll::roll_sum(.x, 

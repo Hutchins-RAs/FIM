@@ -75,7 +75,7 @@ project <- function(.data, ..., with = NULL, from = NULL){
   .data %>% 
     dplyr::mutate(dplyr::across(c(!!!vars), 
                                 ~ dplyr::if_else(date > from,
-                                                 NA_real_,
+                                                 !!with,
                                                  .x))) %>% 
     dplyr::filter(date >= from)  %>% 
     ### Forecast 
