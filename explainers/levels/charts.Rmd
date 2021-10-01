@@ -21,7 +21,7 @@ contributions <- readr::read_rds(here::here("data/contributions.rds"))
 path <- here::here("explainers/levels/levels_cleaning.R")
 source(path)
 
-librarian::shelf(ggbrookings, ggrepel, ggtext)
+librarian::shelf(ggbrookings, ggrepel, ggtext, fabletools)
 ```
 
 ## Headline
@@ -81,6 +81,14 @@ theme_set(theme_brookings())
 update_geom_defaults('line',
                      list(size = 1.5))
 transfers %>% 
+  filter_index("2020 Q1" ~ "2023 Q2") %>% 
+  as_tibble() %>% 
+  mutate(category = snakecase::to_sentence_case(category)) %>% 
+  group_by(category, date) %>% 
+  summarise(consumption = sum(consumption),
+            counterfactual = sum(counterfactual)) %>%
+  
+  as_tibble() %>% 
   mutate(net = consumption - counterfactual) %>% 
   ggplot(mapping = aes(x = date, y = net, color = category)) +
   geom_line(data = . %>% filter(date >= yearquarter("2021 Q2")),
@@ -117,7 +125,7 @@ transfers %>%
   scale_color_brookings('categorical') +
   scale_linetype_manual(values = c("history" = "solid",  "forecast" = "dashed")) + 
   theme(legend.position = "none") +
-  labs(title = "Government transfers minus what they would be if they had grown with potential since Q1 2020<br>",
+  labs(title = "Government purchases, taxes, and transfers minus what they would be if they had grown with potential since Q1 2020<br>",
        x = NULL,
        y = NULL,
        caption = "<br><br>")
@@ -130,11 +138,10 @@ transfers %>%
 consumption_alt_long %>% 
   filter_index("2020 Q1" ~ "2023 Q2") %>% 
   as_tibble() %>%
-  group_by(date) %>% 
-  summarise(net = sum(net)) %>% 
-  left_join(contributions %>% select(date, gdp), by = 'date') %>% 
-  mutate(gdp_cfct = gdp - net) %>% 
-  pivot_longer(c(gdp, gdp_cfct)) %>% 
+  group_by(date, real_gdp) %>% 
+  summarise(net = sum(net), .groups = "drop") %>% 
+  mutate(gdp_cfct = real_gdp - net) %>% 
+  pivot_longer(c(real_gdp, gdp_cfct)) %>% 
   ggplot(aes(x = date, y = value, color = name)) +
   geom_line(data = . %>% filter(date >= yearquarter("2021 Q2")),
                                 lty = 'dashed', alpha = 0.7) +
@@ -160,11 +167,11 @@ consumption_alt_long %>%
   theme(legend.position = "none") +
     scale_x_yearquarter(expand = expansion(0.1, 100),
                       breaks = yearquarter(seq(as.Date("2020-01-01"), as.Date("2023-06-30"), by = "1 quarter"))) +
-  labs(title = "Actual GDP and counterfactual GDP without fiscal policy",
+  labs(title = "Real GDP and counterfactual GDP without fiscal policy",
        x = NULL,
        y = NULL,
        caption = "<br><br>") +
-        geom_richtext(aes(x = lubridate::as_date("2021-08-01"), y = 25000), 
+        geom_richtext(aes(x = lubridate::as_date("2021-09-01"), y = 20750), 
                     label = "Projection",
                     size = 4.5,
                     cex = 2, 
