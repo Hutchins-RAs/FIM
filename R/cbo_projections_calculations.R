@@ -111,7 +111,8 @@ cola_adjustment <- function(df){
         ) 
       )
   }
-
+  
+  
 
 #' Get growth rates of federal transfers
 #'

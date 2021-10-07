@@ -103,6 +103,30 @@ taxes_transfers_minus_neutral <- function(df){
 }
 
 
+
+taxes_transfers_minus_neutral_fourthlag <- function(df){
+  taxes = all_levels('corporate_taxes', 'non_corporate_taxes')
+  transfers = all_levels('social_benefits', 'health_outlays', 'subsidies', 'ui', 'rebate_checks')
+  df %>%
+    dplyr::mutate(
+      dplyr::across(.cols = any_of(all_levels(taxes, transfers)),
+                    .fns = ~ . - dplyr::lag(.) * (1 + real_potential_gdp_growth_fourthlag + q_g_fourthlag(consumption_deflator)),
+                    .names = '{.col}_minus_neutral')
+    )
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 #' Counterfactual spending
 #' 
 #' @param .data 

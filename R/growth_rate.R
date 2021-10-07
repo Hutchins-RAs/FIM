@@ -46,6 +46,31 @@ q_a <- function(x) {
   j
 }
 
+#' @title Q4 over Q4 growth rate
+#' @description Calculates 4 quarter lag growth rate.
+#' @param x PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples 
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname q_g_fourthlag
+#' @export 
+q_g_fourthlag = function(x) {
+  j = c()
+  for (i in 5:length(x)) {
+    j[i] = (((x[i]/x[i - 4])) - 1)
+  }
+  j[1] = j[5]
+  j[2] = j[5]
+  j[3] = j[5]
+  j[4] = j[5]
+  j
+}
+
 #' @title Quarter over quarter growth rate
 #' @description Calculates quarter over quarter growth rate.
 #' @param x PARAM_DESCRIPTION
@@ -67,3 +92,12 @@ q_g = function(x) {
   j[1] = j[2]
   j
 }
+
+
+
+
+
+
+
+
+
