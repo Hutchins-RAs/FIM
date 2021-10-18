@@ -76,7 +76,8 @@ gdp_data %>%
   ) +
   geom_line() +
   scale_x_yearquarter(breaks = "3 months",
-                      expand = expansion()) +
+                      expand = expansion(),
+                      date_labels = "Q%q") +
   scale_color_brookings(labels = c("Actual and Projected Real GDP", 'Real GDP Counterfactual'), reverse = TRUE) +
   scale_y_continuous(labels = scales::label_dollar()) +
   labs(
@@ -86,17 +87,27 @@ gdp_data %>%
     caption = "<br>**Note:** Counterfactual GDP represents an estimate of what GDP would have been had <br>government purchases, taxes, and transfers increased at the rate of potential GDP growth<br>from 2020 Q1 on.<br>
     **Source:** Hutchins Center calculations using data from the Congressional Budget Office<br>and the Bureau of Economic Analysis."
   ) +
-  theme(legend.background = element_rect(fill = "#FAFAFA"),
-        axis.text.x = element_blank()) 
+  theme(legend.background = element_rect(fill = "#FAFAFA")) 
 ```
 
 
 ```{r}
 ggsave(filename = "gdp_effect.png",
        path = path,
-       device = ragg::agg_png(width = 8.5, height = 5, units = "in", res = 300))
+       device = ragg::agg_png(width = 8.5, height = 7, units = "in", res = 300))
 
-gdp_effect <- add_logo(glue("{path}/gdp_effect.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.035)
+ggsave(
+  filename = "gdp_effect.pdf",
+  path = path,
+  width = 8.5,
+  height = 7,
+  units = "in",
+  dpi = 300,
+  device = cairo_pdf
+)
+
+
+gdp_effect <- add_logo(glue("{path}/gdp_effect.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.025)
 
 image_write(gdp_effect, glue("{path}/gdp_effect.png"))
 ```
@@ -121,7 +132,6 @@ components_mlt <-
 ```
 
 ```{r}
-
 components_mlt %>% 
    ggplot(mapping = aes(x = date, y = net_mlt, color = category)) +
     geom_segment(aes(x = yearquarter("2020 Q1"), xend = yearquarter("2023 Q2"),
@@ -130,16 +140,17 @@ components_mlt %>%
   geom_line() +
   geom_text_repel(data = . %>% arrange(date) %>% filter(date == last(date)) %>% mutate(date = lubridate::as_date(date)),
              aes(label = category,
-                 x = date + 120,
-                 y = net ,
+                 x = date + 140,
+                 y = net,
                  color = category), 
              direction = 'y',
              family = 'Roboto',
              fontface = 'bold',
              hjust = 0.5,
              size = 3.25, 
-             nudge_x = -1,
-             force_pull = 10,
+             nudge_x = 0,
+             nudge_y = 0,
+             force_pull = 1,
              min.segment.length = unit(10, 'lines'),
              ylim = c(-300, 550)
              ) +
@@ -163,30 +174,40 @@ components_mlt %>%
   # Allow labels to bleed past the canvas boundaries
   coord_cartesian(clip = 'off') +
   scale_x_yearquarter(date_breaks = "3 months",
-                      expand = expansion())+
+                      expand = expansion(),
+                      date_labels = "Q%q")+
   scale_y_continuous(breaks = scales::pretty_breaks(10),
                      labels = scales::label_dollar()) +
   
   scale_color_brookings('categorical_expanded') +
-  theme(legend.position = "none",
-        axis.text.x = element_blank()) +
+  theme(legend.position = "none") +
   labs(
-    title = "Effect of Components of Fiscal Policy on GDP<br>",
+    title = "Effects of the Components of Fiscal Policy on the Level of GDP<br>",
     x = "",
     y = 'Billions of Chained 2012 Dollars, SAAR',
-    caption = "<br>**Caption:** 
-Government purchases, taxes, and transfers are shown net of what they would<br>have been had they increased at the rate of potential GDP growth from 2020 Q1 on.<br> **Source**: Hutchins  Center calculations  using data from the Congressional Budget Office<br>and the Bureau of Economic Analysis."
+    caption = "<br>**Note:** 
+Government purchases, taxes, and transfers are shown net of what they would have been had they <br> increased at the rate of potential GDP growth from 2020 Q1 on.<br> **Source**: Hutchins  Center calculations  using data from the Congressional Budget Office and the<br>Bureau of Economic Analysis."
   )
+
+ggsave(filename = "gdp_effect_components.png",
+       path = path,
+       device = ragg::agg_png(width = 10, height = 7, units = "in", res = 300))
+
+ggsave(
+  filename = "gdp_effect_components.pdf",
+  path = path,
+  width = 10,
+  height = 7,
+  units = "in",
+  dpi = 300,
+  device = cairo_pdf
+)
 ```
 
 Save the file and then add logo
 
 ```{r}
-ggsave(filename = "gdp_effect_components.png",
-       path = path,
-       device = ragg::agg_png(width = 9, height = 5, units = "in", res = 300))
-
-gdp_effect_components <- add_logo(glue("{path}/gdp_effect_components.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.035)
+gdp_effect_components <- add_logo(glue("{path}/gdp_effect_components.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.015)
 
 image_write(gdp_effect_components, glue("{path}/gdp_effect_components.png"))
 ```
@@ -252,7 +273,8 @@ totals %>%
   scale_fill_brookings('categorical_expanded', 
                        reverse = FALSE) +
   scale_x_yearquarter(date_breaks = "3 months",
-                      expand = expansion()) +
+                      expand = expansion(),
+                      date_labels = "Q%q") +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1, scale = 1)) +
   geom_hline(yintercept = 0) +
   annotate(
@@ -273,7 +295,6 @@ totals %>%
     fontface = "bold"
   ) +
   theme(
-    axis.text.x = element_blank(),
     legend.key.height = unit(.25, 'lines'),
     legend.key.width = unit(1.75, 'lines'),
     legend.margin = margin(3, 0, 0, 0),
@@ -287,7 +308,7 @@ totals %>%
     labs(title = 'Effects of the Components of Fiscal Policy on GDP Growth',
        x = "",
        y = "Percentage Points, Annual Rate",
-       caption = "**Source:** Hutchins Center calculations using data from the Congressional Budget Office<br> and the Bureau of Economic Analysis.") 
+       caption = "<br>**Source:** Hutchins Center calculations using data from the Congressional Budget Office<br> and the Bureau of Economic Analysis.") 
 ```
 
 Save the file and then add logo
@@ -295,9 +316,19 @@ Save the file and then add logo
 ```{r}
 ggsave(filename = "fim_components.png",
        path = path,
-       device = ragg::agg_png(width = 8, height = 5, units = "in", res = 300))
+       device = ragg::agg_png(width = 8, height = 7, units = "in", res = 300))
 
-fim_components <- add_logo(glue("{path}/fim_components.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.035)
+ggsave(
+  filename = "fim_components.pdf",
+  path = path,
+  width = 8,
+  height = 7,
+  units = "in",
+  dpi = 300,
+  device = cairo_pdf
+)
+
+fim_components <- add_logo(glue("{path}/fim_components.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.025)
 
 image_write(fim_components, glue("{path}/fim_components.png"))
 ```
