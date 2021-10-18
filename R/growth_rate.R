@@ -67,3 +67,40 @@ q_g = function(x) {
   j[1] = j[2]
   j
 }
+
+
+#' Year over year growth rate
+#'
+#' @param x 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+q_g_fourthlag <- function (x){
+  j = c()
+  for (i in 4:length(x)) {
+    j[i] = (((x[i] / x[i - 4])) - 1) * 100
+  }
+  j[1] = j[5]
+  j[2] = j[5]
+  j[3] = j[5]
+  j[4] = j[5]
+}
+
+#' Title
+#'
+#' @param x 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+yoy <- function (x){
+  j = c()
+  for (i in 4:length(x)) {
+    j[i] = (((x[i] / x[i - 4])) - 1) 
+  }
+  
+  j
+}

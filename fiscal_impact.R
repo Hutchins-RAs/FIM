@@ -16,8 +16,8 @@ options(scipen = 20)
 devtools::load_all()
 
 # Set dates for current and previous months
-month_year <- glue('{format.Date(today(), "%m")}-{year(today())}')
-last_month_year <- glue('{format.Date(today()-months(1), "%m")}-{year(today())}')
+month_year <- glue('{format.Date(today() - days(7), "%m")}-{year(today())}')
+last_month_year <- glue('{format.Date(today()-months(1) - days(7), "%m")}-{year(today())}')
 
 if(!dir.exists(glue('results/{month_year}'))) {
   dir.create(glue('results/{month_year}'))

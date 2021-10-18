@@ -1,0 +1,304 @@
+---
+title: "charts_final"
+author: "Manuel Alcalá Kovalski"
+date: "10/14/2021"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(fig.path = 'figures/',
+                  fig.width = 1200 / 96, 
+                  fig.height = 700 / 96,
+                  dpi = 96)
+```
+
+## Setup
+
+```{r}
+contributions <- readr::read_rds(here::here("data/contributions.rds"))
+path <- here::here("explainers/levels/levels_cleaning.R")
+source(path)
+
+librarian::shelf(ggbrookings, ggrepel, ggtext, fabletools, magick)
+```
+
+
+```{r}
+# Change graph defaults
+theme_set(theme_brookings(web = TRUE))
+update_geom_defaults('line',
+                     list(size = 1.5))
+contributions <- read_rds('data/contributions.rds' )
+path <- here::here("explainers/levels/final-figures")
+
+```
+
+
+## GDP w Multipliers
+
+```{r}
+gdp_data <-
+  consumption_alt_long %>% 
+  filter_index("2020 Q1" ~ "2023 Q2") %>% 
+  as_tibble() %>%
+  group_by(date, real_gdp, gdp, gdp_deflator) %>% 
+  summarise(net = sum(net), .groups = "drop") %>% 
+  mutate(net_mlt = multipliers(net, c(0.88, 0.24, 0.12, 0.06))) %>% 
+  mutate(gdp_cfct = (real_gdp - net),
+         gdp_cfct_mlt = (real_gdp - net_mlt)) 
+```
+
+
+```{r}
+
+gdp_data %>%
+  mutate_if(is.character, forcats::as_factor) %>%
+  pivot_longer(c(real_gdp, gdp_cfct_mlt)) %>%
+  mutate(name = as_factor(name)) %>% 
+  mutate(name = fct_relevel(name, c("real_gdp", "gdp_cfct_mlt"))) %>% 
+  ggplot(aes(x = date, y = value, color = name)) +
+  annotate(
+    "rect",
+    xmin = yearquarter("2021 Q3"),
+    xmax = yearquarter('2023 Q2'),
+    ymin = -Inf,
+    ymax = Inf,
+    alpha = 0.1,
+    fill = 'yellow'
+  ) +
+  annotate(
+    "text",
+    x = yearquarter("2021 Q4"),
+    y = 20750,
+    label = "Projection",
+    family = "Roboto",
+    fontface = "bold"
+  ) +
+  geom_line() +
+  scale_x_yearquarter(breaks = "3 months",
+                      expand = expansion()) +
+  scale_color_brookings(labels = c("Actual and Projected Real GDP", 'Real GDP Counterfactual'), reverse = TRUE) +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  labs(
+    title = 'Effects of Fiscal Policy on the Level of GDP',
+    x = '',
+    y = 'Billions of Chained 2012 Dollars, SAAR',
+    caption = "<br>**Note:** Counterfactual GDP represents an estimate of what GDP would have been had <br>government purchases, taxes, and transfers increased at the rate of potential GDP growth<br>from 2020 Q1 on.<br>
+    **Source:** Hutchins Center calculations using data from the Congressional Budget Office<br>and the Bureau of Economic Analysis."
+  ) +
+  theme(legend.background = element_rect(fill = "#FAFAFA"),
+        axis.text.x = element_blank()) 
+```
+
+
+```{r}
+ggsave(filename = "gdp_effect.png",
+       path = path,
+       device = ragg::agg_png(width = 8.5, height = 5, units = "in", res = 300))
+
+gdp_effect <- add_logo(glue("{path}/gdp_effect.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.035)
+
+image_write(gdp_effect, glue("{path}/gdp_effect.png"))
+```
+
+## Net transfers with multipliers
+
+```{r}
+# Specify order of components to be consistent across charts. In particular, figure 1 and 3 should use the same ordering.
+order <- c("Health Outlays", "Purchases", "Rebate Checks", "Taxes", "Subsidies", "Social Benefits", "UI")
+
+components_mlt <- 
+  consumption_alt_long %>% 
+  as_tibble() %>% 
+  group_by(date, category) %>% 
+  summarise(net = sum(net), .groups = 'drop') %>% 
+  group_by(category) %>% 
+  mutate(net_mlt = multipliers(net, c(0.88, 0.24, 0.12, 0.06))) %>% 
+  mutate(category = as_factor(category)) %>% 
+  mutate(category = fct_relevel(category, order)) 
+
+  
+```
+
+```{r}
+
+components_mlt %>% 
+   ggplot(mapping = aes(x = date, y = net_mlt, color = category)) +
+    geom_segment(aes(x = yearquarter("2020 Q1"), xend = yearquarter("2023 Q2"),
+               y = 0, yend = 0), color = '#999999', size = 0.8,
+               lty = 'dashed') +
+  geom_line() +
+  geom_text_repel(data = . %>% arrange(date) %>% filter(date == last(date)) %>% mutate(date = lubridate::as_date(date)),
+             aes(label = category,
+                 x = date + 120,
+                 y = net ,
+                 color = category), 
+             direction = 'y',
+             family = 'Roboto',
+             fontface = 'bold',
+             hjust = 0.5,
+             size = 3.25, 
+             nudge_x = -1,
+             force_pull = 10,
+             min.segment.length = unit(10, 'lines'),
+             ylim = c(-300, 550)
+             ) +
+  annotate(
+    "rect",
+    xmin = yearquarter("2021 Q3"),
+    xmax = yearquarter('2023 Q2'),
+    ymin = -Inf,
+    ymax = Inf,
+    alpha = 0.1,
+    fill = 'yellow'
+  ) +
+  annotate(
+    "text",
+    x = yearquarter("2022 Q1"),
+    y = 350,
+    label = "Projection",
+    family = "Roboto",
+    fontface = "bold"
+  ) +
+  # Allow labels to bleed past the canvas boundaries
+  coord_cartesian(clip = 'off') +
+  scale_x_yearquarter(date_breaks = "3 months",
+                      expand = expansion())+
+  scale_y_continuous(breaks = scales::pretty_breaks(10),
+                     labels = scales::label_dollar()) +
+  
+  scale_color_brookings('categorical_expanded') +
+  theme(legend.position = "none",
+        axis.text.x = element_blank()) +
+  labs(
+    title = "Effect of Components of Fiscal Policy on GDP<br>",
+    x = "",
+    y = 'Billions of Chained 2012 Dollars, SAAR',
+    caption = "<br>**Caption:** 
+Government purchases, taxes, and transfers are shown net of what they would<br>have been had they increased at the rate of potential GDP growth from 2020 Q1 on.<br> **Source**: Hutchins  Center calculations  using data from the Congressional Budget Office<br>and the Bureau of Economic Analysis."
+  )
+```
+
+Save the file and then add logo
+
+```{r}
+ggsave(filename = "gdp_effect_components.png",
+       path = path,
+       device = ragg::agg_png(width = 9, height = 5, units = "in", res = 300))
+
+gdp_effect_components <- add_logo(glue("{path}/gdp_effect_components.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.035)
+
+image_write(gdp_effect_components, glue("{path}/gdp_effect_components.png"))
+```
+
+
+## Headline
+```{r totals}
+# Aggregate FIM categories
+totals <-
+  consumption_summary %>%
+  as_tsibble(index = date, key = c(government, variable)) %>%
+  filter_index("2020 Q1" ~ "2023 Q2") %>%
+  mutate(
+    category = case_when(
+      variable %in% c('rebate_checks', 'rebate_checks_arp') ~ 'rebate_checks',
+      variable %in% c('ui') ~ 'UI',
+      variable %in% c('subsidies', 'aid_to_small_businesses_arp') ~ 'subsidies',
+      variable %in% c(
+        'social_benefits',
+        'other_direct_aid_arp',
+        'other_vulnerable_arp'
+      ) ~ 'social_benefits',
+      variable %in% c('corporate_taxes', 'non_corporate_taxes') ~ 'taxes',
+      variable %in% c('purchases') ~ 'purchases',
+      TRUE ~ 'health_outlays'
+    )
+  ) %>% 
+  mutate(category = snakecase::to_title_case(category)) %>%
+  mutate_where(category == 'Ui',
+               category = 'UI') %>% 
+  as_tsibble(index = date,
+             key = c(government, variable, category)) %>%
+  aggregate_key(
+    category,
+    total = sum(consumption),
+    counterfactual = sum(counterfactual),
+    contribution = sum(contribution)
+  ) %>%
+  slice(17:120) %>%
+  as_tibble() %>%
+  mutate(category = forcats::as_factor(as.character(category))) %>% 
+    left_join(contributions) %>%
+  separate(date, into = c('year', 'quarter'), remove = FALSE)
+  
+```
+
+
+```{r headline}
+
+totals %>%
+    mutate(category =fct_relevel(.f = category,
+                        order)) %>% 
+  # Ungroup or `complete` won't work as expected
+  ggplot(aes(
+    x = date,
+    y = contribution
+  )) +
+    geom_col(aes(fill = category), alpha = 0.7) +
+    geom_point(aes(x = date, y = fiscal_impact, lty = "Total Quarterly Fiscal Impact"),
+             size = 2,
+             show.legend = FALSE) +
+  geom_line(aes(x = date, y = fiscal_impact, lty = 'Total Quarterly Fiscal Impact'), size = 1) +
+  scale_fill_brookings('categorical_expanded', 
+                       reverse = FALSE) +
+  scale_x_yearquarter(date_breaks = "3 months",
+                      expand = expansion()) +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1, scale = 1)) +
+  geom_hline(yintercept = 0) +
+  annotate(
+    "rect",
+    xmin = as_date("2021-08-15"),
+    xmax = yearquarter('2023 Q3'),
+    ymin = -Inf,
+    ymax = Inf,
+    alpha = 0.1,
+    fill = 'yellow'
+  ) +
+  annotate(
+    "text",
+    x = yearquarter("2022 Q1"),
+    y = 12.5,
+    label = "Projection",
+    family = "Roboto",
+    fontface = "bold"
+  ) +
+  theme(
+    axis.text.x = element_blank(),
+    legend.key.height = unit(.25, 'lines'),
+    legend.key.width = unit(1.75, 'lines'),
+    legend.margin = margin(3, 0, 0, 0),
+    legend.box = 'vertical',
+    legend.background = element_rect(fill = "#FAFAFA")
+  ) +
+  guides(
+   fill = guide_legend(order = 1),
+   linetype = guide_legend(order = 2, override.aes = list(shape = 1, shape = "dashed"))
+ ) +
+    labs(title = 'Effects of the Components of Fiscal Policy on GDP Growth',
+       x = "",
+       y = "Percentage Points, Annual Rate",
+       caption = "**Source:** Hutchins Center calculations using data from the Congressional Budget Office<br> and the Bureau of Economic Analysis.") 
+```
+
+Save the file and then add logo
+
+```{r}
+ggsave(filename = "fim_components.png",
+       path = path,
+       device = ragg::agg_png(width = 8, height = 5, units = "in", res = 300))
+
+fim_components <- add_logo(glue("{path}/fim_components.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.035)
+
+image_write(fim_components, glue("{path}/fim_components.png"))
+```
+

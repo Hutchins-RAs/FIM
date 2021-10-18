@@ -6,15 +6,22 @@
 #' @export
 #'
 #' @examples
-purchases_contributions <- function(df){
+purchases_contributions <- function(df, lag = 1){
+  
+  if(lag == 1){
+    annualization_constant = 400
+  } 
+  else{
+    annualization_constant = 100
+  }
   df %>%
     mutate(over(c('federal_purchases', 
                   'state_purchases', 
                   'consumption_grants', 
                   'investment_grants'),
                 
-                .fn =  ~ 400 * (.("{.x}") - lag(.("{.x}")) * (1 + .("{.x}_deflator_growth") + real_potential_gdp_growth)) 
-                / lag(gdp),
+                .fn =  ~ annualization_constant * (.("{.x}") - lag(.("{.x}"), n = lag) * (1 + .("{.x}_deflator_growth") + real_potential_gdp_growth)) 
+                / lag(gdp, n = lag),
                 
                 .names = "{x}_contribution"),
            grants_contribution = consumption_grants_contribution + investment_grants_contribution,
@@ -91,13 +98,13 @@ all_taxes_transfers <- function(){
 #' @export
 #'
 #' @examples
-taxes_transfers_minus_neutral <- function(df){
+taxes_transfers_minus_neutral <- function(df, lag = 1){
   taxes = all_levels('corporate_taxes', 'non_corporate_taxes')
   transfers = all_levels('social_benefits', 'health_outlays', 'subsidies', 'ui', 'rebate_checks')
   df %>%
     dplyr::mutate(
       dplyr::across(.cols = any_of(all_levels(taxes, transfers)),
-             .fns = ~ . - dplyr::lag(.) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
+             .fns = ~ . - dplyr::lag(., n = lag) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
              .names = '{.col}_minus_neutral')
     )
 }

@@ -85,7 +85,8 @@ headline_plot <-
            width = 50) +
   geom_line(aes(x = date, 
                 y = fiscal_impact_moving_average,
-                colour = "4-quarter moving-average")) +
+                colour = "4-quarter moving-average"),
+            size = 0.5) +
   geom_point(aes(x = date,
                  y = fiscal_impact_moving_average,
                  colour = "4-quarter moving-average"),
@@ -167,7 +168,8 @@ expanded <-
                width = 50) +
       geom_line(aes(x = date,
                     y = fiscal_impact_moving_average,
-                    colour = "4-quarter moving-average")) +
+                    colour = "4-quarter moving-average"),
+                size = 0.5) +
       geom_point(aes(x = date,
                      y = fiscal_impact_moving_average,
                      colour = "4-quarter moving-average"),
