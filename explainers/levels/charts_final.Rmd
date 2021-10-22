@@ -246,7 +246,7 @@ totals <-
     counterfactual = sum(counterfactual),
     contribution = sum(contribution)
   ) %>%
-  slice(17:120) %>%
+  slice(15:120) %>%
   as_tibble() %>%
   mutate(category = forcats::as_factor(as.character(category))) %>% 
     left_join(contributions) %>%

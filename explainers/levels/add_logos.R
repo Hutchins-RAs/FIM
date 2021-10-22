@@ -19,3 +19,4 @@ image_write(gdp_effect_components, glue("{path}/gdp_effect_components.png"))
 fim_components <- add_logo(glue("{path}/fim_components_wbrackets-01.png"), logo_path = 'hc', 'bottom right', logo_scale = 5, height_padding = 0.025)
 
 image_write(fim_components, glue("{path}/fim_components.png"))
+
