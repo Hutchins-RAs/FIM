@@ -55,7 +55,7 @@ usna <-
   mutate(gftffx = gftffx / 1e3)
 
 
-
+pull_data(c('yop', 'yri'), "usna", start.date = START)
 
 monthly_state_ui <- c('LICL', 'LWCL', 'LUFP','LULP','LUWC','LUWP','LUBP','LUWB','LUEX','LUD','LUWBY', 'LUBPT', 'LUFPT', 'LULPT')
 
@@ -80,6 +80,10 @@ output_xlsx <- function(data, names){
 list(data = haver_raw_list,
      names = names(haver_raw_list)) %>% 
   purrr::pmap(output_xlsx) 
+
+source('data-raw/national_accounts.R')
+devtools::load_all()
+source('data-raw/haver_pivoted.R')
 
 # df = usna
 # 
