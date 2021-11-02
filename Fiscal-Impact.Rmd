@@ -27,15 +27,10 @@ devtools::load_all()
 ```{r data, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
 fim <- 
  readr::read_rds('data/contributions.RDS') %>% 
- tsibble::filter_index('1999 Q4' ~ '2023 Q2')
+ tsibble::filter_index('1999 Q4' ~ '2023 Q3')
 ```
 
 ```{r constants, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
-
-
-
-
-
 
 guidez <- guides(
   fill = guide_legend(
@@ -100,7 +95,7 @@ headline_plot <-
                  labels = " Quarterly fiscal impact")  +
   scale_color_manual(" ",
                      values = c("4-quarter moving-average" = "black")) +
-  annotate("rect", xmin = yearquarter('2021 Q3'), xmax = yearquarter('2023 Q2'),
+  annotate("rect", xmin = yearquarter('2021 Q4'), xmax = yearquarter('2023 Q3'),
            ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
   guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
                              keyheight = unit(0.4, "cm"),
@@ -186,7 +181,7 @@ expanded <-
                               " Taxes, Transfers, & Subsidies")) +
      scale_color_manual(" ", 
                         values=c("4-quarter moving-average" ="black")) +
-      annotate("rect", xmin = projection_start, xmax = yearquarter('2023 Q2'),
+      annotate("rect", xmin = projection_start, xmax = yearquarter('2023 Q3'),
                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
       # scale_x_yearquarter(breaks = 0, date_breaks = "2 years", date_labels = '%Y Q%q',
       #              expand = c(0,0)) + 
