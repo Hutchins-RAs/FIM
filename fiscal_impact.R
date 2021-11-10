@@ -194,7 +194,7 @@ consumption %>%
   get_fiscal_impact()
 
 
-openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'))
+openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)
 write_rds(contributions, file = 'data/contributions.rds')
 
 
