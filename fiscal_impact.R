@@ -75,7 +75,7 @@ usna <-
   mutate_where(id == 'projection',
                consumption_grants_deflator_growth = state_purchases_deflator_growth,
                investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
-  mutate_where(date >= yearquarter('2020 Q2') & date <= yearquarter('2021 Q2'),
+  mutate_where(date >= yearquarter('2020 Q2') & date <= yearquarter('2021 Q3'),
                consumption_grants = overrides$consumption_grants_override) 
 
 # Forecast ----------------------------------------------------------------
