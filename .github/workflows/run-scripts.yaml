@@ -49,6 +49,7 @@ jobs:
           remotes::install_deps(dependencies = TRUE)
           remotes::install_github("DesiQuintans/librarian")
           install.packages("devtools")
+          install.packages('tinytex')
         shell: Rscript {0}
           
       - name: Generate data
