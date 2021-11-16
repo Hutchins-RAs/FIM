@@ -38,5 +38,7 @@ Imports:
     ggplot2,
     dplyover,
     dplyr
+Remotes:
+    TimTeaFan/dplyover
 VignetteBuilder: knitr
 URL: https://fim.org, https://github.com/malcalakovalski/fim
