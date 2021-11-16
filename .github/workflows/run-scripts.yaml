@@ -1,8 +1,4 @@
-on:
-  push:
-    branches:
-      - main
-      - master
+on: [workflow_dispatch]
       
 name: run-scripts
 
