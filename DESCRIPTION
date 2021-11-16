@@ -15,7 +15,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Suggests:
     knitr,
-    rmarkdown,
     targets,
     tarchetypes
 Depends:
@@ -34,10 +33,11 @@ Imports:
     roll,
     tidyr,
     tidyselect,
-    magrittr,
     ggplot2,
     dplyover,
-    dplyr
+    dplyr,
+    rmarkdown,
+    magrittr
 Remotes:
     TimTeaFan/dplyover
 VignetteBuilder: knitr
