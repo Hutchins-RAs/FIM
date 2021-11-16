@@ -58,10 +58,6 @@ jobs:
           source("fiscal_impact.R")
         shell: Rscript {0} 
         
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
-        
       - name: Commit files
         run: |
           git config --local user.email "actions@github.com"
