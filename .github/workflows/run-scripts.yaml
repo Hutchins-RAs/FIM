@@ -27,7 +27,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      steps:
       # Enable tmate debugging of manually-triggered workflows if the input option was provided
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
