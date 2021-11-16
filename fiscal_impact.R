@@ -10,7 +10,9 @@ librarian::shelf(
   "fim",
   "dplyover",
   gt,
-  openxlsx
+  openxlsx,
+  snakecase,
+  rlang
 )
 options(digits = 4)
 options(scipen = 20)
