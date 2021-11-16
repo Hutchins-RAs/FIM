@@ -674,3 +674,5 @@ rmarkdown::render(input = 'update-comparison.Rmd',
                   output_dir = glue("results/{month_year}/"),
                   output_file = glue('update-comparison-{month_year}'),
                   clean = TRUE)
+
+rmarkdown::render(input = 'index.Rmd')
