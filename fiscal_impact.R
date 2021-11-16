@@ -16,8 +16,8 @@ options(scipen = 20)
 devtools::load_all()
 
 # Set dates for current and previous months
-month_year <- glue('{format.Date(today(), "%m")}-{year(today())}')
-last_month_year <- glue('{format.Date(today()-months(1), "%m")}-{year(today())}')
+month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
+last_month_year <- glue('{format.Date(today() - 7 -months(1), "%m")}-{year(today())}')
 
 if(!dir.exists(glue('results/{month_year}'))) {
   dir.create(glue('results/{month_year}'))
@@ -51,7 +51,8 @@ usna <-
                real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
   # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
   mutate(
-    federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare,
+    federal_social_benefits_gross = federal_social_benefits,
+    federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare - nonprofit_provider_relief_fund,
     state_social_benefits = state_social_benefits - medicaid,
     social_benefits = federal_social_benefits + state_social_benefits,
     consumption_grants = gross_consumption_grants - medicaid_grants,
@@ -66,9 +67,9 @@ usna <-
   mutate_where(date == yearquarter('2021 Q1'),
                rebate_checks = rebate_checks - rebate_checks_arp,
                federal_social_benefits = federal_social_benefits + 203
-            ) %>% 
+  ) %>% 
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
-  
+         
          # Aggregate taxes
          corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
          non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes) %>% 
@@ -77,7 +78,6 @@ usna <-
                investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
   mutate_where(date >= yearquarter('2020 Q2') & date <= yearquarter('2021 Q3'),
                consumption_grants = overrides$consumption_grants_override) 
-
 # Forecast ----------------------------------------------------------------
 forecast <- 
   readxl::read_xlsx('data/forecast.xlsx',
@@ -99,7 +99,16 @@ projections <- coalesce_join(usna, forecast, by = 'date') %>%
     health_outlays = medicare + medicaid,
     federal_health_outlays = medicare + medicaid_grants,
     state_health_outlays = medicaid - medicaid_grants
-  )
+  ) %>% 
+  mutate_where(date >= yearquarter('2020 Q2') & date <= yearquarter('2021 Q3'),
+               federal_other_direct_aid_arp = overrides$federal_other_direct_aid_arp_override,
+               federal_other_vulnerable_arp = overrides$federal_other_vulnerable_arp_override,
+               federal_social_benefits = overrides$federal_social_benefits_override) %>% 
+  mutate_where(date == yearquarter("2021 Q1"),
+               federal_social_benefits = federal_social_benefits + 203) %>% 
+  mutate_where(date == yearquarter("2021 Q3"),
+               federal_corporate_taxes = 290,
+               state_corporate_taxes = 119.9)
 
 # Consumption -------------------------------------------------------------
 
@@ -114,17 +123,17 @@ consumption <-
   calculate_mpc("non_corporate_taxes") %>% 
   mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
                 .fns = ~ if_else(date < yearquarter("2021 Q2"),
-                                  mpc_ui(.x),
-                                  mpc_ui_arp(.x)),
+                                 mpc_ui(.x),
+                                 mpc_ui_arp(.x)),
                 .names = '{.col}_post_mpc')) %>% 
-         
+  
   mutate(across(
     .cols = all_of(
       c(
         "rebate_checks_arp",
         "federal_other_direct_aid_arp",
         "federal_other_vulnerable_arp",
-       # "federal_ui_arp",
+        # "federal_ui_arp",
         #"state_ui_arp",
         "federal_aid_to_small_businesses_arp"
       )
@@ -147,14 +156,14 @@ consumption <-
       .fns = ~ mpc_direct_aid_arp(.),
       .names = "{.col}_post_mpc"
     ),
- 
+    
     federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = mpc_small_businesses_arp((federal_aid_to_small_businesses_arp_minus_neutral))
   )
 
 # Contribution ------------------------------------------------------------
 
 contributions <-
-consumption %>%
+  consumption %>%
   purchases_contributions() %>% 
   mutate(across(ends_with("post_mpc"),
                 ~ 400 * .x / lag(gdp),
@@ -185,7 +194,7 @@ consumption %>%
   get_fiscal_impact()
 
 
-openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)
+openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'))
 write_rds(contributions, file = 'data/contributions.rds')
 
 
@@ -304,13 +313,13 @@ comparison_wide <-
                names_to = 'source') %>% 
   arrange(source) %>% 
   select(-id) %>% 
- pivot_wider(names_from = date,
-             values_from = value) %>%
+  pivot_wider(names_from = date,
+              values_from = value) %>%
   mutate(name = snakecase::to_title_case(name)) 
 
 comparison_deflators <-
   comparison %>% 
-    select(date,id, contains('deflator'), previous, current) %>% 
+  select(date,id, contains('deflator'), previous, current) %>% 
   filter(date >= yearquarter("2021 Q2")) %>% 
   ungroup() %>% 
   as_tibble() %>% 
@@ -332,59 +341,62 @@ openxlsx::write.xlsx(x = comparison_deflators,
 openxlsx::write.xlsx(x = comparison_wide,
                      file = glue('results/{month_year}/{month_year}/contributions_comparison.xlsx'),
                      overwrite = TRUE)
-  
+
 
 # Figures -----------------------------------------------------------------
 
-  # Load previous months results
-  previous <-
-    readxl::read_xlsx(glue('results/{last_month_year}/fim-{last_month_year}.xlsx')) %>%
-    mutate(date = yearquarter(date)) %>%
-    drop_na(date) %>%
-    as_tsibble(index = date) %>%
-    filter_index("2020 Q1" ~ "2023 Q4") %>% 
-    select(-id)
-  # Select current results
-  current <- 
-    contributions %>%
-    drop_na(date) %>%
-    filter_index("2020 Q1" ~ "2023 Q4") %>% 
-    as_tsibble(index = date) %>% 
-    select(-id)
-  
-  previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
-  current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
-  
-  comparison <- inner_join(current_long,
-                           previous_long,
-                           by = c('date', 'name')) %>% 
-    rename(variable = name) %>% 
-    as_tsibble(index = date) %>% 
-    select(-id)
-  
-  comparison_long <-
-    comparison %>% 
-    pivot_longer(c(previous, current),
-                 names_to = 'source') 
-  
-  comparison
-  
-  comparison_nested <-
-    comparison_long %>%
-    group_by(variable) %>%
-    nest() %>%
-    mutate(plot = map2(.x = variable,
-                       .y = data,
-                       .f = ~comparison_plot(.data = .y,
-                                             variable = .x)))
-  
-  
+# Load previous months results
+previous <-
+  readxl::read_xlsx(glue('results/{last_month_year}/fim-{last_month_year}.xlsx')) %>%
+  mutate(date = yearquarter(date)) %>%
+  drop_na(date) %>%
+  as_tsibble(index = date) %>%
+  filter_index("2020 Q1" ~ "2023 Q4") %>% 
+  select(-id)
+# Select current results
+current <- 
+  contributions %>%
+  drop_na(date) %>%
+  filter_index("2020 Q1" ~ "2023 Q4") %>% 
+  as_tsibble(index = date) %>% 
+  select(-id)
+
+previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
+current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+
+comparison <- inner_join(current_long,
+                         previous_long,
+                         by = c('date', 'name')) %>% 
+  rename(variable = name) %>% 
+  as_tsibble(index = date) %>% 
+  select(-id)
+
+comparison_long <-
+  comparison %>% 
+  pivot_longer(c(previous, current),
+               names_to = 'source') 
+
+comparison
+
+comparison_nested <-
+  comparison_long %>%
+  group_by(variable) %>%
+  nest() %>%
+  mutate(plot = map2(.x = variable,
+                     .y = data,
+                     .f = ~comparison_plot(.data = .y,
+                                           variable = .x)))
+
+
 plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
 
 
 # Table -------------------------------------------------------------------
 
-## Revisions table
+
+# Revisions table ---------------------------------------------------------
+
+
 
 current_revisions <-
   current %>% 
@@ -401,6 +413,8 @@ previous_revisions <-
   previous %>% 
   as_tibble() %>% 
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants) %>% 
+  mutate_where(date == yearquarter("2021 Q3"),
+               consumption_grants = NA_real_) %>% 
   select(date, federal_purchases_nipa = federal_purchases, state_purchases_nipa = state_purchases, consumption_grants,
          investment_grants) %>% 
   pivot_longer(
@@ -409,10 +423,10 @@ previous_revisions <-
   ) 
 
 revisions <- inner_join(current_revisions, previous_revisions,
-           by = c('date', 'name')) %>% 
+                        by = c('date', 'name')) %>% 
   mutate(diff = current - previous,
          diff_pct = (current / previous) - 1) %>% 
-  filter(date < yearquarter("2021 Q3"))
+  filter(date <= yearquarter("2021 Q3"))
 
 revisions_tbl <-
   revisions %>% 
@@ -457,74 +471,103 @@ revisions_tbl <-
 #fim since 2020 q1 and decomposed into changes due to fed taxes, fed transfers, fed purchases and same list for state.
 #That table should be a standard table we produce every time we run the FIM.
 components <- c(
-                'federal_contribution',
-                'state_contribution', 
-                'federal_transfers_contribution',
-                'federal_corporate_taxes_contribution',
-                'federal_non_corporate_taxes_contribution',
-                'state_transfers_contribution',
-                'state_corporate_taxes_contribution',
-                'state_non_corporate_taxes_contribution')
+  'federal_contribution',
+  'state_contribution', 
+  'federal_transfers_contribution',
+  'federal_corporate_taxes_contribution',
+  'federal_non_corporate_taxes_contribution',
+  'state_transfers_contribution',
+  'state_corporate_taxes_contribution',
+  'state_non_corporate_taxes_contribution')
+
+transfers <- c('social_benefits', 'subsidies', 'aid_to_small_businesses_arp', 'health_outlays', 'rebate_checks', 'rebate_checks_arp', 'ui', 'other_direct_aid_arp', 'other_vulnerable_arp')
+
 
 current_summary <- 
   current %>% 
-  as_tibble() %>% 
-  as_tsibble(index = date) %>% 
-  select(date, fiscal_impact, components) %>% 
-  rename(federal_purchases_fim_contribution = federal_contribution,
-         state_purchases_fim_contribution = state_contribution) %>% 
-  mutate(federal_taxes_contribution = federal_non_corporate_taxes_contribution + federal_corporate_taxes_contribution,
-         state_taxes_contribution = state_non_corporate_taxes_contribution + state_corporate_taxes_contribution) %>% 
-  select(-contains('corporate')) %>% 
-  pivot_longer(
-    c(fiscal_impact, starts_with(c('federal', 'state'))),
-    names_to = c('government', 'contribution'),
-    names_pattern = '(fiscal|federal|state)_(.*)',
-    values_to = 'current'
+  rename(federal_rebate_checks_contribution = rebate_checks_contribution, 
+         federal_rebate_checks_arp_contribution = rebate_checks_arp_contribution,
   ) %>% 
-  mutate(contribution = stringr::str_remove(contribution, '_contribution'),
-         government = recode(government,
-                             fiscal = 'total')) %>% 
-  group_by(government) %>% 
-  arrange(date, factor(government, levels = c('total', 'federal', 'state')))
+  select(date,
+         matches('federal|state') & matches('_contribution') | matches('consumption_grants_|investment_grants_') | matches('fiscal_impact$')) %>% 
+  rename(total_fiscal_impact_contribution = fiscal_impact) %>% 
+  mutate(
+    federal_purchases_contribution = federal_purchases_contribution + consumption_grants_contribution + investment_grants_contribution,
+    state_purchases_contribution = state_purchases_contribution - consumption_grants_contribution - investment_grants_contribution,
+    
+  ) %>% 
+  select(-matches('consumption_grants_|investment_grants_')) %>% 
+  pivot_longer(
+    -c(date, id),
+    names_to = c('government', 'variable', 'level'),
+    names_pattern = '(total|federal|state)_(.*)_(.*)'
+  ) %>% 
+  ungroup() %>% 
+  mutate(category = case_when(variable %in% transfers ~ 'Transfers',
+                              str_detect(variable, 'taxes') ~ 'Taxes',
+                              str_detect(variable, 'purchases') ~ "Purchases",
+                              variable == 'fiscal_impact' ~ 'Fiscal Impact'), .after = 'government') %>% 
+  drop_na() %>% 
+  as_tibble() %>% 
+  group_by(date, government, category) %>% 
+  summarise(value = sum(value)) %>% 
+  arrange(date, factor(government, levels = c('total','federal', 'state')))
+
+
 
 previous_summary <-
   previous %>% 
-  as_tsibble(index = date) %>% 
-  select(date, fiscal_impact, components) %>% 
-  rename(federal_purchases_fim_contribution = federal_contribution,
-         state_purchases_fim_contribution = state_contribution) %>% 
-  mutate(federal_taxes_contribution = federal_non_corporate_taxes_contribution + federal_corporate_taxes_contribution,
-         state_taxes_contribution = state_non_corporate_taxes_contribution + state_corporate_taxes_contribution) %>% 
-  select(-contains('corporate')) %>% 
-  pivot_longer(
-    c(fiscal_impact, starts_with(c('federal', 'state'))),
-    names_to = c('government', 'contribution'),
-    names_pattern = '(fiscal|federal|state)_(.*)',
-    values_to = 'previous'
+  rename(federal_rebate_checks_contribution = rebate_checks_contribution, 
+         federal_rebate_checks_arp_contribution = rebate_checks_arp_contribution,
   ) %>% 
-  mutate(contribution = stringr::str_remove(contribution, '_contribution'),
-         government = recode(government,
-                             fiscal = 'total')) %>% 
-  group_by(government) %>% 
-  arrange(date, factor(government, levels = c('total', 'federal', 'state'))) 
+  select(-federal_purchases_contribution, -state_purchases_contribution) %>% 
+  rename(federal_purchases_contribution = federal_contribution,
+         state_purchases_contribution = state_contribution) %>% 
+  select(date,
+         matches('federal|state') & matches('_contribution') | matches('consumption_grants_|investment_grants_') | matches('fiscal_impact$')) %>% 
+  rename(total_fiscal_impact_contribution = fiscal_impact) %>% 
+  select(-matches('consumption_grants_|investment_grants_')) %>% 
+  pivot_longer(
+    -c(date),
+    names_to = c('government', 'variable', 'level'),
+    names_pattern = '(total|federal|state)_(.*)_(.*)'
+  ) %>% 
+  ungroup() %>% 
+  mutate(category = case_when(variable %in% transfers ~ 'Transfers',
+                              str_detect(variable, 'taxes') ~ 'Taxes',
+                              str_detect(variable, 'purchases') ~ "Purchases",
+                              variable == 'fiscal_impact' ~ 'Fiscal Impact'), .after = 'government') %>% 
+  drop_na() %>% 
+  as_tibble() %>% 
+  group_by(date, government, category) %>% 
+  summarise(value = sum(value)) %>% 
+  arrange(date, factor(government, levels = c('total','federal', 'state')))
 
-  
+
+
+
 summary <- inner_join(current_summary,
-           previous_summary,
-           by = c('date', 'government', 'contribution')) %>% 
-  mutate(difference = current - previous) %>% 
-  arrange(date, factor(government, levels = c('total', 'federal', 'state'))) 
+                      previous_summary,
+                      by = c('date','government', 'category')) %>% 
+  rename(current = value.x,
+         previous = value.y) %>% 
+  mutate(difference = current - previous)
 
+summary %>% 
+  as_tibble() %>% 
+  # filter(government != 'total') %>% 
+  mutate_where(category == "Purchases",
+               category = "Purchases FIM") %>% 
+  group_by(date) 
 
 summary_tbl <-
   summary %>% 
   as_tibble() %>% 
- # filter(government != 'total') %>% 
-  mutate(date = as.character(date),
-         across(c(government, contribution),
-                ~ snakecase::to_title_case(.x))) %>% 
+  # filter(government != 'total') %>% 
+  mutate_where(category == "Purchases",
+               category = "Purchases FIM") %>% 
   group_by(date) %>% 
+  mutate(date = as.character(date)) %>% 
   gt(groupname_col = 'date',
      rowname_col = 'government') %>% 
   tab_style(
@@ -533,12 +576,12 @@ summary_tbl <-
       cell_text(weight = "bold", size = 24)
     )
   ) %>%
-
+  
   opt_row_striping() %>%
   tab_header(title = md('FIM Components Summary')) %>%
   fmt_percent(where(is.numeric),
               scale_values = FALSE) %>% 
-
+  
   opt_all_caps() %>%
   opt_table_font(
     font = list(
@@ -564,20 +607,20 @@ summary_tbl <-
   tab_style(  style = list(
     cell_text(weight = "bold")
   ),
-  locations = list(cells_body(rows = contribution == 'Impact')))
+  locations = list(cells_body(rows = category == 'Fiscal Impact')))
 
 # Deflators ---------------------------------------------------------------
 
 
 
 deflators <- inner_join(previous_long,
-           current_long,
-           by = c('date', 'name' )) %>% 
+                        current_long,
+                        by = c('date', 'name' )) %>% 
   mutate(diff = current - previous) %>% 
   rename(variable = name) %>% 
   filter(str_detect(variable, 'deflator_growth')) %>% 
   mutate(across(where(is.numeric),
-                   ~ ((1 + .x)^4))-1)
+                ~ ((1 + .x)^4))-1)
 
 diff_plot <-
   deflators %>% 
@@ -623,9 +666,8 @@ prev_plot <-
        subtitle = 'Annualized',
        x = NULL,
        y = NULL)
-  
+
 rmarkdown::render(input = 'update-comparison.Rmd',
                   output_dir = glue("results/{month_year}/"),
                   output_file = glue('update-comparison-{month_year}'),
                   clean = TRUE)
-
