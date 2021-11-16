@@ -9,7 +9,8 @@ librarian::shelf(
   "glue",
   "fim",
   "dplyover",
-  gt
+  gt,
+  openxlsx
 )
 options(digits = 4)
 options(scipen = 20)
