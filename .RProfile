@@ -1,4 +1,0 @@
-cat('Welcome to the FIM Project')
-if (interactive()) {
-  suppressMessages(require(usethis, quietly = TRUE))
-}
