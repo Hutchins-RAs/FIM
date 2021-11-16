@@ -51,6 +51,7 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE)
           remotes::install_github("DesiQuintans/librarian")
+          install.packages("devtools")
         shell: Rscript {0}
           
       - name: Generate data
