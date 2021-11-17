@@ -9,7 +9,8 @@ librarian::shelf(
   "glue",
   "fim",
   "dplyover",
-  gt
+  'gt',
+  'ggtext'
 )
 options(digits = 4)
 options(scipen = 20)
@@ -29,15 +30,7 @@ overrides <- readxl::read_xlsx('data/forecast.xlsx',
   rename(date = name) %>% 
   mutate(date = yearquarter(date))
 
-fmap <- read_csv('analysis/fim-historical/nhe_fmap.csv') %>% 
-  mutate(fshare = if_else(is.na(fshare), gf_medicaid / (gf_medicaid + gs_medicaid), fshare)) %>% 
-  mutate(year = as.character(year)) %>% 
-  left_join(history %>% select(date) %>% 
-              separate(date, into = c('year', 'quarter')), by = 'year') %>% 
-  unite(col = date,
-        c('year', 'quarter'),
-        sep = '') %>% 
-  mutate(date = yearquarter(date))
+
 # Load national accounts data from BEA
 projections <- get_cbo_projections()
 
@@ -57,9 +50,16 @@ history <-
   mutate(id = 'historical') %>%
   format_tsibble()
 
-history %>% 
-  left_join(fmap, 
-            by = 'date')
+fmap <- read_csv('analysis/fim-historical/nhe_fmap.csv') %>% 
+  mutate(fshare = if_else(is.na(fshare), gf_medicaid / (gf_medicaid + gs_medicaid), fshare)) %>% 
+  mutate(year = as.character(year)) %>% 
+  left_join(history %>% select(date) %>% 
+              separate(date, into = c('year', 'quarter')), by = 'year') %>% 
+  unite(col = date,
+        c('year', 'quarter'),
+        sep = '') %>% 
+  mutate(date = yearquarter(date))
+
 
 usna <-
   history %>%
@@ -132,7 +132,6 @@ projections <- coalesce_join(usna, forecast, by = 'date') %>%
 
 consumption <-
   projections %>%
-  filter_index('1970 Q1' ~ .) %>% 
   taxes_transfers_minus_neutral() %>%
   calculate_mpc("social_benefits") %>%
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
@@ -241,9 +240,118 @@ interactive <-
 
 readr::write_csv(interactive,  file = glue('analysis/fim-historical/interactive-1960-2021.csv'))
 
-# Figures for website
-rmarkdown::render('Fiscal-Impact.Rmd',
-                  output_file = glue::glue('analysis/fim-historical/Fiscal-Impact-1960-2021'),
-                  clean = TRUE, 
-                  params = list(start = '1960 Q1'))
+
+
+
+# Chart -------------------------------------------------------------------
+
+# Subset data
+headline <-
+  contributions %>%
+  select(date, fiscal_impact, fiscal_impact_moving_average) %>%
+  pivot_longer(fiscal_impact) %>% 
+  filter(date <= yearquarter("2023 Q2"))
+
+# Legend formatting
+guidez <- guides(
+  fill = guide_legend(
+    keywidth = unit(0.8, "cm"),
+    keyheight = unit(0.4, "cm"),
+    ncol = 1
+  ),
+  colour = guide_legend(
+    keywidth = unit(0.8, "cm"),
+    keyheight = unit(0.05, "cm"),
+    ncol = 1
+  )
+)
+
+
+# Recessions data
+
+recessions <-
+  history %>%
+  as_tibble() %>%
+  select(date, recession = recessq) %>%
+  mutate(
+    date,
+    diff = recession - dplyr::lag(recession),
+    business_cycle = case_when(
+      diff == 2 ~ 'recession_start',
+      diff == -2 ~ 'recession_end',
+      recession == 1 ~ 'recession',
+      recession == -1 ~ 'expansion'
+    ),
+    .keep = 'used'
+  ) %>%
+  filter(business_cycle == 'recession_start' |
+           business_cycle == 'recession_end') %>%
+  pivot_longer(business_cycle) %>%
+  mutate(date2 = as_date(date)) %>%
+  pivot_wider(names_from = value,
+              values_from = date) %>%
+  select(recession_start, recession_end) %>%
+  mutate(
+    across(any_of(c(
+      'recession_start', 'recession_end'
+    )),
+    .fns = ~ coalesce(.x, dplyr::lead(.x))),
+    recession_end = dplyr::lead(recession_end),
+    .keep = 'used'
+  ) %>%
+  unique() %>%
+  drop_na()
+
+
+  ggplot(data = headline) +
+  geom_rect(data = recessions,
+            aes(xmin = recession_start, 
+                xmax = recession_end, 
+                ymin=-Inf,
+                ymax=+Inf),
+            fill = 'grey',
+            alpha = 0.5) +
+  geom_col(aes(x = date, y = value, fill = name),
+           width = 50) +
+  geom_line(aes(x = date, 
+                y = fiscal_impact_moving_average,
+                colour = "4-quarter moving-average")) +
+  geom_point(aes(x = date,
+                 y = fiscal_impact_moving_average,
+                 colour = "4-quarter moving-average"),
+             size = 1) +
+  ggtext::geom_richtext(aes(x = yearquarter(today()) + 4,
+                            y = 16),
+                        label = "Projection",
+                        cex = 2,
+                        fill = NA, 
+                        label.color = NA) +
+  fim::scale_fill_fim(palette = 'headline',
+                      labels = " Quarterly fiscal impact")  +
+  scale_color_manual(" ",
+                     values = c("4-quarter moving-average" = "black")) +
+  annotate("rect", xmin = yearquarter('2021 Q3'), xmax = yearquarter('2023 Q2'),
+           ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
+  guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
+                             keyheight = unit(0.4, "cm"),
+                             ncol = 1),
+         colour = guide_legend(keywidth = unit(0.8, "cm"),
+                               keyheight = unit(0.05, "cm"),
+                               ncol = 1)) +
+  fim::fim_theme() +
+  guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
+                             keyheight = unit(0.4, "cm"),
+                             ncol = 1),
+         colour = guide_legend(
+           keywidth = unit(0.8, "cm"),
+           keyheight = unit(0.05, "cm"),
+           ncol = 1
+         ))+
+  labs(title = glue("**Hutchins Center Fiscal Impact Measure: Total**"),
+       x = NULL,
+       y = NULL,
+       subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
+       caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
+        and Congressional Budget Office data; grey shaded areas indicate recessions 
+        and yellow shaded areas indicate projection.") 
 

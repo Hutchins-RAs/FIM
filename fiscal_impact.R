@@ -670,9 +670,11 @@ prev_plot <-
        x = NULL,
        y = NULL)
 
-rmarkdown::render(input = 'update-comparison.Rmd',
-                  output_dir = glue("results/{month_year}/"),
-                  output_file = glue('update-comparison-{month_year}'),
+rmarkdown::render(input = 'index.Rmd',
                   clean = TRUE)
 
-rmarkdown::render(input = 'index.Rmd')
+if (dir.exists(glue('results/{month_year}'))) {
+  file.copy('index.html',
+            glue('results/{month_year}/update-comparison-{month_year}'))
+}
+
