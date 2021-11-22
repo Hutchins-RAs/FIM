@@ -13,7 +13,7 @@ purchases_contributions <- function(df){
                   'consumption_grants', 
                   'investment_grants'),
                 
-                .fn =  ~ 400 * (.("{.x}") - lag(.("{.x}")) * (1 + .("{.x}_deflator_growth") + real_potential_gdp_growth)) 
+                .fns =  ~ 400 * (.("{.x}") - lag(.("{.x}")) * (1 + .("{.x}_deflator_growth") + real_potential_gdp_growth)) 
                 / lag(gdp),
                 
                 .names = "{x}_contribution"),

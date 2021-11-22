@@ -19,7 +19,9 @@ fim_theme <- function() {
                                    margin = margin(0, 0, 5.5, 0)),
           legend.text=element_markdown(size=10), 
           legend.title=element_blank(),
-          legend.spacing.y = unit(2, 'cm')
+          legend.spacing.y = unit(2, 'cm'),
+          panel.grid = ggplot2::element_line(
+            colour = "#FFFFFF")
     ) # , legend.margin = unit(c(rep(-.8, 4)),"cm")
 }
 
