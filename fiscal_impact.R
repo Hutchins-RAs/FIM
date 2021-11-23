@@ -199,6 +199,7 @@ contributions <-
 
 openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)
 write_rds(contributions, file = 'data/contributions.rds')
+usethis::use_data(contributions)
 
 
 # Web materials  -------------------------------------------------------------
