@@ -193,6 +193,8 @@ contributions <-
     taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution +
       federal_corporate_taxes_contribution + state_corporate_taxes_contribution
   ) %>%
+  mutate(subsidies = federal_subsidies + state_subsidies,
+         subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution) %>% 
   #sum_taxes_contributions() %>%
   get_fiscal_impact()
 
@@ -239,7 +241,9 @@ previous <-
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2020 Q2" ~ "2023 Q4")
+  filter_index("2020 Q2" ~ "2023 Q4") %>% 
+  mutate(subsidies = federal_subsidies + state_subsidies,
+         subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution)
 # Select current results
 current <- 
   contributions %>%
@@ -316,14 +320,13 @@ comparison_wide <-
   pivot_longer(where(is.numeric),
                names_to = 'source') %>% 
   arrange(source) %>% 
-  select(-id) %>% 
   pivot_wider(names_from = date,
               values_from = value) %>%
   mutate(name = snakecase::to_title_case(name)) 
 
 comparison_deflators <-
   comparison %>% 
-  select(date,id, contains('deflator'), previous, current) %>% 
+  select(date, contains('deflator'), previous, current) %>% 
   filter(date >= yearquarter("2021 Q2")) %>% 
   ungroup() %>% 
   as_tibble() %>% 
@@ -334,7 +337,6 @@ comparison_deflators <-
   pivot_longer(where(is.numeric),
                names_to = 'source') %>% 
   arrange(source) %>% 
-  select(-id) %>% 
   pivot_wider(names_from = date,
               values_from = value) %>%
   mutate(name = snakecase::to_title_case(name)) 
@@ -356,7 +358,9 @@ previous <-
   drop_na(date) %>%
   as_tsibble(index = date) %>%
   filter_index("2020 Q1" ~ "2023 Q4") %>% 
-  select(-id)
+  select(-id) %>% 
+  mutate(subsidies = federal_subsidies + state_subsidies,
+         subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution)
 # Select current results
 current <- 
   contributions %>%
