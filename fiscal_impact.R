@@ -193,6 +193,8 @@ contributions <-
     taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution +
       federal_corporate_taxes_contribution + state_corporate_taxes_contribution
   ) %>%
+  mutate(subsidies = federal_subsidies + state_subsidies,
+         subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution) %>% 
   #sum_taxes_contributions() %>%
   get_fiscal_impact()
 
