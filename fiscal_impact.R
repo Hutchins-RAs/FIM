@@ -108,10 +108,7 @@ projections <- coalesce_join(usna, forecast, by = 'date') %>%
                federal_other_vulnerable_arp = overrides$federal_other_vulnerable_arp_override,
                federal_social_benefits = overrides$federal_social_benefits_override) %>% 
   mutate_where(date == yearquarter("2021 Q1"),
-               federal_social_benefits = federal_social_benefits + 203) %>% 
-  mutate_where(date == yearquarter("2021 Q3"),
-               federal_corporate_taxes = 290,
-               state_corporate_taxes = 119.9)
+               federal_social_benefits = federal_social_benefits + 203) 
 
 # Consumption -------------------------------------------------------------
 
@@ -679,8 +676,8 @@ rmarkdown::render(input = 'index.Rmd',
                   output_file = 'index.html',
                   clean = TRUE)
 
-if (dir.exists(glue('results/{month_year}'))) {
-  file.copy('index.html',
-            glue('results/{month_year}/update-comparison-{month_year}'))
-}
+
+  file.copy(from = 'index.html',
+            to = glue('results/{month_year}/update-comparison-{month_year}.html'),
+            overwrite = TRUE)
 
