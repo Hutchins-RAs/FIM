@@ -206,7 +206,7 @@ usethis::use_data(contributions, overwrite = TRUE)
 # Interactive data
 interactive <- 
   contributions %>% 
-  filter_index('1999 Q4' ~ '2023 Q2') %>% 
+  filter_index('1999 Q4' ~ '2023 Q3') %>% 
   mutate(consumption = transfers_contribution + taxes_contribution,
          recession = recode(recession, `-1` = 0),
          recession = replace_na(recession, 0),
