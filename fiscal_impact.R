@@ -199,6 +199,7 @@ contributions <-
 
 openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)
 write_rds(contributions, file = 'data/contributions.rds')
+usethis::use_data(contributions, overwrite = TRUE)
 
 
 # Web materials  -------------------------------------------------------------
@@ -671,6 +672,7 @@ prev_plot <-
        y = NULL)
 
 rmarkdown::render(input = 'index.Rmd',
+                  output_file = 'index.html',
                   clean = TRUE)
 
 if (dir.exists(glue('results/{month_year}'))) {

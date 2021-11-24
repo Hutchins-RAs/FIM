@@ -243,115 +243,57 @@ readr::write_csv(interactive,  file = glue('analysis/fim-historical/interactive-
 
 
 
-# Chart -------------------------------------------------------------------
+# Detailed summary -------------------------------------------------------------------
 
-# Subset data
-headline <-
+summary <-
   contributions %>%
-  select(date, fiscal_impact, fiscal_impact_moving_average) %>%
-  pivot_longer(fiscal_impact) %>% 
-  filter(date <= yearquarter("2023 Q2"))
+  as_tibble() %>% 
+  select(date,
+         starts_with('federal|state'),
+         ends_with('contribution'),
+         -grants_contribution,
+         -social_benefits_contribution,
+         -subsidies_contribution,
+         -health_outlays_contribution,
+         -corporate_taxes_contribution,
+         -non_corporate_taxes_contribution,
+         -state_transfers_contribution,
+         -federal_transfers_contribution,
+         -transfers_contribution,
+         -taxes_contribution,
+         consumption_grants_contribution,
+         investment_grants_contribution,
+         rebate_checks_contribution,
+         rebate_checks_arp_contribution) %>% 
+  rename(federal_purchases_nipa_contribution = federal_purchases_contribution,
+         federal_purchases_fim_contribution = federal_contribution,
+         state_purchases_nipa_contribution = state_purchases_contribution,
+         state_purchases_fim_contribution = state_contribution)
 
-# Legend formatting
-guidez <- guides(
-  fill = guide_legend(
-    keywidth = unit(0.8, "cm"),
-    keyheight = unit(0.4, "cm"),
-    ncol = 1
-  ),
-  colour = guide_legend(
-    keywidth = unit(0.8, "cm"),
-    keyheight = unit(0.05, "cm"),
-    ncol = 1
+
+summary_long <-
+  summary %>% 
+  relocate(c(consumption_grants_contribution, investment_grants_contribution), .after = 'date') %>% 
+  relocate(c(federal_purchases_fim_contribution, state_purchases_fim_contribution), .after = 'state_purchases_nipa_contribution') %>% 
+  relocate(contains('health_outlays') | contains('subsidies') | contains('small_businesses'),
+           .after = 'state_social_benefits_contribution') %>% 
+  relocate(contains('taxes'), .after = everything()) %>% 
+  pivot_longer(-c(date)) %>% 
+  mutate(name = snakecase::to_title_case(name),
+         name = str_replace(name, 'Ui', 'UI'),
+         name = str_replace(name, 'Arp', 'ARP'),
+         name = str_replace(name, 'Nipa', 'NIPA'),
+         name = str_replace(name, 'Fim', 'FIM'))
+
+summary_long %>% 
+  pivot_wider(names_from = date,
+              values_from = value) %>% 
+  openxlsx::write.xlsx('analysis/fim-historical/fim_contributions_underlying_detail.xlsx', overwrite = TRUE)
+  
+  pivot_longer(
+    -c(date, gdp),
+    names_to = c('government', 'variable', 'level'),
+    names_pattern = '(federal|state)_(.*)_(.*)'
   )
-)
-
-
-# Recessions data
-
-recessions <-
-  history %>%
-  as_tibble() %>%
-  select(date, recession = recessq) %>%
-  mutate(
-    date,
-    diff = recession - dplyr::lag(recession),
-    business_cycle = case_when(
-      diff == 2 ~ 'recession_start',
-      diff == -2 ~ 'recession_end',
-      recession == 1 ~ 'recession',
-      recession == -1 ~ 'expansion'
-    ),
-    .keep = 'used'
-  ) %>%
-  filter(business_cycle == 'recession_start' |
-           business_cycle == 'recession_end') %>%
-  pivot_longer(business_cycle) %>%
-  mutate(date2 = as_date(date)) %>%
-  pivot_wider(names_from = value,
-              values_from = date) %>%
-  select(recession_start, recession_end) %>%
-  mutate(
-    across(any_of(c(
-      'recession_start', 'recession_end'
-    )),
-    .fns = ~ coalesce(.x, dplyr::lead(.x))),
-    recession_end = dplyr::lead(recession_end),
-    .keep = 'used'
-  ) %>%
-  unique() %>%
-  drop_na()
-
-
-  ggplot(data = headline) +
-  geom_rect(data = recessions,
-            aes(xmin = recession_start, 
-                xmax = recession_end, 
-                ymin=-Inf,
-                ymax=+Inf),
-            fill = 'grey',
-            alpha = 0.5) +
-  geom_col(aes(x = date, y = value, fill = name),
-           width = 50) +
-  geom_line(aes(x = date, 
-                y = fiscal_impact_moving_average,
-                colour = "4-quarter moving-average")) +
-  geom_point(aes(x = date,
-                 y = fiscal_impact_moving_average,
-                 colour = "4-quarter moving-average"),
-             size = 1) +
-  ggtext::geom_richtext(aes(x = yearquarter(today()) + 4,
-                            y = 16),
-                        label = "Projection",
-                        cex = 2,
-                        fill = NA, 
-                        label.color = NA) +
-  fim::scale_fill_fim(palette = 'headline',
-                      labels = " Quarterly fiscal impact")  +
-  scale_color_manual(" ",
-                     values = c("4-quarter moving-average" = "black")) +
-  annotate("rect", xmin = yearquarter('2021 Q3'), xmax = yearquarter('2023 Q2'),
-           ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
-  guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
-                             keyheight = unit(0.4, "cm"),
-                             ncol = 1),
-         colour = guide_legend(keywidth = unit(0.8, "cm"),
-                               keyheight = unit(0.05, "cm"),
-                               ncol = 1)) +
-  fim::fim_theme() +
-  guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
-                             keyheight = unit(0.4, "cm"),
-                             ncol = 1),
-         colour = guide_legend(
-           keywidth = unit(0.8, "cm"),
-           keyheight = unit(0.05, "cm"),
-           ncol = 1
-         ))+
-  labs(title = glue("**Hutchins Center Fiscal Impact Measure: Total**"),
-       x = NULL,
-       y = NULL,
-       subtitle = "Fiscal Policy Contribution to Real GDP Growth, percentage points",
-       caption = "Source: Hutchins Center calculations from Bureau of Economic Analysis 
-        and Congressional Budget Office data; grey shaded areas indicate recessions 
-        and yellow shaded areas indicate projection.") 
-
+  pivot_wider(names_from = 'level',
+              values_from = value)
