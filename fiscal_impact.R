@@ -672,6 +672,7 @@ prev_plot <-
        y = NULL)
 
 rmarkdown::render(input = 'index.Rmd',
+                  output_file = 'index.html',
                   clean = TRUE)
 
 if (dir.exists(glue('results/{month_year}'))) {
