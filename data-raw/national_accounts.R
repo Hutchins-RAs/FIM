@@ -21,7 +21,7 @@ national_accounts <-
   mutate(across(starts_with('j'), ~ q_g(.x), .names = '{.col}_growth')) %>% 
   format_tsibble() %>% 
   #When adding new codes to read in from Haver, make sure to relocate them at the end of the spreadsheet using the below function:
-  relocate(ylwsd:gfsubd, .after = 'jgsi_growth')
+  relocate(ylwsd:gftfbdx, .after = 'jgsi_growth')
 
 usethis::use_data(national_accounts, overwrite = TRUE)
 

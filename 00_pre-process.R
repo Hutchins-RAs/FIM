@@ -104,4 +104,4 @@ fim::national_accounts %>%
   as_tibble() %>% 
   pivot_wider(names_from = date,
               values_from = value) %>% 
-  openxlsx::write.xlsx('data/haver_pivoted.xlsx')
+  openxlsx::write.xlsx('data/haver_pivoted.xlsx', overwrite = TRUE)
