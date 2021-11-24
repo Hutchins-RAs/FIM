@@ -2,7 +2,7 @@
 title: 'Fiscal Impact Update'
 subtitle: 'Q3 2021 Advanced Estimate'
 author: ' Manuel Alcala Kovalski'
-date: "`r Sys.Date()`"
+date: "`r Sys.time()`"
 header-includes:
    - \usepackage[default]{sourcesanspro}
    - \usepackage[T1]{fontenc}
