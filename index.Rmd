@@ -2,7 +2,7 @@
 title: 'Fiscal Impact Update'
 subtitle: 'Q3 2021 Advanced Estimate'
 author: ' Manuel Alcala Kovalski'
-date: "`r Sys.time()`"
+date: '`r glue::glue(format(Sys.Date(), "%A, %B %d %Y")," at ", format(strptime(format(Sys.time(), "%H:%M:%S"), "%H:%M:%S"), "%I:%M %p"))`'
 header-includes:
    - \usepackage[default]{sourcesanspro}
    - \usepackage[T1]{fontenc}
