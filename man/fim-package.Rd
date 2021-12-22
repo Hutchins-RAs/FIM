@@ -11,7 +11,6 @@ The Hutchins Center Fiscal Impact Measure shows how much local, state, and feder
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://fim.org}
   \item \url{https://github.com/malcalakovalski/fim}
 }
 
