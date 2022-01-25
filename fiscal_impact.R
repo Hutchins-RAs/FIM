@@ -1,31 +1,18 @@
 # Setup -------------------------------------------------------------------
 Sys.setenv(TZ = 'UTC')
-librarian::shelf(
-  "tidyverse",
-  "zoo",
-  "TTR",
-  "tsibble",
-  "lubridate",
-  "glue",
-  "fim",
-  "dplyover",
-  fs,
-  gt,
-  openxlsx,
-  snakecase,
-  rlang
-)
-options(digits = 4)
-options(scipen = 20)
+librarian::shelf(tidyverse, tsibble, lubridate, glue, dplyover, zoo, TTR, fs, gt, openxlsx, snakecase, rlang)
 devtools::load_all()
+
+options(digits = 4) # Limit number of digits
+options(scipen = 20)# Turn off scientific notation under 20 digits 
 
 # Set dates for current and previous months
 month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
-last_month_year <- glue('{format.Date(today() - 7 -months(1), "%m")}-{year(today())}')
+last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - months(1) - weeks(1))}')
 
-if(!dir.exists(glue('results/{month_year}'))) {
-  dir.create(glue('results/{month_year}'))
-}
+
+fs::dir_create(glue('results/{month_year}')) # Create folder to store results
+
 
 # Wrangle data ------------------------------------------------------------
 
@@ -33,29 +20,26 @@ if(!dir.exists(glue('results/{month_year}'))) {
 # override the historical data and spread it out based on our best guess
 # for when the money was spent.
 overrides <- readxl::read_xlsx('data/forecast.xlsx',
-                               sheet = 'historical overrides') %>% 
-  select(-name) %>% 
-  pivot_longer(-variable) %>% 
+                               sheet = 'historical overrides') %>% # Read in overrides
+  select(-name) %>% # Remove longer name since we don't need it
+  pivot_longer(-variable,
+               names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
   pivot_wider(names_from = 'variable',
               values_from = 'value') %>% 
-  rename(date = name) %>% 
   mutate(date = yearquarter(date))
+
+current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current quarter for later
 
 # Load national accounts data from BEA
 usna <-
-  read_data() %>%
-  # Rename Haver codes for clarity
-  define_variables() %>%
-  # Specify time series structure:
-  # Key is historical or forecast period
-  # Indexed by date
-  as_tsibble(key = id, index = date) %>%
-  # Calculate GDP growth for data but take CBO for projection
-  mutate_where(id == 'historical',
+  read_data() %>% # Load raw BEA data from Haver and CBO projections
+  define_variables() %>%  # Rename Haver codes for clarity
+  as_tsibble(key = id, index = date) %>% # Specify time series structure
+  mutate_where(id == 'historical',  # Calculate GDP growth for data but take CBO for projection
                real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
-  # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
-  mutate(
-    federal_social_benefits_gross = federal_social_benefits,
+  mutate( 
+    # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
+    federal_social_benefits_gross = federal_social_benefits, # Save original value
     federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare - nonprofit_provider_relief_fund,
     state_social_benefits = state_social_benefits - medicaid,
     social_benefits = federal_social_benefits + state_social_benefits,
@@ -80,17 +64,17 @@ usna <-
   mutate_where(id == 'projection',
                consumption_grants_deflator_growth = state_purchases_deflator_growth,
                investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
-  mutate_where(date >= yearquarter('2020 Q2') & date <= yearquarter('2021 Q3'),
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                consumption_grants = overrides$consumption_grants_override) 
 # Forecast ----------------------------------------------------------------
 forecast <- 
   readxl::read_xlsx('data/forecast.xlsx',
                     sheet = 'forecast') %>% 
   select(-15:-17, -name) %>% 
-  pivot_longer(-variable) %>% 
+  pivot_longer(-variable,
+               names_to = 'date') %>% 
   pivot_wider(names_from = 'variable',
               values_from = 'value') %>% 
-  rename(date = name) %>% 
   mutate(date = yearquarter(date))
 
 
@@ -104,7 +88,7 @@ projections <- coalesce_join(usna, forecast, by = 'date') %>%
     federal_health_outlays = medicare + medicaid_grants,
     state_health_outlays = medicaid - medicaid_grants
   ) %>% 
-  mutate_where(date >= yearquarter('2020 Q2') & date <= yearquarter('2021 Q3'),
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                federal_other_direct_aid_arp = overrides$federal_other_direct_aid_arp_override,
                federal_other_vulnerable_arp = overrides$federal_other_vulnerable_arp_override,
                federal_social_benefits = overrides$federal_social_benefits_override) %>% 
@@ -207,7 +191,7 @@ usethis::use_data(contributions, overwrite = TRUE)
 # Interactive data
 interactive <- 
   contributions %>% 
-  filter_index('1999 Q4' ~ '2023 Q3') %>% 
+  filter_index('1999 Q4' ~ as.character(current_quarter + 8)) %>% 
   mutate(consumption = transfers_contribution + taxes_contribution,
          recession = recode(recession, `-1` = 0),
          recession = replace_na(recession, 0),
@@ -230,6 +214,9 @@ readr::write_csv(interactive,  file = glue('results/{month_year}/interactive-{mo
 rmarkdown::render('Fiscal-Impact.Rmd',
                   output_file = glue::glue('results/{month_year}/Fiscal-Impact-{month_year}'),
                   clean = TRUE)
+
+fs::file_copy(path = 'results/{month_year}/Fiscal-Impact-{month_year}',
+              new_path = 'Fiscal-Impact')
 
 # Comparison ------------------------------------------------------------
 
@@ -255,3 +242,23 @@ rmarkdown::render(input = 'index.Rmd',
   fs::file_copy(path = 'data/forecast.xlsx',
                 new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'),
                 overwrite = TRUE)
+  
+  
+# Template code for figuring out state and local employment decline from FRED
+calculate_employment_change <- function(state, local){
+  state_feb_2020 = 5303
+  local_feb_2020 = 14669
+  
+  feb_2020 = state_feb_2020 + local_feb_2020
+  
+  current = state + local
+  
+  change <- (current / feb_2020) - 1
+  
+  return(change)
+}
+
+
+# Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
+# State govt employment: https://fred.stlouisfed.org/series/CES9092000001
+calculate_employment_change(state = 5030, local = 13911)

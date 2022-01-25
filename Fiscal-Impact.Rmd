@@ -9,7 +9,7 @@ output: pdf_document
 mainfont: Arial 
 params:
   start: '1999 Q4'
-  end: '2023 Q2'
+  end: '2023 Q3'
 ---
 
 ```{r setup, include=FALSE}
@@ -103,7 +103,7 @@ headline_plot <-
                  labels = " Quarterly fiscal impact")  +
   scale_color_manual(" ",
                      values = c("4-quarter moving-average" = "black")) +
-  annotate("rect", xmin = yearquarter('2021 Q3'), xmax = yearquarter('2023 Q2'),
+  annotate("rect", xmin = yearquarter('2021 Q3'), xmax = yearquarter(params$end),
            ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
   guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
                              keyheight = unit(0.4, "cm"),
@@ -189,7 +189,7 @@ expanded <-
                               " Taxes, Transfers, & Subsidies")) +
      scale_color_manual(" ", 
                         values=c("4-quarter moving-average" ="black")) +
-      annotate("rect", xmin = projection_start, xmax = yearquarter('2023 Q2'),
+      annotate("rect", xmin = projection_start, xmax = yearquarter(params$end),
                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
       # scale_x_yearquarter(breaks = 0, date_breaks = "2 years", date_labels = '%Y Q%q',
       #              expand = c(0,0)) + 
@@ -249,7 +249,7 @@ template <-
     
      scale_color_manual(" ", 
                         values=c("4-quarter moving-average" ="black")) ,
-      annotate("rect", xmin = projection_start, xmax = yearquarter('2023 Q2'),
+      annotate("rect", xmin = projection_start, xmax = yearquarter(params$end),
                ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow'),
       # scale_x_yearquarter(breaks = 0, date_breaks = "2 years", date_labels = '%Y Q%q',
       #              expand = c(0,0)) , 

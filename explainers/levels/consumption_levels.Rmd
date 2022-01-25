@@ -70,7 +70,8 @@ overrides <- readxl::read_xlsx('data/forecast.xlsx',
   pivot_wider(names_from = 'variable',
               values_from = 'value') %>% 
   rename(date = name) %>% 
-  mutate(date = yearquarter(date))
+  mutate(date = yearquarter(date)) %>% 
+   filter(date <= yearquarter('2021 Q2'))
 
 # Load national accounts data from BEA
 usna <-
