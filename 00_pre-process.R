@@ -1,6 +1,7 @@
 # 0.0 Source ----------------------------------------------------------------------------------------------------------
 ## Source custom  functions and packages
 Sys.setenv(TZ = 'UTC')
+librarian::shelf(Haver, dplyr, tidyr, readxl, writexl, tsibble, purrr)
 library('dplyr')
 library('tidyr')
 library('Haver')

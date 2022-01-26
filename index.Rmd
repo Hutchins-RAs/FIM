@@ -18,8 +18,7 @@ output:
     hig.retina: 3
     self_contained: yes
     css: [style.css]
-vignette: |
-  %\VignetteIndexEntry{Vignette Title} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+
 ---
 
 ```{r setup, include = FALSE}
@@ -33,7 +32,6 @@ knitr::opts_chunk$set(
   cache = FALSE 
 )
 
-knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
 ```{r fiscal_impact}
@@ -69,7 +67,6 @@ plots$state_purchases + labs(subtitle = "NIPA Consistent")
 
 
 # Grants {.tabset .tabset-pills}
-Likewise, consumption grants are higher now given that we reattributed some of the ARP grants away from federal purchases.
 
 ## Contributions
 

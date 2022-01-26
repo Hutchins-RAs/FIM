@@ -32,7 +32,7 @@ revisions <- inner_join(current_revisions, previous_revisions,
                         by = c('date', 'name')) %>% 
   mutate(diff = current - previous,
          diff_pct = (current / previous) - 1) %>% 
-  filter(date <= yearquarter("2021 Q3"))
+  filter(date <= current_quarter)
 
 revisions_tbl <-
   revisions %>% 

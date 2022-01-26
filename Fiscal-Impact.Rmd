@@ -9,7 +9,7 @@ output: pdf_document
 mainfont: Arial 
 params:
   start: '1999 Q4'
-  end: '2023 Q3'
+  end: '2023 Q4'
 ---
 
 ```{r setup, include=FALSE}
@@ -30,7 +30,7 @@ devtools::load_all()
 ```{r data, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
 fim <- 
  readr::read_rds('data/contributions.RDS') %>% 
- tsibble::filter_index(params$start ~ params$end)
+ filter(date >= params$start & date <= params$end)
 ```
 
 ```{r constants, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
@@ -77,7 +77,7 @@ recessions <-
 headline_plot <-
   ggplot(data = headline) +
     geom_rect(data = recessions %>% 
-            filter(recession_start > yearquarter('1999 Q4')),
+            filter(recession_start > params$start),
             aes(xmin = recession_start, 
               xmax = recession_end, 
               ymin=-Inf,
@@ -159,7 +159,7 @@ expanded <-
 
   ggplot(data = expanded) +
      geom_rect(data = recessions %>% 
-            filter(recession_start > yearquarter('1999 Q4')),
+            filter(recession_start > params$start),
             aes(xmin = recession_start, 
               xmax = recession_end, 
               ymin=-Inf,
@@ -239,7 +239,7 @@ template <-
                     fill = NA, label.color = NA, # remove background and outline
       ),
       geom_rect(data = fim::recessions %>% 
-            filter(recession_start > yearquarter('1999 Q4')),
+            filter(recession_start > params$start),
             aes(xmin = recession_start, 
               xmax = recession_end, 
               ymin=-Inf,

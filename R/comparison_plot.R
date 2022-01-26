@@ -22,8 +22,8 @@ comparison_plot <- function(.data, variable){
     gghutchins::scale_fill_hutchins(
       name = "",
       labels = c('Updated', 'Previous'),
-      pal = 'qual',
-      rev = FALSE
+      palette = 'qual',
+      reverse = FALSE
     ) +
     scale_x_yearquarter(breaks = waiver(),
                         date_breaks = '3 months',

@@ -10,8 +10,15 @@ options(scipen = 20)# Turn off scientific notation under 20 digits
 month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
 last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - months(1) - weeks(1))}')
 
+# Create update folders
 
-fs::dir_create(glue('results/{month_year}')) # Create folder to store results
+update_in_progress <- TRUE
+
+if(update_in_progress == TRUE){
+  dir_create(glue('results/{month_year}')) # Create folder to store results
+  dir_create(glue('results/{month_year}/input_data')) # Folder to store forecast from current update
+  file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
+}
 
 
 # Wrangle data ------------------------------------------------------------
@@ -67,7 +74,7 @@ usna <-
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                consumption_grants = overrides$consumption_grants_override) 
 # Forecast ----------------------------------------------------------------
-forecast <- 
+forecast <- # Read in sheet with our forecasted values
   readxl::read_xlsx('data/forecast.xlsx',
                     sheet = 'forecast') %>% 
   select(-15:-17, -name) %>% 
@@ -78,8 +85,8 @@ forecast <-
   mutate(date = yearquarter(date))
 
 
-projections <- coalesce_join(usna, forecast, by = 'date') %>%
-  
+projections <- # Merge forecast w BEA + CBO
+  coalesce_join(usna, forecast, by = 'date') %>% 
   mutate(# Coalesce NA's to 0
     across(where(is.numeric),
            ~ coalesce(.x, 0))) %>%
@@ -97,7 +104,7 @@ projections <- coalesce_join(usna, forecast, by = 'date') %>%
 
 # Consumption -------------------------------------------------------------
 
-consumption <-
+consumption <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
   taxes_transfers_minus_neutral() %>%
   calculate_mpc("social_benefits") %>%
@@ -147,7 +154,7 @@ consumption <-
 
 # Contribution ------------------------------------------------------------
 
-contributions <-
+contributions <- # Calculate contributions
   consumption %>%
   purchases_contributions() %>% 
   mutate(across(ends_with("post_mpc"),
@@ -212,11 +219,13 @@ readr::write_csv(interactive,  file = glue('results/{month_year}/interactive-{mo
 
 # Figures for website
 rmarkdown::render('Fiscal-Impact.Rmd',
-                  output_file = glue::glue('results/{month_year}/Fiscal-Impact-{month_year}'),
-                  clean = TRUE)
+                  output_file = 'Fiscal-Impact.pdf',
+                  clean = TRUE,
+                  params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8))
 
-fs::file_copy(path = 'results/{month_year}/Fiscal-Impact-{month_year}',
-              new_path = 'Fiscal-Impact')
+file_copy(path = 'Fiscal-Impact.pdf',
+          new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.pdf'),
+          overwrite = TRUE)
 
 # Comparison ------------------------------------------------------------
 
@@ -224,26 +233,21 @@ source('scripts/revision_figures.R')
 source('scripts/revision_table.R')
 source('scripts/revision_deflators.R')
 
-rmarkdown::render(input = 'index.Rmd',
-                  output_file = 'index.html',
-                  clean = TRUE)
+bench::mark(rmarkdown::render(input = 'index.Rmd',
+                  output_file = glue('results/{month_year}/update-comparison-{month_year}.html'),
+                  clean = TRUE,
+                  ))
+
+file_copy(
+  path = glue('results/{month_year}/update-comparison-{month_year}.html'),
+  new_path = 'index.html',
+  overwrite = TRUE
+)
 
 
-  file.copy(from = 'index.html',
-            to = glue('results/{month_year}/update-comparison-{month_year}.html'),
-            overwrite = TRUE)
+# State and local employment ------------------------------------------------------------------
 
-  # Create input data folder if it doesn't exist 
-  if(!dir.exists(glue('results/{month_year}/input_data'))) {
-    dir.create(glue('results/{month_year}/input_data'))
-  }
 
-  # Copy and update forecast sheet from this month to input_data folder 
-  fs::file_copy(path = 'data/forecast.xlsx',
-                new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'),
-                overwrite = TRUE)
-  
-  
 # Template code for figuring out state and local employment decline from FRED
 calculate_employment_change <- function(state, local){
   state_feb_2020 = 5303
@@ -257,7 +261,6 @@ calculate_employment_change <- function(state, local){
   
   return(change)
 }
-
 
 # Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
 # State govt employment: https://fred.stlouisfed.org/series/CES9092000001

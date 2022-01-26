@@ -4,14 +4,14 @@ previous <-
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2020 Q2" ~ "2023 Q4") %>% 
+  filter_index("2020 Q2" ~ as.character(current_quarter + 9)) %>% 
   mutate(subsidies = federal_subsidies + state_subsidies,
          subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution)
 # Select current results
 current <- 
   contributions %>%
   drop_na(date) %>%
-  filter_index("2020 Q2" ~ "2023 Q4") %>% 
+  filter_index("2020 Q2" ~ as.character(current_quarter + 9)) %>% 
   as_tibble() %>%
   select(
     date,
@@ -120,7 +120,7 @@ previous <-
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2020 Q1" ~ "2023 Q4") %>% 
+  filter_index("2020 Q1" ~ as.character(current_quarter + 9)) %>% 
   select(-id) %>% 
   mutate(subsidies = federal_subsidies + state_subsidies,
          subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution)
@@ -128,7 +128,7 @@ previous <-
 current <- 
   contributions %>%
   drop_na(date) %>%
-  filter_index("2020 Q1" ~ "2023 Q4") %>% 
+  filter_index("2020 Q1" ~ as.character(current_quarter + 9)) %>% 
   as_tsibble(index = date) %>% 
   select(-id)
 
