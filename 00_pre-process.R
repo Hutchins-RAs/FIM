@@ -2,13 +2,7 @@
 ## Source custom  functions and packages
 Sys.setenv(TZ = 'UTC')
 librarian::shelf(Haver, dplyr, tidyr, readxl, writexl, tsibble, purrr)
-library('dplyr')
-library('tidyr')
-library('Haver')
-library('readxl')
-library('writexl')
-library('tsibble')
-library('purrr')
+
 haver.path("//ESDATA01/DLX/DATA/")
 devtools::load_all()
 
@@ -20,10 +14,6 @@ START <- "01-01-1970"
 
 # BEA NIPAs 
 names_usna <- read_excel("data/haver_names.xlsx")
-
-
-
-
 
 # Economic Statistics
 
@@ -38,25 +28,31 @@ cpi <-
   monthly_to_quarterly()
 
 
-
+# Wages Lost Assistance Program (Monthly)
 wla <- pull_data('YPTOLM',
                  'usna',
                  frequency = 'monthly',
                  start.date = START) %>%
   monthly_to_quarterly() %>%
   mutate(yptolm = na_if(yptolm, 'NaN'))
+# Child Tax Credit (Monthly)
+ctc <- pull_data('YPTOCM',
+                 'usna',
+                 frequency = 'monthly',
+                 start.date = START) %>%
+  monthly_to_quarterly() %>% 
+  mutate(yptocm = na_if(yptocm, 'NaN'))
 
 usna <-
   pull_data(names_usna$code,
             "usna",
             start.date = START) %>%
   as_tibble() %>% 
- 
-  # left_join(wla) %>%
   left_join(cpi) %>%
   left_join(usecon) %>% 
   # Convert SNAP from millions to billions
-  mutate(gftffx = gftffx / 1e3)
+  mutate(gftffx = gftffx / 1e3) %>% 
+  left_join(ctc, by = 'date')
 
 
 
@@ -85,17 +81,17 @@ list(data = haver_raw_list,
      names = names(haver_raw_list)) %>% 
   purrr::pmap(output_xlsx) 
 
-df = usna
-
-df = df %>%
-  set_names(
-    names_usna %>% 
-      pull(reference) %>% 
-      magrittr::extract(
-        names(df) %>% 
-          match(names_usna$code)
-      )
-  )
+ # df = usna
+ # 
+ #  df %>%
+ #   set_names(
+ #     names_usna %>% 
+ #       pull(reference) %>% 
+ #       magrittr::extract(
+ #         names(df) %>% 
+ #           match(names_usna$code)
+ #       )
+ #   )
 
 source('data-raw/national_accounts.R')
 devtools::load_all()
@@ -106,3 +102,7 @@ fim::national_accounts %>%
   pivot_wider(names_from = date,
               values_from = value) %>% 
   openxlsx::write.xlsx('data/haver_pivoted.xlsx', overwrite = TRUE)
+
+# Check values and then:
+# gert::git_commit_all('Haver update')
+# gert::git_push()
