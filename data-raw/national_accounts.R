@@ -22,7 +22,7 @@ national_accounts <-
   format_tsibble() %>% 
   #When adding new codes to read in from Haver, make sure to relocate them at the end of the spreadsheet using the below function:
   relocate(ylwsd:gftfbdx, .after = 'jgsi_growth') %>% 
-  relocate()
+  relocate(yptocm, .after = everything())
 
 usethis::use_data(national_accounts, overwrite = TRUE)
 
