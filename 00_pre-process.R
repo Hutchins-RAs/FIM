@@ -2,13 +2,6 @@
 ## Source custom  functions and packages
 Sys.setenv(TZ = 'UTC')
 librarian::shelf(Haver, dplyr, tidyr, readxl, writexl, tsibble, purrr)
-library('dplyr')
-library('tidyr')
-library('Haver')
-library('readxl')
-library('writexl')
-library('tsibble')
-library('purrr')
 haver.path("//ESDATA01/DLX/DATA/")
 devtools::load_all()
 
@@ -20,10 +13,6 @@ START <- "01-01-1970"
 
 # BEA NIPAs 
 names_usna <- read_excel("data/haver_names.xlsx")
-
-
-
-
 
 # Economic Statistics
 
@@ -46,6 +35,13 @@ wla <- pull_data('YPTOLM',
   monthly_to_quarterly() %>%
   mutate(yptolm = na_if(yptolm, 'NaN'))
 
+child_tax_credit <- pull_data('YPTOLM',
+                 'usna',
+                 frequency = 'monthly',
+                 start.date = START) %>%
+  monthly_to_quarterly() %>%
+  mutate(yptolm = na_if(yptolm, 'NaN'))
+
 usna <-
   pull_data(names_usna$code,
             "usna",
@@ -55,6 +51,7 @@ usna <-
   # left_join(wla) %>%
   left_join(cpi) %>%
   left_join(usecon) %>% 
+ # left_join(child_tax_credit) %>% 
   # Convert SNAP from millions to billions
   mutate(gftffx = gftffx / 1e3)
 
