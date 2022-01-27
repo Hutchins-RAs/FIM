@@ -43,13 +43,6 @@ ctc <- pull_data('YPTOCM',
   monthly_to_quarterly() %>% 
   mutate(yptocm = na_if(yptocm, 'NaN'))
 
-child_tax_credit <- pull_data('YPTOLM',
-                 'usna',
-                 frequency = 'monthly',
-                 start.date = START) %>%
-  monthly_to_quarterly() %>%
-  mutate(yptolm = na_if(yptolm, 'NaN'))
-
 usna <-
   pull_data(names_usna$code,
             "usna",
