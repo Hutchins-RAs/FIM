@@ -1,0 +1,62 @@
+---
+title: "ui"
+author: "Manuel Alcalá Kovalski"
+date: "6/4/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+librarian::shelf('tidyverse', 'tsibble')
+devtools::load_all()
+```
+
+
+```{r}
+ui <- read_data() %>% 
+  define_variables() %>% 
+  slice(205:210) %>% 
+  left_join(arp %>% select(date, federal_ui_arp, state_ui_arp))  %>%
+  as_tibble() %>% 
+  summarise(date, id,
+         unemployment_rate = unemployment_rate / 100 ,
+         unemployment_rate_growth = unemployment_rate / lag(unemployment_rate) - 1,
+         ui,
+         federal_regular_ui = coalesce(ui_extended_benefits,0),
+         wages_lost_assistance,
+         pua,
+         puc,
+         peuc,
+          federal_ui_arp = coalesce(federal_ui_arp, 0),
+         state_ui_arp = coalesce(state_ui_arp, 0),
+         federal_legislation_ui = pua + puc + peuc + wages_lost_assistance + ui_extended_benefits + federal_ui_arp,
+         ui = ui + wages_lost_assistance,
+         federal_ui = federal_regular_ui + federal_legislation_ui,
+         state_ui = ui - federal_ui,
+         ) 
+  
+ui
+
+```
+
+```{r}
+(ui <-  ui %>% 
+  project(state_ui, federal_regular_ui, with = unemployment_rate_growth) %>%
+  relocate(state_ui, federal_regular_ui,   federal_legislation_ui,federal_ui_arp, .after = 'id') %>% 
+  mutate(federal_legislation_ui = coalesce(federal_legislation_ui, federal_ui_arp)) %>% 
+         mutate(federal_ui = federal_regular_ui + federal_legislation_ui) %>% relocate(federal_ui,  .after  = 'state_ui')
+)
+```
+
+
+```{r}
+theme_set(gghutchins::theme_hutchins())
+ui %>% 
+  pivot_longer(c(state_ui, federal_regular_ui, federal_legislation_ui)) %>% 
+  ggplot(aes(x = date, y = value, fill = name)) +
+  geom_col()
+```
+
