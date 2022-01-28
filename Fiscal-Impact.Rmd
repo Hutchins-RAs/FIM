@@ -99,12 +99,14 @@ headline_plot <-
                         cex = 2,
                         fill = NA, 
                         label.color = NA) +
+  scale_x_yearquarter(expand = expansion()) +
   fim::scale_fill_fim(palette = 'headline',
                  labels = " Quarterly fiscal impact")  +
   scale_color_manual(" ",
                      values = c("4-quarter moving-average" = "black")) +
-  annotate("rect", xmin = yearquarter('2021 Q3'), xmax = yearquarter(params$end),
-           ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
+
+  annotate("rect", xmin = projection_start, xmax = yearquarter(params$end),
+           ymin = -Inf, ymax = Inf, alpha = 0.2, fill = 'yellow') +
   guides(fill = guide_legend(keywidth = unit(0.8, "cm"),
                              keyheight = unit(0.4, "cm"),
                              ncol = 1),
@@ -182,6 +184,7 @@ expanded <-
                     fill = NA, label.color = NA, # remove background and outline
       ) +
     
+  scale_x_yearquarter(expand = expansion()) +
     
       scale_fill_fim(palette = 'expanded',
                      labels = c(" Federal Purchases",
@@ -190,7 +193,7 @@ expanded <-
      scale_color_manual(" ", 
                         values=c("4-quarter moving-average" ="black")) +
       annotate("rect", xmin = projection_start, xmax = yearquarter(params$end),
-               ymin = -Inf, ymax = Inf, alpha = 0.1, fill = 'yellow') +
+               ymin = -Inf, ymax = Inf, alpha = 0.2, fill = 'yellow') +
       # scale_x_yearquarter(breaks = 0, date_breaks = "2 years", date_labels = '%Y Q%q',
       #              expand = c(0,0)) + 
   

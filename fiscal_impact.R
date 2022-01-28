@@ -272,4 +272,5 @@ calculate_employment_change <- function(state, local){
 
 # Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
 # State govt employment: https://fred.stlouisfed.org/series/CES9092000001
-calculate_employment_change(state = 5030, local = 13911)
+calculate_employment_change(state = 5032, local = 13996)
+
