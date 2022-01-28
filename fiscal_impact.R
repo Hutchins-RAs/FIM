@@ -64,7 +64,9 @@ usna <-
                federal_social_benefits = federal_social_benefits + 203
   ) %>% 
   mutate_where(date == yearquarter("2021 Q4"),
-               rebate_checks = 14.2) %>% 
+               rebate_checks_arp = 14.2,
+               rebate_checks = 0) %>% 
+
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
          
          # Aggregate taxes
