@@ -120,7 +120,7 @@ previous <-
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2020 Q1" ~ as.character(current_quarter + 9)) %>% 
+  filter_index("2020 Q1" ~ as.character(current_quarter + 8)) %>% 
   select(-id) %>% 
   mutate(subsidies = federal_subsidies + state_subsidies,
          subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution)
@@ -128,7 +128,7 @@ previous <-
 current <- 
   contributions %>%
   drop_na(date) %>%
-  filter_index("2020 Q1" ~ as.character(current_quarter + 9)) %>% 
+  filter_index("2020 Q1" ~ as.character(current_quarter + 8)) %>% 
   as_tsibble(index = date) %>% 
   select(-id)
 
@@ -158,5 +158,12 @@ comparison_nested <-
                      .f = ~comparison_plot(.data = .y,
                                            variable = .x)))
 
+
+write_rds(comparison_nested, 'data/comparison_nested')
+plots <- comparison_nested %>% 
+  pivot_wider(id_cols = -data, 
+              names_from = 'variable',
+              values_from = 'plot')
+write_rds(plots, 'data/plots')
 
 plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)

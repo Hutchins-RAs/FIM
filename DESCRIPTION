@@ -37,7 +37,8 @@ Imports:
     dplyover,
     dplyr,
     rmarkdown,
-    magrittr
+    magrittr,
+    ggbrookings
 Remotes:
     TimTeaFan/dplyover
 VignetteBuilder: knitr

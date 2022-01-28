@@ -29,17 +29,24 @@ knitr::opts_chunk$set(
   fig.align = 'center',
   warning = FALSE,
   message = FALSE,
-  cache = FALSE 
+  cache = FALSE,
+  results='hide',
+  fig.keep='all'
 )
 
 ```
 
-```{r fiscal_impact}
-plots$fiscal_impact
+```{r}
+librarian::shelf(ggplot2, gt, readr)
+plots <- read_rds('data/plots')
 ```
 
-```{r}
-library(gt)
+```{r fiscal_impact}
+plots$fiscal_impact %>% print()
+```
+
+```{r, include=TRUE, results = 'show'}
+
 revisions_tbl
 summary_tbl
 ```
@@ -51,8 +58,8 @@ summary_tbl
 ## Contributions
 
 ```{r nipa_purchases}
-plots$federal_purchases_contribution + labs(subtitle = "NIPA Consistent")
-plots$state_purchases_contribution +  labs(subtitle = "NIPA Consistent")
+plots$federal_purchases_contribution
+plots$state_purchases_contribution
 ```
 
 
@@ -60,8 +67,8 @@ plots$state_purchases_contribution +  labs(subtitle = "NIPA Consistent")
 ## Levels 
 
 ```{r nipa_purchases_levels}
-plots$federal_purchases  + labs(subtitle = "NIPA Consistent")
-plots$state_purchases + labs(subtitle = "NIPA Consistent")
+plots$federal_purchases  
+plots$state_purchases 
 
 ```
 
@@ -88,8 +95,8 @@ plots$investment_grants
 ## Contributions
 
 ```{r fim_purchases}
-plots$federal_contribution + labs(subtitle = "FIM Consistent")
-plots$state_contribution  + labs(subtitle = "FIM Consistent")
+plots$federal_contribution 
+plots$state_contribution  
 ```
 
 
@@ -294,15 +301,15 @@ The social benefits remainder came in 3.6 billion lower than we had last time. A
 
 ### Contribution
 ```{r soc_cont}
-plots$federal_social_benefits_contribution + labs(subtitle = "Remainder of social benefits")
-plots$state_social_benefits_contribution+ labs(subtitle = "Remainder of social benefits")
+plots$federal_social_benefits_contribution
+plots$state_social_benefits_contribution
 ```
 
 ### Level
 ```{r soc_lvl}
 
-plots$federal_social_benefits+ labs(subtitle = "Remainder of social benefits")
-plots$state_social_benefits+ labs(subtitle = "Remainder of social benefits")
+plots$federal_social_benefits
+plots$state_social_benefits
 ```
 
 

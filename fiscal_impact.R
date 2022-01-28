@@ -63,6 +63,8 @@ usna <-
                rebate_checks = rebate_checks - rebate_checks_arp,
                federal_social_benefits = federal_social_benefits + 203
   ) %>% 
+  mutate_where(date == yearquarter("2021 Q4"),
+               rebate_checks = 14.2) %>% 
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
          
          # Aggregate taxes
@@ -77,7 +79,7 @@ usna <-
 forecast <- # Read in sheet with our forecasted values
   readxl::read_xlsx('data/forecast.xlsx',
                     sheet = 'forecast') %>% 
-  select(-15:-17, -name) %>% 
+  select(-name) %>% 
   pivot_longer(-variable,
                names_to = 'date') %>% 
   pivot_wider(names_from = 'variable',
@@ -100,7 +102,11 @@ projections <- # Merge forecast w BEA + CBO
                federal_other_vulnerable_arp = overrides$federal_other_vulnerable_arp_override,
                federal_social_benefits = overrides$federal_social_benefits_override) %>% 
   mutate_where(date == yearquarter("2021 Q1"),
-               federal_social_benefits = federal_social_benefits + 203) 
+               federal_social_benefits = federal_social_benefits + 203) %>% 
+  # FIXME: Figure out why wrong number was pulled from Haver (like 400)
+  mutate_where(date == yearquarter('2021 Q4'),
+               federal_ui = 11, 
+               state_ui = ui - federal_ui)
 
 # Consumption -------------------------------------------------------------
 
@@ -233,10 +239,9 @@ source('scripts/revision_figures.R')
 source('scripts/revision_table.R')
 source('scripts/revision_deflators.R')
 
-bench::mark(rmarkdown::render(input = 'index.Rmd',
-                  output_file = glue('results/{month_year}/update-comparison-{month_year}.html'),
-                  clean = TRUE,
-                  ))
+rmarkdown::render(input = 'index.Rmd',
+                  output_file = glue('results/{month_year}/update-comparison-{month_year}'),
+                  clean = TRUE)
 
 file_copy(
   path = glue('results/{month_year}/update-comparison-{month_year}.html'),

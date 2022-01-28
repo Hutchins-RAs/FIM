@@ -48,4 +48,27 @@ comparison_plot <- function(.data, variable){
                          labels = scales::label_comma())
   }
   
+  if (variable_name %in% c(
+    'federal_purchases',
+    'federal_purchases_contribution',
+    'state_purchases',
+    'state_purchases_contribution')) {
+    plot + labs(subtitle = 'NIPA Consistent')
+  }
+    else if(variable_name %in% c('federal_contribution', 'state"contribution')) {
+        plot + labs(subtitle = 'FIM Consistent')
+      }
+  else if
+    (variable_name %in% c(
+      'federal_social_benefits',
+      'federal_social_benefits_contribution',
+      'state_social_benefits',
+      'state_social_benefits_contribution'
+    )) {
+      plot + labs(subtitle = 'Social Benefits Remainder')
+    }
+  else{
+    plot
+  }
+  
 }

@@ -9,7 +9,6 @@
 current_revisions <-
   current %>% 
   as_tibble() %>% 
-  mutate(consumption_grants = gross_consumption_grants - medicaid_grants) %>% 
   select(date,  federal_purchases_nipa = federal_purchases, state_purchases_nipa = state_purchases, consumption_grants,
          investment_grants) %>% 
   pivot_longer(
@@ -20,7 +19,6 @@ current_revisions <-
 previous_revisions <-
   previous %>% 
   as_tibble() %>% 
-  mutate(consumption_grants = gross_consumption_grants - medicaid_grants) %>% 
   select(date, federal_purchases_nipa = federal_purchases, state_purchases_nipa = state_purchases, consumption_grants,
          investment_grants) %>% 
   pivot_longer(
