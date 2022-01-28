@@ -261,7 +261,7 @@ plots$rebate_checks
 
 ## Rebate Checks (ARP) {.tabset .tabset-pills}
 
-Last time, we forgot to include the rebate checks from ARP that will go out in the next tax year.
+
 
 ### Contribution
 
@@ -295,9 +295,7 @@ plots$federal_other_direct_aid_arp
 
 ## Social Benefits Remainder {.tabset .tabset-pills}
 
-Level and impact of social benefits net of health outlays, rebate checks, and unemployment insurance.
 
-The social benefits remainder came in 3.6 billion lower than we had last time. Almost half of this is due to Federal UI which came in 1.63 billion lower.
 
 ### Contribution
 ```{r soc_cont}

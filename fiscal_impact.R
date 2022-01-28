@@ -100,7 +100,8 @@ projections <- # Merge forecast w BEA + CBO
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                federal_other_direct_aid_arp = overrides$federal_other_direct_aid_arp_override,
                federal_other_vulnerable_arp = overrides$federal_other_vulnerable_arp_override,
-               federal_social_benefits = overrides$federal_social_benefits_override) %>% 
+               federal_social_benefits = overrides$federal_social_benefits_override,
+               federal_aid_to_small_businesses_arp = overrides$federal_aid_to_small_businesses_arp_override) %>% 
   mutate_where(date == yearquarter("2021 Q1"),
                federal_social_benefits = federal_social_benefits + 203) %>% 
   # FIXME: Figure out why wrong number was pulled from Haver (like 400)
