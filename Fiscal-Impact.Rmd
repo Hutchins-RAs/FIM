@@ -73,6 +73,12 @@ recessions <-
   mutate_where(recession_start == yearquarter("2019 Q4"),
                recession_start = yearquarter("2020 Q1"),
                recession_end = yearquarter("2020 Q2"))
+
+projection_start <-
+  fim %>% 
+  filter(id == 'projection') %>%
+  slice(1) %>%
+  pull(date)
   
 headline_plot <-
   ggplot(data = headline) +

@@ -8,7 +8,13 @@ options(scipen = 20)# Turn off scientific notation under 20 digits
 
 # Set dates for current and previous months
 month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
-last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - months(1) - weeks(1))}')
+
+if(month(today() - 7 -months(1)) < 10){
+  last_month_year <- glue('0{month(today() - 7 -months(1))}-{year(today() - months(1) - weeks(1))}')
+} else{
+  last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - months(1) - weeks(1))}')
+  
+}
 
 # Create update folders
 
