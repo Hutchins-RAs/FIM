@@ -264,8 +264,8 @@ file_copy(
 
 # Template code for figuring out state and local employment decline from FRED
 calculate_employment_change <- function(state, local){
-  state_feb_2020 = 5303
-  local_feb_2020 = 14669
+  state_feb_2020 = 5310
+  local_feb_2020 = 14709
   
   feb_2020 = state_feb_2020 + local_feb_2020
   
@@ -278,5 +278,15 @@ calculate_employment_change <- function(state, local){
 
 # Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
 # State govt employment: https://fred.stlouisfed.org/series/CES9092000001
-calculate_employment_change(state = 5032, local = 13996)
+100 * calculate_employment_change(state = 5209, local = 14061)
+
+# State + Local Feb 2020
+feb2020 <- 5303 + 14669
+jan2022 <- 5209 + 14061
+
+
+(jan2022 - feb2020) / feb2020
+
+(jan2022 / feb2020) - 1
+
 
