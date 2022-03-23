@@ -1,6 +1,7 @@
 # Setup -------------------------------------------------------------------
 Sys.setenv(TZ = 'UTC')
-librarian::shelf(tidyverse, tsibble, lubridate, glue, dplyover, zoo, TTR, fs, gt, openxlsx, snakecase, rlang)
+librarian::shelf(tidyverse, tsibble, lubridate, glue, dplyover, zoo, TTR, fs, gt, openxlsx, 
+                 snakecase, rlang)
 devtools::load_all()
 
 options(digits = 4) # Limit number of digits
@@ -15,6 +16,9 @@ if(month(today() - 7 -months(1)) < 10){
   last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - months(1) - weeks(1))}')
   
 }
+
+month_year <- glue('02-2022')
+last_month_year <- glue('01-2022')
 
 # Create update folders
 
