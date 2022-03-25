@@ -18,13 +18,10 @@ comparison_plot <- function(.data, variable){
     labs(title = glue::glue("{snakecase::to_title_case(variable)}"),
          x = NULL,
          y = NULL) +
-    ggthemes::theme_hc() +
-    gghutchins::scale_fill_hutchins(
-      name = "",
-      labels = c('Updated', 'Previous'),
-      palette = 'qual',
-      reverse = FALSE
-    ) +
+    ggbrookings::theme_brookings() +
+    ggbrookings::scale_fill_brookings(
+                      name = "",
+                      labels = c('Current', 'Previous')) +
     scale_x_yearquarter(breaks = waiver(),
                         date_breaks = '3 months',
                         date_labels = "Q%q") +
