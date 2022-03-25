@@ -105,10 +105,10 @@ comparison_deflators <-
   mutate(name = snakecase::to_title_case(name)) 
 
 openxlsx::write.xlsx(x = comparison_deflators,
-                     file = glue('results/{month_year}/{month_year}_comparison_deflators.xlsx'),
+                     file = glue('results/{month_year}/comparison-deflators-{month_year}.xlsx'),
                      overwrite = TRUE)
 openxlsx::write.xlsx(x = comparison_wide,
-                     file = glue('results/{month_year}/{month_year}/contributions_comparison.xlsx'),
+                     file = glue('results/{month_year}/contributions-comparison-{month_year}.xlsx'),
                      overwrite = TRUE)
 
 
@@ -147,10 +147,62 @@ comparison_long <-
   pivot_longer(c(previous, current),
                names_to = 'source') 
 
-comparison
+
+components <- c(
+  "fiscal_impact",
+  "federal_purchases_contribution",
+  "state_purchases_contribution",
+  "federal_purchases",
+  "state_purchases",
+  "consumption_grants_contribution",
+  "investment_grants_contribution",
+  "consumption_grants",
+  "investment_grants",
+  "federal_contribution",
+  "state_contribution",
+  "federal_corporate_taxes_contribution",
+  "state_corporate_taxes_contribution",
+  "federal_corporate_taxes",
+  "state_corporate_taxes",
+  "federal_non_corporate_taxes_contribution",
+  "state_non_corporate_taxes_contribution",
+  "federal_non_corporate_taxes",
+  "state_non_corporate_taxes",
+  "transfers_contribution",
+  "federal_transfers_contribution",
+  "state_transfers_contribution",
+  "federal_health_outlays_contribution",
+  "state_health_outlays_contribution",
+  "federal_health_outlays",
+  "state_health_outlays",
+  "medicaid",
+  "medicaid_grants",
+  "medicare",
+  "subsidies_contribution",
+  "subsidies",
+  "federal_aid_to_small_businesses_arp_contribution",
+  "federal_aid_to_small_businesses_arp",
+  "federal_ui_contribution",
+  "state_ui_contribution",
+  "federal_ui",
+  "state_ui",
+  "federal_other_vulnerable_arp_contribution",
+  "federal_other_vulnerable_arp",
+  "rebate_checks_contribution",
+  "rebate_checks",
+  "rebate_checks_arp_contribution",
+  "rebate_checks_arp",
+  "federal_other_direct_aid_arp_contribution",
+  "federal_other_direct_aid_arp",
+  "federal_social_benefits_contribution",
+  "state_social_benefits_contribution",
+  "federal_social_benefits",
+  "state_social_benefits"
+)
 
 comparison_nested <-
   comparison_long %>%
+  filter(variable %in% components) %>% 
   group_by(variable) %>%
   nest() %>%
   mutate(plot = map2(.x = variable,
