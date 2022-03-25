@@ -1,6 +1,6 @@
 # Setup -------------------------------------------------------------------
 Sys.setenv(TZ = 'UTC')
-librarian::shelf(tidyverse, tsibble, lubridate, glue, dplyover, zoo, TTR, fs, gt, openxlsx, 
+librarian::shelf(tidyverse, tsibble, lubridate, glue, TimTeaFan/dplyover, zoo, TTR, fs, gt, openxlsx, 
                  snakecase, rlang)
 devtools::load_all()
 
