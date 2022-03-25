@@ -17,8 +17,6 @@ if(month(today() - 7 -months(1)) < 10){
   
 }
 
-month_year <- glue('02-2022')
-last_month_year <- glue('01-2022')
 
 # Create update folders
 
