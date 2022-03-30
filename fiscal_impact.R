@@ -11,9 +11,9 @@ options(scipen = 20)# Turn off scientific notation under 20 digits
 month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
 
 if(month(today() - 7 -months(1)) < 10){
-  last_month_year <- glue('0{month(today() - 7 -months(1))}-{year(today() - months(1) - weeks(1))}')
+  last_month_year <- glue('0{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
 } else{
-  last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - months(1) - weeks(1))}')
+  last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
   
 }
 
