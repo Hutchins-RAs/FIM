@@ -17,7 +17,6 @@ if(month(today() - 7 -months(1)) < 10){
   
 }
 
-
 # Create update folders
 
 update_in_progress <- TRUE
