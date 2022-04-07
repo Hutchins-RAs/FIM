@@ -22,7 +22,8 @@ add_factors_deprecated <- function(df, last_date){
       .fns = ~ if_else(is.na(.x), 
                        0,
                        .x)
-    )    ) %>%
+    )    
+                 ) %>%
     dplyr::mutate(
       #calculate new variables by adding the add factors
       state_health_outlays  = state_health_outlays + add_state_health_outlays,
