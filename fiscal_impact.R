@@ -10,19 +10,20 @@ options(scipen = 20)# Turn off scientific notation under 20 digits
 # Set dates for current and previous months
 month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
 
-if(month(today() - 7 -months(1)) < 10){
+if(month(today() - 7 
+         -months(1)) < 10){
   last_month_year <- glue('0{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
 } else{
   last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
   
 }
 
-# Create update folders
+# Create updatglibe folders
 
-update_in_progress <- TRUE
+update_in_progress <- FALSE
 
 if(update_in_progress == TRUE){
-  dir_create(glue('results/{month_year}')) # Create folder to store results
+  dir_create(glue('results/{month_year}')) # Create folder to gitstore results
   dir_create(glue('results/{month_year}/input_data')) # Folder to store forecast from current update
   file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
 }
