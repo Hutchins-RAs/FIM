@@ -152,7 +152,7 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
   )) %>% 
   mutate(
     across(
-      .cols = all_of(
+      .cols = any_of(
         c("federal_ui_arp", "state_ui_arp", "federal_other_vulnerable_arp") %>% paste0("_minus_neutral")
       ),
       .fns = ~ mpc_vulnerable_arp(.x),
