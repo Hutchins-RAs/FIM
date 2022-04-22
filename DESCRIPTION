@@ -14,16 +14,13 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Suggests:
-    knitr,
-    targets,
-    tarchetypes
+    knitr
 Depends:
     R (>= 2.10)
 Imports:
     purrr,
     lubridate,
     rlang,
-    tidyverse,
     TTR,
     zoo,
     glue,
@@ -34,7 +31,6 @@ Imports:
     tidyr,
     tidyselect,
     ggplot2,
-    dplyover,
     dplyr,
     rmarkdown,
     magrittr
