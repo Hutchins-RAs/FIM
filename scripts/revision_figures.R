@@ -212,10 +212,6 @@ comparison_nested <-
 
 
 write_rds(comparison_nested, 'data/comparison_nested')
-plots <- comparison_nested %>% 
-  pivot_wider(id_cols = -data, 
-              names_from = 'variable',
-              values_from = 'plot')
 write_rds(plots, 'data/plots')
 
 plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)

@@ -3,6 +3,7 @@ title: 'Fiscal Impact Update'
 subtitle: 'Q3 2021 Advanced Estimate'
 author: ' Manuel Alcala Kovalski'
 date: '`r glue::glue(format(Sys.Date(), "%A, %B %d %Y")," at ", format(strptime(format(Sys.time(), "%H:%M:%S", tz = "America/New_York"), "%H:%M:%S"), "%I:%M %p"))`'
+tz: 'America/New_York'
 header-includes:
    - \usepackage[default]{sourcesanspro}
    - \usepackage[T1]{fontenc}
@@ -41,6 +42,7 @@ librarian::shelf(ggplot2, gt, readr)
 plots <- read_rds('data/plots')
 ```
 
+Testing a change. 
 ```{r fiscal_impact}
 plots$fiscal_impact %>% print()
 ```
