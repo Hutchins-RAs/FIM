@@ -1,0 +1,151 @@
+---
+title: "Level calculation"
+author: "Manuel Alcalá Kovalski"
+date: "4/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libs}
+librarian::shelf('targets', 'tidyverse')
+```
+
+```{r}
+tar_load(fim) 
+yoy <- function (x){
+  j = c()
+  for (i in 4:length(x)) {
+    j[i] = (((x[i] / x[i - 4])) - 1) * 100
+  }
+  j[1] = 0
+  j
+}
+
+levels <-
+  fim %>% 
+  select(date, gdp, fiscal_impact, taxes_transfers_cont) %>% 
+  summarise(date, gdp,  fiscal_impact,
+            taxes_transfers_cont,
+            taxes_transfers_level = taxes_transfers_cont * lag(gdp),
+            roll_avg = roll::roll_mean(taxes_transfers_level, width = 4, min_obs = 1, online = TRUE),
+            growth = yoy(roll_avg ) / 100,
+            fim_level = fiscal_impact * lag(gdp),
+            fim_roll_avg = roll::roll_mean(fim_level, width = 4, min_obs = 1, online = TRUE),
+            fim_growth = yoy(fim_roll_avg) / 100)  %>% 
+  mutate(
+    taxes_transfers_level = 0.25 * taxes_transfers_cont * lag(gdp),
+    taxes_transfers_level_growth = yoy(taxes_transfers_level) / 100,
+    fim_level = 0.25 * fiscal_impact * lag(gdp) ,
+    fim_level_growth = yoy(fim_level) / 100) %>% 
+    filter(date > '2019-12-31') 
+```
+
+```{r}
+levels %>% 
+  select(date, ends_with('level_growth')) %>% 
+  filter(date < '2021-12-31') %>% 
+  pivot_longer(-date) %>% 
+  ggplot(aes(x = date, y = value, fill = name)) +
+  geom_line()
+```
+```{r}
+purchases_contribution <- function (.data, var, n_lag) {
+  var <- ensym(var)
+  var_string <- rlang::as_string(enexpr(var))
+  deflator_string <- paste0(var_string, "_pi")
+  deflator <- rlang::sym(deflator_string)
+  .data %>%
+    mutate(`:=`("{{ var }}_cont", 
+    400 * ({{var}} - lag( {{ var }}, n_lag) *(1+!!(deflator) + gdppoth)) / dplyr::lag(gdp, n_lag))) %>% 
+    select(date, !!paste0(var_string, "_cont"))
+}
+
+map_contribution <- function (df) {
+    map(alist(federal_nom, state_local_nom, federal_cgrants, 
+        federal_igrants), ~ purchases_contribution(df, !!.x, n_lag = 4)) %>% reduce(left_join) %>% 
+        left_join(df, .)
+}
+tar_load(projections)
+df <- projections %>% 
+  fim_create() %>% 
+    mutate(id =  if_else(date <= last_hist_date, 'historical', 'projection')) %>%
+      add_factors() %>%
+      override_projections() %>%
+      fill_overrides() %>% 
+      mutate(date2 = yearquarter(date)) %>% 
+      as_tsibble(index = date2) %>% 
+      full_join(read_xlsx('data/pandemic-legislation/arp_summary.xlsx') %>% 
+                  mutate(date2 = yearquarter(date)) , by = 'date2') %>% 
+      rename(date = date.x) %>% 
+      as_tibble() %>% 
+      mutate(federal_cgrants = coalesce(federal_cgrants_override, federal_cgrants)) %>%
+      map_contribution() %>%
+      total_purchases()
+  
+
+df %>% 
+  mutate(federal_purchases = federal_nom + federal_cgrants + federal_igrants) %>% 
+  rename(federal_purchases_contribution = federal_cont) %>% 
+  select(date, federal_purchases, federal_purchases_contribution,  gdp) %>% 
+    filter(date > '1970-12-31') %>% 
+  mutate(
+         federal_purchases_roll_avg = roll::roll_mean(federal_purchases, width = 4, min_obs = 1, online = TRUE),
+         federal_purchases_growth =  yoy(federal_purchases) / 4,
+         level = 100,
+         federal_purchases_contribution_deannualized = deannualize(federal_purchases_contribution)) %>% 
+  mutate(federal_purchases_cumulative = cumprod(federal_purchases_contribution_deannualized),
+           level = level * federal_purchases_cumulative,
+         federal_purchases_contribution_growth = if_else(date > yearquarter('1971 Q4'),
+                          yoy(level),
+                          0)) %>% 
+
+
+
+
+  select(date,  ends_with('growth')) %>% 
+  filter(date > '1971-03-31') %>% 
+  pivot_longer(-date) %>% 
+  ggplot(aes(x = date, y  = value, color = name)) +
+  geom_line() +
+  scale_color_hutchins() +
+  theme(legend.position = 'top')
+        
+  
+
+
+
+  
+```
+```{r}
+yoy <- function (x){
+  j = c()
+  for (i in 4:length(x)) {
+    j[i] = (((x[i] / x[i - 4])) - 1) * 100
+  }
+  j[1] = 0
+  j
+}
+
+deannualize <- function(x){
+  ( x / 100 + 1) ^ (1 / 4)
+}
+
+ df <- fim %>% 
+  summarise(date, 
+            federal_nom_cont = federal_nom_cont - non_health_grants_cont) %>% 
+  mutate(date = tsibble::yearquarter(date)) %>% 
+  filter(date >= yearquarter('2018 Q4')) %>% 
+  mutate(level = 100,
+         federal_nom_cont = deannualize(federal_nom_cont),
+         fim_cumulative = cumprod(federal_nom_cont),
+         level = level * fim_cumulative,
+         growth = if_else(date > yearquarter('2019 Q4'),
+                          yoy(level),
+                          0)) 
+df %>% 
+  filter(date > yearquarter('2019 Q4'))
+```
+

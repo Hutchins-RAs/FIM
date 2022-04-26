@@ -1,0 +1,26 @@
+---
+title: "Aggregation"
+author: "Manuel Alcalá Kovalski"
+date: "4/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+usna <- read_data() %>% define_variables()
+
+df <-  usna %>% 
+  select(date, ends_with('_social_benefits')) %>% 
+  pivot_longer(-c(date, id), 
+               names_to = 'government',
+               values_to = 'social_benefits') %>% 
+  mutate(government = str_remove(government, 
+                                      
+                                      '_social_benefits')) %>% 
+  as_tibble() %>% 
+  nest(date, social_benefits) 
+  mutate(response_relief_act = map_dbl(data$social_benefits, sum, na.rm = TRUE)) 
+```

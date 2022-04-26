@@ -1,0 +1,48 @@
+---
+title: "CBO Economic Projections update July 2021"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+librarian::shelf(tidyverse, readr, tsibble, lubridate)
+devtools::load_all()
+```
+
+```{r}
+feb <- read_rds('data/feb_projections.rds')
+feb_long <- pivot_longer(feb, cols = where(is.numeric), values_to = 'feb')
+jul <- get_cbo_projections()
+jul_long <- pivot_longer(jul, cols = where(is.numeric), values_to = 'jul')
+```
+
+```{r}
+comparison <- inner_join(feb_long,
+                         jul_long,
+                         by = c('date', 'name', 'id')) %>%
+  pivot_longer(c(feb, jul),
+               names_to = 'source') 
+
+comparison_nested <-
+  comparison %>%
+  filter_index("2021 Q2" ~ "2023 Q4") %>% 
+  group_by(name) %>%
+  nest() %>%
+  mutate(plot = map2(.x = name,
+                     .y = data,
+                     .f = ~comparison_plot(.data = .y,
+                                  variable  = .x)))
+
+
+plots <- rlang::set_names(comparison_nested$plot, comparison_nested$name)
+```
+
+```{r}
+plots$c
+```
+
+```{r}
+plots$gdp
+```
+
