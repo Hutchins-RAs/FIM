@@ -47,7 +47,9 @@ current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current q
 
 # Load national accounts data from BEA
 usna <-
-  read_data() %>% # Load raw BEA data from Haver and CBO projections
+  fim::national_accounts |> 
+  coalesce_join(fim::cbo_projections, by = 'date') |> 
+  as_tsibble(key = id, index = date) |> 
   define_variables() %>%  # Rename Haver codes for clarity
   as_tsibble(key = id, index = date) %>% # Specify time series structure
   mutate_where(id == 'historical',  # Calculate GDP growth for data but take CBO for projection
@@ -260,6 +262,8 @@ file_copy(
   overwrite = TRUE
 )
 
+
+full_join(contributions_old, contributions_new, by = c('date', 'id'))
 
 # State and local employment ------------------------------------------------------------------
 
