@@ -219,3 +219,5 @@ cbo_projections <-
 
 
 usethis::use_data(cbo_projections, overwrite = TRUE)
+devtools::load_all()
+writexl::write_xlsx(fim::cbo_projections, 'data/cbo-projections.xlsx')

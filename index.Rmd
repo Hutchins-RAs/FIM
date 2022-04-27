@@ -1,0 +1,335 @@
+---
+title: 'Fiscal Impact Update'
+subtitle: 'Q3 2021 Advanced Estimate'
+author: ' Manuel Alcala Kovalski'
+date: '`r glue::glue(format(Sys.Date(), "%A, %B %d %Y")," at ", format(strptime(format(Sys.time(), "%H:%M:%S", tz = "America/New_York"), "%H:%M:%S"), "%I:%M %p"))`'
+tz: 'America/New_York'
+header-includes:
+   - \usepackage[default]{sourcesanspro}
+   - \usepackage[T1]{fontenc}
+mainfont: SourceSansPro
+output:
+  html_document:
+    toc: true # table of content true
+    toc_float: true
+    toc_depth: 2
+    number_sections: false 
+    theme: united
+    highlight: zenburn 
+    hig.retina: 3
+    self_contained: yes
+    css: [style.css]
+
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>", 
+  echo = FALSE,
+  fig.align = 'center',
+  warning = FALSE,
+  message = FALSE,
+  cache = FALSE,
+  results='hide',
+  fig.keep='all'
+)
+
+```
+
+```{r}
+librarian::shelf(ggplot2, gt, readr)
+plots <- read_rds('data/plots')
+```
+
+```{r fiscal_impact}
+plots$fiscal_impact %>% print()
+```
+
+```{r, include=TRUE, results = 'show'}
+
+revisions_tbl
+summary_tbl
+```
+
+
+# NIPA Consistent Purchases {.tabset .tabset-pills}
+
+
+## Contributions
+
+```{r nipa_purchases}
+plots$federal_purchases_contribution
+plots$state_purchases_contribution
+```
+
+
+
+## Levels 
+
+```{r nipa_purchases_levels}
+plots$federal_purchases  
+plots$state_purchases 
+
+```
+
+
+# Grants {.tabset .tabset-pills}
+
+## Contributions
+
+```{r grants}
+plots$consumption_grants_contribution
+plots$investment_grants_contribution
+
+```
+
+## Levels
+
+```{r grants_levels}
+plots$consumption_grants
+plots$investment_grants
+```
+
+# FIM Consistent Purchases 
+
+## Contributions
+
+```{r fim_purchases}
+plots$federal_contribution 
+plots$state_contribution  
+```
+
+
+
+# Taxes
+
+## Corporate taxes {.tabset .tabset-pills}
+
+### Contributions
+
+```{r corp_contribution}
+plots$federal_corporate_taxes_contribution
+plots$state_corporate_taxes_contribution
+```
+
+### Levels
+
+```{r corp_lvl}
+plots$federal_corporate_taxes
+plots$state_corporate_taxes
+```
+
+## Non-corporate taxes {.tabset .tabset-pills}
+
+
+### Contributions
+
+```{r noncorp_cont}
+plots$federal_non_corporate_taxes_contribution
+plots$state_non_corporate_taxes_contribution
+```
+
+### Levels
+
+```{r noncorp_lvl}
+plots$federal_non_corporate_taxes
+plots$state_non_corporate_taxes
+
+```
+
+# Transfers
+
+## Total 
+
+### Contributions
+
+```{r transfers}
+plots$transfers_contribution
+plots$federal_transfers_contribution
+plots$state_transfers_contribution
+
+```
+
+
+## Health Outlays {.tabset .tabset-pills}
+
+
+### Contributions
+
+```{r health}
+
+plots$federal_health_outlays_contribution
+plots$state_health_outlays_contribution
+```
+
+### Levels
+
+```{r health_lvl}
+
+plots$federal_health_outlays
+plots$state_health_outlays
+```
+
+### Components
+
+```{r health_comp}
+plots$medicaid
+plots$medicaid_grants
+plots$medicare
+```
+
+## Subsidies (non-ARP) {.tabset .tabset-pills}
+
+### Contributions
+
+```{r subsidies}
+plots$subsidies_contribution
+
+```
+
+### Levels
+
+```{r subsidies_lvl}
+
+plots$subsidies
+```
+
+## Subsidies (ARP) {.tabset .tabset-pills}
+ARP PPP and Provider Relief Fund
+
+
+### Contribution
+```{r subsidies-arp-cont}
+plots$federal_aid_to_small_businesses_arp_contribution
+
+```
+
+### Levels
+
+```{r subsidies-arp-level}
+
+plots$federal_aid_to_small_businesses_arp
+```
+
+## Unemployment Insurance {.tabset .tabset-pills}
+
+### Contributions
+
+```{r ui_cont}
+plots$federal_ui_contribution
+plots$state_ui_contribution
+```
+
+### Levels
+
+```{r ui_lvl}
+
+plots$federal_ui
+plots$state_ui
+```
+
+## Other aid to vulnerable households {.tabset .tabset-pills}
+
+ Premium Tax Credits, Ratepayer protection, Assistance for older Americans, COBRA, Emergency Assistance
+ 
+### Contribution
+```{r vulnerable}
+plots$federal_other_vulnerable_arp_contribution
+```
+
+### Level
+
+```{r vulnerable_lvl}
+plots$federal_other_vulnerable_arp
+```
+
+## Rebate Checks (1st and 2nd round){.tabset .tabset-pills}
+
+### Contribution
+
+```{r rebate_cont}
+plots$rebate_checks_contribution
+
+```
+
+### Level
+
+```{r rebate_lvl}
+plots$rebate_checks
+
+```
+
+## Rebate Checks (ARP) {.tabset .tabset-pills}
+
+
+
+### Contribution
+
+```{r rebate_arp_cont}
+plots$rebate_checks_arp_contribution
+
+```
+
+### Level
+
+```{r rebate_arp_lvl}
+plots$rebate_checks_arp
+
+```
+
+## Direct aid to households {.tabset .tabset-pills}
+
+Includes Child tax credit, EITC,  Childcare for workers,  Dependent  care for families
+
+### Contribution
+
+```{r aid_cont}
+plots$federal_other_direct_aid_arp_contribution
+```
+
+### Level
+
+```{r aid_lvl}
+plots$federal_other_direct_aid_arp
+```
+
+## Social Benefits Remainder {.tabset .tabset-pills}
+
+
+
+### Contribution
+```{r soc_cont}
+plots$federal_social_benefits_contribution
+plots$state_social_benefits_contribution
+```
+
+### Level
+```{r soc_lvl}
+
+plots$federal_social_benefits
+plots$state_social_benefits
+```
+
+
+
+
+# Deflators {.tabset .tabset-pills}
+
+## Delta
+```{r}
+diff_plot
+```
+
+## Current
+
+```{r}
+cur_plot
+```
+
+## Previous
+```{r}
+prev_plot
+```
+
+<br>
