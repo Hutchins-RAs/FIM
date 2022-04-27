@@ -19,13 +19,13 @@ pull_data <- function(series, database, start.date = '1970-01-01', frequency = "
                                                                    f = "%m-%d-%Y"))
   q <- data.frame(date = as.Date(rownames(q)), q)
   
-  for (j in 2:ncol(q)) {
-    for (k in 4:nrow(q)) {
-      if (is.na(q[k, j])) {
-        q[k, j] = mean(q[c(k - 1, k - 2, k - 3), j])  # if data is missing use 3-qtr moving average
-        
-      }
-    }
-  }
-  q
+  # for (j in 2:ncol(q)) {
+  #   for (k in 4:nrow(q)) {
+  #     if (is.na(q[k, j])) {
+  #       q[k, j] = mean(q[c(k - 1, k - 2, k - 3), j])  # if data is missing use 3-qtr moving average
+  #       
+  #     }
+  #   }
+  # }
+  # q
 }

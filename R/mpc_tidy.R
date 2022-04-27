@@ -143,12 +143,23 @@ mpc_tidy <-function(data, timing_file = NULL, vars){
    
   mutate(data, 
          across({{vars}},
-                ~ roll::roll_sum(.x, 
+                ~ 400 * roll::roll_sum(.x - counterfactual(.x, deflator = consumption_deflator_growth), 
                                  weights = rev(get_timing(timing, .x)),
                                  width = length(get_timing(timing, .x)),
                                  online = FALSE,
-                                 min_obs = 1),
+                                 min_obs = 1) / lag(gdp),
                 .names = '{.col}_consumption'))
   
   #rlang::eval_tidy(call, data = data)
 }
+
+mpc_alt <-function(timing_file = NULL, vars){
+  
+  timing <- timing_file %||% read_mpc_file()
+  
+  roll::roll_sum({{vars}}, weights = rev(get_timing(timing, {{vars}})),
+                                       width = length(get_timing(timing, {{vars}})),
+                                       online = FALSE,
+                                       min_obs = 1)
+}
+
