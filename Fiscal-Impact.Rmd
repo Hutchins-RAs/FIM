@@ -141,7 +141,7 @@ headline_plot
 
 ```{r, echo=FALSE, message=F, warning=FALSE, out.width = "25%", fig.align = "right"}
 #knitr::include_graphics(path = 'images/HC_NEW_BROOKINGS_RGB.jpg', error = FALSE)
-knitr::include_graphics(file.path(here::here(),"images","HC_NEW_BROOKINGS_RGB.jpg"))
+knitr::include_graphics('images/HC_NEW_BROOKINGS_RGB.jpg')
 ```
 
 ```{r impact-expanded, echo=FALSE, message=FALSE, warning=FALSE, results='asis'}
@@ -296,5 +296,6 @@ ggplot(expanded) +
 
 ```{r, echo=FALSE, message=F, warning=FALSE, out.width = "25%", fig.align = "right"}
 #knitr::include_graphics(path = 'images/HC_NEW_BROOKINGS_RGB.jpg', error = FALSE)
-knitr::include_graphics(file.path(here::here(),"images","HC_NEW_BROOKINGS_RGB.jpg"))
+knitr::include_graphics('images/HC_NEW_BROOKINGS_RGB.jpg')
+
 ```
