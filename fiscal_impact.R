@@ -259,7 +259,7 @@ source('scripts/revision_figures.R')
 source('scripts/revision_table.R')
 source('scripts/revision_deflators.R')
 
-rmarkdown::render(input = 'index.Rmd',
+rmarkdown::render(input = 'update-comparison.Rmd',
                   output_file = glue('results/{month_year}/update-comparison-{month_year}'),
                   clean = TRUE)
 

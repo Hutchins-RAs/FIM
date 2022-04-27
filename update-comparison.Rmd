@@ -42,7 +42,7 @@ librarian::shelf(ggplot2, gt, readr)
 plots <- read_rds('data/plots')
 ```
 
-Testing another change. 
+Testing another change again
 ```{r fiscal_impact}
 plots$fiscal_impact %>% print()
 ```
