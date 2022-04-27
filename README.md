@@ -38,15 +38,15 @@ Once you finish installing it, you can clone this repository and run the code.
 
 ### Starting an update
 
-At the beginning of each FIM update you should create a new `branch` named `update-{month}-{year}` and do all your work there. This way if something goes wrong the `main` branch won't be affected. 
+Open the FIM projects by opening the `fim.Rproj` file.
 
 ### Updating BEA data
 
-The BEA releases their GDP estimates and revisions on a monthly basis. We pull these BEA updates from Haver by running the `data-raw/pre-process.R` script. That script saves the BEA data to analyze in the `data` folder. 
+The BEA releases their GDP estimates and revisions on a monthly basis. We pull these BEA updates from Haver by running the `data-raw/haver-pull.R` script. That script saves the BEA data to analyze in the `data` folder. 
 
 ### Updating our forecast
 
-Once the BEA data is read in you need to copy the data in `data/haver_pivoted.xlsx` to the `"haver pivoted"` sheet in `data/forecast.xlsx`. The next step does not involve R and consists of evaluating the forecast of each component in the spreadsheet. The spreadsheet contains detailed instructions for this step in its first sheet. 
+This step does not involve R and consists of evaluating the forecast of each component in the spreadsheet. The spreadsheet contains detailed instructions for this step in its first sheet. 
 
 Once the forecast is updated and approved you need to calculate the FIM.
 
@@ -64,7 +64,7 @@ If after running this step there are no bugs and you are satisfied with the chan
 
 ### Completing an update
 
-Once the adjustments to `data/forecast.xlsx` and the results are confirmed you need to merge the `update-{month}-{year}` folder you've been working on to the `main` branch. Make sure to write a meaningful commit message such as `"2021 Q4 update finalized"` to make it easy to browse the repository at the point in time in which that update was finalized. 
+Once the adjustments to `data/forecast.xlsx` and the results are confirmed you need to commit and push your changes. Make sure to write a meaningful commit message such as `"2021 Q4 update finalized"` to make it easy to browse the repository at the point in time in which that update was finalized. 
 
 
 
