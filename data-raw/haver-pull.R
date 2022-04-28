@@ -36,6 +36,14 @@ wla <- pull_data('YPTOLM',
   monthly_to_quarterly() %>%
   mutate(yptolm = na_if(yptolm, 'NaN'))
 # Child Tax Credit (Monthly)
+
+# Since Haver only pulls monthly values, you should manually input the quarterly 
+# value if monthly personal income hasn't come out yet. You can find it on the 
+# Effects of Selected Federal Pandemic Response Programs on Federal Government Receipts,
+# Expenditures, and Saving. For example, after the release of Q1 2022 advanced estimate I ran the code chunk below to pull the monthly data, and then manually inputed the quarterly value with:
+# 
+# mutate_where(.data = ctc, .where = date == yearquarter('2022 Q1'), yptocm = 105.6)
+
 ctc <- pull_data('YPTOCM',
                  'usna',
                  frequency = 'monthly',
@@ -94,10 +102,6 @@ haver_pivoted <-
   pivot_wider(names_from = date,
               values_from = value) 
 
-national_accounts <-
-  fim::national_accounts |> 
-  mutate_where(date == yearquarter('2022 Q1'),
-               yptocm = 105.6)
 
 boldHeader <- createStyle(textDecoration = 'bold') # Makes first row bold
 wb <- loadWorkbook('data/forecast.xlsx')
