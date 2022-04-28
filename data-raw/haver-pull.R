@@ -94,6 +94,11 @@ haver_pivoted <-
   pivot_wider(names_from = date,
               values_from = value) 
 
+national_accounts <-
+  fim::national_accounts |> 
+  mutate_where(date == yearquarter('2022 Q1'),
+               yptocm = 105.6)
+
 boldHeader <- createStyle(textDecoration = 'bold') # Makes first row bold
 wb <- loadWorkbook('data/forecast.xlsx')
 if (!('Haver Pivoted' %in% names(wb))) addWorksheet(wb, 'Haver Pivoted')
