@@ -66,13 +66,15 @@ usna <-
 
 
 
-monthly_state_ui <- c('LICL', 'LWCL', 'LUFP','LULP','LUWC','LUWP','LUBP','LUWB','LUEX','LUD','LUWBY', 'LUBPT', 'LUFPT', 'LULPT')
+monthly_state_ui <- c('LICL', 'LWCL', 'LUFP','LULP','LUWC','LUWP','LUBP','LUWB','LUEX','LUD','LUWBY', 'LUBPT', 'LUFPT', 'LULPT', 'LASGOVA', 'LALGOVA', 'CPGS')
 
 state_ui <- pull_data(monthly_state_ui,
                          'usecon',
                          start.date = START) %>%
   as_tibble() %>%
   write_xlsx('data/monthly_state_ui.xlsx')
+
+
 
 
 national_accounts <- 
