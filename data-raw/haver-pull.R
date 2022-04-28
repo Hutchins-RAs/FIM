@@ -84,6 +84,8 @@ national_accounts <-
 usethis::use_data(national_accounts, overwrite = TRUE)
 devtools::load_all()
 
+# Write Haver pivoted to corresponding sheet in the forecast workbook
+
 haver_pivoted <-
   fim::national_accounts %>% 
   select(-id) %>% 
