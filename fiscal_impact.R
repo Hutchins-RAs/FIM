@@ -20,7 +20,7 @@ if(month(today() - 7
 
 # Create updatglibe folders
 
-update_in_progress <- FALSE
+update_in_progress <- TRUE
 
 if(update_in_progress == TRUE){
   dir_create(glue('results/{month_year}')) # Create folder to gitstore results
@@ -47,14 +47,14 @@ current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current q
 
 # Load national accounts data from BEA
 usna <-
-  fim::national_accounts |> 
-  coalesce_join(fim::cbo_projections, by = 'date') |>
-  as_tsibble(key = id, index = date) |> 
+  fim::national_accounts %>% 
+  coalesce_join(fim::cbo_projections, by = 'date') %>%
+  as_tsibble(key = id, index = date) %>% 
   define_variables() %>%  # Rename Haver codes for clarity
   as_tsibble(key = id, index = date) %>% # Specify time series structure
   mutate_where(date == current_quarter,
                federal_corporate_taxes = NA_real_,
-               state_corporate_taxes = NA_real_) |> 
+               state_corporate_taxes = NA_real_) %>% 
   mutate_where(id == 'historical',  # Calculate GDP growth for data but take CBO for projection
                real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
   mutate( 
@@ -119,7 +119,7 @@ projections <- # Merge forecast w BEA + CBO
                federal_aid_to_small_businesses_arp = overrides$federal_aid_to_small_businesses_arp_override) %>% 
   mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
             federal_corporate_taxes = tail(overrides$federal_corporate_taxes_override, n = 1),
-            state_corporate_taxes = tail(overrides$state_corporate_taxes_override, n = 1)) |> 
+            state_corporate_taxes = tail(overrides$state_corporate_taxes_override, n = 1)) %>% 
   mutate_where(date == yearquarter("2021 Q1"),
                federal_social_benefits = federal_social_benefits + 203) %>% 
   # FIXME: Figure out why wrong number was pulled from Haver (like 400)
@@ -284,15 +284,15 @@ file_copy(
 fredr_series_search_tags(
   series_search_text = "All Employees, Local Government",
   limit = 100L
-) |> View()
+) %>% View()
 
 # Calculate percentage change in state + local employment relative to February 2020 (pre-pandemic)
-map_dfr(c("CES9092000001", "CES9093000001"), fredr, frequency = 'm', observation_start = as_date('2020-02-01')) |> 
-  select(date, series_id, value) |> 
-  group_by(date) |> 
-  summarise(employment = sum(value), .groups = 'drop') |> 
-  filter(date == first(date) | date == last(date)) |> 
-  summarise(employment_growth = scales::percent((employment / lag(employment) - 1), accuracy = 0.01)) |> 
+map_dfr(c("CES9092000001", "CES9093000001"), fredr, frequency = 'm', observation_start = as_date('2020-02-01')) %>% 
+  select(date, series_id, value) %>% 
+  group_by(date) %>% 
+  summarise(employment = sum(value), .groups = 'drop') %>% 
+  filter(date == first(date) | date == last(date)) %>% 
+  summarise(employment_growth = scales::percent((employment / lag(employment) - 1), accuracy = 0.01)) %>% 
   drop_na()
 
 
