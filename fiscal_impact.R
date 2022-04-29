@@ -1,7 +1,7 @@
 # Setup -------------------------------------------------------------------
 Sys.setenv(TZ = 'UTC')
 librarian::shelf(tidyverse, tsibble, lubridate, glue, TimTeaFan/dplyover, zoo, TTR, fs, gt, openxlsx, 
-                 snakecase, rlang)
+                 snakecase, rlang, fredr)
 devtools::load_all()
 
 options(digits = 4) # Limit number of digits
@@ -273,33 +273,26 @@ file_copy(
 
 # State and local employment ------------------------------------------------------------------
 
+# In order to use the API, you first need to create an account here: http://api.stlouisfed.org/api_key.html. 
+# Once you have the account, store the API key in your R environment. This protects your API key so it's not shared on GitHub or anywhere else. You can store your key by running usethis::edit_r_environ() to open your .Renviron file and typing FRED_API_KEY=YOUR-API-KEY. Finally save and close the .Renviron file and restart your R Session. 
+# You can also use the hutchinsras@gmail.com FRED account's API key. 
+# For more information see http://sboysel.github.io/fredr/articles/fredr.html
 
-# Template code for figuring out state and local employment decline from FRED
-calculate_employment_change <- function(state, local){
-  state_feb_2020 = 5310
-  local_feb_2020 = 14709
-  
-  feb_2020 = state_feb_2020 + local_feb_2020
-  
-  current = state + local
-  
-  change <- (current / feb_2020) - 1
-  
-  return(change)
-}
+# Data comes from: 
+# - State govt employment: https://fred.stlouisfed.org/series/CES9092000001
+# - Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
+fredr_series_search_tags(
+  series_search_text = "All Employees, Local Government",
+  limit = 100L
+) |> View()
 
-# Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
-# State govt employment: https://fred.stlouisfed.org/series/CES9092000001
-100 * calculate_employment_change(state = 5209, local = 14061)
-
-# State + Local Feb 2020
-feb2020 <- 5303 + 14669
-jan2022 <- 5209 + 14061
-
-
-(jan2022 - feb2020) / feb2020
-
-
-(jan2022 / feb2020) - 1
+# Calculate percentage change in state + local employment relative to February 2020 (pre-pandemic)
+map_dfr(c("CES9092000001", "CES9093000001"), fredr, frequency = 'm', observation_start = as_date('2020-02-01')) |> 
+  select(date, series_id, value) |> 
+  group_by(date) |> 
+  summarise(employment = sum(value), .groups = 'drop') |> 
+  filter(date == first(date) | date == last(date)) |> 
+  summarise(employment_growth = scales::percent((employment / lag(employment) - 1), accuracy = 0.01)) |> 
+  drop_na()
 
 
