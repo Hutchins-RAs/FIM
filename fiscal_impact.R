@@ -45,16 +45,10 @@ overrides <- readxl::read_xlsx('data/forecast.xlsx',
 
 current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current quarter for later
 
-# Load national accounts data from BEA
 usna <-
-  fim::national_accounts %>% 
-  coalesce_join(fim::cbo_projections, by = 'date') %>%
-  as_tsibble(key = id, index = date) %>% 
+  read_data() %>% # Load raw BEA data from Haver and CBO projections
   define_variables() %>%  # Rename Haver codes for clarity
   as_tsibble(key = id, index = date) %>% # Specify time series structure
-  mutate_where(date == current_quarter,
-               federal_corporate_taxes = NA_real_,
-               state_corporate_taxes = NA_real_) %>% 
   mutate_where(id == 'historical',  # Calculate GDP growth for data but take CBO for projection
                real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
   mutate( 
@@ -65,13 +59,15 @@ usna <-
     social_benefits = federal_social_benefits + state_social_benefits,
     consumption_grants = gross_consumption_grants - medicaid_grants,
   ) %>% 
-  mutate(rebate_checks_arp = if_else(date == yearquarter("2021 Q1"),
+  mutate(rebate_checks_arp = if_else(date == yearquarter("2021 Q1"), #hardcoding arp rebate checks for one period
                                      1348.1,
                                      0)) %>%
   mutate_where(id == 'projection',
                rebate_checks_arp = NA,
                federal_ui = NA,
-               state_ui = NA) %>% 
+               state_ui = NA) %>%
+  
+  ##Adjusting data in 2021 because of arp(?)
   mutate_where(date == yearquarter('2021 Q1'),
                rebate_checks = rebate_checks - rebate_checks_arp,
                federal_social_benefits = federal_social_benefits + 203
@@ -79,17 +75,22 @@ usna <-
   mutate_where(date == yearquarter("2021 Q4"),
                rebate_checks_arp = 14.2,
                rebate_checks = 0) %>% 
-
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
          
          # Aggregate taxes
          corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
          non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes) %>% 
+  
+  ##Why are these set equal to state purchases deflator growth
   mutate_where(id == 'projection',
                consumption_grants_deflator_growth = state_purchases_deflator_growth,
                investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
+  #Overriding historical consumption grant 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                consumption_grants = overrides$consumption_grants_override) 
+
+#Pulling out deflators
+
 # Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values
   readxl::read_xlsx('data/forecast.xlsx',
