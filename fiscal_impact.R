@@ -20,7 +20,7 @@ if(month(today() - 7
 
 # Create updatglibe folders
 
-update_in_progress <- TRUE
+update_in_progress <- FALSE
 
 if(update_in_progress == TRUE){
   dir_create(glue('results/{month_year}')) # Create folder to gitstore results
@@ -90,6 +90,34 @@ usna <-
                consumption_grants = overrides$consumption_grants_override) 
 
 #Pulling out deflators
+# deflators<- usna %>% select(gdp_deflator, gdp_growth, 
+#                             consumption_deflator, consumption_deflator_growth, 
+#                             federal_purchases_deflator, federal_purchases_deflator_growth,
+#                             consumption_grants_deflator, consumption_grants_deflator_growth,
+#                             investment_grants_deflator, investment_grants_deflator_growth, date, id)
+# boldHeader <- createStyle(textDecoration = 'bold') # Makes first row bold
+# wb <- loadWorkbook('data/forecast.xlsx')
+# if (!('Deflators_original' %in% names(wb))) addWorksheet(wb, 'Deflators_original')
+# writeData(wb, 'Deflators_original', deflators, headerStyle = boldHeader)
+# setColWidths(wb, 'Haver Pivoted', cols = 1:ncol(deflators), widths = 'auto')
+# saveWorkbook(wb, 'data/forecast.xlsx', overwrite = T)
+# 
+# #pulling in edited version if any
+# deflators_adj<-   readxl::read_xlsx('data/forecast.xlsx',
+#                                     sheet = 'Deflators_adj')%>%
+#   mutate(date = yearquarter(date))
+# 
+# #putting the edited version of the deflators back into the usna 
+# usna_nodeflators<-usna %>% select(-gdp_deflator, -gdp_growth, 
+#                 -consumption_deflator, -consumption_deflator_growth, 
+#                 -federal_purchases_deflator, -federal_purchases_deflator_growth,
+#                 -consumption_grants_deflator, -consumption_grants_deflator_growth,
+#                 -investment_grants_deflator, -investment_grants_deflator_growth)
+# 
+# usna_new<- left_join(usna_nodeflators, deflators_adj, by = c('date', 'id'))
+# #keeping the old one for reference in case something breaks 
+# usna_old<- usna
+# usna<- usna_new 
 
 # Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values
