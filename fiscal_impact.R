@@ -20,7 +20,7 @@ if(month(today() - 7
 
 # Create updatglibe folders
 
-update_in_progress <- FALSE
+update_in_progress <- TRUE
 
 if(update_in_progress == TRUE){
   dir_create(glue('results/{month_year}')) # Create folder to gitstore results
@@ -85,13 +85,15 @@ usna <-
   mutate_where(id == 'projection',
                consumption_grants_deflator_growth = state_purchases_deflator_growth,
                investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
-  #Overriding historical consumption grant 
+  #Overriding historical consumption and investment grant 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               consumption_grants = overrides$consumption_grants_override) 
+               consumption_grants = overrides$consumption_grants_override) %>% 
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
+               investment_grants = overrides$investment_grants_override)
 
-#Pulling out deflators
-# deflators<- usna %>% select(gdp_deflator, gdp_growth, 
-#                             consumption_deflator, consumption_deflator_growth, 
+# #Pulling out deflators
+# deflators<- usna %>% select(gdp_deflator, gdp_growth,
+#                             consumption_deflator, consumption_deflator_growth,
 #                             federal_purchases_deflator, federal_purchases_deflator_growth,
 #                             consumption_grants_deflator, consumption_grants_deflator_growth,
 #                             investment_grants_deflator, investment_grants_deflator_growth, date, id)
@@ -107,17 +109,17 @@ usna <-
 #                                     sheet = 'Deflators_adj')%>%
 #   mutate(date = yearquarter(date))
 # 
-# #putting the edited version of the deflators back into the usna 
-# usna_nodeflators<-usna %>% select(-gdp_deflator, -gdp_growth, 
-#                 -consumption_deflator, -consumption_deflator_growth, 
+# #putting the edited version of the deflators back into the usna
+# usna_nodeflators<-usna %>% select(-gdp_deflator, -gdp_growth,
+#                 -consumption_deflator, -consumption_deflator_growth,
 #                 -federal_purchases_deflator, -federal_purchases_deflator_growth,
 #                 -consumption_grants_deflator, -consumption_grants_deflator_growth,
 #                 -investment_grants_deflator, -investment_grants_deflator_growth)
 # 
 # usna_new<- left_join(usna_nodeflators, deflators_adj, by = c('date', 'id'))
-# #keeping the old one for reference in case something breaks 
+# #keeping the old one for reference in case something breaks
 # usna_old<- usna
-# usna<- usna_new 
+# usna<- usna_new
 
 # Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values
