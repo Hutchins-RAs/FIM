@@ -20,7 +20,7 @@ if(month(today() - 7
 
 # Create updatglibe folders
 
-update_in_progress <- TRUE
+update_in_progress <- FALSE
 
 if(update_in_progress == TRUE){
   dir_create(glue('results/{month_year}')) # Create folder to gitstore results
@@ -117,7 +117,7 @@ usna <-
 #                 -investment_grants_deflator, -investment_grants_deflator_growth)
 # 
 # usna_new<- left_join(usna_nodeflators, deflators_adj, by = c('date', 'id'))
-# #keeping the old one for reference in case something breaks
+# #keeping the old one for reference 
 # usna_old<- usna
 # usna<- usna_new
 
