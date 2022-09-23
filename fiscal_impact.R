@@ -20,7 +20,7 @@ if(month(today() - 7
 
 # Create updatglibe folders
 
-update_in_progress <- TRUE
+update_in_progress <- FALSE
 
 if(update_in_progress == TRUE){
   dir_create(glue('results/{month_year}')) # Create folder to gitstore results
