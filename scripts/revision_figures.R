@@ -24,6 +24,7 @@ current <-
     federal_ui_contribution,
     rebate_checks_contribution,
     rebate_checks_arp_contribution,
+    federal_student_loans_contribution,
     federal_other_vulnerable_arp_contribution,
     federal_other_direct_aid_arp_contribution,
     federal_social_benefits_contribution,
@@ -65,6 +66,12 @@ current <-
 # Pivot both longer
 previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
 current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
+
+if(current_quarter<= yearquarter("2022 Q2")){
+  stloans<- current_long %>% filter(name == "federal_student_loans_contribution") %>% mutate(id = "historical") %>% mutate_where(date > yearquarter('2022 Q2'),id = "projection") %>% mutate(previous = 0) %>% select(date, name, id, previous)
+  previous_long<- bind_rows(previous_long, stloans)
+}
+
 
 # Merge and compare
 comparison <- inner_join(previous_long,
@@ -135,6 +142,18 @@ current <-
 previous_long <- pivot_longer(previous, cols = where(is.numeric), values_to = 'previous')
 current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'current')
 
+if(current_quarter<= yearquarter("2022 Q2")){
+  stloans<- current_long %>% 
+    mutate(id = na_if(id, "historical"))%>% 
+    mutate(id = na_if(id, "projection")) %>% 
+    select(-id)%>%
+    filter(name == "federal_student_loans" | name == "federal_student_loans_contribution" | name == "federal_student_loans_post_mpc" | name == "federal_student_loans_minus_neutral")  %>% 
+    mutate(previous = 0) %>%
+    select(-current)
+  
+  previous_long<- bind_rows(previous_long, stloans)
+}
+
 comparison <- inner_join(current_long,
                          previous_long,
                          by = c('date', 'name')) %>% 
@@ -197,7 +216,9 @@ components <- c(
   "federal_social_benefits_contribution",
   "state_social_benefits_contribution",
   "federal_social_benefits",
-  "state_social_benefits"
+  "state_social_benefits",
+  "federal_student_loans",
+  "federal_student_loans_contribution"
 )
 
 comparison_nested <-
@@ -214,4 +235,5 @@ comparison_nested <-
 write_rds(comparison_nested, 'data/comparison_nested')
 plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
 write_rds(plots, 'data/plots')
+
 

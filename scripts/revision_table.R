@@ -84,7 +84,7 @@ components <- c(
   'state_corporate_taxes_contribution',
   'state_non_corporate_taxes_contribution')
 
-transfers <- c('social_benefits', 'subsidies', 'aid_to_small_businesses_arp', 'health_outlays', 'rebate_checks', 'rebate_checks_arp', 'ui', 'other_direct_aid_arp', 'other_vulnerable_arp')
+transfers <- c('social_benefits', 'subsidies', 'aid_to_small_businesses_arp', 'health_outlays', 'rebate_checks', 'rebate_checks_arp', 'ui', 'other_direct_aid_arp', 'other_vulnerable_arp', 'federal_student_loans')
 
 
 current_summary <- 
@@ -212,3 +212,4 @@ summary_tbl <-
     cell_text(weight = "bold")
   ),
   locations = list(cells_body(rows = category == 'Fiscal Impact')))
+

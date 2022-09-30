@@ -23,6 +23,7 @@ undo_safe_quarter <- function(df){
     mutate(date = yearquarter(date)) %>% 
     as_tsibble(index = 'date')
 }
+
 #' Title
 #'
 #' @return

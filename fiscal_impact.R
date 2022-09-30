@@ -20,7 +20,7 @@ if(month(today() - 7
 
 # Create updatglibe folders
 
-update_in_progress <- FALSE
+update_in_progress <- TRUE
 
 if(update_in_progress == TRUE){
   dir_create(glue('results/{month_year}')) # Create folder to gitstore results
@@ -45,8 +45,85 @@ overrides <- readxl::read_xlsx('data/forecast.xlsx',
 
 current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current quarter for later
 
+usna <-read_data() 
+
+#TODO: put in fxn 
+proj_length = length(which(usna$id == "projection"))
+#seed_gdp is the last observed HISTORICAL GDP value
+seed_gdp = usna$gdp[length(usna$gdp) - proj_length]
+
+#vector of predictions for GDP growth
+proj_growth = usna$gdp_growth[(length(usna$gdp) - proj_length + 1):length(usna$gdp)] +
+  1
+
+# Calculate projected GDP by multiplying current GDP in period i by projected period i
+# GDP growth to calculate period i+1 GDP projection
+#initialize empty vector containing projections
+gdp_proj = c()
+gdp_proj[1] = seed_gdp * proj_growth[1]
+
+for (i in 2:proj_length) {
+  gdp_proj[i] <- proj_growth[i] * gdp_proj[i - 1]
+}
+
+dt <-
+  as_tibble(usna$date) %>% mutate(date = value) %>% select(-value)
+
+h <- usna %>% filter(id == "historical")
+gdp_his <- h$gdp
+
+gdp_p <-
+  as_tibble(gdp_proj) %>% mutate(id = "projection") %>% mutate(gdp_proj = value) %>% select(-value)
+gdp_h <-
+  as_tibble(gdp_his) %>% mutate(id = "historical") %>% mutate(gdp_proj = value) %>% select(-value)
+
+
+gdp_new <- rbind(gdp_h, gdp_p)
+gdp_new <- (cbind(gdp_new, dt))
+
 usna <-
-  read_data() %>% # Load raw BEA data from Haver and CBO projections
+  left_join(usna, gdp_new, by = c('id', 'date')) %>% mutate_where(id == "projection", gdp = gdp_proj)
+
+
+########GDPH#######################
+#seed_gdp is the last observed HISTORICAL GDP value
+seed_gdph = usna$gdph[length(usna$gdph) - proj_length]
+
+#vector of predictions for gdph growth
+proj_growth = usna$gdph_growth[(length(usna$gdph) - proj_length + 1):length(usna$gdph)] +
+  1
+
+# Calculate projected gdph by multiplying current gdph in period i by projected period i
+# gdph growth to calculate period i+1 gdph projection
+#initialize empty vector containing projections
+gdph_proj = c()
+gdph_proj[1] = seed_gdph * proj_growth[1]
+
+for (i in 2:proj_length) {
+  gdph_proj[i] <- proj_growth[i] * gdph_proj[i - 1]
+}
+
+dt <-
+  as_tibble(usna$date) %>% mutate(date = value) %>% select(-value)
+
+h <- usna %>% filter(id == "historical")
+gdph_his <- h$gdph
+
+gdph_p <-
+  as_tibble(gdph_proj) %>% mutate(id = "projection") %>% mutate(gdph_proj = value) %>% select(-value)
+gdph_h <-
+  as_tibble(gdph_his) %>% mutate(id = "historical") %>% mutate(gdph_proj = value) %>% select(-value)
+
+
+gdph_new <- rbind(gdph_h, gdph_p)
+gdph_new <- (cbind(gdph_new, dt))
+
+usna <-
+  left_join(usna, gdph_new, by = c('id', 'date')) %>% mutate_where(id == "projection", gdph = gdph_proj)
+
+usna<-usna %>%
+# Load raw BEA data from Haver and CBO projections
+  #mutate_where(date == yearquarter("2022 Q2"), gdp = 20000) %>%
   define_variables() %>%  # Rename Haver codes for clarity
   as_tsibble(key = id, index = date) %>% # Specify time series structure
   mutate_where(id == 'historical',  # Calculate GDP growth for data but take CBO for projection
@@ -184,7 +261,8 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
         "federal_other_vulnerable_arp",
         # "federal_ui_arp",
         #"state_ui_arp",
-        "federal_aid_to_small_businesses_arp"
+        "federal_aid_to_small_businesses_arp",
+        "federal_student_loans"
       )
     ),
     .fns = ~ .x - dplyr::lag(.x, default = 0) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
@@ -200,7 +278,7 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
     ),
     across(
       .cols = all_of(
-        c("rebate_checks_arp", "federal_other_direct_aid_arp") %>% paste0("_minus_neutral")
+        c("rebate_checks_arp", "federal_other_direct_aid_arp", "federal_student_loans") %>% paste0("_minus_neutral")
       ),
       .fns = ~ mpc_direct_aid_arp(.),
       .names = "{.col}_post_mpc"
@@ -235,10 +313,11 @@ contributions <- # Calculate contributions
     transfers_contribution = federal_social_benefits_contribution + state_social_benefits_contribution +
       rebate_checks_contribution + rebate_checks_arp_contribution + federal_ui_contribution + state_ui_contribution +
       federal_subsidies_contribution + federal_aid_to_small_businesses_arp_contribution +  state_subsidies_contribution + federal_health_outlays_contribution +
-      state_health_outlays_contribution + federal_other_direct_aid_arp_contribution + federal_other_vulnerable_arp_contribution,
+      state_health_outlays_contribution + federal_other_direct_aid_arp_contribution + federal_other_vulnerable_arp_contribution +federal_student_loans_contribution,
     taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution +
       federal_corporate_taxes_contribution + state_corporate_taxes_contribution
   ) %>%
+mutate(federal_transfers_contribution = federal_transfers_contribution + federal_student_loans_contribution)%>%
   mutate(subsidies = federal_subsidies + state_subsidies,
          subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution) %>% 
   #sum_taxes_contributions() %>%
