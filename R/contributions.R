@@ -73,7 +73,7 @@ all_taxes_transfers <- function(){
   taxes_transfers <- c("subsidies","health_outlays", "social_benefits",
                        "non_corporate_taxes", "corporate_taxes",  
                        'ui')
-
+  
   
   all_taxes_transfers <- c(glue::glue('{taxes_transfers}'), glue::glue('federal_{taxes_transfers}'),'rebate_checks',
                            glue::glue('state_{taxes_transfers}'))
@@ -97,8 +97,8 @@ taxes_transfers_minus_neutral <- function(df){
   df %>%
     dplyr::mutate(
       dplyr::across(.cols = any_of(all_levels(taxes, transfers)),
-             .fns = ~ . - dplyr::lag(.) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
-             .names = '{.col}_minus_neutral')
+                    .fns = ~ . - dplyr::lag(.) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
+                    .names = '{.col}_minus_neutral')
     )
 }
 
@@ -113,6 +113,92 @@ taxes_transfers_minus_neutral_fourthlag <- function(df){
                     .fns = ~ . - dplyr::lag(.) * (1 + real_potential_gdp_growth_fourthlag + q_g_fourthlag(consumption_deflator)),
                     .names = '{.col}_minus_neutral')
     )
+}
+
+
+get_real_levels<- function(df){
+  taxes = all_levels('corporate_taxes', 
+                     'non_corporate_taxes',
+                     'federal_corporate_taxes',
+                     'federal_non_corporate_taxes',
+                     'state_corporate_taxes',
+                     'state_non_corporate_taxes')
+  transfers = all_levels('social_benefits', 
+                         'federal_social_benefits',
+                         'state_social_benefits',
+                         'health_outlays',
+                         'federal_health_outlays',
+                         'state_health_outlays',
+                         'subsidies', 
+                         'ui', 
+                         'federal_ui',
+                         "state_ui",
+                         'rebate_checks', 
+                         'rebate_checks_arp',
+                         "federal_other_direct_aid_arp",
+                         "federal_other_vulnerable_arp",
+                         "federal_aid_to_small_businesses_arp",
+                         "federal_student_loans",
+                         "medicaid",
+                         'medicaid_grants',
+                         "medicare", 
+                         "federal_transfers",
+                         "state_transfers")
+  federal_purchases = all_levels('federal_purchases')
+  state_purchases = all_levels('state_purchases')
+  consumption_grants = all_levels('consumption_grants')
+  investment_grants = all_levels('investment_grants')
+  df %>%
+    dplyr::mutate(
+      dplyr::across(.cols = any_of(all_levels(taxes, transfers)),
+                    .fns = ~.  - dplyr::lag(.) * (consumption_deflator_growth),
+                    .names = '{.col}_real'),
+      
+      dplyr::across(.cols = any_of(all_levels(federal_purchases)),
+                    .fns = ~ . - dplyr::lag(.) * (federal_purchases_deflator_growth),
+                    .names = '{.col}_real'),
+      dplyr::across(.cols = any_of(all_levels(state_purchases)),
+                    .fns = ~ . - dplyr::lag(.) * (state_purchases_deflator_growth),
+                    .names = '{.col}_real'),
+      dplyr::across(.cols = any_of(all_levels(consumption_grants)),
+                    .fns = ~ . - dplyr::lag(.) * (consumption_grants_deflator_growth),
+                    .names = '{.col}_real'),
+      dplyr::across(.cols = any_of(all_levels(investment_grants)),
+                    .fns = ~ . - dplyr::lag(.) * (investment_grants_deflator_growth),
+                    .names = '{.col}_real')
+    )
+}
+
+
+
+annualize_deflator<- function(df){
+  deflators = all_levels('consumption_deflator_growth', 
+                     'federal_purchases_deflator_growth',
+                     'state_purchases_deflator_growth',
+                     'consumption_grants_deflator_growth',
+                     'investment_grants_deflator_growth')
+                  
+  df %>%
+    dplyr::mutate(
+      dplyr::across(.cols = any_of(all_levels(deflators)),
+                    .fns = ~( (.)+1)^4 - 1,
+                    .names = '{.col}_ann')
+    )
+}
+
+deannualize_deflator<- function(df){
+  deflators = all_levels('consumption_deflator_growth_ann', 
+                         'federal_purchases_deflator_growth_ann',
+                         'state_purchases_deflator_growth_ann',
+                         'consumption_grants_deflator_growth_ann',
+                         'investment_grants_deflator_growth_ann')
+  
+  df %>%
+    dplyr::mutate(
+      dplyr::across(.cols = any_of(all_levels(deflators)),
+                    .fns = ~( (.)+1)^.25 - 1,
+                    .names = '{.col}'),
+    ) 
 }
 
 

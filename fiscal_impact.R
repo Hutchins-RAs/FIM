@@ -45,84 +45,10 @@ overrides <- readxl::read_xlsx('data/forecast.xlsx',
 
 current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current quarter for later
 
-usna <-read_data() 
-
-#TODO: put in fxn 
-proj_length = length(which(usna$id == "projection"))
-#seed_gdp is the last observed HISTORICAL GDP value
-seed_gdp = usna$gdp[length(usna$gdp) - proj_length]
-
-#vector of predictions for GDP growth
-proj_growth = usna$gdp_growth[(length(usna$gdp) - proj_length + 1):length(usna$gdp)] +
-  1
-
-# Calculate projected GDP by multiplying current GDP in period i by projected period i
-# GDP growth to calculate period i+1 GDP projection
-#initialize empty vector containing projections
-gdp_proj = c()
-gdp_proj[1] = seed_gdp * proj_growth[1]
-
-for (i in 2:proj_length) {
-  gdp_proj[i] <- proj_growth[i] * gdp_proj[i - 1]
-}
-
-dt <-
-  as_tibble(usna$date) %>% mutate(date = value) %>% select(-value)
-
-h <- usna %>% filter(id == "historical")
-gdp_his <- h$gdp
-
-gdp_p <-
-  as_tibble(gdp_proj) %>% mutate(id = "projection") %>% mutate(gdp_proj = value) %>% select(-value)
-gdp_h <-
-  as_tibble(gdp_his) %>% mutate(id = "historical") %>% mutate(gdp_proj = value) %>% select(-value)
-
-
-gdp_new <- rbind(gdp_h, gdp_p)
-gdp_new <- (cbind(gdp_new, dt))
-
 usna <-
-  left_join(usna, gdp_new, by = c('id', 'date')) %>% mutate_where(id == "projection", gdp = gdp_proj)
-
-
-########GDPH#######################
-#seed_gdp is the last observed HISTORICAL GDP value
-seed_gdph = usna$gdph[length(usna$gdph) - proj_length]
-
-#vector of predictions for gdph growth
-proj_growth = usna$gdph_growth[(length(usna$gdph) - proj_length + 1):length(usna$gdph)] +
-  1
-
-# Calculate projected gdph by multiplying current gdph in period i by projected period i
-# gdph growth to calculate period i+1 gdph projection
-#initialize empty vector containing projections
-gdph_proj = c()
-gdph_proj[1] = seed_gdph * proj_growth[1]
-
-for (i in 2:proj_length) {
-  gdph_proj[i] <- proj_growth[i] * gdph_proj[i - 1]
-}
-
-dt <-
-  as_tibble(usna$date) %>% mutate(date = value) %>% select(-value)
-
-h <- usna %>% filter(id == "historical")
-gdph_his <- h$gdph
-
-gdph_p <-
-  as_tibble(gdph_proj) %>% mutate(id = "projection") %>% mutate(gdph_proj = value) %>% select(-value)
-gdph_h <-
-  as_tibble(gdph_his) %>% mutate(id = "historical") %>% mutate(gdph_proj = value) %>% select(-value)
-
-
-gdph_new <- rbind(gdph_h, gdph_p)
-gdph_new <- (cbind(gdph_new, dt))
-
-usna <-
-  left_join(usna, gdph_new, by = c('id', 'date')) %>% mutate_where(id == "projection", gdph = gdph_proj)
-
-usna<-usna %>%
-# Load raw BEA data from Haver and CBO projections
+  read_data() %>%
+  gdp_cbo_growth_rate()%>% #grows current data according to cbo growth rate: gdp and gdph 
+  # Load raw BEA data from Haver and CBO projections
   #mutate_where(date == yearquarter("2022 Q2"), gdp = 20000) %>%
   define_variables() %>%  # Rename Haver codes for clarity
   as_tsibble(key = id, index = date) %>% # Specify time series structure
@@ -166,37 +92,48 @@ usna<-usna %>%
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                consumption_grants = overrides$consumption_grants_override) %>% 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
-               investment_grants = overrides$investment_grants_override)
+               investment_grants = overrides$investment_grants_override) %>% annualize_deflator()
 
-# #Pulling out deflators
-# deflators<- usna %>% select(gdp_deflator, gdp_growth,
-#                             consumption_deflator, consumption_deflator_growth,
-#                             federal_purchases_deflator, federal_purchases_deflator_growth,
-#                             consumption_grants_deflator, consumption_grants_deflator_growth,
-#                             investment_grants_deflator, investment_grants_deflator_growth, date, id)
-# boldHeader <- createStyle(textDecoration = 'bold') # Makes first row bold
-# wb <- loadWorkbook('data/forecast.xlsx')
-# if (!('Deflators_original' %in% names(wb))) addWorksheet(wb, 'Deflators_original')
-# writeData(wb, 'Deflators_original', deflators, headerStyle = boldHeader)
-# setColWidths(wb, 'Haver Pivoted', cols = 1:ncol(deflators), widths = 'auto')
-# saveWorkbook(wb, 'data/forecast.xlsx', overwrite = T)
-# 
-# #pulling in edited version if any
-# deflators_adj<-   readxl::read_xlsx('data/forecast.xlsx',
-#                                     sheet = 'Deflators_adj')%>%
-#   mutate(date = yearquarter(date))
-# 
-# #putting the edited version of the deflators back into the usna
-# usna_nodeflators<-usna %>% select(-gdp_deflator, -gdp_growth,
-#                 -consumption_deflator, -consumption_deflator_growth,
-#                 -federal_purchases_deflator, -federal_purchases_deflator_growth,
-#                 -consumption_grants_deflator, -consumption_grants_deflator_growth,
-#                 -investment_grants_deflator, -investment_grants_deflator_growth)
-# 
-# usna_new<- left_join(usna_nodeflators, deflators_adj, by = c('date', 'id'))
-# #keeping the old one for reference 
-# usna_old<- usna
-# usna<- usna_new
+####################pull out deflator
+deflators<- usna %>% select(consumption_deflator_growth_ann, 
+                            federal_purchases_deflator_growth_ann,
+                            state_purchases_deflator_growth_ann,
+                             consumption_grants_deflator_growth_ann,
+                            investment_grants_deflator_growth_ann, date, id)
+                            wb <- loadWorkbook('data/forecast.xlsx')
+                            if (!('deflators_raw' %in% names(wb))) addWorksheet(wb, 'deflators_raw')
+                            writeData(wb, 'deflators_raw', deflators, headerStyle = boldHeader)
+                            setColWidths(wb, 'deflators_raw', cols = 1:ncol(deflators), widths = 'auto')
+                            saveWorkbook(wb, 'data/forecast.xlsx', overwrite = T)
+                            
+####################put back edited deflator
+deflators_adj<-   readxl::read_xlsx('data/forecast.xlsx', sheet = 'deflators_adj')%>%
+                          
+mutate(date = yearquarter(date)) %>% 
+  
+deannualize_deflator() %>%
+  
+mutate(consumption_deflator_growth = consumption_deflator_growth_ann,
+       federal_purchases_deflator_growth =federal_purchases_deflator_growth_ann,
+       state_purchases_deflator_growth = state_purchases_deflator_growth_ann,
+       investment_grants_deflator_growth =investment_grants_deflator_growth_ann) %>% 
+  
+select(-consumption_deflator_growth_ann, 
+         -federal_purchases_deflator_growth_ann,
+         -state_purchases_deflator_growth_ann,
+         -consumption_grants_deflator_growth_ann,
+         -investment_grants_deflator_growth_ann)
+
+                            #putting the edited version of the deflators back into the usna
+                            usna_nodeflators<-usna %>% select(-consumption_deflator_growth,
+                                            -federal_purchases_deflator_growth,
+                                            -consumption_grants_deflator_growth,
+                                           -investment_grants_deflator_growth)
+
+                            usna_new<- left_join(usna_nodeflators, deflators_adj, by = c('date', 'id'))
+                            #keeping the old one for reference
+                            usna_old<- usna
+                            usna<- usna_new
 
 # Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values
@@ -226,8 +163,8 @@ projections <- # Merge forecast w BEA + CBO
                federal_social_benefits = overrides$federal_social_benefits_override,
                federal_aid_to_small_businesses_arp = overrides$federal_aid_to_small_businesses_arp_override) %>% 
   mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
-            federal_corporate_taxes = tail(overrides$federal_corporate_taxes_override, n = 1),
-            state_corporate_taxes = tail(overrides$state_corporate_taxes_override, n = 1)) %>% 
+               federal_corporate_taxes = tail(overrides$federal_corporate_taxes_override, n = 1),
+               state_corporate_taxes = tail(overrides$state_corporate_taxes_override, n = 1)) %>% 
   mutate_where(date == yearquarter("2021 Q1"),
                federal_social_benefits = federal_social_benefits + 203) %>% 
   # FIXME: Figure out why wrong number was pulled from Haver (like 400)
@@ -237,9 +174,9 @@ projections <- # Merge forecast w BEA + CBO
 
 # Consumption -------------------------------------------------------------
 
-
 consumption <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
+  get_real_levels() %>%
   taxes_transfers_minus_neutral() %>%
   calculate_mpc("social_benefits") %>%
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
@@ -317,11 +254,31 @@ contributions <- # Calculate contributions
     taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution +
       federal_corporate_taxes_contribution + state_corporate_taxes_contribution
   ) %>%
-mutate(federal_transfers_contribution = federal_transfers_contribution + federal_student_loans_contribution)%>%
+  mutate(federal_transfers_contribution = federal_transfers_contribution + federal_student_loans_contribution)%>%
   mutate(subsidies = federal_subsidies + state_subsidies,
          subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution) %>% 
-  #sum_taxes_contributions() %>%
+  
+  
+  mutate(
+    grants_real = consumption_grants_real + investment_grants_real,
+    federal_real = federal_purchases_real + grants_real,
+    state_real = state_purchases_real - grants_real
+  ) %>%
+  mutate(social_benefits_real = federal_social_benefits_real + state_social_benefits_real) %>%
+  mutate(non_corporate_taxes_real = federal_non_corporate_taxes_real + state_non_corporate_taxes_real) %>%
+  mutate(taxes_real = non_corporate_taxes_real + corporate_taxes_real) %>%
+  mutate(
+    transfers_real = federal_social_benefits_real + state_social_benefits_real +
+      rebate_checks_real + rebate_checks_arp_real + federal_ui_real + state_ui_real +
+      federal_subsidies_real + federal_aid_to_small_businesses_arp_real +  state_subsidies_real + federal_health_outlays_real +
+      state_health_outlays_real + federal_other_direct_aid_arp_real + federal_other_vulnerable_arp_real +federal_student_loans_real,
+    taxes_real = federal_non_corporate_taxes_real + state_non_corporate_taxes_real +
+      federal_corporate_taxes_real + state_corporate_taxes_real
+  ) %>% 
+  mutate( subsidies_real = federal_subsidies_real + state_subsidies_real) %>% annualize_deflator()%>%
   get_fiscal_impact()
+#mutate(federal_transfers_real = federal_transfers_real + federal_student_loans_real)%>%
+
 
 
 openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)

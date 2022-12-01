@@ -78,7 +78,7 @@ define_variables <- function(df){
               nonprofit_ppp = gftfpp,
               nonprofit_provider_relief_fund =gftfpv, 
               medicare_reimbursement_increase = gftfpr,
-          
+              
               
               across(c('peuc', 'pua', 'puc',  'wages_lost_assistance', 'rebate_checks', 'nonprofit_ppp',
                        'nonprofit_provider_relief_fund','coronavirus_relief_fund', 'education_stabilization_fund',
@@ -124,7 +124,7 @@ define_variables <- function(df){
               state_purchases_growth = gs_growth,
               real_state_purchases_growth = gsh_growth,
     ) 
-    
+  
   
 }
 
@@ -169,4 +169,36 @@ reallocate_legislation <- function(.data){
       state_social_benefits = state_social_benefits - medicaid ,
       social_benefits = federal_social_benefits + state_social_benefits
     ) 
+}
+
+#' GROW CURRENT GDP WITH CBO GROWTH RATE
+#'
+#' @param df 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gdp_cbo_growth_rate <- function(df){
+  hist_length = length(which(df$id == "historical"))+2
+  df_length = length(df$id)
+  
+  seed_gdp = df$gdp[df$date == current_quarter]
+  seed_growth = df$gdp_growth[df$date == current_quarter+1]
+  
+  df$gdp[df$date==current_quarter+1]<- seed_gdp*(1+seed_growth)
+  
+  for (i in hist_length:df_length) {
+    df$gdp[i] <- (1 + df$gdp_growth[i]) * df$gdp[i - 1]
+  }
+  
+  seed_gdph = df$gdph[df$date == current_quarter]
+  seed_growth = df$gdph_growth[df$date == current_quarter+1]
+  
+  df$gdph[df$date==current_quarter+1]<- seed_gdph*(1+seed_growth)
+  
+  for (i in hist_length:df_length) {
+    df$gdph[i] <- (1 + df$gdph_growth[i]) * df$gdph[i - 1]
+  }
+  usna<-df
 }
