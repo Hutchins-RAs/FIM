@@ -116,7 +116,8 @@ deannualize_deflator() %>%
 mutate(consumption_deflator_growth = consumption_deflator_growth_ann,
        federal_purchases_deflator_growth =federal_purchases_deflator_growth_ann,
        state_purchases_deflator_growth = state_purchases_deflator_growth_ann,
-       investment_grants_deflator_growth =investment_grants_deflator_growth_ann) %>% 
+       investment_grants_deflator_growth =investment_grants_deflator_growth_ann,
+       consumption_grants_deflator_growth=consumption_grants_deflator_growth_ann) %>% 
   
 select(-consumption_deflator_growth_ann, 
          -federal_purchases_deflator_growth_ann,
@@ -128,7 +129,7 @@ select(-consumption_deflator_growth_ann,
                             usna_nodeflators<-usna %>% select(-consumption_deflator_growth,
                                             -federal_purchases_deflator_growth,
                                             -consumption_grants_deflator_growth,
-                                           -investment_grants_deflator_growth)
+                                           -investment_grants_deflator_growth,  -state_purchases_deflator_growth)
 
                             usna_new<- left_join(usna_nodeflators, deflators_adj, by = c('date', 'id'))
                             #keeping the old one for reference
