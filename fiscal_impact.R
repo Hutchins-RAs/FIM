@@ -45,6 +45,17 @@ overrides <- readxl::read_xlsx('data/forecast.xlsx',
 
 current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current quarter for later
 
+##
+deflators_override <- readxl::read_xlsx('data/forecast.xlsx',
+                               sheet = 'deflators_override') %>% # Read in overrides
+  select(-name) %>% # Remove longer name since we don't need it
+  pivot_longer(-variable,
+               names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  mutate(date = yearquarter(date))
+
+##
 usna <-
   read_data() %>%
   gdp_cbo_growth_rate()%>% #grows current data according to cbo growth rate: gdp and gdph 
@@ -92,49 +103,15 @@ usna <-
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                consumption_grants = overrides$consumption_grants_override) %>% 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
-               investment_grants = overrides$investment_grants_override) %>% annualize_deflator()
+               investment_grants = overrides$investment_grants_override) %>%
 
-####################pull out deflator
-deflators<- usna %>% select(consumption_deflator_growth_ann, 
-                            federal_purchases_deflator_growth_ann,
-                            state_purchases_deflator_growth_ann,
-                             consumption_grants_deflator_growth_ann,
-                            investment_grants_deflator_growth_ann, date, id)
-                            wb <- loadWorkbook('data/forecast.xlsx')
-                            if (!('deflators_raw' %in% names(wb))) addWorksheet(wb, 'deflators_raw')
-                            writeData(wb, 'deflators_raw', deflators, headerStyle = boldHeader)
-                            setColWidths(wb, 'deflators_raw', cols = 1:ncol(deflators), widths = 'auto')
-                            saveWorkbook(wb, 'data/forecast.xlsx', overwrite = T)
-                            
-####################put back edited deflator
-deflators_adj<-   readxl::read_xlsx('data/forecast.xlsx', sheet = 'deflators_adj')%>%
-                          
-mutate(date = yearquarter(date)) %>% 
-  
-deannualize_deflator() %>%
-  
-mutate(consumption_deflator_growth = consumption_deflator_growth_ann,
-       federal_purchases_deflator_growth =federal_purchases_deflator_growth_ann,
-       state_purchases_deflator_growth = state_purchases_deflator_growth_ann,
-       investment_grants_deflator_growth =investment_grants_deflator_growth_ann,
-       consumption_grants_deflator_growth=consumption_grants_deflator_growth_ann) %>% 
-  
-select(-consumption_deflator_growth_ann, 
-         -federal_purchases_deflator_growth_ann,
-         -state_purchases_deflator_growth_ann,
-         -consumption_grants_deflator_growth_ann,
-         -investment_grants_deflator_growth_ann)
+mutate_where(date>current_quarter & date<=max(deflators_override$date), 
+             consumption_deflator_growth = deflators_override$consumption_deflator_growth_override,
+             federal_purchases_deflator_growth =deflators_override$federal_purchases_deflator_growth_override,
+             state_purchases_deflator_growth = deflators_override$state_purchases_deflator_growth_override,
+             consumption_grants_deflator_growth = deflators_override$consumption_grants_deflator_growth_override,
+             investment_grants_deflator_growth = deflators_override$investment_grants_deflator_growth_override)
 
-                            #putting the edited version of the deflators back into the usna
-                            usna_nodeflators<-usna %>% select(-consumption_deflator_growth,
-                                            -federal_purchases_deflator_growth,
-                                            -consumption_grants_deflator_growth,
-                                           -investment_grants_deflator_growth,  -state_purchases_deflator_growth)
-
-                            usna_new<- left_join(usna_nodeflators, deflators_adj, by = c('date', 'id'))
-                            #keeping the old one for reference
-                            usna_old<- usna
-                            usna<- usna_new
 
 # Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values
@@ -258,8 +235,9 @@ contributions <- # Calculate contributions
   mutate(federal_transfers_contribution = federal_transfers_contribution + federal_student_loans_contribution)%>%
   mutate(subsidies = federal_subsidies + state_subsidies,
          subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution) %>% 
+  get_fiscal_impact() %>%
   
-  
+  #get the real levels 
   mutate(
     grants_real = consumption_grants_real + investment_grants_real,
     federal_real = federal_purchases_real + grants_real,
@@ -276,11 +254,7 @@ contributions <- # Calculate contributions
     taxes_real = federal_non_corporate_taxes_real + state_non_corporate_taxes_real +
       federal_corporate_taxes_real + state_corporate_taxes_real
   ) %>% 
-  mutate( subsidies_real = federal_subsidies_real + state_subsidies_real) %>% annualize_deflator()%>%
-  get_fiscal_impact()
-#mutate(federal_transfers_real = federal_transfers_real + federal_student_loans_real)%>%
-
-
+  mutate( subsidies_real = federal_subsidies_real + state_subsidies_real)
 
 openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)
 write_rds(contributions, file = 'data/contributions.rds')
