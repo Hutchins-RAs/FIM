@@ -17,14 +17,14 @@ diff_plot <-
   ggplot(aes(x = date,  y =  diff, color = variable)) +
   #geom_col(position=position_dodge2(reverse = TRUE)) +
   geom_line(show.legend = FALSE) +
-  geom_point(show.legend = FALSE) +
+  geom_point(aes(shape=id), show.legend = FALSE) +
   facet_wrap(variable~.) +
   scale_y_continuous(labels = scales::label_percent()) +
   
   labs(title = 'Difference in deflator growth', 
        subtitle = 'Annualized',
        x = NULL,
-       y = NULL)
+       y = NULL)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 cur_plot <-
   deflators %>% 
@@ -32,14 +32,14 @@ cur_plot <-
   ggplot(aes(x = date,  y =  current, color = variable)) +
   #geom_col(position=position_dodge2(reverse = TRUE)) +
   geom_line(show.legend = FALSE) +
-  geom_point(show.legend = FALSE) +
+  geom_point(aes(shape=id),show.legend = FALSE) +
   facet_wrap(variable~.) +
   scale_y_continuous(labels = scales::label_percent()) +
   geom_hline(yintercept = 0) +
   labs(title = 'Current deflator growth', 
        subtitle = 'Annualized',
        x = NULL,
-       y = NULL)
+       y = NULL) + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 prev_plot <-
   deflators %>% 
@@ -47,11 +47,11 @@ prev_plot <-
   ggplot(aes(x = date,  y =  previous, color = variable)) +
   #geom_col(position=position_dodge2(reverse = TRUE)) +
   geom_line(show.legend = FALSE) +
-  geom_point(show.legend = FALSE) +
+  geom_point(aes(shape=id), show.legend = FALSE) +
   facet_wrap(variable~.) +
   scale_y_continuous(labels = scales::label_percent()) +
   geom_hline(yintercept = 0) +
   labs(title = 'Previous deflator growth', 
        subtitle = 'Annualized',
        x = NULL,
-       y = NULL)
+       y = NULL)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
