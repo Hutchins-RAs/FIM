@@ -1,15 +1,19 @@
-# Setup -------------------------------------------------------------------
-Sys.setenv(TZ = 'UTC')
+#Section A: prep for new update ----------------------
+
+Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
+
 librarian::shelf(tidyverse, tsibble, lubridate, glue, TimTeaFan/dplyover, zoo, TTR, fs, gt, openxlsx, 
-                 snakecase, rlang, fredr)
-devtools::load_all()
+                 snakecase, rlang, fredr) # Load packages
+devtools::load_all() # Load all functions in package
 
 options(digits = 4) # Limit number of digits
 options(scipen = 20)# Turn off scientific notation under 20 digits 
 
-# Set dates for current and previous months
+# Set the value of 'month_year' to the current month and year (in the format "mm-yyyy")
 month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
 
+# If the month of the previous month is less than 10, set the value of 'last_month_year' to the previous month and year (in the format "0m-yyyy")
+# Otherwise, set the value of 'last_month_year' to the previous month and year (in the format "mm-yyyy")
 if(month(today() - 7 
          -months(1)) < 10){
   last_month_year <- glue('0{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
@@ -20,16 +24,19 @@ if(month(today() - 7
 
 # Create updatglibe folders
 
-update_in_progress <- TRUE
+update_in_progress <- TRUE #set this to false if you're not running the code for a new month
 
 if(update_in_progress == TRUE){
-  dir_create(glue('results/{month_year}')) # Create folder to gitstore results
-  dir_create(glue('results/{month_year}/input_data')) # Folder to store forecast from current update
+  dir_create(glue('results/{month_year}')) # Create folder for current update in the results directory
+  dir_create(glue('results/{month_year}/input_data')) # Folder to store forecast sheet from current update
+  
+  # Copy the file 'forecast.xlsx' from the 'data' directory to the 'input_data' directory
+  # This is the copy we keep for the current update
   file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
 }
 
 
-# Wrangle data ------------------------------------------------------------
+#Section B: Wrangle data ------------------------------------------------------------
 
 # Since BEA put all CARES act grants to S&L in Q2 2020 we need to
 # override the historical data and spread it out based on our best guess
@@ -47,7 +54,7 @@ current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current q
 
 ##
 deflators_override <- readxl::read_xlsx('data/forecast.xlsx',
-                               sheet = 'deflators_override') %>% # Read in overrides
+                                        sheet = 'deflators_override') %>% # Read in overrides for deflators
   select(-name) %>% # Remove longer name since we don't need it
   pivot_longer(-variable,
                names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
@@ -57,14 +64,15 @@ deflators_override <- readxl::read_xlsx('data/forecast.xlsx',
 
 ##
 usna <-
-  read_data() %>%
+  read_data() %>% # Load raw BEA data from Haver and CBO projections
   gdp_cbo_growth_rate()%>% #grows current data according to cbo growth rate: gdp and gdph 
-  # Load raw BEA data from Haver and CBO projections
-  #mutate_where(date == yearquarter("2022 Q2"), gdp = 20000) %>%
   define_variables() %>%  # Rename Haver codes for clarity
-  as_tsibble(key = id, index = date) %>% # Specify time series structure
-  mutate_where(id == 'historical',  # Calculate GDP growth for data but take CBO for projection
+  as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
+  
+  mutate_where(id == 'historical',  # Calculate GDP growth for data 
                real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
+  
+  #Define FIM variables 
   mutate( 
     # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
     federal_social_benefits_gross = federal_social_benefits, # Save original value
@@ -73,9 +81,12 @@ usna <-
     social_benefits = federal_social_benefits + state_social_benefits,
     consumption_grants = gross_consumption_grants - medicaid_grants,
   ) %>% 
+  
   mutate(rebate_checks_arp = if_else(date == yearquarter("2021 Q1"), #hardcoding arp rebate checks for one period
                                      1348.1,
                                      0)) %>%
+  
+  #Set rebate checks ARP to NA because we don't have a projection for them
   mutate_where(id == 'projection',
                rebate_checks_arp = NA,
                federal_ui = NA,
@@ -95,46 +106,55 @@ usna <-
          corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
          non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes) %>% 
   
-  ##Why are these set equal to state purchases deflator growth
+  ##Set the grants deflator the same as state purchases deflator (the same is done in the forecast/deflators sheet)
   mutate_where(id == 'projection',
                consumption_grants_deflator_growth = state_purchases_deflator_growth,
                investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
+  
   #Overriding historical consumption and investment grant 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                consumption_grants = overrides$consumption_grants_override) %>% 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
                investment_grants = overrides$investment_grants_override) %>%
+  
+  #For the full period of the forecast (8 quarters out), replace CBO deflators with the ones from
+  #the deflators override sheet
+  mutate_where(date>current_quarter & date<=max(deflators_override$date), 
+               consumption_deflator_growth = deflators_override$consumption_deflator_growth_override,
+               federal_purchases_deflator_growth =deflators_override$federal_purchases_deflator_growth_override,
+               state_purchases_deflator_growth = deflators_override$state_purchases_deflator_growth_override,
+               consumption_grants_deflator_growth = deflators_override$consumption_grants_deflator_growth_override,
+               investment_grants_deflator_growth = deflators_override$investment_grants_deflator_growth_override)
 
-mutate_where(date>current_quarter & date<=max(deflators_override$date), 
-             consumption_deflator_growth = deflators_override$consumption_deflator_growth_override,
-             federal_purchases_deflator_growth =deflators_override$federal_purchases_deflator_growth_override,
-             state_purchases_deflator_growth = deflators_override$state_purchases_deflator_growth_override,
-             consumption_grants_deflator_growth = deflators_override$consumption_grants_deflator_growth_override,
-             investment_grants_deflator_growth = deflators_override$investment_grants_deflator_growth_override)
 
-
-# Forecast ----------------------------------------------------------------
-forecast <- # Read in sheet with our forecasted values
+# Section C: Forecast ----------------------------------------------------------------
+forecast <- # Read in sheet with our forecasted values from the data folder
   readxl::read_xlsx('data/forecast.xlsx',
                     sheet = 'forecast') %>% 
-  select(-name) %>% 
+  select(-name) %>% #Remove the 'name' column from the data.
   pivot_longer(-variable,
-               names_to = 'date') %>% 
+               names_to = 'date') %>%  #reshape the data 
   pivot_wider(names_from = 'variable',
               values_from = 'value') %>% 
-  mutate(date = yearquarter(date))
+  mutate(date = yearquarter(date)) #convert date to year-quarter format 
 
 
-projections <- # Merge forecast w BEA + CBO
-  coalesce_join(usna, forecast, by = 'date') %>% 
-  mutate(# Coalesce NA's to 0
+projections <- # Merge forecast w BEA + CBO on the 'date' column, 
+  #filling in NA values with the corresponding value from the other data frame
+  coalesce_join(usna, forecast, by = 'date') %>%  
+  
+  mutate(# Coalesce NA's to 0 for all numeric values 
     across(where(is.numeric),
            ~ coalesce(.x, 0))) %>%
+  
+  #Define FIM variables 
   mutate(
     health_outlays = medicare + medicaid,
     federal_health_outlays = medicare + medicaid_grants,
     state_health_outlays = medicaid - medicaid_grants
   ) %>% 
+  
+  #apply overrides for ARP 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                federal_other_direct_aid_arp = overrides$federal_other_direct_aid_arp_override,
                federal_other_vulnerable_arp = overrides$federal_other_vulnerable_arp_override,
@@ -150,7 +170,7 @@ projections <- # Merge forecast w BEA + CBO
                federal_ui = 11, 
                state_ui = ui - federal_ui)
 
-# Consumption -------------------------------------------------------------
+# Section D: Consumption -------------------------------------------------------------
 
 consumption <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
@@ -162,12 +182,17 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
   calculate_mpc("health_outlays") %>%
   calculate_mpc("corporate_taxes") %>%
   calculate_mpc("non_corporate_taxes") %>% 
+  
+  # Calculate post-MPC values for federal and state UI benefits
   mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
                 .fns = ~ if_else(date < yearquarter("2021 Q2"),
+                                 # Use MPC function for dates before 2021 Q2
                                  mpc_ui(.x),
+                                 # Use MPC_ARP function for dates on or after 2021 Q2
                                  mpc_ui_arp(.x)),
-                .names = '{.col}_post_mpc')) %>% 
+                .names = '{.col}_post_mpc'))  %>% 
   
+  #doing the same as above but for new variables 
   mutate(across(
     .cols = all_of(
       c(
@@ -180,6 +205,7 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
         "federal_student_loans"
       )
     ),
+    #Getting the level minus neutral
     .fns = ~ .x - dplyr::lag(.x, default = 0) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
     .names = "{.col}_minus_neutral"
   )) %>% 
@@ -188,6 +214,7 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
       .cols = any_of(
         c("federal_ui_arp", "state_ui_arp", "federal_other_vulnerable_arp") %>% paste0("_minus_neutral")
       ),
+      #getting the post mpc levels for the ARP variables 
       .fns = ~ mpc_vulnerable_arp(.x),
       .names = "{.col}_post_mpc"
     ),
@@ -195,49 +222,84 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
       .cols = all_of(
         c("rebate_checks_arp", "federal_other_direct_aid_arp", "federal_student_loans") %>% paste0("_minus_neutral")
       ),
+      #same as above, applying a different MPC function to these 
       .fns = ~ mpc_direct_aid_arp(.),
       .names = "{.col}_post_mpc"
     ),
-    
-    federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = mpc_small_businesses_arp((federal_aid_to_small_businesses_arp_minus_neutral))
+    #same as above, applying a different MPC function to this
+    federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
+      mpc_small_businesses_arp((federal_aid_to_small_businesses_arp_minus_neutral))
   )
 
-# Contribution ------------------------------------------------------------
+# Section E: Contribution ------------------------------------------------------------
 
 contributions <- # Calculate contributions
   consumption %>%
   purchases_contributions() %>% 
+  
   mutate(across(ends_with("post_mpc"),
+                #multiplies each value for all post_mpc cols by 400 and divides by the corresponding value in the "gdp" column from the previous row 
+                #The resulting values are given new column names, adding "{.col}_contribution" to the original column names
                 ~ 400 * .x / lag(gdp),
-                .names = "{.col}_contribution"
+                .names = "{.col}_contribution" 
   )) %>%
   rename_with(~ str_replace(.x, "_minus_neutral_post_mpc_contribution", "_contribution")) %>% 
   rename_with(~ str_replace(.x, "minus_neutral_post_mpc", "post_mpc")) %>% 
   rename_with(~ str_replace(.x, "post_mpc_contribution", "contribution")) %>% 
   sum_transfers_contributions() %>% 
   
+  #Define FIM variables for grants and purchases
   mutate(
     grants_contribution = consumption_grants_contribution + investment_grants_contribution,
     federal_contribution = federal_purchases_contribution + grants_contribution,
     state_contribution = state_purchases_contribution - grants_contribution
   ) %>%
-  mutate(social_benefits_contribution = federal_social_benefits_contribution + state_social_benefits_contribution) %>%
-  mutate(non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution) %>%
-  mutate(taxes_contribution = non_corporate_taxes_contribution + corporate_taxes_contribution) %>%
+  
+  #Define FIM variables for social benefits 
+  mutate(social_benefits_contribution = federal_social_benefits_contribution + 
+           state_social_benefits_contribution) %>%
+  
+  #Define FIM variables for taxes 
+  mutate(non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + 
+           state_non_corporate_taxes_contribution) %>%
+  mutate(taxes_contribution = non_corporate_taxes_contribution + 
+           corporate_taxes_contribution) %>%
+  
+  #Define FIM variables for taxes and transfers  
   mutate(
-    transfers_contribution = federal_social_benefits_contribution + state_social_benefits_contribution +
-      rebate_checks_contribution + rebate_checks_arp_contribution + federal_ui_contribution + state_ui_contribution +
-      federal_subsidies_contribution + federal_aid_to_small_businesses_arp_contribution +  state_subsidies_contribution + federal_health_outlays_contribution +
-      state_health_outlays_contribution + federal_other_direct_aid_arp_contribution + federal_other_vulnerable_arp_contribution +federal_student_loans_contribution,
-    taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution +
-      federal_corporate_taxes_contribution + state_corporate_taxes_contribution
+    transfers_contribution = federal_social_benefits_contribution + 
+      state_social_benefits_contribution +
+      rebate_checks_contribution + 
+      rebate_checks_arp_contribution + 
+      federal_ui_contribution + 
+      state_ui_contribution +
+      federal_subsidies_contribution + 
+      federal_aid_to_small_businesses_arp_contribution +  
+      state_subsidies_contribution + 
+      federal_health_outlays_contribution +
+      state_health_outlays_contribution + 
+      federal_other_direct_aid_arp_contribution + 
+      federal_other_vulnerable_arp_contribution +
+      federal_student_loans_contribution,
+    
+    taxes_contribution = federal_non_corporate_taxes_contribution + 
+      state_non_corporate_taxes_contribution +
+      federal_corporate_taxes_contribution + 
+      state_corporate_taxes_contribution
   ) %>%
-  mutate(federal_transfers_contribution = federal_transfers_contribution + federal_student_loans_contribution)%>%
+  
+  #Add student loans to federal transfers 
+  mutate(federal_transfers_contribution = federal_transfers_contribution + 
+           federal_student_loans_contribution)%>%
+  
+  #Define FIM subsidies 
   mutate(subsidies = federal_subsidies + state_subsidies,
          subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution) %>% 
+  
+  #Calculate the FIM for the defined variables 
   get_fiscal_impact() %>%
   
-  #get the real levels 
+  #Do the same aggregation of the real levels 
   mutate(
     grants_real = consumption_grants_real + investment_grants_real,
     federal_real = federal_purchases_real + grants_real,
@@ -256,23 +318,42 @@ contributions <- # Calculate contributions
   ) %>% 
   mutate( subsidies_real = federal_subsidies_real + state_subsidies_real)
 
+#openxlsx::write.xlsx: This function writes an R data object to an .xlsx file (an Excel spreadsheet).
+#file = glue('results/{month_year}/fim-{month_year}.xlsx'): This specifies the file path and name of the .xlsx file that the data will be written to. The glue() function is being used to dynamically create the file path and name using the month_year variable.
+#overwrite = TRUE: This specifies that if the .xlsx file already exists, it should be overwritten with the new data.
+#write_rds(contributions, file = 'data/contributions.rds'): This function writes the contributions data object to an .rds file (an R binary file) with the file path and name specified by the file argument.
+#usethis::use_data(contributions, overwrite = TRUE): This function writes the contributions data object to a .RData file in the current working directory and makes it available in the global environment. The overwrite = TRUE argument specifies that if a .RData file with the same name already exists, it should be overwritten with the new data.
+
 openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)
 write_rds(contributions, file = 'data/contributions.rds')
 usethis::use_data(contributions, overwrite = TRUE)
 
 
-# Web materials  -------------------------------------------------------------
+# Section F: Web materials  -------------------------------------------------------------
 
 # Interactive data
+# Generate interactive data frame from contributions
 interactive <- 
   contributions %>% 
+  # Filter rows of contributions by date, keeping only those between 1999 Q4 and current quarter + 8
   filter_index('1999 Q4' ~ as.character(current_quarter + 8)) %>% 
+  
+  # Create new columns in data frame:
+  # - consumption: sum of transfers_contribution and taxes_contribution
+  # - recession: recode recession column such that -1 is replaced with 0
+  # - recession: replace NA values in recession column with 0
+  # - id: recode id column such that "historical" is replaced with 0 and "projection" is replaced with 1
   mutate(consumption = transfers_contribution + taxes_contribution,
          recession = recode(recession, `-1` = 0),
          recession = replace_na(recession, 0),
          id = recode(id, 
                      historical = 0,
                      projection = 1)) %>% 
+  
+  # Select only specific columns:
+  # date, impact (renamed from fiscal_impact_moving_average), recession, total (renamed from fiscal_impact), 
+  # federal (renamed from federal_contribution), state_local (renamed from state_contribution), 
+  # consumption, projection (renamed from id)
   select(date, 
          impact = fiscal_impact_moving_average,
          recession,
@@ -281,16 +362,21 @@ interactive <-
          state_local = state_contribution,
          consumption,
          projection = id) %>% 
+  
+  # Split date column into year and quarter columns
   separate(date, c('year', 'quarter'))
 
+# Write interactive data frame to CSV file
 readr::write_csv(interactive,  file = glue('results/{month_year}/interactive-{month_year}.csv'))
 
 # Figures for website
 rmarkdown::render('Fiscal-Impact.Rmd',
+                  # Render R Markdown document to PDF file
                   output_file = 'Fiscal-Impact.pdf',
                   clean = TRUE,
                   params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8))
 
+# Copy PDF file to new location, overwriting any existing file
 file_copy(path = 'Fiscal-Impact.pdf',
           new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.pdf'),
           overwrite = TRUE)
@@ -310,7 +396,6 @@ file_copy(
   new_path = 'index.html',
   overwrite = TRUE
 )
-
 
 
 # State and local employment ------------------------------------------------------------------
