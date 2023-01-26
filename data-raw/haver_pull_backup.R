@@ -77,7 +77,7 @@ state_ui <- pull_data(monthly_state_ui,
 
 
 #IMPUTING THE CURRENT QUARTER #S FROM HAVER_PULL_BACKUP
-usecon_imputed<-usecon%>% mutate_where(date == "2022-09-30",
+usecon_imputed<-usecon%>% mutate_where(date == "2022-12-31",
                                    pcw=usecon_currentq$pcw,
                                    gdppothq=usecon_currentq$gdppothq,
                                    gdppotq=usecon_currentq$gdppotq,
@@ -86,13 +86,13 @@ usecon_imputed<-usecon%>% mutate_where(date == "2022-09-30",
                                    lalgova=usecon_currentq$lalgova,
                                    cpgs=usecon_currentq$cpgs)
                                    
-cpi_imputed<-cpi%>% mutate_where(date == "2022-09-30", ui=cpi_currentq$ui)
+cpi_imputed<-cpi%>% mutate_where(date == "2022-12-31", ui=cpi_currentq$ui)
 
                                                                 
-wla_imputed<-wla%>% mutate_where(date == "2022-09-30",yptolm=wla_currentq$yptolm)
-ctc_imputed<-ctc%>% mutate_where(date == "2022-09-30",yptocm=ctc_currentq$yptocm)
+wla_imputed<-wla%>% mutate_where(date == "2022-12-31",yptolm=wla_currentq$yptolm)
+ctc_imputed<-ctc%>% mutate_where(date == "2022-12-31",yptocm=ctc_currentq$yptocm)
 
-state_ui_imputed<-state_ui%>% mutate_where(date == "2022-09-30",licl=state_ui_currentq$licl,
+state_ui_imputed<-state_ui%>% mutate_where(date == "2022-12-31",licl=state_ui_currentq$licl,
                                        lwcl=state_ui_currentq$lwcl,
                                        lufp=state_ui_currentq$lufp,
                                        lulp=state_ui_currentq$lulp,
@@ -111,7 +111,7 @@ state_ui_imputed<-state_ui%>% mutate_where(date == "2022-09-30",licl=state_ui_cu
                                        cpgs=state_ui_currentq$cpgs)%>%
   write_xlsx('data/monthly_state_ui.xlsx')
                                        
-usna_imputed<-usna%>% mutate_where(date == "2022-09-30",gdp=usna_currentq$gdp,
+usna_imputed<-usna%>% mutate_where(date == "2022-12-31",gdp=usna_currentq$gdp,
                                gdph=usna_currentq$gdph,
                                jgdp=usna_currentq$jgdp,
                                c=usna_currentq$c,
