@@ -7,6 +7,9 @@ librarian::shelf(Haver, dplyr, tidyr, readxl, writexl, tsibble, purrr, openxlsx)
 haver.path("//ESDATA01/DLX/DATA/")
 devtools::load_all()
 
+####new quarter update? (say false if it's revision)
+new_quarter<- TRUE
+
 # 0.1 Pull Raw Data---------------------------------------------------------------
 
 START <- "01-01-1970"
@@ -16,16 +19,16 @@ START <- "01-01-1970"
 # BEA NIPAs 
 names_usna <- read_excel("data/haver_names.xlsx")
 
+
 #pull in sheets from data/haver_backup.xlsx. see readme sheet in workbook on how to update this 
-usecon_currentq<- read_excel("data/haver_backup.xlsx", sheet = "usecon", col_names = TRUE) %>% mutate(date=as.Date(date))
-cpi_currentq<- read_excel("data/haver_backup.xlsx", sheet = "cpi", col_names = TRUE) %>% mutate(date=as.Date(date))
-wla_currentq<- read_excel("data/haver_backup.xlsx", sheet = "wla", col_names = TRUE) %>% mutate(date=as.Date(date))
-ctc_currentq<- read_excel("data/haver_backup.xlsx", sheet = "ctc", col_names = TRUE) %>% mutate(date=as.Date(date))
-state_ui_currentq<- read_excel("data/haver_backup.xlsx", sheet = "state_ui", col_names = TRUE) %>% mutate(date=as.Date(date))
-usna_currentq<- read_excel("data/haver_backup.xlsx", sheet = "usna", col_names = TRUE) %>% mutate(date=as.Date(date))
+sheets <- c("usecon", "cpi", "wla", "ctc", "state_ui", "usna")
+for(i in sheets) {
+  assign(paste0(i, "_currentq"), read_excel("data/haver_backup.xlsx", sheet = i, col_names = TRUE) %>% mutate(date=as.Date(date)))
+}
+
 
 # Economic Statistics
-#THESE ARE PULLING IN OLD DATA FROM HAVER. NOTE THAT THE SCRIPT IS WRITTEN ASSUMING ONLY THE CURRENT QUARTER #S ARE NOT UP TO 
+#THESE ARE PULLING IN OLD DATA FROM HAVER DLX. NOTE THAT THE SCRIPT IS WRITTEN ASSUMING ONLY THE CURRENT QUARTER #S ARE NOT UP TO 
 #DATE ON HAVER. IF YOU'RE MANUALLY PULLING IN MULTIPLE QUARTERS OF DATA, MAKE SURE TO UPDATE THE SCRIPT AND WORKBOOK ACCORDINGLY.
 usecon <- 
   pull_data(c("PCW", "GDPPOTHQ", "GDPPOTQ", "RECESSQ",
@@ -74,6 +77,28 @@ state_ui <- pull_data(monthly_state_ui,
                       'usecon',
                       start.date = START) %>%
   as_tibble()
+
+##After pulling in the DLX data, we're going to either impute the current quarters data (if it's a revision) or append the current quarter's data (if it's a new quarter)
+#make sure that new_quarter at the top of this script is set to TRUE or FALSE accordingly
+
+
+# check if usecon has observations for date = 12-31-2022
+usecon_end_of_year <- usecon %>% 
+  filter(date == as.Date("2022-12-31"))
+
+# if usecon has observations for date = 12-31-2022, update pcw, gdp, and pce
+if(nrow(usecon_end_of_year) > 0) {
+  usecon <- usecon %>%
+    left_join(usecon_currentq %>% filter(date == as.Date("2022-12-31")), by = c("date")) %>%
+    select(-pcw_currentq, -gdp_currentq, -pce_currentq) %>%
+    rename(pcw = pcw_currentq, gdp = gdp_currentq, pce = pce_currentq)
+}
+
+# if usecon does not have observations for date = 12-31-2022, append usecon_currentq
+if(nrow(usecon_end_of_year) == 0) {
+  usecon <- rbind(usecon, usecon_currentq %>% filter(date == as.Date("2022-12-31")))
+}
+
 
 usecon_imputed<-usecon
 
