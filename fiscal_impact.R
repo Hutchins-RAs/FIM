@@ -128,7 +128,7 @@ usna <-
 
 
 # Section C: Forecast ----------------------------------------------------------------
-forecast <- # Read in sheet with our forecast values from the data folder
+forecast <- # Read in sheet with our forecasted values from the data folder
   readxl::read_xlsx('data/forecast.xlsx',
                     sheet = 'forecast') %>% 
   select(-name) %>% #Remove the 'name' column from the data.
