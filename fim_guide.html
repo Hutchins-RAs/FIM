@@ -1499,7 +1499,7 @@ div.tocify {
 <h1 class="title toc-ignore">FIM Guide</h1>
 <h3 class="subtitle">An attempt</h3>
 <h4 class="author">Nasiha Salwati</h4>
-<h4 class="date">Wednesday, February 15 2023 at 10:21 AM</h4>
+<h4 class="date">Thursday, February 16 2023 at 09:40 AM</h4>
 
 </div>
 
@@ -1700,26 +1700,42 @@ devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <div id="section-3-3-1">
 <h4 id="bea">BEA</h4>
 <p>We get new data every month. The process varies a little if it’s a <a href="#new_q">new quarter</a> or <a href="#rev">revision</a>. Updates are published the day after we get the data (i.e. by the end of Friday if we got the data on Thursday).</p>
+<ul>
+<li>All BEA updates follow the same basic structure:
+<ul>
+<li><a href="#prep">Prep</a> the forecast sheet.</li>
+<li><a href="#pull">Pull</a> GDP data.</li>
+<li><a href="#discuss">Discuss</a> and adjust the forecast.</li>
+<li><a href="#run_the_fim">Run</a> the FIM.</li>
+<li><a href="#compare">Compare</a> changes from last update and adjust as needed.</li>
+<li><a href="#publish">Publish</a> the results.</li>
+</ul></li>
+</ul>
+<h5 id="new-quarter-update"><a id="new_q"></a> New quarter update</h5>
+<ul>
+<li>Make a copy of the previous forecast in the <em>forecast comparison</em> sheet of</li>
+</ul>
 </div>
 <div id="section-3-3-2">
 <h4 id="cbo">CBO</h4>
 <p>We get updates a few times a year. The process varies depending on whether it’s a <a href="#baseline">new CBO baseline</a> or a <a href="#score">new policy score</a>. Updates are published after we get the next BEA release.</p>
 <h5 id="new-cbo-baseline">New CBO Baseline</h5>
 <ul>
-<li>As mentioned in the <a href="#data">data</a> section, we get routine updates from the CBO that informs our baseline forecast. Here are the steps to incorporate a new CBO baseline (this a close complement to – but not a substitute for – what’s in the <span class="file">forecast.xlsx</span> file’s <em>Checklist (CBO Budget Release)</em> sheet):
+<li><a id="baseline"></a> As mentioned in the <a href="#data">data</a> section, we get routine updates from the CBO that informs our baseline forecast. Here are the steps to incorporate a new CBO baseline (this a close complement to – but not a substitute for – what’s in the <span class="file">forecast.xlsx</span> file’s <em>Checklist (CBO Budget Release)</em> sheet):
 <ul>
 <li>We use the linked Excel files from three CBO publications: <a href="https://www.cbo.gov/data/budget-economic-data#3">the 10-year Budget Projection</a>, <a href="https://www.cbo.gov/data/budget-economic-data#4">the 10-year Economic Projection</a>, and <a href="https://www.cbo.gov/data/budget-economic-data#7">the Revenue Projection</a>.</li>
 <li>Download the latest release. Update the <em>economic</em> and <em>budget</em> sheets within <code>inst/extdata/</code><span class="file">projections.xlsx</span> workbook using the instructions in the <em>dictionary</em> sheet. Make sure to save your work.</li>
 <li>Run <code>data-raw/</code><span class="file">projections.R</span>. This overwrites the <span class="r-object">projections</span> dataset.</li>
 <li>You can check whether the update has worked by <a href="#load_fim">loading</a> the <span class="r-object">fim</span> package and running <code>View(projections)</code> in your console. Git <span class="git-object">commit</span> and <span class="git-object">push</span> your changes once you feel confident about your work.</li>
-<li>Next, we have to update the sheets of <code>data/</code><span class="file">projections.xlsx</span> using the CBO release Excel files.</li>
-<li>In the <em>forecast comparison</em> sheet of <span class="file">projections.xlsx</span>, copy the <u>values</u> in the Current Forecast table, and paste the <u>values</u> into the Previous Forecast table. Label the table headings to reflect the date of the Previous Forecast and the date of the CBO update. -Locate CBO items in the sheets of the FIM components. They should all be labeled as such, with a comment on the CBO release, table, and row number they are pulled from. Copy the old values in each series and paste them in rows near where they currently are. Insert rows if you have to. This retains a record of what we previously had for each CBO line and makes comparing changes easier.</li>
-<li>Use the comment in the series label to locate the same series in the latest CBO release. Note that table #s and row #s referring to the CBO data may change between CBO updates. Make sure you’ve located the same series by comparing it against what was published in the old update.</li>
+<li>Next, we have to update the sheets of <code>data/</code><span class="file">forecast.xlsx</span> using the CBO release Excel files.</li>
+<li>In the <em>forecast comparison</em> sheet of <span class="file">forecast.xlsx</span>, copy the <u>values</u> in the Current Forecast table, and paste the <u>values</u> into the Previous Forecast table. Label the table headings to reflect the date of the Previous Forecast and the date of the CBO update.</li>
+<li>Locate CBO items in the sheets of the FIM components. They should all be labeled as such, with a comment on the CBO release, table, and row number they are pulled from. Copy the old values in each series and paste them in rows near where they currently are. Insert rows if you have to. This retains a record of what we previously had for each CBO line and makes comparing changes easier.</li>
+<li>Use the comment in the series label to locate the same series in the latest CBO release. Note that table #s and row #s referring to the CBO data may change between CBO updates. You can double-check you’ve located the same series by comparing it against what was published in the old update.</li>
 <li>Replace the old values with the numbers from the most recent update. The new numbers should go exactly where the old numbers were in order to preserve the formulas that depend on CBO. Label the old and new values clearly. Also update the comment with the release date, table, and row # of where you pulled it from.</li>
 <li>Walk through the changes with Louise like a regular update. It’s important to discuss how to deal with old legislation we’ve added to the sheets – by incorporating the new baseline, we’d likely want to ‘turn those off’ (i.e. set them to zero) since they’re now included in CBO.</li>
 <li>Clean up the sheets (removing the rows with the old series/old legislation if they’re no longer used, for instance).</li>
-<li>Run the FIM and compare output as usual.</li>
-<li>Wait until the next BEA update to publish the results.</li>
+<li><a href="#run_the_fim">Run the FIM</a> and <a href="#compare">compare</a> output as usual.</li>
+<li>Wait until the next <a href="#bea_update">BEA update</a> to <a href="#publish">publish</a> the results.</li>
 </ul></li>
 </ul>
 </div>
