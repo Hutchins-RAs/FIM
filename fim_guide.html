@@ -1499,7 +1499,7 @@ div.tocify {
 <h1 class="title toc-ignore">FIM Guide</h1>
 <h3 class="subtitle">An attempt</h3>
 <h4 class="author">Nasiha Salwati</h4>
-<h4 class="date">Thursday, February 16 2023 at 09:40 AM</h4>
+<h4 class="date">Thursday, February 16 2023 at 02:53 PM</h4>
 
 </div>
 
@@ -1585,6 +1585,7 @@ div.tocify {
 <li><p>After committing your changes, you will have to <span class="git-object">push</span> your changes to <span class="origin">fetch</span>(<a href="https://github.com/Hutchins-Center/fim">https://github.com/Hutchins-Center/fim</a>) to make them available to other contributors.</p></li>
 <li><p>Pushed changes can then be <span class="git-object">fetch</span>-ed and <span class="git-object">pull</span>-ed within the Github Desktop app by others.</p></li>
 </ul>
+<p>Note that merging changes for the same file can be tricky so multiple users should not be simultaneously working on the same file. Wait for them to <span class="git-object">push</span> their changes. Then <span class="git-object">fetch</span> and <span class="git-object">pull</span> them in before making changes to the same file.</p>
 <p>Only approved contributors can make changes to the repository. To be added, please reach out to the admin with your Github username. The current admin is Eli (<code>@EliAsdourian</code>). To add contributors, admins can navigate to <a href="https://github.com/Hutchins-Center/fim/settings/access">https://github.com/Hutchins-Center/fim/settings/access</a> and add people by their username. They can also remove contributors or reassign admin duties. For security, try to restrict the admin designation to one RA at a time.</p>
 </div>
 <div id="section-1-2">
@@ -1594,7 +1595,8 @@ div.tocify {
 <li><p>Install RTools from the Software Center if you don’t already have it.</p></li>
 <li><p>Install the <span class="r-object">fim</span> package by running the following code in your R console:</p></li>
 </ol>
-<pre><code>install.packages(&quot;devtools&quot;) #install devtools first if you don&#39;t already have it
+<pre><code>install.packages(&quot;devtools&quot;) 
+install.packages(&quot;librarian&quot;) 
 
 devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <ol start="3" style="list-style-type: decimal">
@@ -1721,22 +1723,28 @@ devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <p>We get updates a few times a year. The process varies depending on whether it’s a <a href="#baseline">new CBO baseline</a> or a <a href="#score">new policy score</a>. Updates are published after we get the next BEA release.</p>
 <h5 id="new-cbo-baseline">New CBO Baseline</h5>
 <ul>
-<li><a id="baseline"></a> As mentioned in the <a href="#data">data</a> section, we get routine updates from the CBO that informs our baseline forecast. Here are the steps to incorporate a new CBO baseline (this a close complement to – but not a substitute for – what’s in the <span class="file">forecast.xlsx</span> file’s <em>Checklist (CBO Budget Release)</em> sheet):
+<li><a id="baseline"></a> As mentioned in the <a href="#data">data</a> section, we get routine updates from the CBO that informs our baseline forecast. Here are the steps to incorporate a new CBO baseline (you can also use the the <span class="file">forecast.xlsx</span> file’s <em>Checklist (CBO Budget Release)</em> if you prefer):
 <ul>
-<li>We use the linked Excel files from three CBO publications: <a href="https://www.cbo.gov/data/budget-economic-data#3">the 10-year Budget Projection</a>, <a href="https://www.cbo.gov/data/budget-economic-data#4">the 10-year Economic Projection</a>, and <a href="https://www.cbo.gov/data/budget-economic-data#7">the Revenue Projection</a>.</li>
-<li>Download the latest release. Update the <em>economic</em> and <em>budget</em> sheets within <code>inst/extdata/</code><span class="file">projections.xlsx</span> workbook using the instructions in the <em>dictionary</em> sheet. Make sure to save your work.</li>
+<li>We use the linked Excel files from three CBO publications: <a href="https://www.cbo.gov/data/budget-economic-data#3">the 10-year Budget Projection</a>, <a href="https://www.cbo.gov/data/budget-economic-data#4">the 10-year Economic Projection</a>, and <a href="https://www.cbo.gov/data/budget-economic-data#7">the Revenue Projection</a>. Download the latest release.</li>
+</ul></li>
+</ul>
+<h6 id="updating-the-projections-dataset">Updating the <span class="r-object">projections</span> dataset</h6>
+<ul>
+<li>Update the <em>economic</em> and <em>budget</em> sheets within <code>inst/extdata/</code><span class="file">projections.xlsx</span> workbook using the instructions in the <em>dictionary</em> sheet. Make sure to save your work.</li>
 <li>Run <code>data-raw/</code><span class="file">projections.R</span>. This overwrites the <span class="r-object">projections</span> dataset.</li>
 <li>You can check whether the update has worked by <a href="#load_fim">loading</a> the <span class="r-object">fim</span> package and running <code>View(projections)</code> in your console. Git <span class="git-object">commit</span> and <span class="git-object">push</span> your changes once you feel confident about your work.</li>
-<li>Next, we have to update the sheets of <code>data/</code><span class="file">forecast.xlsx</span> using the CBO release Excel files.</li>
+</ul>
+<h6 id="updating-the-forecast.xlsx-workbook">Updating the <span class="file">forecast.xlsx</span> workbook</h6>
+<ul>
 <li>In the <em>forecast comparison</em> sheet of <span class="file">forecast.xlsx</span>, copy the <u>values</u> in the Current Forecast table, and paste the <u>values</u> into the Previous Forecast table. Label the table headings to reflect the date of the Previous Forecast and the date of the CBO update.</li>
 <li>Locate CBO items in the sheets of the FIM components. They should all be labeled as such, with a comment on the CBO release, table, and row number they are pulled from. Copy the old values in each series and paste them in rows near where they currently are. Insert rows if you have to. This retains a record of what we previously had for each CBO line and makes comparing changes easier.</li>
 <li>Use the comment in the series label to locate the same series in the latest CBO release. Note that table #s and row #s referring to the CBO data may change between CBO updates. You can double-check you’ve located the same series by comparing it against what was published in the old update.</li>
-<li>Replace the old values with the numbers from the most recent update. The new numbers should go exactly where the old numbers were in order to preserve the formulas that depend on CBO. Label the old and new values clearly. Also update the comment with the release date, table, and row # of where you pulled it from.</li>
+<li>Replace the old values with the numbers from the most recent update. The new numbers should go exactly where the old numbers were in order to preserve the formulas that depend on CBO.<br> Note that some of the rows labeled as CBO have hard coded variables in every cell, while others have formulas in the historical period and have hard coded values in the forecast period. In both cases, only paste over the hard coded values with the new numbers. In other words, <u>no formulas should be replaced with hard coded values</u>.</li>
+<li>Label the old and new values clearly. Also update the comment with the release date, table, and row # of where you pulled it from.</li>
 <li>Walk through the changes with Louise like a regular update. It’s important to discuss how to deal with old legislation we’ve added to the sheets – by incorporating the new baseline, we’d likely want to ‘turn those off’ (i.e. set them to zero) since they’re now included in CBO.</li>
 <li>Clean up the sheets (removing the rows with the old series/old legislation if they’re no longer used, for instance).</li>
 <li><a href="#run_the_fim">Run the FIM</a> and <a href="#compare">compare</a> output as usual.</li>
 <li>Wait until the next <a href="#bea_update">BEA update</a> to <a href="#publish">publish</a> the results.</li>
-</ul></li>
 </ul>
 </div>
 </div>
