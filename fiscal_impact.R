@@ -3,7 +3,7 @@
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
 
 librarian::shelf(tidyverse, tsibble, lubridate, glue, TimTeaFan/dplyover, zoo, TTR, fs, gt, openxlsx, 
-                 snakecase, rlang, fredr) # Load packages
+                 snakecase, rlang, fredr, BrookingsInstitution/ggbrookings) # Load packages
 devtools::load_all() # Load all functions in package
 
 options(digits = 4) # Limit number of digits
@@ -395,7 +395,7 @@ file_copy(path = 'Fiscal-Impact.pdf',
           new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.pdf'),
           overwrite = TRUE)
 
-# Comparison ------------------------------------------------------------
+# Section G: Comparison ------------------------------------------------------------
 
 source('scripts/revision_figures.R')
 source('scripts/revision_table.R')

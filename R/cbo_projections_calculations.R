@@ -14,7 +14,7 @@ cola_adjustment <- function(df){
       mutate(cpiu_g = fim::q_a(cpiu) / 100,
              cola_rate = if_else(lubridate::quarter(date) == 1,
                                  lag(cpiu_g, 2),
-                                 NULL)) %>%
+                                 NA)) %>%
       tidyr::fill(cola_rate)
   }
   smooth_transfers_net_health_ui <- function(df){
