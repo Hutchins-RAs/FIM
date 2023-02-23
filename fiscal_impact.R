@@ -10,7 +10,7 @@ options(digits = 4) # Limit number of digits
 options(scipen = 20)# Turn off scientific notation under 20 digits 
 
 #are we running this after a cbo baseline and pre-bea update?
-post_cbo_baseline<- FALSE 
+post_cbo_baseline<- FALSE
 
 if(post_cbo_baseline == TRUE){
   month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}-post-cbo')
@@ -31,8 +31,8 @@ if((month(today() - 7
   
 }
 
-#setting our reference period to be the post-cbo files if we've already produced fim output incorporating the cbo update 
-if(file.exists(glue('results/{month_year}-post-cbo/'))){
+#setting our reference period to be the post-cbo files if we've already produced fim output incorporating the cbo update
+if(file.exists(glue('results/{month_year}-post-cbo'))){
   last_month_year<- glue('{month_year}-post-cbo')
 }
 
