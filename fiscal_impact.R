@@ -9,17 +9,31 @@ devtools::load_all() # Load all functions in package
 options(digits = 4) # Limit number of digits
 options(scipen = 20)# Turn off scientific notation under 20 digits 
 
-# Set the value of 'month_year' to the current month and year (in the format "mm-yyyy")
-month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
+#are we running this after a cbo baseline and pre-bea update?
+post_cbo_baseline<- FALSE
+
+if(post_cbo_baseline == TRUE){
+  month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}-post-cbo')
+}else{
+  # Set the value of 'month_year' to the current month and year (in the format "mm-yyyy")
+  month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
+}
+
+
 
 # If the month of the previous month is less than 10, set the value of 'last_month_year' to the previous month and year (in the format "0m-yyyy")
 # Otherwise, set the value of 'last_month_year' to the previous month and year (in the format "mm-yyyy")
-if(month(today() - 7 
-         -months(1)) < 10){
+if((month(today() - 7 
+         -months(1)) < 10)){
   last_month_year <- glue('0{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
 } else{
   last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
   
+}
+
+#setting our reference period to be the post-cbo files if we've already produced fim output incorporating the cbo update
+if(file.exists(glue('results/{month_year}-post-cbo'))){
+  last_month_year<- glue('{month_year}-post-cbo')
 }
 
 # Create updatglibe folders
