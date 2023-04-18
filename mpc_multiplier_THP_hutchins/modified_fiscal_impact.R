@@ -79,7 +79,7 @@ deflators_override <- readxl::read_xlsx('data/forecast.xlsx',
 ##
 usna <-
   read_data() %>% # Load raw BEA data from Haver and CBO projections
-  gdp_cbo_growth_rate()%>% #grows current data according to cbo growth rate: gdp and gdph 
+  gdp_cbo_growth_rate() %>% #grows current data according to cbo growth rate: gdp and gdph 
   define_variables() %>%  # Rename Haver codes for clarity
   as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
   
