@@ -177,4 +177,26 @@ mpc_non_health_grants_arp <- mpc(timing = c(rep(0.07, 2),
                          weights = rev(weights), online = FALSE,  min_obs = 1)
   }
  
+  
+
+# this is for the ham-hutch project on excess savings ---------------------
+
+  create_vectors_from_rows <- function(df) {
+    for (i in 1:nrow(df)) {
+      variable_name <- as.character(df[i, "variable"])
+      variable_name <- paste0("mpc_", variable_name)
+      values <- as.numeric(df[i, c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")])
+      assign(variable_name, values, envir = .GlobalEnv)
+    }
+  }
+  
+  
+  apply_mpc<-function (x, mpc_vector) {
+    1 * roll::roll_sum(x, 
+                       width = length(mpcs), 
+                       weights = rev(mpcs), 
+                       online = FALSE, 
+                       min_obs = 1)
+  }
+  
  

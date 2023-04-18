@@ -185,7 +185,6 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                state_ui = ui - federal_ui)
 
 # Section D: Consumption -------------------------------------------------------------
-
 consumption <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
   get_real_levels() %>%
