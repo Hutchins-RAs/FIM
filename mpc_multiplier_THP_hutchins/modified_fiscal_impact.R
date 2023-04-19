@@ -188,11 +188,19 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
 mpc <- readxl::read_xlsx('data/forecast.xlsx', 
                           sheet = 'mpc', 
                           skip = 1) %>%
-  select(-1)
+  select(-1) %>%
+  select(-`Total over 3 years`)
 
-# Get the MPS
-mpc_columns <- mpc[, c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12")]
-#mps_columns <- 1 - mpc_columns
+# Get the cumulative MPC
+c_mpc <- mpc %>% # cumulative MPC
+  select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
+  apply(.,1,cumsum) %>% # apply cumulative sum
+  t() %>% # transpose it back to our original formation
+  cbind(mpc[, "variable", drop = FALSE], .) # add back variable names
 
-# Combine the 'variable' column with the calculated numeric columns
-mps <- cbind(mpc[, "variable", drop = FALSE], mps_columns)
+# Get the cumulative MPS
+c_mps <- c_mpc %>%
+  select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
+  mutate(1 - .) %>%
+  cbind(mpc[, "variable", drop = FALSE], .) # add back variable names
+
