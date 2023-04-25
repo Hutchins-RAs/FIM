@@ -185,22 +185,111 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                state_ui = ui - federal_ui)
 
 # Section D: MPS----------------------------------------------------------------
-mpc <- readxl::read_xlsx('data/forecast.xlsx', 
-                          sheet = 'mpc', 
-                          skip = 1) %>%
-  select(-1) %>%
-  select(-`Total over 3 years`)
+  ## SUBPART A: read in the data and create MPC and MPS tables
+  mpc <- readxl::read_xlsx('data/forecast.xlsx', 
+                            sheet = 'mpc', 
+                            skip = 1) %>%
+    select(-1) %>%
+    select(-`Total over 3 years`)
+  
+  # Get the cumulative MPC
+  c_mpc <- mpc %>% # cumulative MPC
+    select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
+    apply(.,1,cumsum) %>% # apply cumulative sum
+    t() %>% # transpose it back to our original formation
+    cbind(mpc[, "variable", drop = FALSE], .) # add back variable names
+  
+  # Get the cumulative MPS
+  c_mps <- c_mpc %>%
+    select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
+    mutate(1 - .) %>%
+    cbind(mpc[, "variable", drop = FALSE], .) # add back variable names
 
-# Get the cumulative MPC
-c_mpc <- mpc %>% # cumulative MPC
-  select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
-  apply(.,1,cumsum) %>% # apply cumulative sum
-  t() %>% # transpose it back to our original formation
-  cbind(mpc[, "variable", drop = FALSE], .) # add back variable names
+# # An alternative MPS that is suitable as input into the mps_lorae function (as of 4/20/2023)
+# alt_mps <- mpc %>% # cumulative MPC
+#   #select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
+#   mutate(`1` = 1 - `1`) %>%
+#   mutate_at(vars(`2`:`12`), ~ . * -1)
 
-# Get the cumulative MPS
-c_mps <- c_mpc %>%
-  select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
-  mutate(1 - .) %>%
-  cbind(mpc[, "variable", drop = FALSE], .) # add back variable names
+# Rather than defining a separate mpc function for each category of FIM input, we 
+# (Lorae and Nasiha) propose (as of 4/19/2023) that we create one MPC function with the type
+# of input as an argument. That input then calls the correct row of the MPC table
+# with our MPC assumptions.
+# see mpc_lorae.R within the R folder for more information.
+
+  ## SUBPART B: Try a practice MPS calculation. Let's use the ui_arp MPS.
+  test_mps <- c_mps[which(alt_mps$variable == "ui_arp"),] %>%
+    select(-variable) %>%
+    unlist()
+  # Let's suppose spending looks like this: 
+  test_spending <- c(100, 100, 300, 50, 0, 0, 0, 0)
+  
+  # Applying the MPS function should give us our stream of savings.
+  saving_stream <- mps_lorae(x = test_spending, mps = test_mps)
+  #Looks good!
+
+  # SUBPART C: Try applying to real data, ignoring the real vs. nominal and "minus
+  # neutral" adjustments for now.
+  # "rebate_checks_arp", "federal_other_direct_aid_arp", "federal_student_loans"
+  # all use 
+
+saving <- # Compute saving out of transfers (apply MPS's)
+  projections %>%
+  get_real_levels() %>%
+  taxes_transfers_minus_neutral() %>%
+  calculate_mpc("social_benefits") %>%
+  #Let's ignore rebate checks for now... they are confusing.
+  #mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
+  calculate_mpc("subsidies") %>%
+  calculate_mpc("health_outlays") %>%
+  calculate_mpc("corporate_taxes") %>%
+  calculate_mpc("non_corporate_taxes") %>% 
+  
+  # Calculate post-MPC values for federal and state UI benefits
+  mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
+                .fns = ~ if_else(date < yearquarter("2021 Q2"),
+                                 # Use MPC function for dates before 2021 Q2
+                                 mpc_ui(.x),
+                                 # Use MPC_ARP function for dates on or after 2021 Q2
+                                 mpc_ui_arp(.x)),
+                .names = '{.col}_post_mpc'))  %>% 
+  
+  #doing the same as above but for new variables 
+  mutate(across(
+    .cols = all_of(
+      c(
+        "rebate_checks_arp",
+        "federal_other_direct_aid_arp",
+        "federal_other_vulnerable_arp",
+        # "federal_ui_arp",
+        #"state_ui_arp",
+        "federal_aid_to_small_businesses_arp",
+        "federal_student_loans"
+      )
+    ),
+    #Getting the level minus neutral
+    .fns = ~ .x - dplyr::lag(.x, default = 0) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
+    .names = "{.col}_minus_neutral"
+  )) %>% 
+  mutate(
+    across(
+      .cols = any_of(
+        c("federal_ui_arp", "state_ui_arp", "federal_other_vulnerable_arp") %>% paste0("_minus_neutral")
+      ),
+      #getting the post mpc levels for the ARP variables 
+      .fns = ~ mpc_vulnerable_arp(.x),
+      .names = "{.col}_post_mpc"
+    ),
+    across(
+      .cols = all_of(
+        c("rebate_checks_arp", "federal_other_direct_aid_arp", "federal_student_loans") %>% paste0("_minus_neutral")
+      ),
+      #same as above, applying a different MPC function to these 
+      .fns = ~ mpc_direct_aid_arp(.),
+      .names = "{.col}_post_mpc"
+    ),
+    #same as above, applying a different MPC function to this
+    federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
+      mpc_small_businesses_arp((federal_aid_to_small_businesses_arp_minus_neutral))
+  )
 

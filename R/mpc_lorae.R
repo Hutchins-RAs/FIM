@@ -37,12 +37,22 @@
 # of the transfer.
 
 
-function (x, mpcs = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)) {
-  
-  
+mpc_lorae <- function (x, mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)){
   1 * roll::roll_sum(x, 
-                     width = length(mpcs), 
-                     weights = rev(mpcs), 
-                     online = FALSE, 
-                     min_obs = 1)
+                    width = length(mpc), 
+                    weights = rev(mpc), 
+                    online = FALSE, 
+                    min_obs = 1)
 }
+
+#both of these functions are the same and can probably be combined into one function.
+
+mps_lorae <- function(x, mps){
+  roll::roll_sum(x,
+                 width = length(mps),
+                 weights = rev(mps),
+                 online = FALSE,
+                 min_obs = 1)
+}
+  
+  

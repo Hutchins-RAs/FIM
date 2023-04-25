@@ -103,13 +103,15 @@ get_all_mpc <- function(df){
 #' @examples
 calculate_mpc <- function(df, taxes_transfers){
   
-  net <- 'minus_neutral'
+  net <- 'minus_neutral' # Just a string that is added to variables we are naming below
   government_levels <- c(glue::glue('{taxes_transfers}_{net}'), glue::glue('federal_{taxes_transfers}_{net}'),
                          glue::glue('state_{taxes_transfers}_{net}'))
   total <- glue::glue('{taxes_transfers}_post_mpc')
   federal <- glue::glue('federal_{taxes_transfers}_post_mpc')
   state <- glue::glue('state_{taxes_transfers}_post_mpc')
   
+  # "second draw" means that if it's a subsidy, then we apply a different MPC before 
+  # 2021 Q1 from the MPC we apply after.
   if(taxes_transfers == 'subsidies'){
     second_draw <- tsibble::yearquarter('2021 Q1')
     mpc_fun <- eval(sym(glue::glue('mpc_{taxes_transfers}')))
