@@ -34,7 +34,7 @@ wla <- pull_data('YPTOLM',
                  frequency = 'monthly',
                  start.date = START) %>%
   monthly_to_quarterly() %>%
-  mutate(yptolm = na_if(yptolm, 'NaN'))
+  mutate(yptolm = na_if(yptolm, NaN))
 # Child Tax Credit (Monthly)
 
 # Since Haver only pulls monthly values, you should manually input the quarterly 
@@ -49,7 +49,7 @@ ctc <- pull_data('YPTOCM',
                  frequency = 'monthly',
                  start.date = START) %>%
   monthly_to_quarterly() %>% 
-  mutate(yptocm = na_if(yptocm, 'NaN'))
+  mutate(yptocm = na_if(yptocm, NaN))
 
 usna <-
   pull_data(names_usna$code,
