@@ -411,18 +411,14 @@ file_copy(
 )
 
 #nasiha-added-temp
-# ns_current<- comparison_wide %>% filter(source == "current")
-# ns_current<- ns_current[, 1:10]
-# ns_current<- ns_current[complate.cases(ns_current),]
-# 
-# 
-# ns_previous<- comparison_wide %>% filter(source == "previous")
-# ns_current<- ns_current[, 1:10]
-# ns_previoust<- ns_previous[complate.cases(ns_previous),]
-# 
-# 
-# readr::write_csv(ns_current,  file = glue('results/{month_year}/current-{month_year}.csv'))
-# readr::write_csv(ns_previous,  file = glue('results/{month_year}/previous-{month_year}.csv'))
+ns_hist<- comparison_wide[, 1:10] 
+ns_proj<- comparison_wide[, c(1:3, 11:20)]
+
+ns_hist <- ns_hist %>% filter(id == "historical") %>% select(-"id")
+ns_proj <- ns_proj %>% filter(id == "projection")%>% select(-"id")
+
+ns_comparison<- left_join(ns_hist, ns_proj, by = c("name", "source")) %>% arrange(name)
+readr::write_csv(ns_comparison,  file = glue('results/{month_year}/ns_comparison-{month_year}.csv'))
 
 
 # State and local employment ------------------------------------------------------------------
