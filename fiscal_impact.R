@@ -410,6 +410,13 @@ file_copy(
   overwrite = TRUE
 )
 
+#nasiha-added-temp
+ns_current<- comparison_wide %>% filter(source == "current")
+ns_previous<- comparison_wide %>% filter(source == "previous")
+
+readr::write_csv(ns_current,  file = glue('results/{month_year}/current-{month_year}.csv'))
+readr::write_csv(ns_previous,  file = glue('results/{month_year}/previous-{month_year}.csv'))
+
 
 # State and local employment ------------------------------------------------------------------
 
