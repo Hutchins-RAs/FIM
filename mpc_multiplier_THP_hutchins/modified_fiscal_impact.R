@@ -206,10 +206,10 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
     cbind(mpc[, "variable", drop = FALSE], .) # add back variable names
 
 # # An alternative MPS that is suitable as input into the mps_lorae function (as of 4/20/2023)
-# alt_mps <- mpc %>% # cumulative MPC
-#   #select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
-#   mutate(`1` = 1 - `1`) %>%
-#   mutate_at(vars(`2`:`12`), ~ . * -1)
+alt_mps <- mpc %>% # cumulative MPC
+  #select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
+  mutate(`1` = 1 - `1`) %>%
+  mutate_at(vars(`2`:`12`), ~ . * -1)
 
 # Rather than defining a separate mpc function for each category of FIM input, we 
 # (Lorae and Nasiha) propose (as of 4/19/2023) that we create one MPC function with the type
@@ -230,8 +230,82 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
 
   # SUBPART C: Try applying to real data, ignoring the real vs. nominal and "minus
   # neutral" adjustments for now.
-  # "rebate_checks_arp", "federal_other_direct_aid_arp", "federal_student_loans"
-  # all use 
+  # The columns of the projections data frame called:
+  # "federal_ui_arp", "state_ui_arp", "federal_other_vulnerable_arp"
+  # are all fed into this function: mpc_vulnerable_arp(.x)
+  # [Note: How do we know this? See lines 208 to 233 of fiscal_impact.R
+  # The below lines of code are copied from mpc.R.]
+  # which has MPC stream:
+  mpc_vulnerable_arp <- c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)
+  # [Note: How do we know this? See line 153 of mpc.R.]
+  # These values nicely match what we already have in the "other_vulnerable_arp" row
+  # of the mpc data frame. So the c_mps data frame (which was constructed from the
+  # mpc data frame) should be good to go for this one. We might have a few MPCs 
+  # that don't match between the code and the data frame, but will deal with those 
+  # as they occur).
+  
+  # Let's test run what the spending stream looks like here."ss" stands for "spending
+  # stream"
+  other_vulnerable_arp_mps <- c_mps[which(alt_mps$variable == "other_vulnerable_arp"),] %>%
+    select(-variable) %>%
+    unlist()
+  ss_federal_ui_arp <- mps_lorae(x = projections$federal_ui, 
+                                 mps = other_vulnerable_arp_mps)
+  # cool!
+  
+  # Let's graph using ggplot2.
+  df1 <- data.frame(Date = projections$date, Value = projections$federal_ui, Dataset = "Disbursed")
+  df2 <- data.frame(Date = projections$date, Value = ss_federal_ui_arp, Dataset = "Implied Spending")
+  
+  # Combine both data frames
+  combined_df <- rbind(df1, df2)
+  
+  translucent_blue <- rgb(0, 0, 1, alpha = 0.5)
+  translucent_orange <- rgb(255/255, 165/255, 0/255, alpha = 0.5)
+  
+  # Convert Date to a date format using as.Date()
+  combined_df$Date <- as.Date(combined_df$Date)
+  
+  # Set the date range you want to display
+  start_date <- as.Date("2019-01-01")
+  end_date <- as.Date("2023-05-01")
+  
+  # Modify the ggplot code to create the overlaid and stacked bar chart with limited date range and adjusted date labels
+  bar_chart <- ggplot(combined_df, aes(x = Date, y = Value, fill = Dataset)) + 
+    geom_bar(stat = "identity", position = "identity", alpha = 0.8) +
+    scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    labs(title = "Federal UI ARP\nDisbursement (using BLS data) versus Implied Spending (using MPC assumptions)",
+         x = "Date",
+         y = "$ Billions") +
+    scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Spending" = translucent_orange))
+  
+  # Display the bar chart
+  print(bar_chart)
+  
+  
+  
+  
+  
+  mpc_vulnerable_arp <- c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)
+  mpc_direct_aid_arp <- mpc(timing = c(0.14, 0.10, 0.1,  rep(0.05, 6), 0.03, 0.03, 0.03))
+  mpc_small_businesses_arp <- mpc(timing =  c(rep(0.04, 2), rep(0.017, 10)))
+  mpc_ui_arp <-  mpc(timing =  c(0.2, 0.17, 0.16, 0.15,  0.09, rep(0.05, 2), 0.04))
+  mpc_non_health_grants_arp <- mpc(timing = c(rep(0.07, 2),
+                                              rep(0.049, 10),
+                                              rep(0.0475, 7),
+                                              0.0375))
+  mpc_arp_non_health_grants_dos<- function(x){
+    mpc <- 1
+    weights <- c(rep(0.07, 2),
+                 rep(0.049, 10),
+                 rep(0.0475, 7),
+                 0.0375)
+    
+    mpc * roll::roll_sum(x, width = length(weights),
+                         weights = rev(weights), online = FALSE,  min_obs = 1)
+  }
+  
 
 saving <- # Compute saving out of transfers (apply MPS's)
   projections %>%

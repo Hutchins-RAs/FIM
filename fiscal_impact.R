@@ -189,7 +189,7 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
   get_real_levels() %>%
   taxes_transfers_minus_neutral() %>%
-  calculate_mpc("social_benefits") %>%
+  calculate_mpc("social_benefits") %>% #apply the calculate_mpc function to the "social_benefits" column of projections df
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
   calculate_mpc("subsidies") %>%
   calculate_mpc("health_outlays") %>%
