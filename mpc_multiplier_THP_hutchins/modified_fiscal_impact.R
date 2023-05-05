@@ -253,9 +253,16 @@ alt_mps <- mpc %>% # cumulative MPC
                                  mps = other_vulnerable_arp_mps)
   # cool!
   
+  ### graph function
+  graph_mps <- function(disbursed = xxx,
+                        ss = xxx,
+                        title = xxx,
+                        )
+  
+  ### graph code that works
   # Let's graph using ggplot2.
   df1 <- data.frame(Date = projections$date, Value = projections$federal_ui, Dataset = "Disbursed")
-  df2 <- data.frame(Date = projections$date, Value = ss_federal_ui_arp, Dataset = "Implied Spending")
+  df2 <- data.frame(Date = projections$date, Value = ss_federal_ui_arp, Dataset = "Implied Saving")
   
   # Combine both data frames
   combined_df <- rbind(df1, df2)
@@ -267,21 +274,32 @@ alt_mps <- mpc %>% # cumulative MPC
   combined_df$Date <- as.Date(combined_df$Date)
   
   # Set the date range you want to display
-  start_date <- as.Date("2019-01-01")
-  end_date <- as.Date("2023-05-01")
+  start_date <- as.Date("2019-01-01") # first bar is 2019 Q1
+  end_date <- as.Date("2025-01-01") # last bar is 2024 Q4
+  
+  # Add an offset to the x-axis positions. This will align the bars so that the 
+  # 2021 Q1 bar will sit to the right of the 2021 tick mark, rather than be aligned
+  # with the center of the tick mark (which is the default result).
+  x_offset <- 45
   
   # Modify the ggplot code to create the overlaid and stacked bar chart with limited date range and adjusted date labels
-  bar_chart <- ggplot(combined_df, aes(x = Date, y = Value, fill = Dataset)) + 
+  bar_chart <- ggplot(combined_df, aes(x = Date + x_offset, y = Value, fill = Dataset)) + 
     geom_bar(stat = "identity", position = "identity", alpha = 0.8) +
     scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-    labs(title = "Federal UI ARP\nDisbursement (using BLS data) versus Implied Spending (using MPC assumptions)",
-         x = "Date",
-         y = "$ Billions") +
-    scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Spending" = translucent_orange))
+    # Adjusting Y-axis labels to a "$X,XXX B" format
+    scale_y_continuous(label = scales::dollar_format(suffix = " B")) + 
+    # Adjusting X-axis label positioning
+    theme(axis.text.x = element_text(angle = 0, # labels are horizontal
+                                     vjust = 0.5,
+                                     hjust = 0.5)) + # labels are aligned to center of tick mark
+    labs(title = "Federal UI ARP\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)",
+         x = "",
+         y = "") +
+    scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange))
   
   # Display the bar chart
   print(bar_chart)
+  
   
   
   
