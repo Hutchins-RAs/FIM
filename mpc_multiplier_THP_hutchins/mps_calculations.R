@@ -251,13 +251,8 @@ alt_mps <- mpc %>% # cumulative MPC
     unlist()
   ss_federal_ui_arp <- mps_lorae(x = projections$federal_ui, 
                                  mps = other_vulnerable_arp_mps)
-  # cool!
   
-  ### graph function
-  graph_mps <- function(disbursed = xxx,
-                        ss = xxx,
-                        title = xxx,
-                        )
+  
   
   ### graph code that works
   # Let's graph using ggplot2.
@@ -295,7 +290,11 @@ alt_mps <- mpc %>% # cumulative MPC
     labs(title = "Federal UI ARP\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)",
          x = "",
          y = "") +
-    scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange))
+    scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange)) +
+    # Remove the legend title
+    guides(fill = guide_legend(title = NULL)) +
+    # Set the background to white
+    theme_classic()
   
   # Display the bar chart
   print(bar_chart)
