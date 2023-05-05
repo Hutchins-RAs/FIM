@@ -17,7 +17,8 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
                       date = projections$date, # A vector of the dates used in the graph
                       start = "2019-01-01", # Graph start date
                       end = "2025-01-01", # Graph end date
-                      title = "Test data type" # Graph title
+                      title = "Test data type", # Graph title
+                      terminal # Terminal MPS for graph caption
                       ) {
   
   # Assemble the data for graphing
@@ -32,9 +33,11 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
   )
   
   # Initialize graph settings
-  # Construct the string for the graph title
+  # Construct the graph title
   custom_title <- paste0(title, 
                          "\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)")
+  # Construct the graph caption
+  custom_caption <- paste0("Note: Terminal MPS is ", terminal*100, "% of initial disbursement.")
   # Create custom colors
   translucent_blue <- rgb(0, 0.3, 1, alpha = 1)
   translucent_orange <- rgb(1, 0.8, 0, alpha = 0.1)
@@ -59,16 +62,21 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
     theme(axis.text.x = element_text(angle = 0, # labels are horizontal
                                      vjust = 0.5,
                                      hjust = 0.5), # labels are aligned to center of tick mark
-          panel.grid.major.y = element_line(color = "grey60", linetype = "dashed")) + # add grey horizontal gridlines
+          panel.grid.major.y = element_line(color = "grey60", linetype = "dashed"), # add grey horizontal gridlines
+          plot.caption = element_text(hjust = 0)) + # left-align the caption
     labs(title = custom_title,
          x = "", # No X-axis title
-         y = "") + # No Y-axis title
+         y = "", # No Y-axis title
+         caption = custom_caption) + 
     scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange)) +
     # Remove the legend title
     guides(fill = guide_legend(title = NULL)) 
   
-  # Display the bar chart
-  print(bar_chart)
+  # # Display the bar chart
+  # print(bar_chart)
+  
+  # Return both the data frame and the chart
+  return(list(data = combined_df, chart = bar_chart))
 }
 
 ########## SECTION 2: ss_graph_wrapper function ##########
@@ -85,14 +93,34 @@ ss_graph_wrapper <- function(disbursed = projections$federal_other_vulnerable_ar
     select(-variable) %>%
     unlist()
   
+  # If we make no further adjustments to MPS, then the roll_sum function used in
+  # mps_lorae will automatically assume that saving beyond Q12 will be 0% of the
+  # initial disbursement. We want to ensure that doesn't happen. The easiest way 
+  # to do this is to make the mps vector very long by adding the terminal value many
+  # times to the end.
+  # A quick and easy way to do this is to append the last value to the mps vector
+  # back to the mps vector N times, where N is the length of the entirety of the 
+  # projection period. Using this strategy, it is impossible for us to run out of
+  # mps elements before running out of projection period dates.
+
+  terminal <- mps[length(mps)] # last value of the current mps vector
+  
+  # Appending terminal rate to the mps vector N times to avoid error described above
+  mps <- mps %>%
+    c(., rep(terminal, times = length(date)))
+  
   # Next, calculate the savings stream using mps_lorae
   ss <- mps_lorae(x = disbursed, 
                   mps = mps)
   # Finally, graph the savings stream and the disbursed funds using graph_mps
-  graph_mps(disbursed = disbursed, # How much $ was actually disbursed
-            ss = ss, # Our best guesses on savings resulting from disbursement
-            date = date, # A vector of the dates used in the graph
-            start = start, # Graph start date
-            end = end, # Graph end date
-            title = title) # Graph title
+  result <- graph_mps(disbursed = disbursed, # How much $ was actually disbursed
+              ss = ss, # Our best guesses on savings resulting from disbursement
+              date = date, # A vector of the dates used in the graph
+              start = start, # Graph start date
+              end = end, # Graph end date
+              title = title, # Graph title
+              terminal = terminal) # Terminal MPS
+
+  # Return the result
+  return(result)
 }

@@ -264,18 +264,9 @@ alt_mps <- mpc %>% # cumulative MPC
   # MPCs for ARP, depending on whether it was before or after 2021 Q1. I'll start
   # with some more simplistic examples.
     ### Federal other vulnerable ARP
-    ss_federal_other_vulnerable_arp <- mps_lorae(x = projections$federal_other_vulnerable_arp, 
-                                                 mps = other_vulnerable_arp_mps)
-    graph_mps(disbursed = projections$federal_other_vulnerable_arp, # How much $ was actually disbursed
-              ss = ss_federal_other_vulnerable_arp, # Our best guesses on savings resulting from disbursement
-              date = projections$date, # A vector of the dates used in the graph
-              start = "2019-01-01", # Graph start date
-              end = "2025-01-01", # Graph end date
-              title = "Federal Other Vulnerable ARP") # Graph title
-    # Instead of always running these two lines of code, I'll create a wrapper 
-    # function
+    # The MPCs in the table do match the MPCs in the code
     ss_graph_wrapper(disbursed = projections$federal_other_vulnerable_arp, # How much $ was actually disbursed
-             mps_name = other_vulnerable_arp_mps, # Which MPS to use
+             mps_name = "other_vulnerable_arp", # Which MPS to use
              date = projections$date, # A vector of the dates used in the graph
              start = "2019-01-01", # Graph start date
              end = "2025-01-01", # Graph end date
@@ -296,8 +287,6 @@ alt_mps <- mpc %>% # cumulative MPC
                      start = "2019-01-01", # Graph start date
                      end = "2025-01-01", # Graph end date
                      title = "Rebate Checks ARP") # Graph title
-    # TODO: This graph shows a problem in the current MPS calculation. It assumes saving
-    # goes to 0 when the window ends. I need to fix this by perhaps lengthening the window.
     ### Federal Other Direct Aid ARP
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
     # Code MPCs:
@@ -314,6 +303,15 @@ alt_mps <- mpc %>% # cumulative MPC
                      start = "2019-01-01", # Graph start date
                      end = "2025-01-01", # Graph end date
                      title = "Federal Other Direct Aid ARP") # Graph title
+    ### Federal Student Loans
+    # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
+    ss_graph_wrapper(disbursed = projections$federal_student_loans, # How much $ was actually disbursed
+                     mps_name = "other_direct_aid_arp", # Which MPS to use
+                     date = projections$date, # A vector of the dates used in the graph
+                     start = "2019-01-01", # Graph start date
+                     end = "2025-01-01", # Graph end date
+                     title = "Federal Student Loans") # Graph title
+    ### Federal Aid to Small Businesses ARP
     
     
     
