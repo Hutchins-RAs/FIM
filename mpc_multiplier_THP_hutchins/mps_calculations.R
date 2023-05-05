@@ -251,59 +251,83 @@ alt_mps <- mpc %>% # cumulative MPC
     unlist()
   ss_federal_ui_arp <- mps_lorae(x = projections$federal_ui, 
                                  mps = other_vulnerable_arp_mps)
+  # Let's graph it. We're using the graph_mps function from graph_mps.R
+  graph_mps(disbursed = projections$federal_ui, # How much $ was actually disbursed
+            ss = ss_federal_ui_arp, # Our best guesses on savings resulting from disbursement
+            date = projections$date, # A vector of the dates used in the graph
+            start = "2019-01-01", # Graph start date
+            end = "2025-01-01", # Graph end date
+            title = "Federal UI ARP") # Graph title
   
-  
-  
-  ### graph code that works
-  # Let's graph using ggplot2.
-  df1 <- data.frame(Date = projections$date, Value = projections$federal_ui, Dataset = "Disbursed")
-  df2 <- data.frame(Date = projections$date, Value = ss_federal_ui_arp, Dataset = "Implied Saving")
-  
-  # Combine both data frames
-  combined_df <- rbind(df1, df2)
-  
-  translucent_blue <- rgb(0, 0, 1, alpha = 0.5)
-  translucent_orange <- rgb(255/255, 165/255, 0/255, alpha = 0.5)
-  
-  # Convert Date to a date format using as.Date()
-  combined_df$Date <- as.Date(combined_df$Date)
-  
-  # Set the date range you want to display
-  start_date <- as.Date("2019-01-01") # first bar is 2019 Q1
-  end_date <- as.Date("2025-01-01") # last bar is 2024 Q4
-  
-  # Add an offset to the x-axis positions. This will align the bars so that the 
-  # 2021 Q1 bar will sit to the right of the 2021 tick mark, rather than be aligned
-  # with the center of the tick mark (which is the default result).
-  x_offset <- 45
-  
-  # Modify the ggplot code to create the overlaid and stacked bar chart with limited date range and adjusted date labels
-  bar_chart <- ggplot(combined_df, aes(x = Date + x_offset, y = Value, fill = Dataset)) + 
-    geom_bar(stat = "identity", position = "identity", alpha = 0.8) +
-    scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
-    # Adjusting Y-axis labels to a "$X,XXX B" format
-    scale_y_continuous(label = scales::dollar_format(suffix = " B")) + 
-    # Adjusting X-axis label positioning
-    theme(axis.text.x = element_text(angle = 0, # labels are horizontal
-                                     vjust = 0.5,
-                                     hjust = 0.5)) + # labels are aligned to center of tick mark
-    labs(title = "Federal UI ARP\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)",
-         x = "",
-         y = "") +
-    scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange)) +
-    # Remove the legend title
-    guides(fill = guide_legend(title = NULL)) +
-    # Set the background to white
-    theme_classic()
-  
-  # Display the bar chart
-  print(bar_chart)
-  
-  
-  
-  
-  
-  
+  # PART D: Apply to other data.
+  # It turns out that the above calculation isn't quite right. We use two different
+  # MPCs for ARP, depending on whether it was before or after 2021 Q1. I'll start
+  # with some more simplistic examples.
+    ### Federal other vulnerable ARP
+    ss_federal_other_vulnerable_arp <- mps_lorae(x = projections$federal_other_vulnerable_arp, 
+                                                 mps = other_vulnerable_arp_mps)
+    graph_mps(disbursed = projections$federal_other_vulnerable_arp, # How much $ was actually disbursed
+              ss = ss_federal_other_vulnerable_arp, # Our best guesses on savings resulting from disbursement
+              date = projections$date, # A vector of the dates used in the graph
+              start = "2019-01-01", # Graph start date
+              end = "2025-01-01", # Graph end date
+              title = "Federal Other Vulnerable ARP") # Graph title
+    # Instead of always running these two lines of code, I'll create a wrapper 
+    # function
+    ss_graph_wrapper(disbursed = projections$federal_other_vulnerable_arp, # How much $ was actually disbursed
+             mps_name = other_vulnerable_arp_mps, # Which MPS to use
+             date = projections$date, # A vector of the dates used in the graph
+             start = "2019-01-01", # Graph start date
+             end = "2025-01-01", # Graph end date
+             title = "Federal Other Vulnerable ARP") # Graph title
+    ### Rebate Checks ARP
+    # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
+    # Code MPCs:
+    mpc_direct_aid_arp
+    # implies MPCs are:
+    # (0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03)
+    # but the table
+    mpc[which(mpc$variable == "other_direct_aid_arp"),]
+    # implies MPCs are:
+    # (0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0, 0)
+    ss_graph_wrapper(disbursed = projections$rebate_checks_arp, # How much $ was actually disbursed
+                     mps_name = "other_direct_aid_arp", # Which MPS to use
+                     date = projections$date, # A vector of the dates used in the graph
+                     start = "2019-01-01", # Graph start date
+                     end = "2025-01-01", # Graph end date
+                     title = "Rebate Checks ARP") # Graph title
+    # TODO: This graph shows a problem in the current MPS calculation. It assumes saving
+    # goes to 0 when the window ends. I need to fix this by perhaps lengthening the window.
+    ### Federal Other Direct Aid ARP
+    # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
+    # Code MPCs:
+    mpc_direct_aid_arp
+    # implies MPCs are:
+    # (0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03)
+    # but the table
+    mpc[which(mpc$variable == "other_direct_aid_arp"),]
+    # implies MPCs are:
+    # (0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0, 0)
+    ss_graph_wrapper(disbursed = projections$federal_other_direct_aid_arp, # How much $ was actually disbursed
+                     mps_name = "other_direct_aid_arp", # Which MPS to use
+                     date = projections$date, # A vector of the dates used in the graph
+                     start = "2019-01-01", # Graph start date
+                     end = "2025-01-01", # Graph end date
+                     title = "Federal Other Direct Aid ARP") # Graph title
+    
+    
+    
+    # State UI ARP
+    ss_state_ui_arp <- mps_lorae(x = projections$XXXX, 
+                                 mps = other_vulnerable_arp_mps)
+    # Let's graph it. We're using the graph_mps function from graph_mps.R
+    graph_mps(disbursed = projections$federal_ui, # How much $ was actually disbursed
+              ss = ss_federal_ui_arp, # Our best guesses on savings resulting from disbursement
+              date = projections$date, # A vector of the dates used in the graph
+              start = "2019-01-01", # Graph start date
+              end = "2025-01-01", # Graph end date
+              title = "Federal UI ARP") # Graph title
+
   mpc_vulnerable_arp <- c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)
   mpc_direct_aid_arp <- mpc(timing = c(0.14, 0.10, 0.1,  rep(0.05, 6), 0.03, 0.03, 0.03))
   mpc_small_businesses_arp <- mpc(timing =  c(rep(0.04, 2), rep(0.017, 10)))

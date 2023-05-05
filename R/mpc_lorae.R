@@ -37,7 +37,9 @@
 # of the transfer.
 
 
-mpc_lorae <- function (x, mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)){
+mpc_lorae <- function (x, # A vector of cash disbursement data
+                       mpc) # A vector of MPCs
+  {
   1 * roll::roll_sum(x, 
                     width = length(mpc), 
                     weights = rev(mpc), 

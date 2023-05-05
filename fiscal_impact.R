@@ -196,7 +196,7 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
   calculate_mpc("corporate_taxes") %>%
   calculate_mpc("non_corporate_taxes") %>% 
   
-  # Calculate post-MPC values for federal and state UI benefits
+  # Calculate pandemic-adjusted MPC values for federal and state UI benefits
   mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
                 .fns = ~ if_else(date < yearquarter("2021 Q2"),
                                  # Use MPC function for dates before 2021 Q2

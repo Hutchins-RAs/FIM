@@ -7,8 +7,11 @@
 # ("ss" argument in the function, graphed in an orange color). The function also 
 # has arguments for customizing the graph title, the display start date, and the 
 # display end date. This graphing function is meant for use in mps_calculations.R.
+#
+# SECTION 1: graph_mps function
+# SECTION 2: ss_graph_wrapper function
 
-### graph function
+########## SECTION 1: graph_mps function ##########
 graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actually disbursed
                       ss = ss_federal_ui_arp, # Our best guesses on savings resulting from disbursement
                       date = projections$date, # A vector of the dates used in the graph
@@ -25,7 +28,7 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
     Value = c(disbursed, ss),
     # Constructing a column that labels observations as either a disbursement or
     # implied saving
-    Dataset = rep(c("Disbursed", "Implied Saving"), c(nrow(df1), nrow(df2)))
+    Dataset = rep(c("Disbursed", "Implied Saving"), c(length(disbursed), length(ss)))
   )
   
   # Initialize graph settings
@@ -34,7 +37,7 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
                          "\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)")
   # Create custom colors
   translucent_blue <- rgb(0, 0.3, 1, alpha = 1)
-  translucent_orange <- rgb(0.9, 0.8, 0, alpha = 0.1)
+  translucent_orange <- rgb(1, 0.8, 0, alpha = 0.1)
   # Set the date range for display
   start_date <- as.Date(start) # first bar is 2019 Q1
   end_date <- as.Date(end) # last bar is 2024 Q4
@@ -66,4 +69,30 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
   
   # Display the bar chart
   print(bar_chart)
+}
+
+########## SECTION 2: ss_graph_wrapper function ##########
+
+ss_graph_wrapper <- function(disbursed = projections$federal_other_vulnerable_arp, # How much $ was actually disbursed
+                             mps_name, # Which row entry to use in c_mps
+                             date = projections$date, # A vector of the dates used in the graph
+                             start = "2019-01-01", # Graph start date
+                             end = "2025-01-01", # Graph end date
+                             title = "Federal Other Vulnerable ARP") # Graph title
+  {
+  # First, get the MPS vector using mps_name
+  mps <- c_mps[which(alt_mps$variable == mps_name),] %>%
+    select(-variable) %>%
+    unlist()
+  
+  # Next, calculate the savings stream using mps_lorae
+  ss <- mps_lorae(x = disbursed, 
+                  mps = mps)
+  # Finally, graph the savings stream and the disbursed funds using graph_mps
+  graph_mps(disbursed = disbursed, # How much $ was actually disbursed
+            ss = ss, # Our best guesses on savings resulting from disbursement
+            date = date, # A vector of the dates used in the graph
+            start = start, # Graph start date
+            end = end, # Graph end date
+            title = title) # Graph title
 }
