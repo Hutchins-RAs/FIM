@@ -6,11 +6,10 @@
 # $20 is spent in 2020 Q2, and an additional $10 is spent in 2020 Q3, for a total
 # of $60 spent within the first 3 quarters of the fiscal injection.
 
-# The x variable indicates how much money was injected in each period. I'm not sure
-# what period is the starting period. But let's say the first element of the vector
-# represents 2020 Q1. If x = c(100, 0, 0, 0, 100), that means that $100 was 
-# injected in 2020 Q1, and then nothing was injected for the next 3 quarters. Then,
-# an additional $100 was injected in 2021 Q1.
+# The x variable indicates how much money was injected in each period. Let's say 
+# that the first element of the vector represents 2020 Q1. If x = c(100, 0, 0, 0, 100),
+# that means that $100 was injected in 2020 Q1, and then nothing was injected for
+# the next 3 quarters. Then, an additional $100 was injected in 2021 Q1.
 
 # The roll_sum calculates a rolling dot product. Let's use the example above, with
 # mpcs = c(0.3, 0.2, 0.1) and 
