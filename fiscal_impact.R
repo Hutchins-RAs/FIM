@@ -241,7 +241,7 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
     ),
     #same as above, applying a different MPC function to this
     federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
-      mpc_small_businesses_arp((federal_aid_to_small_businesses_arp_minus_neutral))
+      mpc_small_businesses_arp ((federal_aid_to_small_businesses_arp_minus_neutral))
   )
 
 # Section E: Contribution ------------------------------------------------------------

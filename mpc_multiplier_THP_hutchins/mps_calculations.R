@@ -205,11 +205,11 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
     mutate(1 - .) %>%
     cbind(mpc[, "variable", drop = FALSE], .) # add back variable names
 
-  # # # An alternative MPS that is suitable as input into the mps_lorae function (as of 4/20/2023)
-  # alt_mps <- mpc %>% # cumulative MPC
-  #   #select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
-  #   mutate(`1` = 1 - `1`) %>%
-  #   mutate_at(vars(`2`:`12`), ~ . * -1)
+  # # An alternative MPS that is suitable as input into the mps_lorae function (as of 4/20/2023)
+  alt_mps <- mpc %>% # cumulative MPC
+    #select(-`variable`) %>% # remove the "variable" column so that we can use `apply` function
+    mutate(`1` = 1 - `1`) %>%
+    mutate_at(vars(`2`:`12`), ~ . * -1)
 
   # Rather than defining a separate mpc function for each category of FIM input, we 
   # (Lorae and Nasiha) propose (as of 4/19/2023) that we create one MPC function with the type
@@ -257,20 +257,32 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
             date = projections$date, # A vector of the dates used in the graph
             start = "2019-01-01", # Graph start date
             end = "2025-01-01", # Graph end date
-            title = "Federal UI ARP") # Graph title
+            title = "Federal UI ARP", # Graph title
+            terminal = other_vulnerable_arp_mps[12] %>% as.numeric()) # terminal savings rate
   
   # PART D: Apply to other data.
   # It turns out that the above calculation isn't quite right. We use two different
   # MPCs for ARP, depending on whether it was before or after 2021 Q1. I'll start
   # with some more simplistic examples.
+  
+  
+  ## initialize the pdf
+  # Start the PDF device driver
+  pdf("mpc_multiplier_THP_hutchins/output-2023.05.18.pdf",
+      width = 11,
+      height = 8.5)
+  
     ### Federal other vulnerable ARP
     # The MPCs in the table do match the MPCs in the code
-    ss_graph_wrapper(disbursed = projections$federal_other_vulnerable_arp, # How much $ was actually disbursed
-             mps_name = "other_vulnerable_arp", # Which MPS to use
-             date = projections$date, # A vector of the dates used in the graph
-             start = "2019-01-01", # Graph start date
-             end = "2025-01-01", # Graph end date
-             title = "Federal Other Vulnerable ARP") # Graph title
+    federal_other_vulnerable_arp <-
+      ss_graph_wrapper(disbursed = projections$federal_other_vulnerable_arp, # How much $ was actually disbursed
+               mps_name = "other_vulnerable_arp", # Which MPS to use
+               date = projections$date, # A vector of the dates used in the graph
+               start = "2019-01-01", # Graph start date
+               end = "2025-01-01", # Graph end date
+               title = "Federal Other Vulnerable ARP") # Graph title
+    print(federal_other_vulnerable_arp$chart)
+    
     ### Rebate Checks ARP
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
     # Code MPCs:
@@ -281,12 +293,15 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
     mpc[which(mpc$variable == "other_direct_aid_arp"),]
     # implies MPCs are:
     # (0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0, 0)
-    ss_graph_wrapper(disbursed = projections$rebate_checks_arp, # How much $ was actually disbursed
-                     mps_name = "other_direct_aid_arp", # Which MPS to use
-                     date = projections$date, # A vector of the dates used in the graph
-                     start = "2019-01-01", # Graph start date
-                     end = "2025-01-01", # Graph end date
-                     title = "Rebate Checks ARP") # Graph title
+    rebate_checks_arp <-
+      ss_graph_wrapper(disbursed = projections$rebate_checks_arp, # How much $ was actually disbursed
+                       mps_name = "other_direct_aid_arp", # Which MPS to use
+                       date = projections$date, # A vector of the dates used in the graph
+                       start = "2019-01-01", # Graph start date
+                       end = "2025-01-01", # Graph end date
+                       title = "Rebate Checks ARP") # Graph title
+    print(rebate_checks_arp$chart)
+    
     ### Federal Other Direct Aid ARP
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
     # Code MPCs:
@@ -297,27 +312,130 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
     mpc[which(mpc$variable == "other_direct_aid_arp"),]
     # implies MPCs are:
     # (0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0, 0, 0)
-    ss_graph_wrapper(disbursed = projections$federal_other_direct_aid_arp, # How much $ was actually disbursed
-                     mps_name = "other_direct_aid_arp", # Which MPS to use
-                     date = projections$date, # A vector of the dates used in the graph
-                     start = "2019-01-01", # Graph start date
-                     end = "2025-01-01", # Graph end date
-                     title = "Federal Other Direct Aid ARP") # Graph title
+    federal_other_direct_aid_arp <-
+      ss_graph_wrapper(disbursed = projections$federal_other_direct_aid_arp, # How much $ was actually disbursed
+                       mps_name = "other_direct_aid_arp", # Which MPS to use
+                       date = projections$date, # A vector of the dates used in the graph
+                       start = "2019-01-01", # Graph start date
+                       end = "2025-01-01", # Graph end date
+                       title = "Federal Other Direct Aid ARP") # Graph title
+    print(federal_other_direct_aid_arp$chart)
+    
     ### Federal Student Loans
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
-    ss_graph_wrapper(disbursed = projections$federal_student_loans, # How much $ was actually disbursed
-                     mps_name = "other_direct_aid_arp", # Which MPS to use
-                     date = projections$date, # A vector of the dates used in the graph
-                     start = "2019-01-01", # Graph start date
-                     end = "2025-01-01", # Graph end date
-                     title = "Federal Student Loans") # Graph title
+    federal_student_loans <-
+      ss_graph_wrapper(disbursed = projections$federal_student_loans, # How much $ was actually disbursed
+                       mps_name = "other_direct_aid_arp", # Which MPS to use
+                       date = projections$date, # A vector of the dates used in the graph
+                       start = "2019-01-01", # Graph start date
+                       end = "2025-01-01", # Graph end date
+                       title = "Federal Student Loans") # Graph title
+    print(federal_student_loans$chart)
+    
     ### Federal Aid to Small Businesses ARP
     # The MPCs in the table do match the MPCs in the code
-    ss_graph_wrapper(disbursed = projections$federal_aid_to_small_businesses_arp, # How much $ was actually disbursed
-                     mps_name = "aid_to_small_businesses_arp", # Which MPS to use
-                     date = projections$date, # A vector of the dates used in the graph
-                     start = "2019-01-01", # Graph start date
-                     end = "2025-01-01", # Graph end date
-                     title = "Federal Aid to Small Businesses ARP") # Graph title
+    federal_aid_to_small_businesses_arp <-
+      ss_graph_wrapper(disbursed = projections$federal_aid_to_small_businesses_arp, # How much $ was actually disbursed
+                       mps_name = "aid_to_small_businesses_arp", # Which MPS to use
+                       date = projections$date, # A vector of the dates used in the graph
+                       start = "2019-01-01", # Graph start date
+                       end = "2025-01-01", # Graph end date
+                       title = "Federal Aid to Small Businesses ARP") # Graph title
+    print(federal_aid_to_small_businesses_arp$chart)
     
+    ### Federal UI
+    # Needs a special way of calculating because we have pre- and post-COVID MPCs
+    # How do we want to apply the UIs
+      disbursed <- projections$federal_ui # How much $ was actually disbursed
+      date <- projections$date # A vector of the dates used in the graph
+      start <- "2019-01-01" # Graph start date
+      end <- "2025-01-01" # Graph end date
+      # Initialize the MPSs (here we have 2: one pre-Q2 2021 and one post)
+      mps_1 <- c_mps[which(alt_mps$variable == "ui"),] %>%
+        select(-variable) %>%
+        unlist()
+      mps_2 <- c_mps[which(alt_mps$variable == "ui_arp"),] %>%
+        select(-variable) %>%
+        unlist()
+      # Get the terminal MPSs
+      terminal_1 <- mps_1[length(mps_1)] # last value of the current mps vector
+      terminal_2 <- mps_2[length(mps_2)] # last value of the current mps vector
+      # Appending terminal rate to the mps vector N times to avoid error of cutting
+      # off too early
+      mps_1 <- mps_1 %>%
+        c(., rep(terminal_1, times = length(date)))
+      mps_2 <- mps_2 %>%
+        c(., rep(terminal_2, times = length(date)))
+      # Next, calculate the savings stream using mps_lorae
+      ss <- mps_lorae(x = disbursed, 
+                      mps = ifelse(date < yearquarter("2021 Q2"), mps_1, mps_2))
+      # Finally, graph the savings stream and the disbursed funds using graph_mps
+      federal_ui <- 
+        graph_mps(disbursed = disbursed, # How much $ was actually disbursed
+                          ss = ss, # Our best guesses on savings resulting from disbursement
+                          date = date, # A vector of the dates used in the graph
+                          start = start, # Graph start date
+                          end = end, # Graph end date
+                          title = "Federal UI", # Graph title
+                          terminal = terminal_2) # Terminal MPS
+      print(federal_ui$chart)
+      
+      ### State UI
+      # Needs a special way of calculating because we have pre- and post-COVID MPCs
+      # How do we want to apply the UIs
+      disbursed <- projections$state_ui # How much $ was actually disbursed
+      date <- projections$date # A vector of the dates used in the graph
+      start <- "2019-01-01" # Graph start date
+      end <- "2025-01-01" # Graph end date
+      # Initialize the MPSs (here we have 2: one pre-Q2 2021 and one post)
+      mps_1 <- c_mps[which(alt_mps$variable == "ui"),] %>%
+        select(-variable) %>%
+        unlist()
+      mps_2 <- c_mps[which(alt_mps$variable == "ui_arp"),] %>%
+        select(-variable) %>%
+        unlist()
+      # Get the terminal MPSs
+      terminal_1 <- mps_1[length(mps_1)] # last value of the current mps vector
+      terminal_2 <- mps_2[length(mps_2)] # last value of the current mps vector
+      # Appending terminal rate to the mps vector N times to avoid error of cutting
+      # off too early
+      mps_1 <- mps_1 %>%
+        c(., rep(terminal_1, times = length(date)))
+      mps_2 <- mps_2 %>%
+        c(., rep(terminal_2, times = length(date)))
+      # Next, calculate the savings stream using mps_lorae
+      ss <- mps_lorae(x = disbursed, 
+                      mps = ifelse(date < yearquarter("2021 Q2"), mps_1, mps_2))
+      # Finally, graph the savings stream and the disbursed funds using graph_mps
+      state_ui <- 
+        graph_mps(disbursed = disbursed, # How much $ was actually disbursed
+                          ss = ss, # Our best guesses on savings resulting from disbursement
+                          date = date, # A vector of the dates used in the graph
+                          start = start, # Graph start date
+                          end = end, # Graph end date
+                          title = "State UI", # Graph title
+                          terminal = terminal_2) # Terminal MPS
+      print(state_ui$chart)
+      
+      # Close the device driver
+      dev.off()
+    
+      
+      ### Time to make the mega graph
+      # list of dataframes
+      df_list <- list(
+        federal_other_vulnerable_arp$data,
+        rebate_checks_arp$data,
+        federal_other_direct_aid_arp$data,
+        federal_student_loans$data,
+        federal_aid_to_small_businesses_arp$data,
+        federal_ui$data,
+        state_ui$data
+      )
+      # bind rows from all data frames, and group by Date and Dataset
+      # then, summarise by summing the Value
+      total_df <- df_list %>%
+        bind_rows() %>%
+        group_by(Dataset, Date) %>%
+        summarise(Value = sum(Value), .groups = "drop")
  

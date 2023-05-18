@@ -39,8 +39,8 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
   # Construct the graph caption
   custom_caption <- paste0("Note: Terminal MPS is ", terminal*100, "% of initial disbursement.")
   # Create custom colors
-  translucent_blue <- rgb(0, 0.3, 1, alpha = 1)
-  translucent_orange <- rgb(1, 0.8, 0, alpha = 0.1)
+  translucent_blue <- rgb(0, 0.3, 1, alpha = 0.1)
+  translucent_orange <- rgb(1, 0.7, 0, alpha = 0.1)
   # Set the date range for display
   start_date <- as.Date(start) # first bar is 2019 Q1
   end_date <- as.Date(end) # last bar is 2024 Q4
