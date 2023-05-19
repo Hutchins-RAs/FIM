@@ -18,9 +18,15 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
                       start = "2019-01-01", # Graph start date
                       end = "2025-01-01", # Graph end date
                       title = "Test data type", # Graph title
-                      terminal # Terminal MPS for graph caption
+                      terminal, # Terminal MPS for graph caption
+                      annualized = TRUE # TRUE if values are annualized
                       ) {
   
+  # Turn annualized values into quarterly values
+  if(annualized == TRUE) {
+    disbursed <- disbursed/4
+    ss <- ss/4
+  }
   # Assemble the data for graphing
   combined_df <- data.frame(
     # Constructing the "Date" column

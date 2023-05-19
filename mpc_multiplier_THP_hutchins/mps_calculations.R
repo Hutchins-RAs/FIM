@@ -225,6 +225,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   test_spending <- c(100, 100, 300, 50, 0, 0, 0, 0)
   
   # Applying the MPS function should give us our stream of savings.
+  # Note: we now have an mps function which divides by 4
   saving_stream <- mps_lorae(x = test_spending, mps = test_mps)
   #Looks good!
 
@@ -301,6 +302,25 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                        end = "2025-01-01", # Graph end date
                        title = "Rebate Checks ARP") # Graph title
     print(rebate_checks_arp$chart)
+
+    ### Rebate Checks (non ARP?)
+    # The MPCs in the table DO NOT match the MPCs in the code
+    # Code MPCs:
+    mpc_rebate_checks
+    # Implies mpcs are:
+    # (0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
+    #But the table
+    mpc[which(mpc$variable == "rebate_checks"),]
+    # implies MPCs are:
+    # (0.245, 0.105, 0.056, 0.056, 0.056, 0.056, 0.056, 0.056, 0, 0, 0, 0)
+    rebate_checks <-
+      ss_graph_wrapper(disbursed = projections$rebate_checks, # How much $ was actually disbursed
+                       mps_name = "rebate_checks", # Which MPS to use
+                       date = projections$date, # A vector of the dates used in the graph
+                       start = "2019-01-01", # Graph start date
+                       end = "2025-01-01", # Graph end date
+                       title = "Rebate Checks") # Graph title
+    print(rebate_checks$chart)
     
     ### Federal Other Direct Aid ARP
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
@@ -430,12 +450,116 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
         federal_student_loans$data,
         federal_aid_to_small_businesses_arp$data,
         federal_ui$data,
-        state_ui$data
+        state_ui$data,
+        rebate_checks$data
       )
       # bind rows from all data frames, and group by Date and Dataset
       # then, summarise by summing the Value
-      total_df <- df_list %>%
+      combined_df <- df_list %>%
         bind_rows() %>%
         group_by(Dataset, Date) %>%
         summarise(Value = sum(Value), .groups = "drop")
+      
+      # Initialize graph settings
+      # Construct the graph title
+      start <- "2019-01-01" # Graph start date
+      end <- "2030-01-01"
+      custom_title <- paste0("TOTAL", 
+                             "\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)")
+      # Create custom colors
+      translucent_blue <- rgb(0, 0.3, 1, alpha = 0.1)
+      translucent_orange <- rgb(1, 0.7, 0, alpha = 0.1)
+      # Set the date range for display
+      start_date <- as.Date(start) # first bar is 2019 Q1
+      end_date <- as.Date(end) # last bar is 2024 Q4
+      # Add an offset to the x-axis positions. This will align the bars so that 
+      # the 2021 Q1 bar, for example, will sit to the right of the 2021 tick mark, 
+      # rather than be aligned with the center of the tick mark (which is the default
+      # result).
+      x_offset <- 45
+      
+      # Generate bar chart using ggplot2
+      bar_chart <- ggplot(combined_df, aes(x = Date + x_offset, y = Value, fill = Dataset)) + 
+        geom_bar(stat = "identity", position = "identity", alpha = 0.8) +
+        scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
+        # Adjusting Y-axis labels to a "$X,XXX B" format
+        scale_y_continuous(label = scales::dollar_format(suffix = " B")) + 
+        # Set the background to white
+        theme_classic() +
+        # Adjusting X-axis label positioning
+        theme(axis.text.x = element_text(angle = 0, # labels are horizontal
+                                         vjust = 0.5,
+                                         hjust = 0.5), # labels are aligned to center of tick mark
+              panel.grid.major.y = element_line(color = "grey60", linetype = "dashed"), # add grey horizontal gridlines
+              plot.caption = element_text(hjust = 0)) + # left-align the caption
+        labs(title = custom_title,
+             x = "", # No X-axis title
+             y = "") + # No Y-axis title
+        scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange)) +
+        # Remove the legend title
+        guides(fill = guide_legend(title = NULL)) 
+      
+      
+      
+      
+
+# Graph WITHOUT state ui --------------------------------------------------
+
+      
+      ### Time to make the mega graph
+      # list of dataframes
+      df_list <- list(
+        federal_other_vulnerable_arp$data,
+        rebate_checks_arp$data,
+        federal_other_direct_aid_arp$data,
+        federal_student_loans$data,
+        federal_aid_to_small_businesses_arp$data,
+        federal_ui$data,
+        rebate_checks$data
+      )
+      # bind rows from all data frames, and group by Date and Dataset
+      # then, summarise by summing the Value
+      combined_df <- df_list %>%
+        bind_rows() %>%
+        group_by(Dataset, Date) %>%
+        summarise(Value = sum(Value), .groups = "drop")
+      
+      # Initialize graph settings
+      # Construct the graph title
+      start <- "2019-01-01" # Graph start date
+      end <- "2030-01-01"
+      custom_title <- paste0("TOTAL", 
+                             "\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)")
+      # Create custom colors
+      translucent_blue <- rgb(0, 0.3, 1, alpha = 0.1)
+      translucent_orange <- rgb(1, 0.7, 0, alpha = 0.1)
+      # Set the date range for display
+      start_date <- as.Date(start) # first bar is 2019 Q1
+      end_date <- as.Date(end) # last bar is 2024 Q4
+      # Add an offset to the x-axis positions. This will align the bars so that 
+      # the 2021 Q1 bar, for example, will sit to the right of the 2021 tick mark, 
+      # rather than be aligned with the center of the tick mark (which is the default
+      # result).
+      x_offset <- 45
+      
+      # Generate bar chart using ggplot2
+      bar_chart_no_ui <- ggplot(combined_df, aes(x = Date + x_offset, y = Value, fill = Dataset)) + 
+        geom_bar(stat = "identity", position = "identity", alpha = 0.8) +
+        scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
+        # Adjusting Y-axis labels to a "$X,XXX B" format
+        scale_y_continuous(label = scales::dollar_format(suffix = " B")) + 
+        # Set the background to white
+        theme_classic() +
+        # Adjusting X-axis label positioning
+        theme(axis.text.x = element_text(angle = 0, # labels are horizontal
+                                         vjust = 0.5,
+                                         hjust = 0.5), # labels are aligned to center of tick mark
+              panel.grid.major.y = element_line(color = "grey60", linetype = "dashed"), # add grey horizontal gridlines
+              plot.caption = element_text(hjust = 0)) + # left-align the caption
+        labs(title = custom_title,
+             x = "", # No X-axis title
+             y = "") + # No Y-axis title
+        scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange)) +
+        # Remove the legend title
+        guides(fill = guide_legend(title = NULL)) 
  

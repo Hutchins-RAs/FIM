@@ -55,5 +55,14 @@ mps_lorae <- function(x, mps){
                  online = FALSE,
                  min_obs = 1)
 }
+
+
+mps <- function(x, mps){
+  roll::roll_sum(x, # We don't divide by 4, since we assume the input is already not annualized
+                 width = length(mps),
+                 weights = rev(mps),
+                 online = FALSE,
+                 min_obs = 1)
+}
   
   
