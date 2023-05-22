@@ -28,15 +28,26 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
     disbursed <- disbursed/4
     ss <- ss/4
   }
+  
+  # Get the cumulative sum for the line graph
+  # NOTE: this will include all sums up to the present. I may want to consider
+  # removing any sums that precede the pandemic
+  c_disbursed <- cumsum(disbursed)
+  
   # Assemble the data for graphing
   combined_df <- data.frame(
     # Constructing the "Date" column
     Date = as.Date(date), 
-    # Constructing a column that includes disbursed and saving
-    Value = c(disbursed, ss),
+    # Constructing a column that includes disbursed and saving and cumulative sum
+    Value = c(disbursed, ss, c_disbursed),
     # Constructing a column that labels observations as either a disbursement or
     # implied saving
-    Dataset = rep(c("Disbursed", "Implied Saving"), c(length(disbursed), length(ss)))
+    Dataset = rep(c("Disbursed", 
+                    "Cumulative Implied Saving",
+                    "Cumulative Disbursed"), 
+                  c(length(disbursed), 
+                    length(ss),
+                    length(c_disbursed)))
   )
   
   # Initialize graph settings
@@ -57,8 +68,10 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
   # result).
   x_offset <- 45
   
+  # Filter out 'Disbursed' from the Dataset column
+  bar_df <- combined_df[!(combined_df$Dataset == "Cumulative Disbursed"), ]
   # Generate bar chart using ggplot2
-  bar_chart <- ggplot(combined_df, aes(x = Date + x_offset, y = Value, fill = Dataset)) + 
+  bar_chart <- ggplot(bar_df, aes(x = Date + x_offset, y = Value, fill = Dataset)) + 
     geom_bar(stat = "identity", position = "identity", alpha = 0.8) +
     scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
     # Adjusting Y-axis labels to a "$X,XXX B" format
@@ -75,14 +88,16 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
          x = "", # No X-axis title
          y = "", # No Y-axis title
          caption = custom_caption) + 
-    scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange)) +
+    scale_fill_manual(values = c("Disbursed" = translucent_blue, "Cumulative Implied Saving" = translucent_orange)) +
     # Remove the legend title
     guides(fill = guide_legend(title = NULL)) 
   
+  # Filter out 'Disbursed' from the Dataset column
+  line_df <- combined_df[!(combined_df$Dataset == "Disbursed"), ]
   # Generate line chart using ggplot2
-  line_chart <- ggplot(combined_df, aes(x = Date + x_offset, y = Value, color = Dataset)) + 
+  line_chart <- ggplot(line_df, aes(x = Date + x_offset, y = Value, color = Dataset)) + 
     geom_line(aes(group = Dataset), size = 1) +
-    geom_point(aes(shape = Dataset), size = 3) +
+    #geom_point(aes(shape = Dataset), size = 3) +
     scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
     scale_y_continuous(label = scales::dollar_format(suffix = " B")) +
     theme_classic() +
@@ -95,8 +110,8 @@ graph_mps <- function(disbursed = projections$federal_ui, # How much $ was actua
          x = "", 
          y = "", 
          caption = custom_caption) + 
-    scale_color_manual(values = c("Disbursed" = "blue", "Implied Saving" = "orange")) +
-    scale_shape_manual(values = c("Disbursed" = 20, "Implied Saving" = 20)) +
+    scale_color_manual(values = c("Cumulative Disbursed" = "blue", "Cumulative Implied Saving" = "orange")) +
+    #scale_shape_manual(values = c("Disbursed" = 20, "Cumulative Implied Saving" = 20)) +
     guides(color = guide_legend(title = NULL), shape = guide_legend(title = NULL))
   
   # # Display the bar chart

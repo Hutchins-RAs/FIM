@@ -259,7 +259,9 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
             start = "2019-01-01", # Graph start date
             end = "2025-01-01", # Graph end date
             title = "Federal UI ARP", # Graph title
-            terminal = other_vulnerable_arp_mps[12] %>% as.numeric()) # terminal savings rate
+            terminal = other_vulnerable_arp_mps[12] %>% as.numeric(), # terminal savings rate
+            annualized = TRUE
+  )
   
   # PART D: Apply to other data.
   # It turns out that the above calculation isn't quite right. We use two different
@@ -269,7 +271,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   
   ## initialize the pdf
   # Start the PDF device driver
-  pdf("mpc_multiplier_THP_hutchins/output-2023.05.18.pdf",
+  pdf("mpc_multiplier_THP_hutchins/output-2023.05.22.pdf",
       width = 11,
       height = 8.5)
   
@@ -281,8 +283,9 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                date = projections$date, # A vector of the dates used in the graph
                start = "2019-01-01", # Graph start date
                end = "2025-01-01", # Graph end date
-               title = "Federal Other Vulnerable ARP") # Graph title
-    print(federal_other_vulnerable_arp$chart)
+               title = "Federal Other Vulnerable ARP", # Graph title
+               annualized = TRUE)
+    print(federal_other_vulnerable_arp$chartline)
     
     ### Rebate Checks ARP
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
@@ -301,7 +304,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                        start = "2019-01-01", # Graph start date
                        end = "2025-01-01", # Graph end date
                        title = "Rebate Checks ARP") # Graph title
-    print(rebate_checks_arp$chart)
+    print(rebate_checks_arp$line)
 
     ### Rebate Checks (non ARP?)
     # The MPCs in the table DO NOT match the MPCs in the code
@@ -320,7 +323,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                        start = "2019-01-01", # Graph start date
                        end = "2025-01-01", # Graph end date
                        title = "Rebate Checks") # Graph title
-    print(rebate_checks$chart)
+    print(rebate_checks$line)
     
     ### Federal Other Direct Aid ARP
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
@@ -339,7 +342,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                        start = "2019-01-01", # Graph start date
                        end = "2025-01-01", # Graph end date
                        title = "Federal Other Direct Aid ARP") # Graph title
-    print(federal_other_direct_aid_arp$chart)
+    print(federal_other_direct_aid_arp$line)
     
     ### Federal Student Loans
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
@@ -350,7 +353,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                        start = "2019-01-01", # Graph start date
                        end = "2025-01-01", # Graph end date
                        title = "Federal Student Loans") # Graph title
-    print(federal_student_loans$chart)
+    print(federal_student_loans$line)
     
     ### Federal Aid to Small Businesses ARP
     # The MPCs in the table do match the MPCs in the code
@@ -361,7 +364,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                        start = "2019-01-01", # Graph start date
                        end = "2025-01-01", # Graph end date
                        title = "Federal Aid to Small Businesses ARP") # Graph title
-    print(federal_aid_to_small_businesses_arp$chart)
+    print(federal_aid_to_small_businesses_arp$line)
     
     ### Federal UI
     # Needs a special way of calculating because we have pre- and post-COVID MPCs
@@ -398,7 +401,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                           end = end, # Graph end date
                           title = "Federal UI", # Graph title
                           terminal = terminal_2) # Terminal MPS
-      print(federal_ui$chart)
+      print(federal_ui$line)
       
       ### State UI
       # Needs a special way of calculating because we have pre- and post-COVID MPCs
@@ -435,10 +438,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                           end = end, # Graph end date
                           title = "State UI", # Graph title
                           terminal = terminal_2) # Terminal MPS
-      print(state_ui$chart)
-      
-      # Close the device driver
-      dev.off()
+      print(state_ui$line)
     
       
       ### Time to make the mega graph
@@ -450,7 +450,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
         federal_student_loans$data,
         federal_aid_to_small_businesses_arp$data,
         federal_ui$data,
-        state_ui$data,
+        #state_ui$data,#State is high before the pandemic, so we exclude it.
         rebate_checks$data
       )
       # bind rows from all data frames, and group by Date and Dataset
@@ -463,12 +463,10 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
       # Initialize graph settings
       # Construct the graph title
       start <- "2019-01-01" # Graph start date
-      end <- "2030-01-01"
+      end <- "2025-01-01"
       custom_title <- paste0("TOTAL", 
                              "\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)")
-      # Create custom colors
-      translucent_blue <- rgb(0, 0.3, 1, alpha = 0.1)
-      translucent_orange <- rgb(1, 0.7, 0, alpha = 0.1)
+
       # Set the date range for display
       start_date <- as.Date(start) # first bar is 2019 Q1
       end_date <- as.Date(end) # last bar is 2024 Q4
@@ -478,88 +476,31 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
       # result).
       x_offset <- 45
       
+      line_df <- combined_df[!(combined_df$Dataset == "Disbursed"), ]
       # Generate bar chart using ggplot2
-      bar_chart <- ggplot(combined_df, aes(x = Date + x_offset, y = Value, fill = Dataset)) + 
-        geom_bar(stat = "identity", position = "identity", alpha = 0.8) +
+      line_chart <- ggplot(line_df, aes(x = Date + x_offset, y = Value, color = Dataset)) + 
+        geom_line(aes(group = Dataset), size = 1) +
+        #geom_point(aes(shape = Dataset), size = 3) +
         scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
-        # Adjusting Y-axis labels to a "$X,XXX B" format
-        scale_y_continuous(label = scales::dollar_format(suffix = " B")) + 
-        # Set the background to white
-        theme_classic() +
-        # Adjusting X-axis label positioning
-        theme(axis.text.x = element_text(angle = 0, # labels are horizontal
+        scale_y_continuous(label = scales::dollar_format(suffix = " B")) +
+        #theme_classic() +
+        theme(axis.text.x = element_text(angle = 0,
                                          vjust = 0.5,
-                                         hjust = 0.5), # labels are aligned to center of tick mark
-              panel.grid.major.y = element_line(color = "grey60", linetype = "dashed"), # add grey horizontal gridlines
-              plot.caption = element_text(hjust = 0)) + # left-align the caption
-        labs(title = custom_title,
-             x = "", # No X-axis title
-             y = "") + # No Y-axis title
-        scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange)) +
-        # Remove the legend title
-        guides(fill = guide_legend(title = NULL)) 
+                                         hjust = 0.5),
+              panel.grid.major.y = element_line(color = "grey60", linetype = "dashed"),
+              plot.caption = element_text(hjust = 0)) + 
+        labs(title = "TOTAL Cumulative Disbursements and Savings",
+             x = "", 
+             y = "", 
+             caption = "Sums combine the following categories: Federal Other Vulnerable ARP, Rebate Checks ARP, Federal Other Direct Aid ARP, Federal Student Loans, Federal Aid to Small 
+             \nBusinesses ARP, Federal UI, Rebate Checks. Note that State UI is excluded because cumulative savings out of it were substantial even prior to the pandemic.") + 
+        scale_color_manual(values = c("Cumulative Disbursed" = "blue", "Cumulative Implied Saving" = "orange")) +
+        #scale_shape_manual(values = c("Disbursed" = 20, "Cumulative Implied Saving" = 20)) +
+        guides(color = guide_legend(title = NULL), shape = guide_legend(title = NULL))
       
       
+      print(line_chart)
       
-      
+      # Close the device driver
+      dev.off()
 
-# Graph WITHOUT state ui --------------------------------------------------
-
-      
-      ### Time to make the mega graph
-      # list of dataframes
-      df_list <- list(
-        federal_other_vulnerable_arp$data,
-        rebate_checks_arp$data,
-        federal_other_direct_aid_arp$data,
-        federal_student_loans$data,
-        federal_aid_to_small_businesses_arp$data,
-        federal_ui$data,
-        rebate_checks$data
-      )
-      # bind rows from all data frames, and group by Date and Dataset
-      # then, summarise by summing the Value
-      combined_df <- df_list %>%
-        bind_rows() %>%
-        group_by(Dataset, Date) %>%
-        summarise(Value = sum(Value), .groups = "drop")
-      
-      # Initialize graph settings
-      # Construct the graph title
-      start <- "2019-01-01" # Graph start date
-      end <- "2030-01-01"
-      custom_title <- paste0("TOTAL", 
-                             "\nDisbursement (using BLS data) versus Implied Saving (using MPC assumptions)")
-      # Create custom colors
-      translucent_blue <- rgb(0, 0.3, 1, alpha = 0.1)
-      translucent_orange <- rgb(1, 0.7, 0, alpha = 0.1)
-      # Set the date range for display
-      start_date <- as.Date(start) # first bar is 2019 Q1
-      end_date <- as.Date(end) # last bar is 2024 Q4
-      # Add an offset to the x-axis positions. This will align the bars so that 
-      # the 2021 Q1 bar, for example, will sit to the right of the 2021 tick mark, 
-      # rather than be aligned with the center of the tick mark (which is the default
-      # result).
-      x_offset <- 45
-      
-      # Generate bar chart using ggplot2
-      bar_chart_no_ui <- ggplot(combined_df, aes(x = Date + x_offset, y = Value, fill = Dataset)) + 
-        geom_bar(stat = "identity", position = "identity", alpha = 0.8) +
-        scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
-        # Adjusting Y-axis labels to a "$X,XXX B" format
-        scale_y_continuous(label = scales::dollar_format(suffix = " B")) + 
-        # Set the background to white
-        theme_classic() +
-        # Adjusting X-axis label positioning
-        theme(axis.text.x = element_text(angle = 0, # labels are horizontal
-                                         vjust = 0.5,
-                                         hjust = 0.5), # labels are aligned to center of tick mark
-              panel.grid.major.y = element_line(color = "grey60", linetype = "dashed"), # add grey horizontal gridlines
-              plot.caption = element_text(hjust = 0)) + # left-align the caption
-        labs(title = custom_title,
-             x = "", # No X-axis title
-             y = "") + # No Y-axis title
-        scale_fill_manual(values = c("Disbursed" = translucent_blue, "Implied Saving" = translucent_orange)) +
-        # Remove the legend title
-        guides(fill = guide_legend(title = NULL)) 
- 
