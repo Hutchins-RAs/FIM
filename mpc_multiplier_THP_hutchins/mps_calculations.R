@@ -185,7 +185,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                state_ui = ui - federal_ui)
 
 # Section D: MPS----------------------------------------------------------------
-  ## SUBPART A: read in the data and create MPC and MPS tables
+  ##### SUBPART A: read in the data and create MPC and MPS tables #####
   mpc <- readxl::read_xlsx('data/forecast.xlsx', 
                             sheet = 'mpc', 
                             skip = 1) %>%
@@ -217,7 +217,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   # with our MPC assumptions.
   # see mpc_lorae.R within the R folder for more information.
 
-  ## SUBPART B: Try a practice MPS calculation. Let's use the ui_arp MPS.
+  ##### SUBPART B: Try a practice MPS calculation. Let's use the ui_arp MPS. #####
   test_mps <- c_mps[which(alt_mps$variable == "ui_arp"),] %>%
     select(-variable) %>%
     unlist()
@@ -229,8 +229,8 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   saving_stream <- mps_lorae(x = test_spending, mps = test_mps)
   #Looks good!
 
-  # SUBPART C: Try applying to real data, ignoring the real vs. nominal and "minus
-  # neutral" adjustments for now.
+  ##### SUBPART C: Try applying to real data, ignoring the real vs. nominal and "minus
+  # neutral" adjustments for now. #####
   # The columns of the projections data frame called:
   # "federal_ui_arp", "state_ui_arp", "federal_other_vulnerable_arp"
   # are all fed into this function: mpc_vulnerable_arp(.x)
@@ -263,7 +263,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
             annualized = TRUE
   )
   
-  # PART D: Apply to other data.
+  ##### PART D: Apply to other data. #####
   # It turns out that the above calculation isn't quite right. We use two different
   # MPCs for ARP, depending on whether it was before or after 2021 Q1. I'll start
   # with some more simplistic examples.
@@ -440,18 +440,18 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                           terminal = terminal_2) # Terminal MPS
       print(state_ui$line)
     
-      
-      ### Time to make the mega graph
+      ##### SUBPART E: Continue this output with aggregates #####
+      ### Total cumulative disbursed and implied saving graph
       # list of dataframes
       df_list <- list(
-        federal_other_vulnerable_arp$data,
-        rebate_checks_arp$data,
-        federal_other_direct_aid_arp$data,
-        federal_student_loans$data,
-        federal_aid_to_small_businesses_arp$data,
-        federal_ui$data,
+        federal_other_vulnerable_arp = federal_other_vulnerable_arp$data,
+        rebate_checks_arp = rebate_checks_arp$data,
+        federal_other_direct_aid = federal_other_direct_aid_arp$data,
+        federal_student_loans = federal_student_loans$data,
+        federal_aid_to_small_businesses_arp = federal_aid_to_small_businesses_arp$data,
+        federal_ui = federal_ui$data,
         #state_ui$data,#State is high before the pandemic, so we exclude it.
-        rebate_checks$data
+        rebate_checks = rebate_checks$data
       )
       # bind rows from all data frames, and group by Date and Dataset
       # then, summarise by summing the Value
@@ -478,7 +478,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
       
       line_df <- combined_df[!(combined_df$Dataset == "Disbursed"), ]
       # Generate bar chart using ggplot2
-      line_chart <- ggplot(line_df, aes(x = Date + x_offset, y = Value, color = Dataset)) + 
+      total_disbursed_saving <- ggplot(line_df, aes(x = Date + x_offset, y = Value, color = Dataset)) + 
         geom_line(aes(group = Dataset), size = 1) +
         #geom_point(aes(shape = Dataset), size = 3) +
         scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
@@ -498,8 +498,83 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
         #scale_shape_manual(values = c("Disbursed" = 20, "Cumulative Implied Saving" = 20)) +
         guides(color = guide_legend(title = NULL), shape = guide_legend(title = NULL))
       
+      print(total_disbursed_saving)
       
-      print(line_chart)
+      ### Total cumulative implied saving line graph
+      # bind rows from all data frames, and group by Date and Dataset
+      # then, summarise by summing the Value
+      
+      # Initialize graph x-axis bounds
+      start <- "2019-01-01" # Graph start date
+      end <- "2025-01-01"
+      
+      # Set the date range for display
+      start_date <- as.Date(start) # first bar is 2019 Q1
+      end_date <- as.Date(end) # last bar is 2024 Q4
+      # Add a new column to each data frame in the list indicating the source of the data.
+      # Use lapply to apply a function to each data frame in the list.
+      df_list_named <- lapply(names(df_list), function(x) {
+        df_list[[x]] %>%
+          filter(Dataset == "Cumulative Implied Saving") %>%
+          mutate(Source = x)
+      })
+      
+      # Combine all data frames into a single data frame
+      df_combined <- bind_rows(df_list_named)
+      
+      # Now we can plot our data
+      total_saving <- ggplot(df_combined, aes(x = Date, y = Value, fill = Source)) +
+        geom_area() +
+        scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
+        scale_y_continuous(label = scales::dollar_format(suffix = " B")) +
+        labs(x = "Date",
+             y = "Cumulative Implied Saving",
+             caption = "Sums combine the following categories: Federal Other Vulnerable ARP, Rebate Checks ARP, Federal Other Direct Aid ARP, Federal Student Loans, Federal Aid to Small 
+             \nBusinesses ARP, Federal UI, Rebate Checks. Note that State UI is excluded because cumulative savings out of it were substantial even prior to the pandemic.",
+             fill = "Program",
+             title = "Cumulative Implied Saving by Program Over Time") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1),
+              legend.position = "bottom")
+      
+      print(total_saving)
+      
+      ### Total cumulative disbursed line graph
+      # bind rows from all data frames, and group by Date and Dataset
+      # then, summarise by summing the Value
+      
+      # Initialize graph x-axis bounds
+      start <- "2019-01-01" # Graph start date
+      end <- "2025-01-01"
+      
+      # Set the date range for display
+      start_date <- as.Date(start) # first bar is 2019 Q1
+      end_date <- as.Date(end) # last bar is 2024 Q4
+      # Add a new column to each data frame in the list indicating the source of the data.
+      # Use lapply to apply a function to each data frame in the list.
+      df_list_named <- lapply(names(df_list), function(x) {
+        df_list[[x]] %>%
+          filter(Dataset == "Cumulative Disbursed") %>%
+          mutate(Source = x)
+      })
+      
+      # Combine all data frames into a single data frame
+      df_combined <- bind_rows(df_list_named)
+      
+      # Now we can plot our data
+      total_disbursed <- ggplot(df_combined, aes(x = Date, y = Value, fill = Source)) +
+        geom_area() +
+        scale_x_date(date_labels = "%Y", date_breaks = "1 year", limits = c(start_date, end_date)) +
+        scale_y_continuous(label = scales::dollar_format(suffix = " B")) +
+        labs(x = "Date",
+             y = "Cumulative Disbursed",
+             caption = "Sums combine the following categories: Federal Other Vulnerable ARP, Rebate Checks ARP, Federal Other Direct Aid ARP, Federal Student Loans, Federal Aid to Small 
+             \nBusinesses ARP, Federal UI, Rebate Checks. Note that State UI is excluded because cumulative savings out of it were substantial even prior to the pandemic.",
+             fill = "Program",
+             title = "Cumulative Disbursed by Program Over Time") +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1),
+              legend.position = "bottom")
+      
+      print(total_disbursed)
       
       # Close the device driver
       dev.off()
