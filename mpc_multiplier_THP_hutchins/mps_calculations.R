@@ -283,9 +283,12 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                date = projections$date, # A vector of the dates used in the graph
                start = "2019-01-01", # Graph start date
                end = "2025-01-01", # Graph end date
-               title = "Federal Other Vulnerable ARP", # Graph title
+               title = "Figure 1A: Federal Other Vulnerable ARP", # Graph title
                annualized = TRUE)
-    print(federal_other_vulnerable_arp$chartline)
+    # Print the plot into the PDF
+    print(federal_other_vulnerable_arp$line)
+    # Save the plot as a PNG file
+    ggsave("mpc_multiplier_THP_hutchins/figures/fig01a.png", plot = federal_other_vulnerable_arp$line, width = 10, height = 8, dpi = 300)
     
     ### Rebate Checks ARP
     # CAUTION: This is another one where MPCs in the table don't match MPCs in the code.
@@ -303,8 +306,12 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                        date = projections$date, # A vector of the dates used in the graph
                        start = "2019-01-01", # Graph start date
                        end = "2025-01-01", # Graph end date
-                       title = "Rebate Checks ARP") # Graph title
+                       title = "Figure 1B: Rebate Checks ARP") # Graph title
+    # Print the plot into the PDF
     print(rebate_checks_arp$line)
+    # Save the plot as a PNG file
+    ggsave("mpc_multiplier_THP_hutchins/figures/fig01b.png", plot = rebate_checks_arp$line, width = 10, height = 8, dpi = 300)
+    
 
     ### Rebate Checks (non ARP?)
     # The MPCs in the table DO NOT match the MPCs in the code
