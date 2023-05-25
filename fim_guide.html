@@ -1347,6 +1347,76 @@ pre code {
 </style>
 
 
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
 
 <!-- tabsets -->
 
@@ -1492,6 +1562,29 @@ div.tocify {
 
 
 
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">My Website</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
 <div id="header">
 
 
@@ -1499,7 +1592,7 @@ div.tocify {
 <h1 class="title toc-ignore">FIM Guide</h1>
 <h3 class="subtitle">An attempt</h3>
 <h4 class="author">Nasiha Salwati</h4>
-<h4 class="date">Thursday, February 16 2023 at 02:53 PM</h4>
+<h4 class="date">Friday, May 12 2023 at 03:22 PM</h4>
 
 </div>
 
@@ -1562,7 +1655,7 @@ div.tocify {
 </ul>
 </div>
 <div id="note-that-this-is-not-a-standalone-document-nor-a-comprehensive-guide.-it-is-aimed-at-supplementing-our-other-resources-including" class="section level4">
-<h4><a id="note"></a> Note that this is not a standalone document nor a comprehensive guide. It is aimed at supplementing our other resources, including:</h4>
+<h4><a id="&lt;i&gt;&lt;u&gt;note&lt;/i&gt;&lt;/u&gt;"></a> <i><u>Note</i></u> that this is not a standalone document nor a comprehensive guide. It is aimed at supplementing our other resources, including:</h4>
 <ul>
 <li>Manu’s <a href="https://github.com/Hutchins-Center/fim#readme">read-me</a></li>
 <li>The guides and checklists in the data/<span class="file">forecast.xlsx</span> workbook.</li>
@@ -1575,9 +1668,9 @@ div.tocify {
 <p>We host the FIM at the following Github repository: <a href="https://github.com/Hutchins-Center/fim">https://github.com/Hutchins-Center/fim</a>. It contains the code, data, and output for the FIM. It was originally authored by Manuel Alcala Kovalski (Manu).</p>
 <p>If you’re new to Github, you might find Manu’s <a href="https://malcalakovalski.github.io/git_brownbag/#1">slides</a> a useful introduction. The Desktop version of Git is probably the easiest to use and is the version I’ve chosen for this guide. Here’s how to get Git:</p>
 <ol style="list-style-type: decimal">
-<li>Sign up for a <a href="https://github.com/">Github account</a> if you don’t already have one.</li>
+<li>Sign up for a <a href="https://github.com/signup">Github account</a> if you don’t already have one.</li>
 <li>Install the <a href="https://desktop.github.com/">Github Desktop app</a> from the Software Center.</li>
-<li>Clone the following repository to a folder on your computer: <a href="https://github.com/Hutchins-Center/fim">https://github.com/Hutchins-Center/fim</a>. (In the Desktop App, go to <code>File</code>&gt;<code>Clone a respository</code>&gt;<code>URL</code> and paste in the link.) In <code>Local path</code> choose a location on your computer where you’d like to host the <code>fim</code> folder. Note: Try choose a file path that is not synced to Sharepoint.</li>
+<li>Clone the following repository to a folder on your computer: <a href="https://github.com/Hutchins-Center/fim">https://github.com/Hutchins-Center/fim</a>. (In the Desktop App, go to <code>File</code>&gt;<code>Clone a respository</code>&gt;<code>URL</code> and paste in the link.) In <code>Local path</code> choose a location on your computer where you’d like to host the <code>fim</code> folder. <i><u>Note</i></u>: Choose a file path that is not synced to Sharepoint. More specifically, the file should be on your hard drive, not one that is uploaded to a Cloud.</li>
 </ol>
 <p>We use Git to <span class="git-object">push</span> our own changes and <span class="git-object">pull</span> other contributors’ changes to the FIM.</p>
 <ul>
@@ -1585,8 +1678,8 @@ div.tocify {
 <li><p>After committing your changes, you will have to <span class="git-object">push</span> your changes to <span class="origin">fetch</span>(<a href="https://github.com/Hutchins-Center/fim">https://github.com/Hutchins-Center/fim</a>) to make them available to other contributors.</p></li>
 <li><p>Pushed changes can then be <span class="git-object">fetch</span>-ed and <span class="git-object">pull</span>-ed within the Github Desktop app by others.</p></li>
 </ul>
-<p>Note that merging changes for the same file can be tricky so multiple users should not be simultaneously working on the same file. Wait for them to <span class="git-object">push</span> their changes. Then <span class="git-object">fetch</span> and <span class="git-object">pull</span> them in before making changes to the same file.</p>
-<p>Only approved contributors can make changes to the repository. To be added, please reach out to the admin with your Github username. The current admin is Eli (<code>@EliAsdourian</code>). To add contributors, admins can navigate to <a href="https://github.com/Hutchins-Center/fim/settings/access">https://github.com/Hutchins-Center/fim/settings/access</a> and add people by their username. They can also remove contributors or reassign admin duties. For security, try to restrict the admin designation to one RA at a time.</p>
+<p><i><u>Note</i></u> that merging changes for the same file can be tricky so multiple users should not be simultaneously working on the same file. Wait for them to <span class="git-object">push</span> their changes. Then <span class="git-object">fetch</span> and <span class="git-object">pull</span> them in before making changes to the same file.</p>
+<p>Only approved contributors can make changes to the repository. To be added, please reach out to the admin with your Github username. The current admin is Lorae Stojanovic (<code>@lorae-brookings</code>). To add contributors, admins can navigate to <a href="https://github.com/Hutchins-Center/fim/settings/access">https://github.com/Hutchins-Center/fim/settings/access</a> and add people by their username. They can also remove contributors or reassign admin duties. For security, try to restrict the admin designation to one RA at a time.</p>
 </div>
 <div id="section-1-2">
 <h3 id="install-the-fim-package">Install the <span class="r-object">fim</span> package</h3>
@@ -1601,7 +1694,7 @@ install.packages(&quot;librarian&quot;)
 devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <ol start="3" style="list-style-type: decimal">
 <li><p><a id="load_fim"></a> To load the <span class="r-object">fim</span> package, open the <span class="file">fim.Rproj</span> file in the fim directory. This will set the working directory to the fim folder. <u>IMPORTANT: Make sure to always have the <span class="file">fim.Rproj</span> file open before running any code related to the FIM.</u></p></li>
-<li><p>Next, open the <span class="file">fiscal_impact.R</span> script and run up till the line <code>devtools::load_all()</code> (line 8 at the time of writing this guide) to load the <span class="r-object">fim</span> package and all relevant functions. Note: if it is your first time running the script, it is best to run this section one line at a time and install all dependencies. Each subsequent time, you can load the <span class="r-object">fim</span> by pressing <code>CTRL + SHIFT + L</code> when working within the <span class="file">fim.Rproj</span> file.</p></li>
+<li><p>Next, open the <span class="file">fiscal_impact.R</span> script and run up till the line <code>devtools::load_all()</code> (line 8 at the time of writing this guide) to load the <span class="r-object">fim</span> package and all relevant functions. <i><u>Note</i></u>: if it is your first time running the script, it is best to run this section one line at a time and install all dependencies. Each subsequent time, you can load the <span class="r-object">fim</span> by pressing <code>CTRL + SHIFT + L</code> when working within the <span class="file">fim.Rproj</span> file.</p></li>
 </ol>
 <p>As general R practice, avoid saving the R Workspace image when you exit. (To disable this exit prompt, navigate to <code>Tools &gt; Global Options</code> from the top menu bar. In the <code>General</code> tab, change the value for <code>Save workspace to . RData on exit</code> to <code>Never</code>)</p>
 </div>
@@ -1617,14 +1710,14 @@ devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <ul>
 <li><p>We get data for our <em>historical</em> period (everything including the most recent numbers) from BEA’s <a href="https://www.bea.gov/products/national-income-and-product-accounts">National Income and Product Accounts</a>, which are hosted on <a href="https://haver.com/">Haver</a>.</p>
 <ul>
-<li>Every month the BEA releases new data on GDP (known as the <a href="https://www.bea.gov/data/gdp/gross-domestic-product">gdp release</a>). For each quarter, we get a preliminary estimate and two revisions, thus giving us data over three months for each quarter. These data are updated in the <a href="https://haverproducts.com/products/u-s-economic-detail/#top">Haver datasets</a>.</li>
+<li><a id="bea_data"></a> Every month, the BEA releases new data on GDP (known as the <a href="https://www.bea.gov/data/gdp/gross-domestic-product">gdp release</a>). For each quarter, we get a preliminary estimate and two revisions, thus giving us data over three months for each quarter. These data are updated in the <a href="https://haverproducts.com/products/u-s-economic-detail/#top">Haver datasets</a>.</li>
 </ul></li>
 </ul>
 <p>
 <ul>
-<li><p>We get estimates for our <em>forecast</em> period using the BEA data as well as CBO’s <a href="https://www.cbo.gov/data/budget-economic-data">Budget, Economic, and Revenue Projections</a>.</p>
+<li><p>We get estimates for our <em>forecast</em> period using the BEA data as well as CBOs <a href="https://www.cbo.gov/data/budget-economic-data">Budget, Economic, and Revenue Projections</a>.</p>
 <ul>
-<li>Typically a few times each year, the CBO releases updates on its projections. We use variables from the <a href="https://www.cbo.gov/data/budget-economic-data#3">10-year Budget</a>, <a href="https://www.cbo.gov/data/budget-economic-data#4">10-year Economic</a>, and <a href="https://www.cbo.gov/data/budget-economic-data#7">Revenue</a> projections as a baseline for many of our <em>forecast</em> estimates.
+<li>Typically, a few times each year, the CBO releases updates on its projections. We use variables from the <a href="https://www.cbo.gov/data/budget-economic-data#3">10-year Budget</a>, <a href="https://www.cbo.gov/data/budget-economic-data#4">10-year Economic</a>, and <a href="https://www.cbo.gov/data/budget-economic-data#7">Revenue</a> projections as a baseline for many of our <em>forecast</em> estimates.
 </div></li>
 </ul></li>
 </ul>
@@ -1636,11 +1729,11 @@ devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <div id="data-rawhaver_pull.r" class="section level4">
 <h4>data-raw/<span class="file">haver_pull.R</span></h4>
 <ul>
-<li>Used for ‘pulling in the data’ when GDP numbers come in, used every update.
+<li>Used for ‘pulling in the data’ when GDP numbers come in, used every update.<a id="haver_pull"></a>
 <ul>
 <li>We pull GDP data from Haver using this script following a <a href="#data">BEA release</a> (typically the last Thursday of the month; view upcoming releases <a href="https://www.bea.gov/news/schedule">here</a>).</li>
 <li>It updates the <span class="r-object">national accounts</span> dataset and the <i>Haver Pivoted</i> sheet in the data/<span class="file">forecast.xlsx</span> workbook.</li>
-<li>Note: We only run the script the morning of the GDP release (once the numbers have been updated on Haver). It is important to <a href="#prep">prep the forecast sheet</a> before pulling in the data, meaning it should only be run once you’re ready for the current update and not in between updates.</li>
+<li><i><u>Note</i></u>: We only run the script the morning of the GDP release (once the numbers have been updated on Haver). It is important to <a href="#prep">prep the forecast sheet</a> before pulling in the data, meaning it should only be run once you’re ready for the current update and not in between updates.</li>
 </ul>
 </div></li>
 </ul>
@@ -1649,12 +1742,12 @@ devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <div id="dataforecast.xlsx" class="section level4">
 <h4>data/<span class="file">forecast.xlsx</span></h4>
 <ul>
-<li>We call this the ‘forecast sheet’ (even though it’s a workbook and has a sheet called <i>forecast</i> within it), used every update.
+<li>We call this the <a id="forecast"></a>‘forecast sheet’ (even though it’s a workbook and has a sheet called <i>forecast</i> within it), used every update.
 <ul>
 <li>This is the main document that we use to update the FIM forecast.</li>
 <li>It comprises sheets that calculate the forecast levels for various FIM components, as well as the data and policy scores used to generate them. It also includes the primary instructions on how to update the FIM and a record of MPC assumptions.</li>
 <li>When new BEA data comes in, we use data-raw/<span class="file">haver_pull.R</span> to pull it into the <i>Haver Pivoted</i> sheet. The <i>Haver Pivoted</i> sheet contains quarterly BEA data up to and including the most recent numbers in the right-most column.</li>
-<li>The sheets of the FIM components pull data from <i>Haver Pivoted</i>. Each of these sheets has one or several tables split into a <em>historical</em> and a <em>forecast</em> period. The line items in these tables feed into formulas to create a top line FIM component in the <em>forecast</em> period, which is then pulled into the <i>forecast</i> sheet.</li>
+<li>The sheets of the FIM components pull data from <i>Haver Pivoted</i>. Each of these sheets has one or several tables split into a <em>historical</em> and a <em>forecast</em> period. The line items in these tables feed into formulas to create a top-line FIM component in the <em>forecast</em> period, which is then pulled into the <i>forecast</i> sheet.</li>
 <li>Certain values are also called into the <i>historical overrides</i> and <i>deflators_override</i> sheets. These two sheets, along with the <i>forecast</i> sheet, are the only ones pulled into the code.</li>
 </ul>
 </div></li>
@@ -1667,7 +1760,7 @@ devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <li>This is the main script that calculates the FIM. Typically, this is the only script we run after we are happy with the <span class="file">forecast.xlsx</span> sheet.</li>
 <li>It pulls in the updated data (the <span class="r-object">national accounts</span> and <span class="r-object">projections</span> datasets), the updated <em>forecast</em> sheet from the data/<span class="file">forecast.xlsx</span> workbook, the historical overrides and our updated deflators (<em>historical overrides</em>, and <em>deflators_override</em> sheets from the same workbook).</li>
 <li>It cleans, reshapes, and defines the FIM categories for the <em>historical</em> and <em>forecast</em> period by calling all the relevant functions from the <span class="r-object">fim</span> package.</li>
-<li>It calculates the FIM by generating the counterfactual levels, getting the difference from the actuals, applying MPCs, and their % contributions to GDP. (See the methodology document linked <a href="#note">above</a> for details)</li>
+<li>It calculates the FIM by generating the counterfactual levels, getting the difference from the actuals, applying MPCs, and their % contributions to GDP. (See the methodology document linked <a href="#%3Ci%3E%3Cu%3Enote%3C/i%3E%3C/u%3E">above</a> for details)</li>
 <li>It generates the update comparison (where we compare how much our estimates have changed since the last update by category), reported in the <span class="file">index.html</span> file.</li>
 <li>It generates the web materials that we publish on the website: <code>results/month-year/</code><span class="file">Fiscal-Impact-month-year.pdf</span> and <code>results/month-year/</code><span class="file">interactive-month-year.csv</span>. It also saves a copy of the <span class="file">forecast.xlsx</span> workbook for the current update in the same <code>results</code> directory for future reference.</li>
 </ul>
@@ -1692,59 +1785,87 @@ devtools::install_github(&quot;Hutchins-Center/fim&quot;)</code></pre>
 <li>We run it after we’ve updated inst/extdata/<span class="file">projections.xlsx</span> with a new CBO baseline.</li>
 <li>It pulls the <em>economic</em> and <em>budget</em> sheets from <span class="file">projections.xlsx</span>, cleans them, and updates the <span class="r-object">projections</span> dataset.</li>
 <li>The updated <span class="r-object">projections</span> dataset is used when we run the FIM using <span class="file">fiscal_impact.R</span>. This means that we only have to run <span class="file">projections.R</span> once we get a new CBO baseline.</li>
-<li>Note that neither <span class="file">projections.xlsx</span> nor <span class="file">projections.R</span> updates the <span class="file">forecast.xlsx</span> workbook following a CBO release: they only update the <span class="r-object">projections</span> dataset. We manually paste in certain series from the CBO update into the forecast sheet (see instructions here)</li>
+<li><i><u>Note</i></u> that neither <span class="file">projections.xlsx</span> nor <span class="file">projections.R</span> updates the <span class="file">forecast.xlsx</span> workbook following a CBO release: they only update the <span class="r-object">projections</span> dataset. We manually paste in certain series from the CBO update into the forecast sheet (see instructions here)</li>
 </ul></li>
 </ul>
 </div>
 </div>
 <div id="section-3-3">
-<h3 id="steps-to-update-the-fim">Steps to update the FIM</h3>
+</div>
+</div>
+<div id="steps-to-update-the-fim" class="section level3">
+<h3>Steps to update the FIM</h3>
 <div id="section-3-3-1">
-<h4 id="bea">BEA</h4>
-<p>We get new data every month. The process varies a little if it’s a <a href="#new_q">new quarter</a> or <a href="#rev">revision</a>. Updates are published the day after we get the data (i.e. by the end of Friday if we got the data on Thursday).</p>
-<ul>
-<li>All BEA updates follow the same basic structure:
-<ul>
+
+<div id="bea" class="section level4">
+<h4>BEA</h4>
+<p>As mentioned <a href="#data">above</a>, we get monthly data for the quarterly BEA numbers. The process varies a little if it’s a <a href="#new_q">new quarter</a> or <a href="#rev">revision</a>. FIM updates are published the day after we get the data (i.e., by the end of Friday if we got the data on Thursday).</p>
+<div style="line-height: 1.5;">
+<p>All BEA updates follow the same basic structure:</p>
+<ol style="list-style-type: decimal">
 <li><a href="#prep">Prep</a> the forecast sheet.</li>
 <li><a href="#pull">Pull</a> GDP data.</li>
 <li><a href="#discuss">Discuss</a> and adjust the forecast.</li>
 <li><a href="#run_the_fim">Run</a> the FIM.</li>
-<li><a href="#compare">Compare</a> changes from last update and adjust as needed.</li>
+<li><a href="#compare">Compare</a> changes from the last update and adjust as needed.</li>
 <li><a href="#publish">Publish</a> the results.</li>
-</ul></li>
-</ul>
+</ol>
+</div>
+<div id="section-3-3-1-1">
 <h5 id="new-quarter-update"><a id="new_q"></a> New quarter update</h5>
+<p>Every three months (Jan, Apr, Jul, and Oct) we get data for what we call a “new” quarter from the BEA. BEA calls this the <a href="https://www.bea.gov/help/glossary/advance-estimate">Advance estimate</a> for the most recent quarter (so, in Jan 2023, we got the Advance estimate for Q4 2022; in Dec 2022, we got the Advance estimate for Q3 2022, etc.) Running this update is the most time-intensive because steps (1), (3), and (5) take more time than they do in a revision.</p>
+<ol style="list-style-type: decimal">
+<li><a id="prep"></a> Prep the forecast sheet
 <ul>
-<li>Make a copy of the previous forecast in the <em>forecast comparison</em> sheet of</li>
-</ul>
+<li><b>When do we do this?</b> Before the data come out, ideally before the Thursday of the <a href="https://www.bea.gov/data/gdp/gross-domestic-product">GDP release</a>.</li>
+<li>Open the data/<a href="#forecast">forecast.xlsx</a> file.</li>
+<li>Navigate to the sheet that says <i>Checklist (New Quarter Release)</i> sheet</li>
+<li>Go through the checklist and update the sheets in the Excel workbook according to the instructions. The goal is to do all the steps that can be done without the data: at the time of writing this guide, that means going through row 6, “Prepare the Historical Overrides and deflators_override sheets.”</li>
+<li><i><u>Note</i></u>: be extra careful with row 5, “Prepare this month’s spreadsheet for a new quarter of data to be read in from Haver.” This is the most important part of our new quarter update, as it sets us up to use the new data we’ll be getting to inform our new forecast. Double check every formula in the historical period and the forecast period, check your intuition for how we’re using the data to inform our forecast, check whether there are any inconsistencies in our formulas … basically, do a good job because mistakes here can be costly.</li>
+</ul></li>
+<li><a id="pull"></a> Pull GDP data
+<ul>
+<li><b>When do we do this?</b> The day of the <a href="https://www.bea.gov/data/gdp/gross-domestic-product">GDP release</a>, ideally first thing Thursday morning.</li>
+<li>Open the <span class="file">fim.Rproj</span> file and load the <span class="r-object">fim</span> package (<code>CTRL+SHIFT+L</code>)</li>
+<li>Open the data-raw/<a href="#haver_pull">haver_pull.R</a> script and run it. Make sure that you don’t have the data/<a href="#forecast">forecast.xlsx</a> workbook open, as this script overwrites the <i>Haver Pivoted</i> sheet (and, as mentioned <a href="#haver_pull">above</a>, updates the <span class="r-object">national accounts</span>.)</li>
+<li>Note: we specify which series we pull from Haver in data/<span class="file">haver_names.xlsx.</span> If you want to add a new series to the FIM, put it at the end of the list (row 75 at the time of writing this guide) and add the haver code and the variable name in columns A and B respectively.</li>
+<li></li>
+</ul></li>
+</ol>
+<div id="section-3-3-1-2">
+<h5 id="revision-update"><a id="rev"></a> Revision update</h5>
+<p>BEA revises the data for each quarter twice. So every Feb, Mar, May, Jun, Aug, Sep, Nov, and Dec, we get data for the same quarter that we did in the preceding month (so, in Feb 2023 and Mar 2023, we got data for Q4 2022.) These updates tend to be an easier lift than a <a href="#new_q">new quarter</a> update unless there’s a new policy or <a href="#section-3-3-2">CBO baseline</a> to incorporate (which isn’t common.)</p>
+</div>
 </div>
 <div id="section-3-3-2">
 <h4 id="cbo">CBO</h4>
 <p>We get updates a few times a year. The process varies depending on whether it’s a <a href="#baseline">new CBO baseline</a> or a <a href="#score">new policy score</a>. Updates are published after we get the next BEA release.</p>
+<div id="section-3-3-2-1">
 <h5 id="new-cbo-baseline">New CBO Baseline</h5>
 <ul>
-<li><a id="baseline"></a> As mentioned in the <a href="#data">data</a> section, we get routine updates from the CBO that informs our baseline forecast. Here are the steps to incorporate a new CBO baseline (you can also use the the <span class="file">forecast.xlsx</span> file’s <em>Checklist (CBO Budget Release)</em> if you prefer):
+<li><a id="baseline"></a> As mentioned in the <a href="#data">data</a> section, we get routine updates from the CBO that inform our baseline forecast. Here are the steps to incorporate a new CBO baseline (you can also use the <span class="file">forecast.xlsx</span> file’s <em>Checklist (CBO Budget Release)</em> if you prefer):
 <ul>
 <li>We use the linked Excel files from three CBO publications: <a href="https://www.cbo.gov/data/budget-economic-data#3">the 10-year Budget Projection</a>, <a href="https://www.cbo.gov/data/budget-economic-data#4">the 10-year Economic Projection</a>, and <a href="https://www.cbo.gov/data/budget-economic-data#7">the Revenue Projection</a>. Download the latest release.</li>
 </ul></li>
 </ul>
-<h6 id="updating-the-projections-dataset">Updating the <span class="r-object">projections</span> dataset</h6>
+<h6 id="updating-the-projections-dataset">1. Updating the <span class="r-object">projections</span> dataset</h6>
 <ul>
 <li>Update the <em>economic</em> and <em>budget</em> sheets within <code>inst/extdata/</code><span class="file">projections.xlsx</span> workbook using the instructions in the <em>dictionary</em> sheet. Make sure to save your work.</li>
 <li>Run <code>data-raw/</code><span class="file">projections.R</span>. This overwrites the <span class="r-object">projections</span> dataset.</li>
 <li>You can check whether the update has worked by <a href="#load_fim">loading</a> the <span class="r-object">fim</span> package and running <code>View(projections)</code> in your console. Git <span class="git-object">commit</span> and <span class="git-object">push</span> your changes once you feel confident about your work.</li>
 </ul>
-<h6 id="updating-the-forecast.xlsx-workbook">Updating the <span class="file">forecast.xlsx</span> workbook</h6>
+<h6 id="updating-the-forecast.xlsx-workbook">2. Updating the <span class="file">forecast.xlsx</span> workbook</h6>
 <ul>
 <li>In the <em>forecast comparison</em> sheet of <span class="file">forecast.xlsx</span>, copy the <u>values</u> in the Current Forecast table, and paste the <u>values</u> into the Previous Forecast table. Label the table headings to reflect the date of the Previous Forecast and the date of the CBO update.</li>
 <li>Locate CBO items in the sheets of the FIM components. They should all be labeled as such, with a comment on the CBO release, table, and row number they are pulled from. Copy the old values in each series and paste them in rows near where they currently are. Insert rows if you have to. This retains a record of what we previously had for each CBO line and makes comparing changes easier.</li>
-<li>Use the comment in the series label to locate the same series in the latest CBO release. Note that table #s and row #s referring to the CBO data may change between CBO updates. You can double-check you’ve located the same series by comparing it against what was published in the old update.</li>
-<li>Replace the old values with the numbers from the most recent update. The new numbers should go exactly where the old numbers were in order to preserve the formulas that depend on CBO.<br> Note that some of the rows labeled as CBO have hard coded variables in every cell, while others have formulas in the historical period and have hard coded values in the forecast period. In both cases, only paste over the hard coded values with the new numbers. In other words, <u>no formulas should be replaced with hard coded values</u>.</li>
-<li>Label the old and new values clearly. Also update the comment with the release date, table, and row # of where you pulled it from.</li>
+<li>Use the comment in the series label to locate the same series in the latest CBO release. <i><u>Note</i></u> that table #s and row #s referring to the CBO data may change between CBO updates. You can double-check you’ve located the same series by comparing it against what was published in the old update.</li>
+<li>Replace the old values with the numbers from the most recent update. The new numbers should go exactly where the old numbers were in order to preserve the formulas that depend on CBO.<br> <i><u>Note</i></u> that some of the rows labeled as CBO have hard-coded variables in every cell, while others have formulas in the historical period and have hard-coded values in the forecast period. In both cases, only paste over the hard-coded values with the new numbers. In other words, <u>no formulas should be replaced with hard-coded values</u>.</li>
+<li>Label the old and new values clearly. Also, update the comment with the release date, table, and row # of where you pulled it from.</li>
 <li>Walk through the changes with Louise like a regular update. It’s important to discuss how to deal with old legislation we’ve added to the sheets – by incorporating the new baseline, we’d likely want to ‘turn those off’ (i.e. set them to zero) since they’re now included in CBO.</li>
 <li>Clean up the sheets (removing the rows with the old series/old legislation if they’re no longer used, for instance).</li>
 <li><a href="#run_the_fim">Run the FIM</a> and <a href="#compare">compare</a> output as usual.</li>
-<li>Wait until the next <a href="#bea_update">BEA update</a> to <a href="#publish">publish</a> the results.</li>
+<li>Wait until the next <a href="#bea_update">BEA update</a> to <a href="#publish">publish</a> the results.
+</div></li>
 </ul>
 </div>
 </div>
@@ -1801,7 +1922,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3,h4",
+      selectors: "h1,h2,h3,h4,h5",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
