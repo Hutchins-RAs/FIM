@@ -6,6 +6,7 @@ header-includes:
 - \usepackage{float}
 
 output: pdf_document
+latex_engine: lualatex
 mainfont: Arial 
 params:
   start: '1999 Q4'

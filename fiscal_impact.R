@@ -1,9 +1,11 @@
+.libPaths("C:/Users/EAsdourian/Documents/library")
 #Section A: prep for new update ----------------------
 
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
 
 librarian::shelf(tidyverse, tsibble, lubridate, glue, TimTeaFan/dplyover, zoo, TTR, fs, gt, openxlsx, 
-                 snakecase, rlang, fredr, BrookingsInstitution/ggbrookings) # Load packages
+                 snakecase, rlang) # Load packages
+library(ggbrookings)
 devtools::load_all() # Load all functions in package
 
 options(digits = 4) # Limit number of digits
@@ -387,12 +389,13 @@ rmarkdown::render('Fiscal-Impact.Rmd',
                   # Render R Markdown document to PDF file
                   output_file = 'Fiscal-Impact.pdf',
                   clean = TRUE,
-                  params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8))
+                  params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8),
+                  pdf_document(latex_engine = "lualatex"))
 
 # Copy PDF file to new location, overwriting any existing file
-file_copy(path = 'Fiscal-Impact.pdf',
-          new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.pdf'),
-          overwrite = TRUE)
+# file_copy(path = 'Fiscal-Impact.pdf',
+#          new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.pdf'),
+#          overwrite = TRUE)
 
 # Section G: Comparison ------------------------------------------------------------
 
