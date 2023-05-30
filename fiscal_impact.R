@@ -1,4 +1,16 @@
-.libPaths("C:/Users/EAsdourian/Documents/library")
+
+# Miscellaneous: set up for Eli because has a different library directory -----
+#Get system information
+sys_info <- Sys.info()
+
+# Check if the username is 'EAsdourian'
+if (sys_info['user'] == 'EAsdourian') {
+  .libPaths("C:/Users/EAsdourian/Documents/library")
+  # Other code to run if the user is 'EAsdourian'
+} else {
+  print("The code is not being run by 'EAsdourian'")
+}
+
 #Section A: prep for new update ----------------------
 
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
@@ -391,7 +403,7 @@ rmarkdown::render('Fiscal-Impact.Rmd',
                   clean = TRUE,
                   params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8))
 
-# Copy PDF file to new location, overwriting any existing file
+# Copy html file to new location, overwriting any existing file
 file_copy(path = 'Fiscal-Impact.html',
          new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.html'),
          overwrite = TRUE)
