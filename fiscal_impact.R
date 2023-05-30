@@ -387,15 +387,14 @@ readr::write_csv(interactive,  file = glue('results/{month_year}/interactive-{mo
 # Figures for website
 rmarkdown::render('Fiscal-Impact.Rmd',
                   # Render R Markdown document to PDF file
-                  output_file = 'Fiscal-Impact.pdf',
+                  output_file = 'Fiscal-Impact.html',
                   clean = TRUE,
-                  params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8),
-                  pdf_document(latex_engine = "lualatex"))
+                  params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8))
 
 # Copy PDF file to new location, overwriting any existing file
-# file_copy(path = 'Fiscal-Impact.pdf',
-#          new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.pdf'),
-#          overwrite = TRUE)
+file_copy(path = 'Fiscal-Impact.html',
+         new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.html'),
+         overwrite = TRUE)
 
 # Section G: Comparison ------------------------------------------------------------
 

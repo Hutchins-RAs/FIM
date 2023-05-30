@@ -5,8 +5,7 @@ header-includes:
 - \usepackage{graphicx}
 - \usepackage{float}
 
-output: pdf_document
-latex_engine: lualatex
+output: html_document
 mainfont: Arial 
 params:
   start: '1999 Q4'
