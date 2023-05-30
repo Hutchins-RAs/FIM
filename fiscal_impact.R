@@ -16,8 +16,7 @@ if (sys_info['user'] == 'EAsdourian') {
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
 
 librarian::shelf(tidyverse, tsibble, lubridate, glue, TimTeaFan/dplyover, zoo, TTR, fs, gt, openxlsx, 
-                 snakecase, rlang) # Load packages
-library(ggbrookings)
+                 snakecase, rlang, BrookingsInstitution/ggbrookings) # Load packages
 devtools::load_all() # Load all functions in package
 
 options(digits = 4) # Limit number of digits
