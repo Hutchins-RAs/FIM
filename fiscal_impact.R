@@ -3,12 +3,12 @@
 #Get system information
 sys_info <- Sys.info()
 
-# Check if the username is 'EAsdourian'
-if (sys_info['user'] == 'EAsdourian') {
-  .libPaths("C:/Users/EAsdourian/Documents/library")
-  # Other code to run if the user is 'EAsdourian'
+# Check if the username is 'easdourian'
+if (sys_info['user'] == 'easdourian') {
+  .libPaths("C:/Users/easdourian/Documents/library")
+  # Other code to run if the user is 'easdourian'
 } else {
-  print("The code is not being run by 'EAsdourian'")
+  print("The code is not being run by 'easdourian'")
 }
 
 #Section A: prep for new update ----------------------
