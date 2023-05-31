@@ -7,3 +7,4 @@ output_file <- "fim_guide.html"
 
 # Render the R Markdown document and save the output to the specified path
 rmarkdown::render(input_file, output_file = output_file)
+
