@@ -1,9 +1,5 @@
 # 0.0 Source ----------------------------------------------------------------------------------------------------------
 ## Source custom  functions and packages
-
-#First time running haver_pull? Install the Haver package: 
-#install.packages("Haver", repos="http://www.haver.com/r/")
-
 Sys.setenv(TZ = 'UTC')
 librarian::shelf(Haver, dplyr, tidyr, readxl, writexl, tsibble, purrr, openxlsx)
 
