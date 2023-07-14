@@ -1,3 +1,4 @@
+
 #Section A: prep for new update ----------------------
 
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
@@ -586,3 +587,25 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
       # Close the device driver
       dev.off()
 
+      ##### SUBPART F: Output a table with MPCs and MPSs#####
+      # The problem with the c_MPC and c_MPS, etc. tables generated above is that
+      # they come from the Excel document. The Excel document does not match the 
+      # code MPCs.
+      # And my calculations above use MPCs and MPSs from the Excel document... not
+      # from the code! Time to fix this.
+      
+      # Generate data frame of MPCs
+      # Define the data frame with the first column
+      df <- data.frame(name = c("mpc_direct_aid_arp", "mpc_rebate_checks"))
+      
+      # Define the data frame columns row-by-row
+      # first row is code name
+      # second row is table name
+      act_mpc <- rbind(c("mpc_direct_aid_arp", "other_direct_aid_arp",
+                         0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03),
+                  c("mpc_rebate_checks", "rebate_checks_arp", 
+                    0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08, NA, NA, NA, NA),
+                  c()
+      
+      
+      
