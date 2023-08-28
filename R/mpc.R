@@ -166,7 +166,10 @@ mpc_non_health_grants_arp <- mpc(timing = c(rep(0.07, 2),
                                    rep(0.0475, 7),
                                    0.0375))
 
-
+# Added to account for the supply-side effects on manufacturing from IRA
+# We take the effects as instantaneous rather than as smoothed consumption
+# Over multiple periods
+mpc_supply_side_ira <- mpc(timing = c(1, rep(0, 11)))
 
   mpc_arp_non_health_grants_dos<- function(x){
     mpc <- 1

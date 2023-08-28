@@ -195,7 +195,10 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   # FIXME: Figure out why wrong number was pulled from Haver (like 400)
   mutate_where(date == yearquarter('2021 Q4'),
                federal_ui = 11, 
-               state_ui = ui - federal_ui)
+               state_ui = ui - federal_ui) %>%
+  #apply overrides for Supply Side IRA
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+               supply_side_ira = overrides$supply_side_ira_override)
 
 # Section D: Consumption -------------------------------------------------------------
 consumption <- # Compute consumption out of transfers (apply MPC's)
@@ -228,7 +231,8 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
         # "federal_ui_arp",
         #"state_ui_arp",
         "federal_aid_to_small_businesses_arp",
-        "federal_student_loans"
+        "federal_student_loans",
+        "supply_side_ira"
       )
     ),
     #Getting the level minus neutral
@@ -250,6 +254,14 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
       ),
       #same as above, applying a different MPC function to these 
       .fns = ~ mpc_direct_aid_arp(.),
+      .names = "{.col}_post_mpc"
+    ),
+    across(
+      .cols = any_of(
+        c("supply_side_ira") %>% paste0("_minus_neutral")
+      ),
+      #getting the post mpc levels for the ARP variables
+      .fns = ~ mpc_supply_side_ira(.x),
       .names = "{.col}_post_mpc"
     ),
     #same as above, applying a different MPC function to this
@@ -288,6 +300,8 @@ contributions <- # Calculate contributions
   #Define FIM variables for taxes 
   mutate(non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + 
            state_non_corporate_taxes_contribution) %>%
+  # mutate(corporate_taxes_contribution = corporate_taxes_contribution + 
+  #          supply_side_ira_contribution) %>%
   mutate(taxes_contribution = non_corporate_taxes_contribution + 
            corporate_taxes_contribution) %>%
   
@@ -311,7 +325,8 @@ contributions <- # Calculate contributions
     taxes_contribution = federal_non_corporate_taxes_contribution + 
       state_non_corporate_taxes_contribution +
       federal_corporate_taxes_contribution + 
-      state_corporate_taxes_contribution
+      state_corporate_taxes_contribution +
+      supply_side_ira_contribution
   ) %>%
   
   #Add student loans to federal transfers 
