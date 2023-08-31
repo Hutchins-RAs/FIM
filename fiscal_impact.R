@@ -311,8 +311,8 @@ contributions <- # Calculate contributions
   #Define FIM variables for taxes 
   mutate(non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + 
            state_non_corporate_taxes_contribution) %>%
-  # mutate(corporate_taxes_contribution = corporate_taxes_contribution + 
-  #          supply_side_ira_contribution) %>%
+  mutate(federal_corporate_taxes_contribution = federal_corporate_taxes_contribution +
+           supply_side_ira_contribution) %>%
   mutate(taxes_contribution = non_corporate_taxes_contribution + 
            corporate_taxes_contribution) %>%
   
@@ -336,13 +336,12 @@ contributions <- # Calculate contributions
     taxes_contribution = federal_non_corporate_taxes_contribution + 
       state_non_corporate_taxes_contribution +
       federal_corporate_taxes_contribution + 
-      state_corporate_taxes_contribution +
-      supply_side_ira_contribution
+      state_corporate_taxes_contribution
   ) %>%
   
   #Add student loans to federal transfers 
-  mutate(federal_transfers_contribution = federal_transfers_contribution + 
-           federal_student_loans_contribution)%>%
+  # mutate(federal_transfers_contribution = federal_transfers_contribution +
+  #   federal_student_loans_contribution)%>%
   
   #Define FIM subsidies 
   mutate(subsidies = federal_subsidies + state_subsidies,

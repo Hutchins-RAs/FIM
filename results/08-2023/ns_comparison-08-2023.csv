@@ -11,8 +11,8 @@ Federal Aid to Small Businesses Arp Contribution,previous,0.0421,0.1851,0.0475,-
 Federal Contribution,current,0.0128,-0.6927,0.1686,-0.1256,0.4365,-0.1787,-0.4349,NA,NA,-0.186,-0.1945,-0.3951,-0.4939,-0.143,-0.1426,-0.46,-0.4584
 Federal Contribution,difference,-0,0,0,-0,0,0,-0,NA,NA,-1.3455,0.0037,0.0075,0.0094,0.0027,0.0027,0.0087,32.2647
 Federal Contribution,previous,0.0128,-0.6927,0.1686,-0.1256,0.4365,-0.1787,-0.4349,NA,NA,1.1595,-0.1982,-0.4026,-0.5033,-0.1457,-0.1453,-0.4687,-32.7231
-Federal Corporate Taxes Contribution,current,-0.0173,-0.012,-0.0199,-0.04,-0.0509,-0.0513,-0.0293,NA,NA,-0.0331,-0.028,-0.0166,-0.0021,-0.0045,0.0061,0.0077,0.0232
-Federal Corporate Taxes Contribution,difference,0,0,-0,0,-0,-0,-0,NA,NA,0.0098,0.0102,0.0098,0.0093,0.0092,0.0088,0.0144,-0.1656
+Federal Corporate Taxes Contribution,current,-0.0173,-0.012,-0.0199,-0.04,-0.0509,0.1279,-0.0301,NA,NA,0.3319,0.3106,0.2054,-0.0771,-0.1953,-0.1772,-0.244,-0.1845
+Federal Corporate Taxes Contribution,difference,0,0,-0,0,-0,0.1792,-8e-4,NA,NA,0.3748,0.3488,0.2318,-0.0657,-0.1816,-0.1745,-0.2373,-0.3733
 Federal Corporate Taxes Contribution,previous,-0.0173,-0.012,-0.0199,-0.04,-0.0509,-0.0513,-0.0293,NA,NA,-0.0429,-0.0381,-0.0263,-0.0114,-0.0137,-0.0027,-0.0067,0.1888
 Federal Health Outlays Contribution,current,0.0481,0.1533,0.0452,0.0595,-0.0847,-0.0916,-0.0648,NA,NA,-0.0083,-0.0386,-0.1277,-0.126,-0.0625,0.0066,0.0712,0.1177
 Federal Health Outlays Contribution,difference,0,0,-0,-0,-0,0,-0,NA,NA,-0.0348,-0.0338,-0.0313,-0.0321,0.0027,0.0013,-1e-4,5.5475

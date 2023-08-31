@@ -47,7 +47,7 @@ sum_transfers_contributions <- function(df){
   df %>%
     mutate(
     
-      federal_transfers_contribution = federal_social_benefits_contribution + federal_health_outlays_contribution + federal_subsidies_contribution + federal_ui_contribution + rebate_checks_contribution,
+      federal_transfers_contribution = federal_social_benefits_contribution + federal_health_outlays_contribution + federal_subsidies_contribution + federal_ui_contribution + rebate_checks_contribution + federal_student_loans_contribution,
       state_transfers_contribution = state_social_benefits_contribution + state_health_outlays_contribution + state_ui_contribution + state_subsidies_contribution,
       transfers_contribution = federal_transfers_contribution + state_transfers_contribution)
 }

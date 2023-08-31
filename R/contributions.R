@@ -299,7 +299,7 @@ taxes_contributions <- function(df){
 #' @examples
 transfers_contributions <- function(df){
   transfers <- c('social_benefits', 'health_outlays', 'subsidies',
-                 'ui','rebate_checks') %>%
+                 'ui','rebate_checks','federal_student_loans') %>%
     paste0('_post_mpc') %>% 
     fim::all_levels()
   
