@@ -198,7 +198,10 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                state_ui = ui - federal_ui) %>%
   #apply overrides for Supply Side IRA
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               supply_side_ira = overrides$supply_side_ira_override)
+               supply_side_ira = overrides$supply_side_ira_override) %>%
+  #apply overrides for Federal Student Loans
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+               federal_student_loans = overrides$federal_student_loans_override)
 
 # Section D: Consumption -------------------------------------------------------------
 consumption <- # Compute consumption out of transfers (apply MPC's)
