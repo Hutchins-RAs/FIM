@@ -171,6 +171,9 @@ mpc_non_health_grants_arp <- mpc(timing = c(rep(0.07, 2),
 # Over multiple periods
 mpc_supply_side_ira <- mpc(timing = c(1, rep(0, 11)))
 
+# Added to account student loans
+mpc_student_loans <- mpc(timing = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))
+
   mpc_arp_non_health_grants_dos<- function(x){
     mpc <- 1
     weights <- c(rep(0.07, 2),

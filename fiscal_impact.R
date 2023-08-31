@@ -250,10 +250,18 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
     ),
     across(
       .cols = all_of(
-        c("rebate_checks_arp", "federal_other_direct_aid_arp", "federal_student_loans") %>% paste0("_minus_neutral")
+        c("rebate_checks_arp", "federal_other_direct_aid_arp") %>% paste0("_minus_neutral")
       ),
       #same as above, applying a different MPC function to these 
       .fns = ~ mpc_direct_aid_arp(.),
+      .names = "{.col}_post_mpc"
+    ),
+    across(
+      .cols = all_of(
+        c("federal_student_loans") %>% paste0("_minus_neutral")
+      ),
+      #same as above, applying a different MPC function to these 
+      .fns = ~ mpc_student_loans(.),
       .names = "{.col}_post_mpc"
     ),
     across(
