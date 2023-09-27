@@ -1,3 +1,5 @@
+# Lorae's personal computer
+setwd("C:/Users/stoja/fim")
 
 #Section A: prep for new update ----------------------
 
@@ -192,6 +194,16 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                             skip = 1) %>%
     select(-1) %>%
     select(-`Total over 3 years`)
+  
+  # override the MPC table with actual MPCs
+  mpc <- as.data.frame(mpc)
+  # Federal Other Vulnerable ARP
+  mpc[mpc$variable == "other_vulnerable_arp", 2:ncol(mpc)] <- c(0.2,0.17,0.16,0.15,0.09,0.05,0.05,0.04,0,0,0,0)
+  # Rebate Checks ARP
+  mpc[mpc$variable == "other_direct_aid_arp", 2:ncol(mpc)] <- c(0.14,0.1,0.1,0.05,0.05,0.05,0.05,0.05,0.05,0.03,0.03,0.03)
+  # Rebate Checks
+  mpc[mpc$variable == "rebate_checks", 2:ncol(mpc)] <- c(0.35,0.15,0.08,0.08,0.08,0.08,0.08,0.08,0.08,0,0,0)
+  
   
   # Get the cumulative MPC
   c_mpc <- mpc %>% # cumulative MPC
