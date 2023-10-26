@@ -1,5 +1,7 @@
 # Lorae's personal computer
-setwd("C:/Users/stoja/fim")
+# setwd("C:/Users/stoja/fim")
+# Lorae's work computer
+setwd("C:/Users/lstojanovic/Downloads/fim")
 
 #Section A: prep for new update ----------------------
 
