@@ -601,6 +601,22 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
       # Close the device driver
       dev.off()
 
+      
+      
+      ###
+      # Add a new line to ""
+      library(readxl)
+      sffed_savings <- read_excel("mpc_multiplier_THP_hutchins/excess-savings-data-2023-08-16.xlsx",
+                                  sheet = "Data_AllRecessions")
+      
+      
+      
+      
+      
+      
+      
+      
+      
       ##### SUBPART F: Output a table with MPCs and MPSs#####
       # The problem with the c_MPC and c_MPS, etc. tables generated above is that
       # they come from the Excel document. The Excel document does not match the 
