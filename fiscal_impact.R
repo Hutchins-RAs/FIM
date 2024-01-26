@@ -459,28 +459,28 @@ ns_comparison<- left_join(ns_hist, ns_proj, by = c("name", "source")) %>% arrang
 readr::write_csv(ns_comparison,  file = glue('results/{month_year}/ns_comparison-{month_year}.csv'))
 
 
-# State and local employment ------------------------------------------------------------------
-
-# In order to use the API, you first need to create an account here: http://api.stlouisfed.org/api_key.html. 
-# Once you have the account, store the API key in your R environment. This protects your API key so it's not shared on GitHub or anywhere else. You can store your key by running usethis::edit_r_environ() to open your .Renviron file and typing FRED_API_KEY=YOUR-API-KEY. Finally save and close the .Renviron file and restart your R Session. 
-# You can also use the hutchinsras@gmail.com FRED account's API key. 
-# For more information see http://sboysel.github.io/fredr/articles/fredr.html
-
-# Data comes from: 
-# - State govt employment: https://fred.stlouisfed.org/series/CES9092000001
-# - Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
-fredr_series_search_tags(
-  series_search_text = "All Employees, Local Government",
-  limit = 100L
-) %>% View()
-
-# Calculate percentage change in state + local employment relative to February 2020 (pre-pandemic)
-map_dfr(c("CES9092000001", "CES9093000001"), fredr, frequency = 'm', observation_start = as_date('2020-02-01')) %>% 
-  select(date, series_id, value) %>% 
-  group_by(date) %>% 
-  summarise(employment = sum(value), .groups = 'drop') %>% 
-  filter(date == first(date) | date == last(date)) %>% 
-  summarise(employment_growth = scales::percent((employment / lag(employment) - 1), accuracy = 0.01)) %>% 
-  drop_na()
+# # State and local employment ------------------------------------------------------------------
+# 
+# # In order to use the API, you first need to create an account here: http://api.stlouisfed.org/api_key.html. 
+# # Once you have the account, store the API key in your R environment. This protects your API key so it's not shared on GitHub or anywhere else. You can store your key by running usethis::edit_r_environ() to open your .Renviron file and typing FRED_API_KEY=YOUR-API-KEY. Finally save and close the .Renviron file and restart your R Session. 
+# # You can also use the hutchinsras@gmail.com FRED account's API key. 
+# # For more information see http://sboysel.github.io/fredr/articles/fredr.html
+# 
+# # Data comes from: 
+# # - State govt employment: https://fred.stlouisfed.org/series/CES9092000001
+# # - Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
+# fredr_series_search_tags(
+#   series_search_text = "All Employees, Local Government",
+#   limit = 100L
+# ) %>% View()
+# 
+# # Calculate percentage change in state + local employment relative to February 2020 (pre-pandemic)
+# map_dfr(c("CES9092000001", "CES9093000001"), fredr, frequency = 'm', observation_start = as_date('2020-02-01')) %>% 
+#   select(date, series_id, value) %>% 
+#   group_by(date) %>% 
+#   summarise(employment = sum(value), .groups = 'drop') %>% 
+#   filter(date == first(date) | date == last(date)) %>% 
+#   summarise(employment_growth = scales::percent((employment / lag(employment) - 1), accuracy = 0.01)) %>% 
+#   drop_na()
 
 
