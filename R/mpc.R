@@ -38,7 +38,7 @@ mpc_corporate_taxes <- mpc(-0.4, rep(1/12, 12))
 mpc_non_corporate_taxes <- mpc(-0.6, c(rep(0.2, 2), rep(0.1, 6)))
 
 #' @rdname consumption 
-mpc_subsidies <- mpc(0.86, timing = c(0.11, 0.095, 0.09, 0.085, rep(0.06, 4), rep(0.03, 4), rep(0.02, 4), rep(0.01, 4)))
+mpc_subsidies <- mpc(0.45, timing = c(0.11, 0.095, 0.09, 0.085, rep(0.075, 4), rep(0.06, 4), rep(0.02, 4)))
 
 #' @rdname consumption 
 mpc_subsidies_second_draw <- mpc_subsidies

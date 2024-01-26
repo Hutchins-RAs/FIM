@@ -8,8 +8,8 @@ Cpiu,previous,268.5577,272.8873,278.7067,284.8937,291.5357,295.4957,298.525,NA,N
 Federal Aid to Small Businesses Arp Contribution,current,0.0416,0.1832,0.0467,-0.0341,0.0248,0.0242,-0.0364,NA,NA,NA,-0.0074,-0.0073,-0.0177,-0.0669,-0.029,-0.028,-0.0264
 Federal Aid to Small Businesses Arp Contribution,difference,-0,-0,0,0,0,0,-0,NA,NA,NA,0,0,0,1e-4,1e-4,1e-4,1e-4
 Federal Aid to Small Businesses Arp Contribution,previous,0.0416,0.1832,0.0467,-0.0341,0.0248,0.0242,-0.0364,NA,NA,NA,-0.0075,-0.0074,-0.0177,-0.067,-0.029,-0.0281,-0.0264
-Federal Contribution,current,-0.3178,-0.4967,0.2011,-0.153,0.3921,-0.3316,-0.2298,NA,NA,NA,-0.2424,-0.2445,-0.3884,-0.1026,-0.0922,-0.4192,-0.2832
-Federal Contribution,difference,0,0,-0,-0,-0,0,-0,NA,NA,NA,-0.1008,0.1308,8e-4,-2e-4,-4e-4,2e-4,1e-4
+Federal Contribution,current,-0.3178,-0.4967,0.2011,-0.153,0.3921,-0.3316,-0.2298,NA,NA,NA,-0.2424,-0.239,-0.3884,-0.1026,-0.0922,-0.4192,-0.2832
+Federal Contribution,difference,0,0,-0,-0,-0,0,-0,NA,NA,NA,-0.1008,0.1364,8e-4,-2e-4,-4e-4,2e-4,1e-4
 Federal Contribution,previous,-0.3178,-0.4967,0.2011,-0.153,0.3921,-0.3316,-0.2298,NA,NA,NA,-0.1416,-0.3754,-0.3892,-0.1023,-0.0918,-0.4193,-0.2832
 Federal Corporate Taxes Contribution,current,-0.0167,-0.014,-0.0225,-0.0488,-0.0712,0.1062,-0.0456,NA,NA,NA,0.2855,0.1682,-0.1074,-0.2227,-0.2057,-0.2628,-0.1956
 Federal Corporate Taxes Contribution,difference,0,-0,-0,-0,-0,0,-0,NA,NA,NA,0.0033,-0.001,-4e-4,-2e-4,-3e-4,-1e-4,-3e-4
@@ -20,8 +20,8 @@ Federal Health Outlays Contribution,previous,-0.0053,0.1156,0.0629,0.1572,0.0108
 Federal Non Corporate Taxes Contribution,current,-0.5022,-0.4732,-0.4268,-0.7124,-0.7669,-0.3895,-0.1465,NA,NA,NA,0.3657,0.4954,0.4386,0.443,0.368,0.0554,0.0386
 Federal Non Corporate Taxes Contribution,difference,-0,-0,0,-0,0,-0,0,NA,NA,NA,-0.0786,-0.0789,-0.0392,-0.0384,-0.0377,-0.0372,-0.0366
 Federal Non Corporate Taxes Contribution,previous,-0.5022,-0.4732,-0.4268,-0.7124,-0.7669,-0.3895,-0.1465,NA,NA,NA,0.4443,0.5743,0.4778,0.4814,0.4056,0.0926,0.0752
-Federal Other Direct Aid Arp Contribution,current,-0.0386,0.0092,0.0846,0.0547,0.0337,-0.0631,-0.0644,NA,NA,NA,-0.0236,-0.026,-0.0202,-0.0213,-0.0296,-0.0206,-0.0158
-Federal Other Direct Aid Arp Contribution,difference,0,0,-0,0,-0,0,0,NA,NA,NA,0,1e-4,0,0,1e-4,0,0
+Federal Other Direct Aid Arp Contribution,current,-0.0386,0.0092,0.0846,0.0547,0.0337,-0.0631,-0.0644,NA,NA,NA,-0.0277,-0.0372,-0.0357,-0.0344,-0.0224,-0.0152,-0.0137
+Federal Other Direct Aid Arp Contribution,difference,0,0,-0,0,-0,0,0,NA,NA,NA,-0.0041,-0.0112,-0.0154,-0.013,0.0072,0.0055,0.0021
 Federal Other Direct Aid Arp Contribution,previous,-0.0386,0.0092,0.0846,0.0547,0.0337,-0.0631,-0.0644,NA,NA,NA,-0.0236,-0.026,-0.0203,-0.0213,-0.0296,-0.0207,-0.0159
 Federal Other Vulnerable Arp Contribution,current,0.1201,0.1348,0.1437,0.1243,0.084,0.0483,-0.0368,NA,NA,NA,-0.0964,-0.0618,-0.0487,-0.0432,-0.0257,-0.0102,-0.0098
 Federal Other Vulnerable Arp Contribution,difference,0,0,-0,-0,0,-0,-0,NA,NA,NA,1e-4,2e-4,2e-4,2e-4,1e-4,0,0
@@ -35,32 +35,32 @@ Federal Social Benefits Contribution,previous,-0.0183,-0.0199,0.2097,-0.881,-0.1
 Federal Student Loans Contribution,current,0.0637,0.0292,0.0267,0.0168,-0.0132,-0.0126,-0.012,NA,NA,NA,-0.1122,-0.1016,-0.093,-0.0548,-0.0298,-0.0294,-0.0232
 Federal Student Loans Contribution,difference,0,-0,0,0,-0,-0,-0,NA,NA,NA,0,2e-4,2e-4,1e-4,1e-4,1e-4,0
 Federal Student Loans Contribution,previous,0.0637,0.0292,0.0267,0.0168,-0.0132,-0.0126,-0.012,NA,NA,NA,-0.1122,-0.1018,-0.0932,-0.0549,-0.0298,-0.0295,-0.0233
-Federal Subsidies Contribution,current,0.3926,0.2349,0.0321,-0.0559,-0.0809,-0.083,-0.0507,NA,NA,NA,-0.2132,-0.167,-0.3077,-0.2292,-0.0977,-0.0289,-0.0223
-Federal Subsidies Contribution,difference,0,-0,-0,-0,0,-0,0,NA,NA,NA,0.0113,0.0088,0.0085,0.0078,0.0069,0.0067,0.0065
+Federal Subsidies Contribution,current,0.3559,0.1922,0.0208,-0.0658,-0.1684,-0.1661,-0.0803,NA,NA,NA,-0.1399,-0.1031,-0.2902,-0.2613,-0.1046,-0.0568,-0.0915
+Federal Subsidies Contribution,difference,-0.0366,-0.0427,-0.0112,-0.0099,-0.0875,-0.0831,-0.0295,NA,NA,NA,0.0845,0.0728,0.0261,-0.0243,1e-4,-0.0213,-0.0626
 Federal Subsidies Contribution,previous,0.3926,0.2349,0.0321,-0.0559,-0.0809,-0.083,-0.0507,NA,NA,NA,-0.2245,-0.1759,-0.3163,-0.237,-0.1047,-0.0356,-0.0289
 Federal Ui Contribution,current,0.0732,-0.9657,-1.027,-0.9508,-1.405,-0.9558,-0.393,NA,NA,NA,-0.0074,-0.0014,-7e-4,-3e-4,-2e-4,0,0
 Federal Ui Contribution,difference,-0,0,0,0,0,0,-0,NA,NA,NA,0,0,0,0,0,0,0
 Federal Ui Contribution,previous,0.0732,-0.9657,-1.027,-0.9508,-1.405,-0.9558,-0.393,NA,NA,NA,-0.0074,-0.0014,-7e-4,-3e-4,-2e-4,0,0
-Fiscal Impact,current,-2.4153,-2.942,-3.159,-3.7594,-4.4973,-2.1663,-0.4741,NA,NA,NA,0.0984,-0.6786,-0.5255,-0.5835,-0.3406,-0.5785,-0.4427
-Fiscal Impact,difference,-0,-0,0,-0,0,-0,0,NA,NA,NA,0.3778,0.0127,0.0191,0.0283,0.0149,-0.0238,-0.0119
+Fiscal Impact,current,-2.452,-2.9847,-3.1702,-3.7693,-4.585,-2.2495,-0.5037,NA,NA,NA,0.1675,-0.1075,-0.6267,-0.7305,-0.4342,-0.698,-0.6044
+Fiscal Impact,difference,-0.0366,-0.0427,-0.0112,-0.0099,-0.0878,-0.0831,-0.0295,NA,NA,NA,0.4469,0.5838,-0.0821,-0.1187,-0.0787,-0.1434,-0.1737
 Fiscal Impact,previous,-2.4153,-2.942,-3.159,-3.7594,-4.4973,-2.1663,-0.4741,NA,NA,NA,-0.2794,-0.6913,-0.5446,-0.6118,-0.3555,-0.5547,-0.4308
 Gdp,current,23292.4,23829,24654.6,25029.1,25544.3,25994.6,26408.4,NA,NA,NA,27938.8,28258.3163,28595.9774,28940.5211,29297.2656,29660.7884,30015.6558
 Gdp,difference,0,0,0,0,0,0,0,NA,NA,NA,51.1969,51.7824,52.4012,53.0325,53.6863,54.3524,55.0027
 Gdp,previous,23292.4,23829,24654.6,25029.1,25544.3,25994.6,26408.4,NA,NA,NA,27887.6031,28206.5339,28543.5763,28887.4886,29243.5794,29606.436,29960.6532
-Grants Contribution,current,0.4768,0.1255,0.1992,0.4485,0.7727,-0.2929,-0.72,NA,NA,NA,-0.2928,-0.1239,-0.3653,-0.0159,0.0102,-0.3086,-0.1926
-Grants Contribution,difference,-0,-0,-0,0,0,-0,0,NA,NA,NA,-0.2449,0.1315,0.001,3e-4,2e-4,8e-4,6e-4
+Grants Contribution,current,0.4768,0.1255,0.1992,0.4485,0.7727,-0.2929,-0.72,NA,NA,NA,-0.2928,-0.1184,-0.3653,-0.0159,0.0102,-0.3086,-0.1926
+Grants Contribution,difference,-0,-0,-0,0,0,-0,0,NA,NA,NA,-0.2449,0.1371,0.001,3e-4,2e-4,8e-4,6e-4
 Grants Contribution,previous,0.4768,0.1255,0.1992,0.4485,0.7727,-0.2929,-0.72,NA,NA,NA,-0.0479,-0.2555,-0.3663,-0.0162,0.01,-0.3094,-0.1932
 Real Potential Gdp Growth,current,0.0049,0.0051,0.0051,0.005,0.0048,0.0046,0.0044,NA,NA,NA,0.0044,0.0041,0.0041,0.0042,0.0043,0.0043,0.0044
 Real Potential Gdp Growth,difference,-0,-0,-0,-0,0,0,0,NA,NA,NA,2e-4,-0,0,0,0,0,-0
 Real Potential Gdp Growth,previous,0.0049,0.0051,0.0051,0.005,0.0048,0.0046,0.0044,NA,NA,NA,0.0042,0.0041,0.0041,0.0042,0.0043,0.0043,0.0044
-Rebate Checks Arp Contribution,current,-1.0217,-0.0466,-1.1437,-0.032,-0.0222,-0.0329,-0.0212,NA,NA,NA,-0.012,-0.595,-1e-4,-1e-4,-0.006,0,0
-Rebate Checks Arp Contribution,difference,-0,0,-0,-0,-0,-0,0,NA,NA,NA,0,0.0011,0,0,0,0,0
+Rebate Checks Arp Contribution,current,-1.0217,-0.0466,-1.1437,-0.032,-0.0222,-0.0329,-0.0212,NA,NA,NA,-0.012,-0.1125,-0.1052,-0.102,-0.0999,-0.0968,-0.0938
+Rebate Checks Arp Contribution,difference,-0,0,-0,-0,-0,-0,0,NA,NA,NA,0,0.4836,-0.105,-0.1019,-0.0939,-0.0968,-0.0938
 Rebate Checks Arp Contribution,previous,-1.0217,-0.0466,-1.1437,-0.032,-0.0222,-0.0329,-0.0212,NA,NA,NA,-0.012,-0.5961,-1e-4,-1e-4,-0.006,0,0
 Rebate Checks Contribution,current,-0.2616,-1.0835,-0.3665,-0.0599,-0.9928,-0.0298,-0.02,NA,NA,NA,0,0,0,0,0,0,0
 Rebate Checks Contribution,difference,-0,-0,-0,0,0,0,0,NA,NA,NA,0,0,0,0,0,0,0
 Rebate Checks Contribution,previous,-0.2616,-1.0835,-0.3665,-0.0599,-0.9928,-0.0298,-0.02,NA,NA,NA,0,0,0,0,0,0,0
-State Contribution,current,-0.853,-0.1309,-0.6088,-0.7158,-1.0669,0.5057,0.8345,NA,NA,NA,0.503,0.0847,0.3054,-0.063,-0.1089,0.2078,0.0882
-State Contribution,difference,0,-0,0,-0,-0,-0,0,NA,NA,NA,0.471,-0.1315,-8e-4,-1e-4,-0,-6e-4,-4e-4
+State Contribution,current,-0.853,-0.1309,-0.6088,-0.7158,-1.0669,0.5057,0.8345,NA,NA,NA,0.503,0.1147,0.3054,-0.063,-0.1089,0.2078,0.0882
+State Contribution,difference,0,-0,0,-0,-0,-0,0,NA,NA,NA,0.471,-0.1015,-8e-4,-1e-4,-0,-6e-4,-4e-4
 State Contribution,previous,-0.853,-0.1309,-0.6088,-0.7158,-1.0669,0.5057,0.8345,NA,NA,NA,0.0319,0.2162,0.30620000000000003,-0.0628,-0.1088,0.2084,0.0886
 State Corporate Taxes Contribution,current,-0.0156,-0.0231,-0.0418,-0.052,-0.027,-0.0272,-0.0346,NA,NA,NA,-0.0097,-0.0079,-0.0043,0.0026,0.018,0.0299,0.0081
 State Corporate Taxes Contribution,difference,-0,-0,0,-0,0,0,0,NA,NA,NA,-2e-4,-2e-4,-2e-4,-2e-4,-3e-4,-3e-4,-2e-4
@@ -71,14 +71,14 @@ State Health Outlays Contribution,previous,0.2373,-0.0477,-0.0185,-0.0866,-0.048
 State Non Corporate Taxes Contribution,current,-0.127,-0.0725,-0.1451,-0.1689,-0.1617,0.0432,0.0981,NA,NA,NA,0.1689,0.2062,0.1816,0.1326,0.0975,0.0592,-0.0114
 State Non Corporate Taxes Contribution,difference,0,-0,-0,-0,0,0,0,NA,NA,NA,0.0524,0.0182,-0.0077,0.0087,0.0087,0.0087,0.0087
 State Non Corporate Taxes Contribution,previous,-0.127,-0.0725,-0.1451,-0.1689,-0.1617,0.0432,0.0981,NA,NA,NA,0.1165,0.188,0.1893,0.1239,0.0888,0.0505,-0.02
-State Purchases Deflator Growth,current,0.0185,0.0158,0.0191,0.022,0.0328,0.0042,0.0068,NA,NA,NA,0.0021,0.0082,0.0076,0.0073,0.0071,0.0073,0.0071
-State Purchases Deflator Growth,difference,0,0,-0,0,0,-0,0,NA,NA,NA,-0.0054,0,0,0,-0,-0,-0
+State Purchases Deflator Growth,current,0.0185,0.0158,0.0191,0.022,0.0328,0.0042,0.0068,NA,NA,NA,0.0021,0.0074,0.0076,0.0073,0.0071,0.0073,0.0071
+State Purchases Deflator Growth,difference,0,0,-0,0,0,-0,0,NA,NA,NA,-0.0054,-8e-4,0,0,-0,-0,-0
 State Purchases Deflator Growth,previous,0.0185,0.0158,0.0191,0.022,0.0328,0.0042,0.0068,NA,NA,NA,0.0076,0.0082,0.0076,0.0073,0.0071,0.0073,0.0071
 State Social Benefits,current,162.3,166.4,166.8,169.1,176.6,196.5,249.8,NA,NA,NA,176.9,196.2983,199.5248,202.8043,206.1377,209.5258,212.9697
 State Social Benefits,difference,-0,-0,-0,0,-0,0,0,NA,NA,NA,-16.224,0,0,-0,0,0,0
 State Social Benefits,previous,162.3,166.4,166.8,169.1,176.6,196.5,249.8,NA,NA,NA,193.124,196.2983,199.5248,202.8043,206.1377,209.5258,212.9697
-State Subsidies Contribution,current,0.0067,-0.0011,-5e-4,-5e-4,-4e-4,-1e-4,-1e-4,NA,NA,NA,-1e-4,-0.0015,-0.0043,-4e-4,-4e-4,-4e-4,-4e-4
-State Subsidies Contribution,difference,0,-0,0,-0,0,-0,-0,NA,NA,NA,5e-4,-1e-4,-0,-0,-0,-0,-0
+State Subsidies Contribution,current,0.0067,-0.0011,-5e-4,-6e-4,-7e-4,-1e-4,-1e-4,NA,NA,NA,-1e-4,-0.0011,-0.0025,-5e-4,-4e-4,-6e-4,-0.0013
+State Subsidies Contribution,difference,-0,-0,-0,-1e-4,-3e-4,0,0,NA,NA,NA,5e-4,4e-4,0.0018,-0,-0,-2e-4,-0.001
 State Subsidies Contribution,previous,0.0067,-0.0011,-5e-4,-5e-4,-4e-4,-1e-4,-1e-4,NA,NA,NA,-6e-4,-0.0015,-0.0043,-4e-4,-4e-4,-4e-4,-4e-4
 State Ui Contribution,current,-0.1554,-0.2608,-0.1429,-0.1394,-0.1948,-0.0977,-0.0459,NA,NA,NA,-2e-4,8e-4,0.0079,0.0113,0.0114,0.0099,0.0086
 State Ui Contribution,difference,-0,0,0,0,-0,-0,0,NA,NA,NA,4e-4,1e-4,1e-4,1e-4,0,-0,0
