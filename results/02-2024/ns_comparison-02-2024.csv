@@ -11,8 +11,8 @@ Federal Aid to Small Businesses Arp Contribution,previous,0.0416,0.1832,0.0467,-
 Federal Contribution,current,-0.3147,-0.492,0.2061,-0.1514,0.3853,-0.3518,-0.2561,NA,NA,NA,NA,-0.2553,-0.4625,-0.0666,-0.083,-0.4212,-0.2973
 Federal Contribution,difference,0.0031,0.0047,0.005,0.0016,-0.0068,-0.0203,-0.0263,NA,NA,NA,NA,-0.0163,-0.0742,0.0359,0.0093,-0.0021,-0.0141
 Federal Contribution,previous,-0.3178,-0.4967,0.2011,-0.153,0.3921,-0.3316,-0.2298,NA,NA,NA,NA,-0.239,-0.3884,-0.1026,-0.0922,-0.4192,-0.2832
-Federal Corporate Taxes Contribution,current,-0.016,-0.0135,-0.0221,-0.0484,-0.0708,0.1067,-0.0452,NA,NA,NA,NA,0.1405,-0.1545,-0.2881,-0.2601,-0.307,-0.2298
-Federal Corporate Taxes Contribution,difference,7e-4,6e-4,5e-4,4e-4,4e-4,4e-4,4e-4,NA,NA,NA,NA,-0.0277,-0.0471,-0.0654,-0.0544,-0.0442,-0.0342
+Federal Corporate Taxes Contribution,current,-0.016,-0.0135,-0.0221,-0.0484,-0.0708,0.1067,-0.0452,NA,NA,NA,NA,0.1638,-0.1183,-0.2381,-0.2242,-0.2846,-0.2202
+Federal Corporate Taxes Contribution,difference,7e-4,6e-4,5e-4,4e-4,4e-4,4e-4,4e-4,NA,NA,NA,NA,-0.0044,-0.0108,-0.0154,-0.0186,-0.0218,-0.0246
 Federal Corporate Taxes Contribution,previous,-0.0167,-0.014,-0.0225,-0.0488,-0.0712,0.1062,-0.0456,NA,NA,NA,NA,0.1682,-0.1074,-0.2227,-0.2057,-0.2628,-0.1956
 Federal Health Outlays Contribution,current,-0.0149,0.1127,0.0635,0.1594,0.0114,-0.0474,-0.1384,NA,NA,NA,NA,-0.2623,-0.2571,-0.0697,-0.1072,-0.0109,0.0136
 Federal Health Outlays Contribution,difference,-0.0096,-0.0029,7e-4,0.0021,6e-4,-0.0032,-0.008,NA,NA,NA,NA,0.0391,0.1001,0.1608,0.1301,0.0342,-0.0605
@@ -41,8 +41,8 @@ Federal Subsidies Contribution,previous,0.3559,0.1922,0.0208,-0.0658,-0.1684,-0.
 Federal Ui Contribution,current,0.0698,-0.9679,-1.0281,-0.9516,-1.4056,-0.9559,-0.3929,NA,NA,NA,NA,-0.0014,-7e-4,-3e-4,-2e-4,0,0
 Federal Ui Contribution,difference,-0.0034,-0.0022,-0.0011,-8e-4,-6e-4,-1e-4,1e-4,NA,NA,NA,NA,-0,-0,-0,-0,0,0
 Federal Ui Contribution,previous,0.0732,-0.9657,-1.027,-0.9508,-1.405,-0.9558,-0.393,NA,NA,NA,NA,-0.0014,-7e-4,-3e-4,-2e-4,0,0
-Fiscal Impact,current,-2.4568,-2.9731,-3.1497,-3.7536,-4.5905,-2.2874,-0.5607,NA,NA,NA,NA,-0.5553,-0.8884,-0.6894,-0.4098,-0.8421,-0.8456
-Fiscal Impact,difference,-0.0048,0.0115,0.0206,0.0157,-0.0054,-0.038,-0.057,NA,NA,NA,NA,-0.4478,-0.2617,0.0411,0.0244,-0.1441,-0.2412
+Fiscal Impact,current,-2.4568,-2.9731,-3.1497,-3.7536,-4.5905,-2.2874,-0.5607,NA,NA,NA,NA,-0.4043,-0.7993,-0.6397,-0.3742,-0.82,-0.8363
+Fiscal Impact,difference,-0.0048,0.0115,0.0206,0.0157,-0.0054,-0.038,-0.057,NA,NA,NA,NA,-0.2968,-0.1727,0.0908,0.06,-0.122,-0.2318
 Fiscal Impact,previous,-2.452,-2.9847,-3.1702,-3.7693,-4.585,-2.2495,-0.5037,NA,NA,NA,NA,-0.1075,-0.6267,-0.7305,-0.4342,-0.698,-0.6044
 Gdp,current,23292.4,23829,24654.6,25029.1,25544.3,25994.6,26408.4,NA,NA,NA,NA,28264.1826,28601.9138,28946.529,29303.3476,29666.9459,30021.887
 Gdp,difference,0,0,0,0,0,0,0,NA,NA,NA,NA,5.8663,5.9364,6.008,6.082,6.1575,6.2311
@@ -59,8 +59,8 @@ Rebate Checks Arp Contribution,previous,-1.0217,-0.0466,-1.1437,-0.032,-0.0222,-
 Rebate Checks Contribution,current,-0.2626,-1.0844,-0.3675,-0.0609,-0.9938,-0.0297,-0.0199,NA,NA,NA,NA,0,0,0,0,0,0
 Rebate Checks Contribution,difference,-0.001,-9e-4,-0.001,-0.001,-0.001,1e-4,1e-4,NA,NA,NA,NA,0,0,0,0,0,0
 Rebate Checks Contribution,previous,-0.2616,-1.0835,-0.3665,-0.0599,-0.9928,-0.0298,-0.02,NA,NA,NA,NA,0,0,0,0,0,0
-State Contribution,current,-0.8497,-0.1259,-0.6034,-0.7141,-1.074,0.4851,0.8073,NA,NA,NA,NA,-0.0815,0.3086,-0.0647,-0.094,0.2329,0.1213
-State Contribution,difference,0.0033,0.005,0.0054,0.0017,-0.0071,-0.0206,-0.0272,NA,NA,NA,NA,-0.1962,0.0032,-0.0017,0.0149,0.0251,0.0331
+State Contribution,current,-0.8497,-0.1259,-0.6034,-0.7141,-1.074,0.4851,0.8073,NA,NA,NA,NA,0.0461,0.3614,-0.065,-0.0943,0.2326,0.121
+State Contribution,difference,0.0033,0.005,0.0054,0.0017,-0.0071,-0.0206,-0.0272,NA,NA,NA,NA,-0.0686,0.056,-0.0021,0.0146,0.0248,0.0328
 State Contribution,previous,-0.853,-0.1309,-0.6088,-0.7158,-1.0669,0.5057,0.8345,NA,NA,NA,NA,0.1147,0.3054,-0.063,-0.1089,0.2078,0.0882
 State Corporate Taxes Contribution,current,-0.0154,-0.0229,-0.0417,-0.0518,-0.0268,-0.027,-0.0344,NA,NA,NA,NA,-0.0163,-0.0125,-0.005,0.0117,0.0258,0.0055
 State Corporate Taxes Contribution,difference,2e-4,2e-4,2e-4,1e-4,1e-4,2e-4,2e-4,NA,NA,NA,NA,-0.0085,-0.0082,-0.0076,-0.0063,-0.0041,-0.0026
