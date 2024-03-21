@@ -204,11 +204,29 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                federal_student_loans = overrides$federal_student_loans_override)
 
 # Section D: Consumption -------------------------------------------------------------
-consumption <- # Compute consumption out of transfers (apply MPC's)
+# Isolating the first part of consumption, which I will not attempt
+# to refactor (for now)
+consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
   get_real_levels() %>%
-  taxes_transfers_minus_neutral() %>%
-  calculate_mpc("social_benefits") %>% #apply the calculate_mpc function to the "social_benefits" column of projections df
+  taxes_transfers_minus_neutral() 
+## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
+## = social_benefits, but it does not. TODO: Investigate later.
+logical_vector <- consumption_pt1$federal_social_benefits + consumption_pt1$state_social_benefits == consumption_pt1$social_benefits
+any_false <- any(!logical_vector)
+print(any_false)
+# as you can see, there are false elements in this vector comparing the two values
+
+
+# Second part of consumption, which will be refactored
+consumption_pt2 <-
+  consumption_pt1 %>%
+  #apply the calculate_mpc function to the "social_benefits" column of consumption_pt1 df
+  # creates social_benefits_post_mpc
+  # federal_social_benefits_post_mpc
+  # and state_social_benefits_post_mpc
+  
+  calculate_mpc("social_benefits") %>% 
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
   calculate_mpc("subsidies") %>%
   calculate_mpc("health_outlays") %>%
@@ -279,6 +297,9 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
     federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
       mpc_small_businesses_arp ((federal_aid_to_small_businesses_arp_minus_neutral))
   )
+
+# assign result to the consumption df, so rest of code runs smoothly
+consumption <- consumption_pt2
 
 # Section E: Contribution ------------------------------------------------------------
 
