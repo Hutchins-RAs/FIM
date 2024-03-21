@@ -275,7 +275,17 @@ consumption_pt2 <-
   mutate(state_health_outlays_post_mpc = mpc_lorae(x = state_health_outlays_minus_neutral,
                                                     mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
   
-  calculate_mpc("corporate_taxes") %>%
+  # Corporate taxes work the same as health outlays and social benefits.
+  # When I compare my mpc_lorae function to the original outputs, using the
+  # I get a miniscule difference, on the order of 10*(-15), which is the result 
+  # of computer rounding - not any theoretical / mathematical differences.
+  mutate(corporate_taxes_post_mpc = mpc_lorae(x = corporate_taxes_minus_neutral,
+                                             mpc = rep(-0.0333333333333333, 12))) %>%
+  mutate(federal_corporate_taxes_post_mpc = mpc_lorae(x = federal_corporate_taxes_minus_neutral,
+                                                     mpc = rep(-0.0333333333333333, 12))) %>%
+  mutate(state_corporate_taxes_post_mpc = mpc_lorae(x = state_corporate_taxes_minus_neutral,
+                                                   mpc = rep(-0.0333333333333333, 12))) %>%
+  
   calculate_mpc("non_corporate_taxes") %>% 
   
   # Calculate pandemic-adjusted MPC values for federal and state UI benefits
