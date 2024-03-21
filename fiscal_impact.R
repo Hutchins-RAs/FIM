@@ -204,19 +204,29 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                federal_student_loans = overrides$federal_student_loans_override)
 
 # Section D: Consumption -------------------------------------------------------------
+mpc_social_benefits <-function(x) {
+  0.9 * roll::roll_sum(x, width = length(c(0.25, 0.25, 0.25, 
+                                           0.25)), weights = rev(c(0.25, 0.25, 0.25, 0.25)), online = FALSE, 
+                       min_obs = 1)
+}
+
+mpc_social_benefits_beta <- function(x) {
+  
+}
+
 # Isolating the first part of consumption, which I will not attempt
 # to refactor (for now)
 consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
   get_real_levels() %>%
   taxes_transfers_minus_neutral() 
+
 ## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
 ## = social_benefits, but it does not. TODO: Investigate later.
 logical_vector <- consumption_pt1$federal_social_benefits + consumption_pt1$state_social_benefits == consumption_pt1$social_benefits
 any_false <- any(!logical_vector)
 print(any_false)
 # as you can see, there are false elements in this vector comparing the two values
-
 
 # Second part of consumption, which will be refactored
 consumption_pt2 <-
