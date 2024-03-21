@@ -204,13 +204,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                federal_student_loans = overrides$federal_student_loans_override)
 
 # Section D: Consumption -------------------------------------------------------------
-mpc_social_benefits <-function(x) {
-  0.9 * roll::roll_sum(x, width = length(c(0.25, 0.25, 0.25, 
-                                           0.25)), weights = rev(c(0.25, 0.25, 0.25, 0.25)), online = FALSE, 
-                       min_obs = 1)
-}
-
-
+ 
 # Isolating the first part of consumption, which I will not attempt
 # to refactor (for now)
 consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
