@@ -286,7 +286,13 @@ consumption_pt2 <-
   mutate(state_corporate_taxes_post_mpc = mpc_lorae(x = state_corporate_taxes_minus_neutral,
                                                    mpc = rep(-0.0333333333333333, 12))) %>%
   
-  calculate_mpc("non_corporate_taxes") %>% 
+  # Non-corporate taxes. As before, tiny difference that's near 0
+  mutate(non_corporate_taxes_post_mpc = mpc_lorae(x = non_corporate_taxes_minus_neutral,
+                                              mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
+  mutate(federal_non_corporate_taxes_post_mpc = mpc_lorae(x = federal_non_corporate_taxes_minus_neutral,
+                                                      mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
+  mutate(state_non_corporate_taxes_post_mpc = mpc_lorae(x = state_non_corporate_taxes_minus_neutral,
+                                                    mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
   
   # Calculate pandemic-adjusted MPC values for federal and state UI benefits
   mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
