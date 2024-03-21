@@ -236,6 +236,13 @@ consumption_pt2 <-
   # federal_social_benefits_post_mpc
   # and state_social_benefits_post_mpc
   
+# Ok, so this is how the social benefits work. As an input, you take either the
+# column social_benefits_minus_neutral, federal_social_benefits_minus_neutral, or 
+# state_social_benefits_minus_neutral. Those are your inputs. You throw those into the
+# function mpc_social_benefits(x) as the x variable. What you get as an output
+# is then labelled as social_benefits_post_mpc, federal_social_benefits_post_mpc,
+# or state_social_benefits_post_mpc. Those are appended to the given data frame.
+  
   calculate_mpc("social_benefits") %>% 
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
   calculate_mpc("subsidies") %>%
