@@ -210,9 +210,6 @@ mpc_social_benefits <-function(x) {
                        min_obs = 1)
 }
 
-mpc_social_benefits_beta <- function(x) {
-  
-}
 
 # Isolating the first part of consumption, which I will not attempt
 # to refactor (for now)
@@ -231,19 +228,27 @@ print(any_false)
 # Second part of consumption, which will be refactored
 consumption_pt2 <-
   consumption_pt1 %>%
-  #apply the calculate_mpc function to the "social_benefits" column of consumption_pt1 df
-  # creates social_benefits_post_mpc
-  # federal_social_benefits_post_mpc
-  # and state_social_benefits_post_mpc
   
-# Ok, so this is how the social benefits work. As an input, you take either the
-# column social_benefits_minus_neutral, federal_social_benefits_minus_neutral, or 
-# state_social_benefits_minus_neutral. Those are your inputs. You throw those into the
-# function mpc_social_benefits(x) as the x variable. What you get as an output
-# is then labelled as social_benefits_post_mpc, federal_social_benefits_post_mpc,
-# or state_social_benefits_post_mpc. Those are appended to the given data frame.
+  # Ok, so this is how the social benefits work. As an input, you take either the
+  # column social_benefits_minus_neutral, federal_social_benefits_minus_neutral, or 
+  # state_social_benefits_minus_neutral. Those are your inputs. You throw those into the
+  # function mpc_social_benefits(x) as the x variable. What you get as an output
+  # is then labelled as social_benefits_post_mpc, federal_social_benefits_post_mpc,
+  # or state_social_benefits_post_mpc. Those are appended to the given data frame.
   
-  calculate_mpc("social_benefits") %>% 
+  # In this next section of code, I've replaced that section with some code that
+  # appends new columns using my custom mpc_lorae() function.
+  
+  # Creating the social_benefits_post_mpc column using mpc_lorae formula
+  mutate(social_benefits_post_mpc = mpc_lorae(x = social_benefits_minus_neutral,
+                                              mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
+  # Doing the same thing, this time w federal_social_benefits_post_mpc
+  mutate(federal_social_benefits_post_mpc = mpc_lorae(x = federal_social_benefits_minus_neutral,
+                                              mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
+  # Doing the same thing, this time w state_social_benefits_post_mpc
+  mutate(state_social_benefits_post_mpc = mpc_lorae(x = state_social_benefits_minus_neutral,
+                                                      mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
+
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
   calculate_mpc("subsidies") %>%
   calculate_mpc("health_outlays") %>%
