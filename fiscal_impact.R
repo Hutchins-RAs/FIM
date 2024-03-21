@@ -255,8 +255,26 @@ consumption_pt2 <-
   
   calculate_mpc("subsidies") %>%
   
-
-  calculate_mpc("health_outlays") %>%
+  # Health outlays work the same way as social benefits. Process:
+  # health_outlays_minus_neutral -> {apply mpc_health_outlays()} -> health_outlays_post_mpc
+  # federal_health_outlays_minus_neutral -> {apply mpc_health_outlays()} -> federal_health_outlays_post_mpc
+  # state_health_outlays_minus_neutral -> {apply mpc_health_outlays()} -> state_health_outlays_post_mpc
+  # 
+  # When I compare my mpc_lorae function to the original outputs, using the
+  # mpc_health_outlays function, I get a miniscule difference, on the order of 
+  # 10*(-15), which is the result of computer rounding - not any
+  # theoretical / mathematical differences.
+  
+  # Creating the health_outlays_post_mpc column using mpc_lorae formula
+  mutate(health_outlays_post_mpc = mpc_lorae(x = health_outlays_minus_neutral,
+                                            mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
+  # Doing the same thing, this time w federal_health_outlays_post_mpc
+  mutate(federal_health_outlays_post_mpc = mpc_lorae(x = federal_health_outlays_minus_neutral,
+                                                      mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
+  # Doing the same thing, this time w state_social_benefits_post_mpc
+  mutate(state_health_outlays_post_mpc = mpc_lorae(x = state_health_outlays_minus_neutral,
+                                                    mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
+  
   calculate_mpc("corporate_taxes") %>%
   calculate_mpc("non_corporate_taxes") %>% 
   
