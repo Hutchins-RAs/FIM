@@ -248,9 +248,20 @@ consumption_pt2 <-
   # Doing the same thing, this time w state_social_benefits_post_mpc
   mutate(state_social_benefits_post_mpc = mpc_lorae(x = state_social_benefits_minus_neutral,
                                                       mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-
+  
+  # REBATE CHECKS ARE TRICKY SO LEAVE REFACTORING TO END.
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
+  
+  # SUBSIDIES ALSO TRICKY SO LEAVE REFACTORING TO END.
+  # Process is not quite the below, so beware. Leaving my notes here for later.
+  # Subsidies work the same way as social benefits. Process:
+  # subsidies_minus_neutral -> {apply mpc_subsidies()} -> subsidies_post_mpc
+  # federal_subsidies_minus_neutral -> {apply mpc_subsidies()} -> federal_subsidies_post_mpc
+  # state_subsidies_minus_neutral -> {apply mpc_subsidies()} -> state_subsidies_post_mpc
+  
   calculate_mpc("subsidies") %>%
+  
+
   calculate_mpc("health_outlays") %>%
   calculate_mpc("corporate_taxes") %>%
   calculate_mpc("non_corporate_taxes") %>% 
