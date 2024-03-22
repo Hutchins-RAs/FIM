@@ -307,6 +307,18 @@ consumption_pt2 <-
                 .names = '{.col}_post_mpc'))  %>% 
   
   ### THE DIFFICULT REFACTORING STARTS HERE
+  # Unlike in the above sections, we must first generate xxxx_minus_neutral
+  # before we can feed it into the mpc function to generate xxx_post_mpc.
+  # So each line item in this section will have two new lines of code: one to
+  # generate xxxx_minus_neutral, and one to generate xxx_post_mpc.
+  # Let's start with rebate_checks_arp.
+  # generate rebate_checks_arp_minus_neutral
+  mutate(rebate_checks_arp_minus_neutral = 
+           rebate_checks_arp - lag(rebate_checks_arp, default = 0) * 
+           (1 + real_potential_gdp_growth + consumption_deflator_growth))
+  # generate rebate_checks_arp_post_mpc
+  #stuff here
+  
   #doing the same as above but for new variables 
   mutate(across(
     .cols = all_of(
