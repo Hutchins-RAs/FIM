@@ -257,12 +257,7 @@ consumption_pt2 <-
   # TODO: REBATE CHECKS ARE TRICKY SO LEAVE REFACTORING TO END.
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
   
-  # TODO: SUBSIDIES ALSO TRICKY SO LEAVE REFACTORING TO END.
-  # Process is not quite the below, so beware. Leaving my notes here for later.
-  # Subsidies work the same way as social benefits. Process:
-  # subsidies_minus_neutral -> {apply mpc_subsidies()} -> subsidies_post_mpc
-  # federal_subsidies_minus_neutral -> {apply mpc_subsidies()} -> federal_subsidies_post_mpc
-  # state_subsidies_minus_neutral -> {apply mpc_subsidies()} -> state_subsidies_post_mpc
+  # subsidies, federal subsidies, and state subsidies
   mutate(subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
                                       mpc_lorae(subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
                                       mpc_lorae(subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
