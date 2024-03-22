@@ -268,15 +268,12 @@ consumption_pt2 <-
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
   
   # Create subsidies_post_mpc, federal_subsidies_post_pc, and state_subsidies_post_mpc
-  mutate(subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                      mpc_lorae(subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
-                                      mpc_lorae(subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
-  mutate(federal_subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                              mpc_lorae(federal_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
-                                              mpc_lorae(federal_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
-  mutate(state_subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                      mpc_lorae(state_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
-                                      mpc_lorae(state_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
+  mutate(subsidies_post_mpc = mpc_lorae(subsidies_minus_neutral, 
+                                        mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
+  mutate(federal_subsidies_post_mpc = mpc_lorae(federal_subsidies_minus_neutral, 
+                                                mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
+  mutate(state_subsidies_post_mpc = mpc_lorae(state_subsidies_minus_neutral, 
+                                              mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
   # Create the health_outlays_post_mpc
   mutate(health_outlays_post_mpc = mpc_lorae(x = health_outlays_minus_neutral,
                                             mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
