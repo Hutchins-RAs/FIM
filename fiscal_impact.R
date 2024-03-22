@@ -364,8 +364,12 @@ consumption_pt2 <-
   mutate(supply_side_ira_minus_neutral_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
                                                                   mpc = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))) %>%
 
-# assign result to the consumption df, so rest of code runs smoothly
+# Assign result to the consumption df, so rest of code runs smoothly
 consumption <- consumption_pt2
+# Apply column order to perfectly match old version of fim. These lines can be
+# deleted later if column order turns out to be irrelevant.
+load("consumption_column_order.RData")
+consumption <- consumption[, column_order]
 
 # Section E: Contribution ------------------------------------------------------------
 
