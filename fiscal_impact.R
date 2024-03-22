@@ -263,8 +263,15 @@ consumption_pt2 <-
   # subsidies_minus_neutral -> {apply mpc_subsidies()} -> subsidies_post_mpc
   # federal_subsidies_minus_neutral -> {apply mpc_subsidies()} -> federal_subsidies_post_mpc
   # state_subsidies_minus_neutral -> {apply mpc_subsidies()} -> state_subsidies_post_mpc
-  
-  calculate_mpc("subsidies") %>%
+  mutate(subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
+                                      mpc_lorae(subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
+                                      mpc_lorae(subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
+  mutate(federal_subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
+                                              mpc_lorae(federal_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
+                                              mpc_lorae(federal_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
+  mutate(state_subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
+                                      mpc_lorae(state_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
+                                      mpc_lorae(state_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
   
   # Health outlays work the same way as social benefits. Process:
   # health_outlays_minus_neutral -> {apply mpc_health_outlays()} -> health_outlays_post_mpc
@@ -315,7 +322,6 @@ consumption_pt2 <-
                                  mpc_ui_arp(.x)),
                 .names = '{.col}_post_mpc'))  %>% 
   
-  ### THE DIFFICULT REFACTORING STARTS HERE
   # Unlike in the above sections, we must first generate xxxx_minus_neutral
   # before we can feed it into the mpc function to generate xxx_post_mpc.
   # So each line item in this section will have two new lines of code: one to
