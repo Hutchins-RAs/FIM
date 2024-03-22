@@ -218,6 +218,8 @@ logical_vector <- consumption_pt1$federal_social_benefits + consumption_pt1$stat
 any_false <- any(!logical_vector)
 print(any_false)
 # as you can see, there are false elements in this vector comparing the two values
+# try subtracting or using all.equal() function - it's possible the differences
+# are miniscule.
 
 # Second part of consumption, which will be refactored
 consumption_pt2 <-
@@ -304,6 +306,7 @@ consumption_pt2 <-
                                  mpc_ui_arp(.x)),
                 .names = '{.col}_post_mpc'))  %>% 
   
+  ### THE DIFFICULT REFACTORING STARTS HERE
   #doing the same as above but for new variables 
   mutate(across(
     .cols = all_of(
