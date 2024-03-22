@@ -362,7 +362,7 @@ consumption_pt2 <-
                                                              rpgg = real_potential_gdp_growth, 
                                                              cdg = consumption_deflator_growth)) %>%
   mutate(supply_side_ira_minus_neutral_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
-                                                                  mpc = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))) %>%
+                                                                  mpc = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
 
 # Assign result to the consumption df, so rest of code runs smoothly
 consumption <- consumption_pt2
