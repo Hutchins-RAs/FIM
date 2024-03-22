@@ -307,7 +307,6 @@ consumption_pt2 <-
   mutate(state_non_corporate_taxes_post_mpc = mpc_lorae(x = state_non_corporate_taxes_minus_neutral,
                                                     mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
   
-  # TODO: UI IS TRICKY SO LEAVE REFACTORING TO END.
   # Calculate pandemic-adjusted MPC values for federal and state UI benefits
   mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
                 .fns = ~ if_else(date < yearquarter("2021 Q2"),
