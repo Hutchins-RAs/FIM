@@ -254,30 +254,20 @@ print(any_false)
 consumption_pt2 <-
   consumption_pt1 %>%
   
-  # Ok, so this is how the social benefits work. As an input, you take either the
-  # column social_benefits_minus_neutral, federal_social_benefits_minus_neutral, or 
-  # state_social_benefits_minus_neutral. Those are your inputs. You throw those into the
-  # function mpc_social_benefits(x) as the x variable. What you get as an output
-  # is then labelled as social_benefits_post_mpc, federal_social_benefits_post_mpc,
-  # or state_social_benefits_post_mpc. Those are appended to the given data frame.
-  
-  # In this next section of code, I've replaced that section with some code that
-  # appends new columns using my custom mpc_lorae() function.
-  
-  # Creating the social_benefits_post_mpc column using mpc_lorae formula
+  # Create social_benefits_post_mpc column
   mutate(social_benefits_post_mpc = mpc_lorae(x = social_benefits_minus_neutral,
                                               mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Doing the same thing, this time w federal_social_benefits_post_mpc
+  # Create federal_social_benefits_post_mpc
   mutate(federal_social_benefits_post_mpc = mpc_lorae(x = federal_social_benefits_minus_neutral,
                                               mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Doing the same thing, this time w state_social_benefits_post_mpc
+  # Create state_social_benefits_post_mpc
   mutate(state_social_benefits_post_mpc = mpc_lorae(x = state_social_benefits_minus_neutral,
                                                       mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
   
   # TODO: REBATE CHECKS ARE TRICKY SO LEAVE REFACTORING TO END.
   mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
   
-  # subsidies, federal subsidies, and state subsidies
+  # Create subsidies_post_mpc, federal_subsidies_post_pc, and state_subsidies_post_mpc
   mutate(subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
                                       mpc_lorae(subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
                                       mpc_lorae(subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
@@ -287,27 +277,15 @@ consumption_pt2 <-
   mutate(state_subsidies_post_mpc = if_else(date < yearquarter("2021 Q2"),
                                       mpc_lorae(state_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)),
                                       mpc_lorae(state_subsidies_minus_neutral, 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02)))) %>%
-  
-  # Health outlays work the same way as social benefits. Process:
-  # health_outlays_minus_neutral -> {apply mpc_health_outlays()} -> health_outlays_post_mpc
-  # federal_health_outlays_minus_neutral -> {apply mpc_health_outlays()} -> federal_health_outlays_post_mpc
-  # state_health_outlays_minus_neutral -> {apply mpc_health_outlays()} -> state_health_outlays_post_mpc
-  # 
-  # When I compare my mpc_lorae function to the original outputs, using the
-  # mpc_health_outlays function, I get a miniscule difference, on the order of 
-  # 10*(-15), which is the result of computer rounding - not any
-  # theoretical / mathematical differences.
-  
-  # Creating the health_outlays_post_mpc column using mpc_lorae formula
+  # Create the health_outlays_post_mpc
   mutate(health_outlays_post_mpc = mpc_lorae(x = health_outlays_minus_neutral,
                                             mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Doing the same thing, this time w federal_health_outlays_post_mpc
+  # Create federal_health_outlays_post_mpc
   mutate(federal_health_outlays_post_mpc = mpc_lorae(x = federal_health_outlays_minus_neutral,
                                                       mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Doing the same thing, this time w state_social_benefits_post_mpc
+  # Create state_social_benefits_post_mpc
   mutate(state_health_outlays_post_mpc = mpc_lorae(x = state_health_outlays_minus_neutral,
                                                     mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  
   # Corporate taxes work the same as health outlays and social benefits.
   # When I compare my mpc_lorae function to the original outputs, using the
   # I get a miniscule difference, on the order of 10*(-15), which is the result 
@@ -318,7 +296,6 @@ consumption_pt2 <-
                                                      mpc = rep(-0.0333333333333333, 12))) %>%
   mutate(state_corporate_taxes_post_mpc = mpc_lorae(x = state_corporate_taxes_minus_neutral,
                                                    mpc = rep(-0.0333333333333333, 12))) %>%
-  
   # Non-corporate taxes. As before, tiny difference that's near 0
   mutate(non_corporate_taxes_post_mpc = mpc_lorae(x = non_corporate_taxes_minus_neutral,
                                               mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
@@ -326,7 +303,6 @@ consumption_pt2 <-
                                                       mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
   mutate(state_non_corporate_taxes_post_mpc = mpc_lorae(x = state_non_corporate_taxes_minus_neutral,
                                                     mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
-  
   # Calculate pandemic-adjusted MPC values for federal and state UI benefits
   mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
                 .fns = ~ if_else(date < yearquarter("2021 Q2"),
@@ -335,8 +311,6 @@ consumption_pt2 <-
                                  # Use MPC_ARP function for dates on or after 2021 Q2
                                  mpc_ui_arp(.x)),
                 .names = '{.col}_post_mpc'))  %>% 
-
-
   # generate rebate_checks_arp_post_mpc
   # note that the code I'm refactoring generates rebate_checks_arp_minus_neutral_post_mpc
   # which breaks the convention of just calling it rebate_checks_arp_post_mpc.
