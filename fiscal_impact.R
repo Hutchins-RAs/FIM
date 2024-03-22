@@ -356,7 +356,7 @@ consumption_pt2 <-
                                                                            rpgg = real_potential_gdp_growth, 
                                                                            cdg = consumption_deflator_growth)) %>%
   mutate(federal_student_loans_minus_neutral_post_mpc = mpc_lorae(x = federal_student_loans_minus_neutral, 
-                                                                                mpc = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017))) %>%
+                                                                                mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
   # generate supply_side_ira _minus_neutral and _minus_neutral_post_mpc
   mutate(supply_side_ira_minus_neutral = minus_neutral(x = supply_side_ira, 
                                                              rpgg = real_potential_gdp_growth, 
