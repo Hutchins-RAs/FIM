@@ -332,12 +332,16 @@ consumption_pt2 <-
   mutate(supply_side_ira_minus_neutral_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
                                                                   mpc = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
 
-# Assign result to the consumption df, so rest of code runs smoothly
-consumption <- consumption_pt2
 # Apply column order to perfectly match old version of fim. These lines can be
 # deleted later if column order turns out to be irrelevant.
 load("consumption_column_order.RData")
-consumption <- consumption[, column_order]
+consumption_new <- consumption_pt2 %>%
+  .[, consumption_column_order]
+all.equal(consumption, consumption_new)
+
+# Assign result to the consumption df, so rest of code runs smoothly.
+# consumption_new is just a temporary feature to compare between new and old fims
+consumption <- consumption_new
 
 # Section E: Contribution ------------------------------------------------------------
 
