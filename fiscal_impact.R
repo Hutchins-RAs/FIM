@@ -339,16 +339,28 @@ consumption_pt2 <-
                                                          cdg = consumption_deflator_growth)) %>%
   mutate(federal_other_direct_aid_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_other_direct_aid_arp_minus_neutral, 
                                                               mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
+  # generate federal_other_vulnerable_arp _minus_neutral and _minus_neutral_post_mpc
+  mutate(federal_other_vulnerable_arp_minus_neutral = minus_neutral(x = federal_other_vulnerable_arp, 
+                                                                    rpgg = real_potential_gdp_growth, 
+                                                                    cdg = consumption_deflator_growth)) %>%
+  mutate(federal_other_vulnerable_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_other_vulnerable_arp_minus_neutral, 
+                                                                         mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
+  # generate federal_aid_to_small_businesses_arp _minus_neutral and _minus_neutral_post_mpc
+  mutate(federal_aid_to_small_businesses_arp_minus_neutral = minus_neutral(x = federal_aid_to_small_businesses_arp, 
+                                                                    rpgg = real_potential_gdp_growth, 
+                                                                    cdg = consumption_deflator_growth)) %>%
+  mutate(federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_aid_to_small_businesses_arp_minus_neutral, 
+                                                                         mpc = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017))) %>%
+  
 
   
   #doing the same as above but for new variables 
   mutate(across(
     .cols = all_of(
       c(
-        "federal_other_vulnerable_arp"#,
         # # "federal_ui_arp",
         # #"state_ui_arp",
-        # "federal_aid_to_small_businesses_arp",
+        "federal_aid_to_small_businesses_arp"#,
         # "federal_student_loans",
         # "supply_side_ira"
       )
@@ -358,17 +370,6 @@ consumption_pt2 <-
     .names = "{.col}_minus_neutral"
   )) %>% 
   mutate(
-    across(
-      .cols = any_of(
-        c(
-          #"federal_ui_arp", 
-          #"state_ui_arp", 
-          "federal_other_vulnerable_arp") %>% paste0("_minus_neutral")
-      ),
-      #getting the post mpc levels for the ARP variables
-      .fns = ~ mpc_vulnerable_arp(.x),
-      .names = "{.col}_post_mpc"
-    )#,
   #   across(
   #     .cols = all_of(
   #       c("federal_student_loans") %>% paste0("_minus_neutral")
@@ -385,9 +386,9 @@ consumption_pt2 <-
   #     .fns = ~ mpc_supply_side_ira(.x),
   #     .names = "{.col}_post_mpc"
   #   ),
-  #   #same as above, applying a different MPC function to this
-  #   federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
-  #     mpc_small_businesses_arp ((federal_aid_to_small_businesses_arp_minus_neutral))
+    #same as above, applying a different MPC function to this
+    federal_aid_to_small_businesses_arp_minus_neutral_post_mpc =
+      mpc_small_businesses_arp ((federal_aid_to_small_businesses_arp_minus_neutral))
   )
 
 # assign result to the consumption df, so rest of code runs smoothly
