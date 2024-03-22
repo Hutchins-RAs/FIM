@@ -219,7 +219,27 @@ minus_neutral <- function(x, # the data in question
 consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
   get_real_levels() %>%
-  taxes_transfers_minus_neutral() 
+  taxes_transfers_minus_neutral() %>% # Do most of the _minus_neutral calculations
+  # Remainder of _minus_neutral calculated here
+  mutate(rebate_checks_arp_minus_neutral = minus_neutral(x = rebate_checks_arp, 
+                                                         rpgg = real_potential_gdp_growth, 
+                                                         cdg = consumption_deflator_growth)) %>%
+  mutate(federal_other_direct_aid_arp_minus_neutral = minus_neutral(x = federal_other_direct_aid_arp, 
+                                                                    rpgg = real_potential_gdp_growth, 
+                                                                    cdg = consumption_deflator_growth)) %>%
+  mutate(federal_other_vulnerable_arp_minus_neutral = minus_neutral(x = federal_other_vulnerable_arp, 
+                                                                    rpgg = real_potential_gdp_growth, 
+                                                                    cdg = consumption_deflator_growth)) %>%
+  mutate(federal_aid_to_small_businesses_arp_minus_neutral = minus_neutral(x = federal_aid_to_small_businesses_arp, 
+                                                                           rpgg = real_potential_gdp_growth, 
+                                                                           cdg = consumption_deflator_growth)) %>%
+  mutate(federal_student_loans_minus_neutral = minus_neutral(x = federal_student_loans, 
+                                                             rpgg = real_potential_gdp_growth, 
+                                                             cdg = consumption_deflator_growth)) %>%
+  mutate(supply_side_ira_minus_neutral = minus_neutral(x = supply_side_ira, 
+                                                       rpgg = real_potential_gdp_growth, 
+                                                       cdg = consumption_deflator_growth))
+  
 
 ## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
 ## = social_benefits, but it does not. TODO: Investigate later.
@@ -315,16 +335,8 @@ consumption_pt2 <-
                                  # Use MPC_ARP function for dates on or after 2021 Q2
                                  mpc_ui_arp(.x)),
                 .names = '{.col}_post_mpc'))  %>% 
-  
-  # Unlike in the above sections, we must first generate xxxx_minus_neutral
-  # before we can feed it into the mpc function to generate xxx_post_mpc.
-  # So each line item in this section will have two new lines of code: one to
-  # generate xxxx_minus_neutral, and one to generate xxx_post_mpc.
-  # Let's start with rebate_checks_arp.
-  # generate rebate_checks_arp_minus_neutral
-  mutate(rebate_checks_arp_minus_neutral = minus_neutral(x = rebate_checks_arp, 
-                                                         rpgg = real_potential_gdp_growth, 
-                                                         cdg = consumption_deflator_growth)) %>%
+
+
   # generate rebate_checks_arp_post_mpc
   # note that the code I'm refactoring generates rebate_checks_arp_minus_neutral_post_mpc
   # which breaks the convention of just calling it rebate_checks_arp_post_mpc.
@@ -333,34 +345,19 @@ consumption_pt2 <-
   # TODO: rename this variable to follow convention and update downstream code
   mutate(rebate_checks_arp_minus_neutral_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
                                                               mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
-  # generate federal_other_direct_aid_arp  _minus_neutral and _minus_neutral_post_mpc
-  mutate(federal_other_direct_aid_arp_minus_neutral = minus_neutral(x = federal_other_direct_aid_arp, 
-                                                         rpgg = real_potential_gdp_growth, 
-                                                         cdg = consumption_deflator_growth)) %>%
+  # generate federal_other_direct_aid_arp _minus_neutral_post_mpc
   mutate(federal_other_direct_aid_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_other_direct_aid_arp_minus_neutral, 
                                                               mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
-  # generate federal_other_vulnerable_arp _minus_neutral and _minus_neutral_post_mpc
-  mutate(federal_other_vulnerable_arp_minus_neutral = minus_neutral(x = federal_other_vulnerable_arp, 
-                                                                    rpgg = real_potential_gdp_growth, 
-                                                                    cdg = consumption_deflator_growth)) %>%
+  # generate federal_other_vulnerable_arp _minus_neutral_post_mpc
   mutate(federal_other_vulnerable_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_other_vulnerable_arp_minus_neutral, 
                                                                          mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
-  # generate federal_aid_to_small_businesses_arp _minus_neutral and _minus_neutral_post_mpc
-  mutate(federal_aid_to_small_businesses_arp_minus_neutral = minus_neutral(x = federal_aid_to_small_businesses_arp, 
-                                                                    rpgg = real_potential_gdp_growth, 
-                                                                    cdg = consumption_deflator_growth)) %>%
+  # generate federal_aid_to_small_businesses_arp _minus_neutral_post_mpc
   mutate(federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_aid_to_small_businesses_arp_minus_neutral, 
                                                                          mpc = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017))) %>%
-  # generate federal_student_loans _minus_neutral and _minus_neutral_post_mpc
-  mutate(federal_student_loans_minus_neutral = minus_neutral(x = federal_student_loans, 
-                                                                           rpgg = real_potential_gdp_growth, 
-                                                                           cdg = consumption_deflator_growth)) %>%
+  # generate federal_student_loans _minus_neutral_post_mpc
   mutate(federal_student_loans_minus_neutral_post_mpc = mpc_lorae(x = federal_student_loans_minus_neutral, 
                                                                                 mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
   # generate supply_side_ira _minus_neutral and _minus_neutral_post_mpc
-  mutate(supply_side_ira_minus_neutral = minus_neutral(x = supply_side_ira, 
-                                                             rpgg = real_potential_gdp_growth, 
-                                                             cdg = consumption_deflator_growth)) %>%
   mutate(supply_side_ira_minus_neutral_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
                                                                   mpc = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
 
