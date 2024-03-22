@@ -322,9 +322,9 @@ consumption_pt2 <-
   # generate xxxx_minus_neutral, and one to generate xxx_post_mpc.
   # Let's start with rebate_checks_arp.
   # generate rebate_checks_arp_minus_neutral
-  mutate(rebate_checks_arp_minus_neutral = 
-           rebate_checks_arp - lag(rebate_checks_arp, default = 0) * 
-           (1 + real_potential_gdp_growth + consumption_deflator_growth))
+  mutate(rebate_checks_arp_minus_neutral = minus_neutral(x = rebate_checks_arp, 
+                                                         rpgg = real_potential_gdp_growth, 
+                                                         cdg = consumption_deflator_growth))
   # generate rebate_checks_arp_post_mpc
   #stuff here
   
