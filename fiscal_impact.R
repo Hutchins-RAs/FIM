@@ -205,6 +205,15 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
 
 # Section D: Consumption -------------------------------------------------------------
  
+# generalized minus_neutral function
+minus_neutral <- function(x, # the data in question
+                          rpgg, # real_potential_gdp_growth,
+                          cdg # consumption deflator growth
+                          ) {
+  output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
+  return(output)
+}
+
 # Isolating the first part of consumption, which I will not attempt
 # to refactor (for now)
 consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
