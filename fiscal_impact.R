@@ -311,14 +311,14 @@ consumption_pt2 <-
   mutate(across(
     .cols = all_of(
       c(
-        "rebate_checks_arp",
-        "federal_other_direct_aid_arp",
-        "federal_other_vulnerable_arp",
-        # "federal_ui_arp",
-        #"state_ui_arp",
-        "federal_aid_to_small_businesses_arp",
-        "federal_student_loans",
-        "supply_side_ira"
+        "rebate_checks_arp"#,
+        # "federal_other_direct_aid_arp",
+        # "federal_other_vulnerable_arp",
+        # # "federal_ui_arp",
+        # #"state_ui_arp",
+        # "federal_aid_to_small_businesses_arp",
+        # "federal_student_loans",
+        # "supply_side_ira"
       )
     ),
     #Getting the level minus neutral
@@ -326,41 +326,42 @@ consumption_pt2 <-
     .names = "{.col}_minus_neutral"
   )) %>% 
   mutate(
-    across(
-      .cols = any_of(
-        c("federal_ui_arp", "state_ui_arp", "federal_other_vulnerable_arp") %>% paste0("_minus_neutral")
-      ),
-      #getting the post mpc levels for the ARP variables 
-      .fns = ~ mpc_vulnerable_arp(.x),
-      .names = "{.col}_post_mpc"
-    ),
+  #   across(
+  #     .cols = any_of(
+  #       c("federal_ui_arp", "state_ui_arp", "federal_other_vulnerable_arp") %>% paste0("_minus_neutral")
+  #     ),
+  #     #getting the post mpc levels for the ARP variables 
+  #     .fns = ~ mpc_vulnerable_arp(.x),
+  #     .names = "{.col}_post_mpc"
+  #   ),
     across(
       .cols = all_of(
-        c("rebate_checks_arp", "federal_other_direct_aid_arp") %>% paste0("_minus_neutral")
+        c("rebate_checks_arp")#, "federal_other_direct_aid_arp") 
+        %>% paste0("_minus_neutral")
       ),
       #same as above, applying a different MPC function to these 
       .fns = ~ mpc_direct_aid_arp(.),
       .names = "{.col}_post_mpc"
-    ),
-    across(
-      .cols = all_of(
-        c("federal_student_loans") %>% paste0("_minus_neutral")
-      ),
-      #same as above, applying a different MPC function to these 
-      .fns = ~ mpc_student_loans(.),
-      .names = "{.col}_post_mpc"
-    ),
-    across(
-      .cols = any_of(
-        c("supply_side_ira") %>% paste0("_minus_neutral")
-      ),
-      #getting the post mpc levels for the ARP variables
-      .fns = ~ mpc_supply_side_ira(.x),
-      .names = "{.col}_post_mpc"
-    ),
-    #same as above, applying a different MPC function to this
-    federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
-      mpc_small_businesses_arp ((federal_aid_to_small_businesses_arp_minus_neutral))
+    ) #,
+  #   across(
+  #     .cols = all_of(
+  #       c("federal_student_loans") %>% paste0("_minus_neutral")
+  #     ),
+  #     #same as above, applying a different MPC function to these 
+  #     .fns = ~ mpc_student_loans(.),
+  #     .names = "{.col}_post_mpc"
+  #   ),
+  #   across(
+  #     .cols = any_of(
+  #       c("supply_side_ira") %>% paste0("_minus_neutral")
+  #     ),
+  #     #getting the post mpc levels for the ARP variables
+  #     .fns = ~ mpc_supply_side_ira(.x),
+  #     .names = "{.col}_post_mpc"
+  #   ),
+  #   #same as above, applying a different MPC function to this
+  #   federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
+  #     mpc_small_businesses_arp ((federal_aid_to_small_businesses_arp_minus_neutral))
   )
 
 # assign result to the consumption df, so rest of code runs smoothly
