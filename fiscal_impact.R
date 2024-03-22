@@ -324,16 +324,21 @@ consumption_pt2 <-
   # generate rebate_checks_arp_minus_neutral
   mutate(rebate_checks_arp_minus_neutral = minus_neutral(x = rebate_checks_arp, 
                                                          rpgg = real_potential_gdp_growth, 
-                                                         cdg = consumption_deflator_growth))
+                                                         cdg = consumption_deflator_growth)) %>%
   # generate rebate_checks_arp_post_mpc
-  #stuff here
+  # note that the code I'm refactoring generates rebate_checks_arp_minus_neutral_post_mpc
+  # which breaks the convention of just calling it rebate_checks_arp_post_mpc.
+  # but I'm keeping it this way for now because I don't want to unintentionally 
+  # break downstream code.
+  # TODO: rename this variable to follow convention and update downstream code
+  mutate(rebate_checks_arp_minus_neutral_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
+                                                              mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
   
   #doing the same as above but for new variables 
   mutate(across(
     .cols = all_of(
       c(
-        "rebate_checks_arp"#,
-        # "federal_other_direct_aid_arp",
+        "federal_other_direct_aid_arp"#,
         # "federal_other_vulnerable_arp",
         # # "federal_ui_arp",
         # #"state_ui_arp",
@@ -357,7 +362,7 @@ consumption_pt2 <-
   #   ),
     across(
       .cols = all_of(
-        c("rebate_checks_arp")#, "federal_other_direct_aid_arp") 
+        c("federal_other_direct_aid_arp") 
         %>% paste0("_minus_neutral")
       ),
       #same as above, applying a different MPC function to these 
