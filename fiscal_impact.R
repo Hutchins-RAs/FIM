@@ -381,13 +381,22 @@ consumption_pt3 <-
   mutate(state_non_corporate_taxes_post_mpc = mpc_lorae(x = state_non_corporate_taxes_minus_neutral,
                                                     mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
   # Calculate pandemic-adjusted MPC values for federal and state UI benefits
-  mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
-                .fns = ~ if_else(date < yearquarter("2021 Q2"),
-                                 # Use MPC function for dates before 2021 Q2
-                                 mpc_ui(.x),
-                                 # Use MPC_ARP function for dates on or after 2021 Q2
-                                 mpc_ui_arp(.x)),
-                .names = '{.col}_post_mpc'))  %>% 
+  # federal_ui_post_mpc
+  mutate(federal_ui_minus_neutral_post_mpc = if_else(date < yearquarter("2021 Q2"),
+                                      # Use one MPC for dates before 2021 Q2
+                                      mpc_lorae(x = federal_ui_minus_neutral,
+                                                mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
+                                      # Use another MPC for dates 2021 Q2 and beyond
+                                      mpc_lorae(x = federal_ui_minus_neutral,
+                                                mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
+  # state_ui_post_mpc
+  mutate(state_ui_minus_neutral_post_mpc = if_else(date < yearquarter("2021 Q2"),
+                                       # Use one MPC for dates before 2021 Q2
+                                       mpc_lorae(x = state_ui_minus_neutral,
+                                                 mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
+                                       # Use another MPC for dates 2021 Q2 and beyond
+                                       mpc_lorae(x = state_ui_minus_neutral,
+                                                 mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
   # generate rebate_checks_arp_post_mpc
   # note that the code I'm refactoring generates rebate_checks_arp_minus_neutral_post_mpc
   # which breaks the convention of just calling it rebate_checks_arp_post_mpc.
