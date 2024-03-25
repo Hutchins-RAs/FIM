@@ -426,7 +426,7 @@ consumption <- consumption_new
 
 # Section E: Contribution ------------------------------------------------------------
 
-contributions <- # Calculate contributions
+contributions_pt1 <- # Calculate contributions
   consumption %>%
   purchases_contributions() %>% 
   
@@ -439,8 +439,9 @@ contributions <- # Calculate contributions
   rename_with(~ str_replace(.x, "_minus_neutral_post_mpc_contribution", "_contribution")) %>% 
   rename_with(~ str_replace(.x, "minus_neutral_post_mpc", "post_mpc")) %>% 
   rename_with(~ str_replace(.x, "post_mpc_contribution", "contribution")) %>% 
-  sum_transfers_contributions() %>% 
-  
+  sum_transfers_contributions() #%>% 
+
+contributions_pt2 <- contributions_pt1 %>%
   #Define FIM variables for grants and purchases
   mutate(
     grants_contribution = consumption_grants_contribution + investment_grants_contribution,
@@ -512,6 +513,15 @@ contributions <- # Calculate contributions
       federal_corporate_taxes_real + state_corporate_taxes_real
   ) %>% 
   mutate( subsidies_real = federal_subsidies_real + state_subsidies_real)
+
+load("TEMP_contributions.RData")
+contributions_new <- contributions_pt2 #%>%
+#   .[, consumption_column_order]
+all.equal(contributions, contributions_new)
+
+
+# for later use in this code
+contributions <- contributions_new
 
 #openxlsx::write.xlsx: This function writes an R data object to an .xlsx file (an Excel spreadsheet).
 #file = glue('results/{month_year}/fim-{month_year}.xlsx'): This specifies the file path and name of the .xlsx file that the data will be written to. The glue() function is being used to dynamically create the file path and name using the month_year variable.
