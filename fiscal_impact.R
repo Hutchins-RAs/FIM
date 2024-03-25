@@ -225,6 +225,32 @@ consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
   get_real_levels()
 
+variable_list <- c(
+  "ui",
+  "federal_ui",
+  "state_ui",
+  "subsidies",
+  "federal_subsidies",
+  "state_subsidies",
+  "health_outlays",
+  "federal_health_outlays",
+  "state_health_outlays",
+  "social_benefits",
+  "federal_social_benefits",
+  "state_social_benefits",
+  "corporate_taxes",
+  "federal_corporate_taxes",
+  "state_corporate_taxes",
+  "non_corporate_taxes",
+  "federal_non_corporate_taxes",
+  "state_non_corporate_taxes",
+  "rebate_checks_arp",
+  "federal_other_direct_aid_arp",
+  "federal_other_vulnerable_arp",
+  "federal_aid_to_small_businesses_arp",
+  "federal_student_loans",
+  "supply_side_ira"
+)
 ### CALCULATE MINUS NEUTRALS
 # perform all minus_neutral calculations here USING minus_neutral() function
 consumption_pt2 <- consumption_pt1 %>%
