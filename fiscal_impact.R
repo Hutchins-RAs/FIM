@@ -233,9 +233,9 @@ consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
   get_real_levels()
 
 ### CALCULATE MINUS NEUTRALS
-  # perform all minus_neutral calculations here USING beta_minus_neutral() function
-  # rebate_checks don't have a federal or state level
+# perform all minus_neutral calculations here USING beta_minus_neutral() function
 consumption_pt2 <- consumption_pt1 %>%
+  # rebate_checks don't have a federal or state level
   mutate(rebate_checks_minus_neutral = beta_minus_neutral(x = rebate_checks, 
                                                rpgg = real_potential_gdp_growth, 
                                                cdg = consumption_deflator_growth)) %>%
@@ -330,7 +330,6 @@ print(any_false)
 # are miniscule.
 
 ### CALCULATE MPCS
-# Second part of consumption, which will be refactored
 consumption_pt3 <-
   consumption_pt2 %>%
   
