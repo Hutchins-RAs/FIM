@@ -249,7 +249,8 @@ variable_list <- c(
   "federal_other_vulnerable_arp",
   "federal_aid_to_small_businesses_arp",
   "federal_student_loans",
-  "supply_side_ira"
+  "supply_side_ira",
+  "rebate_checks"
 )
 
 # CALCULATE MINUS NEUTRALS: AN ALTERNATIVE to the below steps, I am working on
