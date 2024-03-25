@@ -394,6 +394,8 @@ consumption_pt3 <-
   # but I'm keeping it this way for now because I don't want to unintentionally 
   # break downstream code.
   # TODO: rename this variable to follow convention and update downstream code
+  # will have to do this after I've stopped reordering the columns to match the 
+  # original FIM, since the reordering requires a perfect match.
   mutate(rebate_checks_arp_minus_neutral_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
                                                               mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
   # generate federal_other_direct_aid_arp _minus_neutral_post_mpc
