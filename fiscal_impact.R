@@ -439,8 +439,8 @@ contributions_pt1 <- # Calculate contributions
                 ~ 400 * .x / lag(gdp),
                 .names = "{.col}_contribution" 
   )) %>%
-  # rename_with(~ str_replace(.x, "_minus_neutral_post_mpc_contribution", "_contribution")) %>% 
-  # rename_with(~ str_replace(.x, "minus_neutral_post_mpc", "post_mpc")) %>% 
+  # TODO: Standardize this section so that retroactively renaming post_mpc_contribution
+  # columns to _contribution columns is unnecessary
   rename_with(~ str_replace(.x, "post_mpc_contribution", "contribution")) %>% 
   sum_transfers_contributions() #%>% 
 
