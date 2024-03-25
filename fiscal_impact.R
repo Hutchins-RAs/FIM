@@ -287,6 +287,20 @@ print(any_false)
 # are miniscule.
 
 ### CALCULATE MPCS
+# Here, we're going to have an MPC data frame that contains the correct MPCs
+# to use at each period.
+mpc01 = c(0.225, 0.225, 0.225, 0.225)
+mpc02 = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
+# The columns will represent periods, so that a user can define MPCs in each 
+# quarter. This will allow for tweaks of MPCs over time without affecting our 
+# historic FIM estimates. It will also allow us to change the FIM if we believe
+# MPCs are different (which, for example, we did during COVID).
+test <- tibble(example1 = list(mpc01, mpc02), example2 = list(mpc02, mpc02))
+# (This will take more computing power than using a simple for loop for the
+# exceptions, but I think it will be more robust to future changes in the FIM)
+#post_mpc_df <- apply
+
+
 consumption_pt3 <-
   consumption_pt2 %>%
   
