@@ -265,11 +265,16 @@ minus_neutral_df <- apply(
                           cdg = consumption_pt1$consumption_deflator_growth) %>% #arg from minus_neutral
   as.data.frame()
 
-# rename the columns by appending "_minus_neutral" to the end of each variable
+# Rename the columns by appending "_minus_neutral" to the end of each variable
 # name to make it consistent with the rest of the code. Eventually, we will no
 # longer do this because we will simply use the minus_neutral_df, rather than
-# the consumption_pt1, consumption_pt2, etc. data frames.
+# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
+# refactoring to avoid unnecessary errors.
 colnames(minus_neutral_df) <- c(glue::glue('{variable_list}_minus_neutral'))
+
+# Append the new _minus_neutral rows to the consumption_pt1 data frame to 
+# create the consumption_pt2 data frame.
+consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_df)
 
 ## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
 ## = social_benefits, but it does not. TODO: Investigate later.
@@ -279,9 +284,6 @@ print(any_false)
 # as you can see, there are false elements in this vector comparing the two values
 # try subtracting or using all.equal() function - it's possible the differences
 # are miniscule.
-# appending the new _minus_neutral rows to the consumption_pt1 data frame to 
-# create the consumption_pt2 data frame.
-consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_df)
 
 ### CALCULATE MPCS
 consumption_pt3 <-
