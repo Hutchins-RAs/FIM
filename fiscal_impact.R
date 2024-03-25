@@ -381,7 +381,7 @@ consumption_pt3 <-
                                                     mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
   # Calculate pandemic-adjusted MPC values for federal and state UI benefits
   # federal_ui_post_mpc
-  mutate(federal_ui_minus_neutral_post_mpc = if_else(date < yearquarter("2021 Q2"),
+  mutate(federal_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
                                       # Use one MPC for dates before 2021 Q2
                                       mpc_lorae(x = federal_ui_minus_neutral,
                                                 mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
@@ -389,7 +389,7 @@ consumption_pt3 <-
                                       mpc_lorae(x = federal_ui_minus_neutral,
                                                 mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
   # state_ui_post_mpc
-  mutate(state_ui_minus_neutral_post_mpc = if_else(date < yearquarter("2021 Q2"),
+  mutate(state_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
                                        # Use one MPC for dates before 2021 Q2
                                        mpc_lorae(x = state_ui_minus_neutral,
                                                  mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
@@ -397,39 +397,30 @@ consumption_pt3 <-
                                        mpc_lorae(x = state_ui_minus_neutral,
                                                  mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
   # generate rebate_checks_arp_post_mpc
-  # note that the code I'm refactoring generates rebate_checks_arp_minus_neutral_post_mpc
-  # which breaks the convention of just calling it rebate_checks_arp_post_mpc.
-  # but I'm keeping it this way for now because I don't want to unintentionally 
-  # break downstream code.
-  # TODO: rename this variable to follow convention and update downstream code
-  # will have to do this after I've stopped reordering the columns to match the 
-  # original FIM, since the reordering requires a perfect match.
-  mutate(rebate_checks_arp_minus_neutral_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
+  mutate(rebate_checks_arp_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
                                                               mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
-  # generate federal_other_direct_aid_arp _minus_neutral_post_mpc
-  mutate(federal_other_direct_aid_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_other_direct_aid_arp_minus_neutral, 
+  # generate federal_other_direct_aid_arp_post_mpc
+  mutate(federal_other_direct_aid_arp_post_mpc = mpc_lorae(x = federal_other_direct_aid_arp_minus_neutral, 
                                                               mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
-  # generate federal_other_vulnerable_arp _minus_neutral_post_mpc
-  mutate(federal_other_vulnerable_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_other_vulnerable_arp_minus_neutral, 
+  # generate federal_other_vulnerable_arp_post_mpc
+  mutate(federal_other_vulnerable_arp_post_mpc = mpc_lorae(x = federal_other_vulnerable_arp_minus_neutral, 
                                                                          mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
-  # generate federal_aid_to_small_businesses_arp _minus_neutral_post_mpc
-  mutate(federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = mpc_lorae(x = federal_aid_to_small_businesses_arp_minus_neutral, 
+  # generate federal_aid_to_small_businesses_arp_post_mpc
+  mutate(federal_aid_to_small_businesses_arp_post_mpc = mpc_lorae(x = federal_aid_to_small_businesses_arp_minus_neutral, 
                                                                          mpc = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017))) %>%
-  # generate federal_student_loans _minus_neutral_post_mpc
-  mutate(federal_student_loans_minus_neutral_post_mpc = mpc_lorae(x = federal_student_loans_minus_neutral, 
+  # generate federal_student_loans_post_mpc
+  mutate(federal_student_loans_post_mpc = mpc_lorae(x = federal_student_loans_minus_neutral, 
                                                                                 mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
-  # generate supply_side_ira _minus_neutral and _minus_neutral_post_mpc
-  mutate(supply_side_ira_minus_neutral_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
+  # generate supply_side_ira_post_mpc
+  mutate(supply_side_ira_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
                                                                   mpc = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
 
 # Apply column order to perfectly match old version of fim. These lines can be
 # deleted later if column order turns out to be irrelevant.
-load("consumption_column_order.RData")
-load("TEMP_consumption.RData")
 load("TEMP_consumption_newnames.RData")
+load("TEMP_consumption_newnames_column_order.RData")
 consumption_new <- consumption_pt3 %>%
-  .[, consumption_column_order]
-all.equal(consumption, consumption_new)
+  .[, consumption_newnames_column_order]
 all.equal(consumption_newnames, consumption_new)
 
 # Assign result to the consumption df, so rest of code runs smoothly.
@@ -448,8 +439,8 @@ contributions_pt1 <- # Calculate contributions
                 ~ 400 * .x / lag(gdp),
                 .names = "{.col}_contribution" 
   )) %>%
-  rename_with(~ str_replace(.x, "_minus_neutral_post_mpc_contribution", "_contribution")) %>% 
-  rename_with(~ str_replace(.x, "minus_neutral_post_mpc", "post_mpc")) %>% 
+  # rename_with(~ str_replace(.x, "_minus_neutral_post_mpc_contribution", "_contribution")) %>% 
+  # rename_with(~ str_replace(.x, "minus_neutral_post_mpc", "post_mpc")) %>% 
   rename_with(~ str_replace(.x, "post_mpc_contribution", "contribution")) %>% 
   sum_transfers_contributions() #%>% 
 
