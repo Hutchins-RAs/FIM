@@ -210,11 +210,14 @@ minus_neutral <- function(x, # the data in question
                           rpgg, # real_potential_gdp_growth,
                           cdg # consumption deflator growth
                           ) {
-  output <- x - lag(x) * (1 + rpgg + cdg)
-  #output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
+  output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
   return(output)
 }
 # test (beta version) minus_neutral function
+# This alternative function is needed to perfectly match the FIM output; if the 
+# normal _minus_neutral function is used instead, then values of 1970 Q1 in some
+# columns like non_corporate_taxes equal a number rather than NA. 
+# TODO: standardize the FIM by using one or the other function.
 beta_minus_neutral <- function(x, # the data in question
                           rpgg, # real_potential_gdp_growth,
                           cdg # consumption deflator growth
@@ -230,6 +233,17 @@ consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
   get_real_levels() %>%
   taxes_transfers_minus_neutral() %>% # Do most of the _minus_neutral calculations
   # Adding on some new _minus_neutral calculations here
+  # corporate taxes
+  mutate(corporate_taxes_minus_neutral = beta_minus_neutral(x = corporate_taxes, 
+                                                                rpgg = real_potential_gdp_growth, 
+                                                                cdg = consumption_deflator_growth)) %>%
+  mutate(federal_corporate_taxes_minus_neutral = beta_minus_neutral(x = federal_corporate_taxes, 
+                                                                        rpgg = real_potential_gdp_growth, 
+                                                                        cdg = consumption_deflator_growth)) %>%
+  mutate(state_corporate_taxes_minus_neutral = beta_minus_neutral(x = state_corporate_taxes, 
+                                                                      rpgg = real_potential_gdp_growth, 
+                                                                      cdg = consumption_deflator_growth)) %>%
+  # non-corporate taxes
   mutate(non_corporate_taxes_minus_neutral = beta_minus_neutral(x = non_corporate_taxes, 
                                                          rpgg = real_potential_gdp_growth, 
                                                          cdg = consumption_deflator_growth)) %>%
