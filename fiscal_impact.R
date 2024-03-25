@@ -414,7 +414,16 @@ load("TEMP_consumption_newnames.RData")
 load("TEMP_consumption_newnames_column_order.RData")
 consumption_new <- consumption_pt3 %>%
   .[, consumption_newnames_column_order]
-all.equal(consumption_newnames, consumption_new)
+end <- nrow(consumption_newnames)
+# Comparing all but the first row of the two consumption data frames:
+# consumption_newnames is the original FIM data frame from main branch with the
+# colnames edited slightly to match this standardized version; consumption_new
+# is the new df generated here. Their first rows do not match because of the
+# _minus_neutral function, which used to have a defauly lag = 0 for some pandemic-
+# era programs. Lorae has since standardized this, causing the slight difference
+# in NA entries. Thus, comparing the second entry onward is a more appropriate
+# check.
+all.equal(consumption_newnames[2:end,], consumption_new[2:end,])
 
 # Assign result to the consumption df, so rest of code runs smoothly.
 # consumption_new is just a temporary feature to compare between new and old fims
