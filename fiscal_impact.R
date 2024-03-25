@@ -331,22 +331,27 @@ consumption_pt2 <- consumption_pt1 %>%
   mutate(state_non_corporate_taxes_minus_neutral = minus_neutral(x = state_non_corporate_taxes, 
                                                                    rpgg = real_potential_gdp_growth, 
                                                                    cdg = consumption_deflator_growth)) %>%
-  ## Remainder of _minus_neutral calculated here USING minus_neutral() function
+  # rebate checks arp
   mutate(rebate_checks_arp_minus_neutral = minus_neutral(x = rebate_checks_arp, 
                                                          rpgg = real_potential_gdp_growth, 
                                                          cdg = consumption_deflator_growth)) %>%
+  #federal other direct aid arp
   mutate(federal_other_direct_aid_arp_minus_neutral = minus_neutral(x = federal_other_direct_aid_arp, 
                                                                     rpgg = real_potential_gdp_growth, 
                                                                     cdg = consumption_deflator_growth)) %>%
+  # federal other vulnerable arp
   mutate(federal_other_vulnerable_arp_minus_neutral = minus_neutral(x = federal_other_vulnerable_arp, 
                                                                     rpgg = real_potential_gdp_growth, 
                                                                     cdg = consumption_deflator_growth)) %>%
+  # federal aid to small businesses arp
   mutate(federal_aid_to_small_businesses_arp_minus_neutral = minus_neutral(x = federal_aid_to_small_businesses_arp, 
                                                                            rpgg = real_potential_gdp_growth, 
                                                                            cdg = consumption_deflator_growth)) %>%
+  # federal student loans
   mutate(federal_student_loans_minus_neutral = minus_neutral(x = federal_student_loans, 
                                                              rpgg = real_potential_gdp_growth, 
                                                              cdg = consumption_deflator_growth)) %>%
+  # supply side IRA
   mutate(supply_side_ira_minus_neutral = minus_neutral(x = supply_side_ira, 
                                                        rpgg = real_potential_gdp_growth, 
                                                        cdg = consumption_deflator_growth))
