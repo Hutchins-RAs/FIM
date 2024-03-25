@@ -278,7 +278,11 @@ consumption <- # Compute consumption out of transfers (apply MPC's)
     #same as above, applying a different MPC function to this
     federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
       mpc_small_businesses_arp ((federal_aid_to_small_businesses_arp_minus_neutral))
-  )
+  ) %>%
+  rename_with(~ str_replace(.x, "minus_neutral_post_mpc", "post_mpc"))
+
+consumption_newnames_column_order <- colnames(consumption)
+save(consumption_newnames_column_order, file = "TEMP_consumption_newnames_column_order.RData")
 
 # Section E: Contribution ------------------------------------------------------------
 
@@ -293,7 +297,6 @@ contributions <- # Calculate contributions
                 .names = "{.col}_contribution" 
   )) %>%
   rename_with(~ str_replace(.x, "_minus_neutral_post_mpc_contribution", "_contribution")) %>% 
-  rename_with(~ str_replace(.x, "minus_neutral_post_mpc", "post_mpc")) %>% 
   rename_with(~ str_replace(.x, "post_mpc_contribution", "contribution")) %>% 
   sum_transfers_contributions() %>% 
   
