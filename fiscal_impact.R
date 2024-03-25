@@ -418,9 +418,11 @@ consumption_pt3 <-
 # deleted later if column order turns out to be irrelevant.
 load("consumption_column_order.RData")
 load("TEMP_consumption.RData")
+load("TEMP_consumption_newnames.RData")
 consumption_new <- consumption_pt3 %>%
   .[, consumption_column_order]
 all.equal(consumption, consumption_new)
+all.equal(consumption_newnames, consumption_new)
 
 # Assign result to the consumption df, so rest of code runs smoothly.
 # consumption_new is just a temporary feature to compare between new and old fims
