@@ -207,22 +207,15 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
  
 # generalized minus_neutral function
 minus_neutral <- function(x, # the data in question
-                          rpgg, # real_potential_gdp_growth,
-                          cdg # consumption deflator growth
-                          ) {
-  output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
-  return(output)
-}
-# test (beta version) minus_neutral function
-# This alternative function is needed to perfectly match the FIM output; if the 
-# normal _minus_neutral function is used instead, then values of 1970 Q1 in some
-# columns like non_corporate_taxes equal a number rather than NA. 
-# TODO: standardize the FIM by using one or the other function.
-beta_minus_neutral <- function(x, # the data in question
-                          rpgg, # real_potential_gdp_growth,
+                          rpgg, # real potential gdp growth,
                           cdg # consumption deflator growth
 ) {
   output <- x - lag(x) * (1 + rpgg + cdg)
+  # This optional line will make the 1970 Q1 entries equal a numeric value, rather
+  # than NA, by assuming that the 1969 Q4 value for each data series was 0. 
+  # Prior versions of the FIM had this setting on for pandemic-era stimulus. We
+  # have chosen to remove it.
+  # output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
   return(output)
 }
 
@@ -233,70 +226,70 @@ consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
   get_real_levels()
 
 ### CALCULATE MINUS NEUTRALS
-# perform all minus_neutral calculations here USING beta_minus_neutral() function
+# perform all minus_neutral calculations here USING minus_neutral() function
 consumption_pt2 <- consumption_pt1 %>%
   # rebate_checks don't have a federal or state level
-  mutate(rebate_checks_minus_neutral = beta_minus_neutral(x = rebate_checks, 
+  mutate(rebate_checks_minus_neutral = minus_neutral(x = rebate_checks, 
                                                rpgg = real_potential_gdp_growth, 
                                                cdg = consumption_deflator_growth)) %>%
   # ui
-  mutate(ui_minus_neutral = beta_minus_neutral(x = ui, 
+  mutate(ui_minus_neutral = minus_neutral(x = ui, 
                                                       rpgg = real_potential_gdp_growth, 
                                                       cdg = consumption_deflator_growth)) %>%
-  mutate(federal_ui_minus_neutral = beta_minus_neutral(x = federal_ui, 
+  mutate(federal_ui_minus_neutral = minus_neutral(x = federal_ui, 
                                                               rpgg = real_potential_gdp_growth, 
                                                               cdg = consumption_deflator_growth)) %>%
-  mutate(state_ui_minus_neutral = beta_minus_neutral(x = state_ui, 
+  mutate(state_ui_minus_neutral = minus_neutral(x = state_ui, 
                                                             rpgg = real_potential_gdp_growth, 
                                                             cdg = consumption_deflator_growth)) %>%  
   # subsidies
-  mutate(subsidies_minus_neutral = beta_minus_neutral(x = subsidies, 
+  mutate(subsidies_minus_neutral = minus_neutral(x = subsidies, 
                                                            rpgg = real_potential_gdp_growth, 
                                                            cdg = consumption_deflator_growth)) %>%
-  mutate(federal_subsidies_minus_neutral = beta_minus_neutral(x = federal_subsidies, 
+  mutate(federal_subsidies_minus_neutral = minus_neutral(x = federal_subsidies, 
                                                                    rpgg = real_potential_gdp_growth, 
                                                                    cdg = consumption_deflator_growth)) %>%
-  mutate(state_subsidies_minus_neutral = beta_minus_neutral(x = state_subsidies, 
+  mutate(state_subsidies_minus_neutral = minus_neutral(x = state_subsidies, 
                                                                  rpgg = real_potential_gdp_growth, 
                                                                  cdg = consumption_deflator_growth)) %>%  
   # health_outlays
-  mutate(health_outlays_minus_neutral = beta_minus_neutral(x = health_outlays, 
+  mutate(health_outlays_minus_neutral = minus_neutral(x = health_outlays, 
                                                             rpgg = real_potential_gdp_growth, 
                                                             cdg = consumption_deflator_growth)) %>%
-  mutate(federal_health_outlays_minus_neutral = beta_minus_neutral(x = federal_health_outlays, 
+  mutate(federal_health_outlays_minus_neutral = minus_neutral(x = federal_health_outlays, 
                                                                     rpgg = real_potential_gdp_growth, 
                                                                     cdg = consumption_deflator_growth)) %>%
-  mutate(state_health_outlays_minus_neutral = beta_minus_neutral(x = state_health_outlays, 
+  mutate(state_health_outlays_minus_neutral = minus_neutral(x = state_health_outlays, 
                                                                   rpgg = real_potential_gdp_growth, 
                                                                   cdg = consumption_deflator_growth)) %>%
   # social benefits
-  mutate(social_benefits_minus_neutral = beta_minus_neutral(x = social_benefits, 
+  mutate(social_benefits_minus_neutral = minus_neutral(x = social_benefits, 
                                                             rpgg = real_potential_gdp_growth, 
                                                             cdg = consumption_deflator_growth)) %>%
-  mutate(federal_social_benefits_minus_neutral = beta_minus_neutral(x = federal_social_benefits, 
+  mutate(federal_social_benefits_minus_neutral = minus_neutral(x = federal_social_benefits, 
                                                                     rpgg = real_potential_gdp_growth, 
                                                                     cdg = consumption_deflator_growth)) %>%
-  mutate(state_social_benefits_minus_neutral = beta_minus_neutral(x = state_social_benefits, 
+  mutate(state_social_benefits_minus_neutral = minus_neutral(x = state_social_benefits, 
                                                                   rpgg = real_potential_gdp_growth, 
                                                                   cdg = consumption_deflator_growth)) %>%
   # corporate taxes
-  mutate(corporate_taxes_minus_neutral = beta_minus_neutral(x = corporate_taxes, 
+  mutate(corporate_taxes_minus_neutral = minus_neutral(x = corporate_taxes, 
                                                                 rpgg = real_potential_gdp_growth, 
                                                                 cdg = consumption_deflator_growth)) %>%
-  mutate(federal_corporate_taxes_minus_neutral = beta_minus_neutral(x = federal_corporate_taxes, 
+  mutate(federal_corporate_taxes_minus_neutral = minus_neutral(x = federal_corporate_taxes, 
                                                                         rpgg = real_potential_gdp_growth, 
                                                                         cdg = consumption_deflator_growth)) %>%
-  mutate(state_corporate_taxes_minus_neutral = beta_minus_neutral(x = state_corporate_taxes, 
+  mutate(state_corporate_taxes_minus_neutral = minus_neutral(x = state_corporate_taxes, 
                                                                       rpgg = real_potential_gdp_growth, 
                                                                       cdg = consumption_deflator_growth)) %>%
   # non-corporate taxes
-  mutate(non_corporate_taxes_minus_neutral = beta_minus_neutral(x = non_corporate_taxes, 
+  mutate(non_corporate_taxes_minus_neutral = minus_neutral(x = non_corporate_taxes, 
                                                          rpgg = real_potential_gdp_growth, 
                                                          cdg = consumption_deflator_growth)) %>%
-  mutate(federal_non_corporate_taxes_minus_neutral = beta_minus_neutral(x = federal_non_corporate_taxes, 
+  mutate(federal_non_corporate_taxes_minus_neutral = minus_neutral(x = federal_non_corporate_taxes, 
                                                            rpgg = real_potential_gdp_growth, 
                                                            cdg = consumption_deflator_growth)) %>%
-  mutate(state_non_corporate_taxes_minus_neutral = beta_minus_neutral(x = state_non_corporate_taxes, 
+  mutate(state_non_corporate_taxes_minus_neutral = minus_neutral(x = state_non_corporate_taxes, 
                                                                    rpgg = real_potential_gdp_growth, 
                                                                    cdg = consumption_deflator_growth)) %>%
   ## Remainder of _minus_neutral calculated here USING minus_neutral() function
