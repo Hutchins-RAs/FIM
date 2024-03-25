@@ -251,6 +251,19 @@ variable_list <- c(
   "federal_student_loans",
   "supply_side_ira"
 )
+
+# CALCULATE MINUS NEUTRALS: AN ALTERNATIVE to the below steps, I am working on
+# wrapping all the steps together in this section.
+# TODO: Make these row names indexes for the date so that the information isn't
+# lost in this step. Alternatively, omit all dates until the end.
+# TODO: This is a matrix. Convert into a data frame
+# apply the minus_neutral calculation to each row in variable_list
+minus_neutral_mat <- apply(X = consumption_pt1[variable_list], 
+                          MARGIN = 2, # apply the function to the columns 
+                          FUN = minus_neutral, # User-defined minus_neutral function
+                          rpgg = consumption_pt1$real_potential_gdp_growth, #arg from minus_neutral
+                          cdg = consumption_pt1$consumption_deflator_growth) #arg from minus_neutral
+
 ### CALCULATE MINUS NEUTRALS
 # perform all minus_neutral calculations here USING minus_neutral() function
 consumption_pt2 <- consumption_pt1 %>%
