@@ -270,11 +270,12 @@ minus_neutral_df <- apply(
 # longer do this because we will simply use the minus_neutral_df, rather than
 # the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
 # refactoring to avoid unnecessary errors.
-colnames(minus_neutral_df) <- c(glue::glue('{variable_list}_minus_neutral'))
+minus_neutral_renamed_df <- minus_neutral_df
+colnames(minus_neutral_renamed_df) <- c(glue::glue('{variable_list}_minus_neutral'))
 
 # Append the new _minus_neutral rows to the consumption_pt1 data frame to 
 # create the consumption_pt2 data frame.
-consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_df)
+consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
 
 ## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
 ## = social_benefits, but it does not. TODO: Investigate later.
