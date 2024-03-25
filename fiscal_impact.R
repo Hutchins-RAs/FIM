@@ -253,14 +253,13 @@ variable_list <- c(
   "rebate_checks"
 )
 
-# CALCULATE MINUS NEUTRALS: AN ALTERNATIVE to the below steps, I am working on
-# wrapping all the steps together in this section.
-# TODO: Make these row names indexes for the date so that the information isn't
-# lost in this step. Alternatively, omit all dates until the end.
-# TODO: This is a matrix. Convert into a data frame
-# apply the minus_neutral calculation to each row in variable_list
-minus_neutral_mat <- apply(X = consumption_pt1[variable_list], 
-                          MARGIN = 2, # apply the function to the columns 
+# CALCULATE MINUS NEUTRALS
+minus_neutral_df <- apply(
+  # consumption_pt1 contains many columns, so we isolate to only the entries
+  # that exist in variable_list, which are those which we want to calculate 
+  # minus_neutral values for.
+                          X = consumption_pt1[variable_list], 
+                          MARGIN = 2, # apply the function to the columns (1 = rows)
                           FUN = minus_neutral, # User-defined minus_neutral function
                           rpgg = consumption_pt1$real_potential_gdp_growth, #arg from minus_neutral
                           cdg = consumption_pt1$consumption_deflator_growth) #arg from minus_neutral
@@ -357,6 +356,14 @@ consumption_pt2 <- consumption_pt1 %>%
                                                        rpgg = real_potential_gdp_growth, 
                                                        cdg = consumption_deflator_growth))
   
+                          cdg = consumption_pt1$consumption_deflator_growth) %>% #arg from minus_neutral
+  as.data.frame()
+
+# rename the columns by appending "_minus_neutral" to the end of each variable
+# name to make it consistent with the rest of the code. Eventually, we will no
+# longer do this because we will simply use the minus_neutral_df, rather than
+# the consumption_pt1, consumption_pt2, etc. data frames.
+colnames(minus_neutral_df) <- c(glue::glue('{variable_list}_minus_neutral'))
 
 ## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
 ## = social_benefits, but it does not. TODO: Investigate later.
@@ -366,6 +373,9 @@ print(any_false)
 # as you can see, there are false elements in this vector comparing the two values
 # try subtracting or using all.equal() function - it's possible the differences
 # are miniscule.
+# appending the new _minus_neutral rows to the consumption_pt1 data frame to 
+# create the consumption_pt2 data frame.
+consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_df)
 
 ### CALCULATE MPCS
 consumption_pt3 <-
