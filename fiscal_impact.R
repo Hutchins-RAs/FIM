@@ -210,7 +210,16 @@ minus_neutral <- function(x, # the data in question
                           rpgg, # real_potential_gdp_growth,
                           cdg # consumption deflator growth
                           ) {
-  output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
+  output <- x - lag(x) * (1 + rpgg + cdg)
+  #output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
+  return(output)
+}
+# test (beta version) minus_neutral function
+beta_minus_neutral <- function(x, # the data in question
+                          rpgg, # real_potential_gdp_growth,
+                          cdg # consumption deflator growth
+) {
+  output <- x - lag(x) * (1 + rpgg + cdg)
   return(output)
 }
 
@@ -220,6 +229,16 @@ consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
   get_real_levels() %>%
   taxes_transfers_minus_neutral() %>% # Do most of the _minus_neutral calculations
+  # Adding on some new _minus_neutral calculations here
+  mutate(non_corporate_taxes_minus_neutral = beta_minus_neutral(x = non_corporate_taxes, 
+                                                         rpgg = real_potential_gdp_growth, 
+                                                         cdg = consumption_deflator_growth)) %>%
+  mutate(federal_non_corporate_taxes_minus_neutral = beta_minus_neutral(x = federal_non_corporate_taxes, 
+                                                           rpgg = real_potential_gdp_growth, 
+                                                           cdg = consumption_deflator_growth)) %>%
+  mutate(state_non_corporate_taxes_minus_neutral = beta_minus_neutral(x = state_non_corporate_taxes, 
+                                                                   rpgg = real_potential_gdp_growth, 
+                                                                   cdg = consumption_deflator_growth)) %>%
   # Remainder of _minus_neutral calculated here
   mutate(rebate_checks_arp_minus_neutral = minus_neutral(x = rebate_checks_arp, 
                                                          rpgg = real_potential_gdp_growth, 
@@ -335,6 +354,7 @@ consumption_pt2 <-
 # Apply column order to perfectly match old version of fim. These lines can be
 # deleted later if column order turns out to be irrelevant.
 load("consumption_column_order.RData")
+load("TEMP_consumption.RData")
 consumption_new <- consumption_pt2 %>%
   .[, consumption_column_order]
 all.equal(consumption, consumption_new)

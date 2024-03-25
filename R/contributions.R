@@ -92,7 +92,7 @@ all_taxes_transfers <- function(){
 #'
 #' @examples
 taxes_transfers_minus_neutral <- function(df){
-  taxes = all_levels('corporate_taxes', 'non_corporate_taxes')
+  taxes = all_levels('corporate_taxes')#, 'non_corporate_taxes')
   transfers = all_levels('social_benefits', 'health_outlays', 'subsidies', 'ui', 'rebate_checks')
   df %>%
     dplyr::mutate(
