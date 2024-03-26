@@ -351,7 +351,10 @@ mpc02 = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
 # quarter. This will allow for tweaks of MPCs over time without affecting our 
 # historic FIM estimates. It will also allow us to change the FIM if we believe
 # MPCs are different (which, for example, we did during COVID).
-test <- tibble(example1 = list(mpc01, mpc02), example2 = list(mpc02, mpc02))
+test <- tibble(date = consumption$date, # create date column
+               # federal_ui contains mpc01 if date before 2021 Q2 and mpc02 if after
+               federal_ui = if_else(date < yearquarter("2021 Q2"), list(mpc01), list(mpc02))
+)
 # (This will take more computing power than using a simple for loop for the
 # exceptions, but I think it will be more robust to future changes in the FIM)
 #post_mpc_df <- apply
