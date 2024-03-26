@@ -287,6 +287,62 @@ print(any_false)
 # are miniscule.
 
 ### CALCULATE MPCS
+# This data frame will contain MPC reference values
+test <- tibble(variable = c(
+  "ui",
+  "federal_ui",
+  "state_ui",
+  "subsidies",
+  "federal_subsidies",
+  "state_subsidies",
+  "health_outlays",
+  "federal_health_outlays",
+  "state_health_outlays",
+  "social_benefits",
+  "federal_social_benefits",
+  "state_social_benefits",
+  "corporate_taxes",
+  "federal_corporate_taxes",
+  "state_corporate_taxes", 
+  "non_corporate_taxes",
+  "federal_non_corporate_taxes",
+  "state_non_corporate_taxes",
+  "rebate_checks_arp",
+  "federal_other_direct_aid_arp",
+  "federal_other_vulnerable_arp",
+  "federal_aid_to_small_businesses_arp",
+  "federal_student_loans",
+  "supply_side_ira",
+  "rebate_checks"
+),
+mpc = list(
+  c(),
+  c(), 
+  c(), 
+  0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
+  0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
+  0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
+  c(0.225, 0.225, 0.225, 0.225), 
+  c(0.225, 0.225, 0.225, 0.225), 
+  c(0.225, 0.225, 0.225, 0.225), 
+  c(0.225, 0.225, 0.225, 0.225), 
+  c(0.225, 0.225, 0.225, 0.225), 
+  c(0.225, 0.225, 0.225, 0.225), 
+  rep(-0.0333333333333333, 12), 
+  rep(-0.0333333333333333, 12), 
+  rep(-0.0333333333333333, 12), 
+  c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
+  c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
+  c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
+  c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005), 
+  c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005), 
+  c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
+  c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017),
+  c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
+  c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+  0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
+)
+)
 # Here, we're going to have an MPC data frame that contains the correct MPCs
 # to use at each period.
 mpc01 = c(0.225, 0.225, 0.225, 0.225)
