@@ -291,9 +291,10 @@ print(any_false)
 # to use at each period.
 # This data frame will contain MPC reference values
 mpc_values <- list(
-  ui = c(),
-  federal_ui = c(), 
-  state_ui = c(), 
+  # ui = c(), # TODO: remove, this variable is never used in mpc. But it is created in the consumption
+  # # dataframe so wait to remove until downstream code is checked.
+  # federal_ui = c(), 
+  # state_ui = c(), 
   subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
   federal_subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
   state_subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
@@ -324,7 +325,46 @@ mpc_values <- list(
 
 consumption_pt3 <-
   consumption_pt2 %>%
-  
+  # federal_ui_post_mpc
+  mutate(federal_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
+                                       # Use one MPC for dates before 2021 Q2
+                                       mpc_lorae(x = federal_ui_minus_neutral,
+                                                 mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
+                                       # Use another MPC for dates 2021 Q2 and beyond
+                                       mpc_lorae(x = federal_ui_minus_neutral,
+                                                 mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
+  # state_ui_post_mpc
+  mutate(state_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
+                                     # Use one MPC for dates before 2021 Q2
+                                     mpc_lorae(x = state_ui_minus_neutral,
+                                               mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
+                                     # Use another MPC for dates 2021 Q2 and beyond
+                                     mpc_lorae(x = state_ui_minus_neutral,
+                                               mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))))
+
+# Define a new dataframe to hold the results
+post_mpc_df <- lapply(names(mpc_values), function(variable_name) {
+  # apply the mpc_lorae function
+  mpc_lorae(x = minus_neutral_df[[variable_name]], 
+            mpc = mpc_values[[variable_name]]) # note that mpc_values only contains
+  # 22 of the 25 mpcs, because UI is more complicated
+  }) %>%
+  as.data.frame()
+  names(post_mpc_df) <- names(mpc_values)
+
+# Rename the columns by appending "_minus_neutral" to the end of each variable
+# name to make it consistent with the rest of the code. Eventually, we will no
+# longer do this because we will simply use the minus_neutral_df, rather than
+# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
+# refactoring to avoid unnecessary errors.
+post_mpc_renamed_df <- post_mpc_df
+colnames(post_mpc_renamed_df) <- c(glue::glue('{names(mpc_values)}_post_mpc'))
+
+
+# Set the names of the dataframe columns to reflect the transformations
+names(mpc_transformed_df) <- paste0(names(mpc_values), "_post_mpc")
+
+consumption_pt4 <- consumption_pt3 %>%
   # Create social_benefits_post_mpc column
   mutate(social_benefits_post_mpc = mpc_lorae(x = social_benefits_minus_neutral,
                                               mpc = mpc_values$social_benefits)) %>%
@@ -365,22 +405,6 @@ consumption_pt3 <-
                                                           mpc = mpc_values$federal_non_corporate_taxes)) %>%
   mutate(state_non_corporate_taxes_post_mpc = mpc_lorae(x = state_non_corporate_taxes_minus_neutral,
                                                         mpc = mpc_values$state_non_corporate_taxes)) %>%
-  # federal_ui_post_mpc
-  mutate(federal_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                      # Use one MPC for dates before 2021 Q2
-                                      mpc_lorae(x = federal_ui_minus_neutral,
-                                                mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
-                                      # Use another MPC for dates 2021 Q2 and beyond
-                                      mpc_lorae(x = federal_ui_minus_neutral,
-                                                mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
-  # state_ui_post_mpc
-  mutate(state_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                       # Use one MPC for dates before 2021 Q2
-                                       mpc_lorae(x = state_ui_minus_neutral,
-                                                 mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
-                                       # Use another MPC for dates 2021 Q2 and beyond
-                                       mpc_lorae(x = state_ui_minus_neutral,
-                                                 mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
   # Generate rebate_checks_arp_post_mpc
   mutate(rebate_checks_arp_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
                                                 mpc = mpc_values$rebate_checks_arp)) %>%
@@ -403,7 +427,7 @@ consumption_pt3 <-
 # deleted later if column order turns out to be irrelevant.
 load("TEMP_consumption_newnames.RData")
 load("TEMP_consumption_newnames_column_order.RData")
-consumption_new <- consumption_pt3 %>%
+consumption_new <- consumption_pt4 %>%
   .[, consumption_newnames_column_order]
 end <- nrow(consumption_newnames)
 # Comparing all but the first row of the two consumption data frames:
