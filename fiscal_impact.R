@@ -287,77 +287,39 @@ print(any_false)
 # are miniscule.
 
 ### CALCULATE MPCS
-# This data frame will contain MPC reference values
-test <- tibble(variable = c(
-  "ui",
-  "federal_ui",
-  "state_ui",
-  "subsidies",
-  "federal_subsidies",
-  "state_subsidies",
-  "health_outlays",
-  "federal_health_outlays",
-  "state_health_outlays",
-  "social_benefits",
-  "federal_social_benefits",
-  "state_social_benefits",
-  "corporate_taxes",
-  "federal_corporate_taxes",
-  "state_corporate_taxes", 
-  "non_corporate_taxes",
-  "federal_non_corporate_taxes",
-  "state_non_corporate_taxes",
-  "rebate_checks_arp",
-  "federal_other_direct_aid_arp",
-  "federal_other_vulnerable_arp",
-  "federal_aid_to_small_businesses_arp",
-  "federal_student_loans",
-  "supply_side_ira",
-  "rebate_checks"
-),
-mpc = list(
-  c(),
-  c(), 
-  c(), 
-  0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
-  0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
-  0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
-  c(0.225, 0.225, 0.225, 0.225), 
-  c(0.225, 0.225, 0.225, 0.225), 
-  c(0.225, 0.225, 0.225, 0.225), 
-  c(0.225, 0.225, 0.225, 0.225), 
-  c(0.225, 0.225, 0.225, 0.225), 
-  c(0.225, 0.225, 0.225, 0.225), 
-  rep(-0.0333333333333333, 12), 
-  rep(-0.0333333333333333, 12), 
-  rep(-0.0333333333333333, 12), 
-  c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
-  c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
-  c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
-  c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005), 
-  c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005), 
-  c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
-  c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017),
-  c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
-  c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-  0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
-)
-)
 # Here, we're going to have an MPC data frame that contains the correct MPCs
 # to use at each period.
-mpc01 = c(0.225, 0.225, 0.225, 0.225)
-mpc02 = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
-# The columns will represent periods, so that a user can define MPCs in each 
-# quarter. This will allow for tweaks of MPCs over time without affecting our 
-# historic FIM estimates. It will also allow us to change the FIM if we believe
-# MPCs are different (which, for example, we did during COVID).
-test <- tibble(date = consumption$date, # create date column
-               # federal_ui contains mpc01 if date before 2021 Q2 and mpc02 if after
-               federal_ui = if_else(date < yearquarter("2021 Q2"), list(mpc01), list(mpc02))
+# This data frame will contain MPC reference values
+mpc_values <- list(
+  ui = c(),
+  federal_ui = c(), 
+  state_ui = c(), 
+  subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
+  federal_subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
+  state_subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
+  health_outlays = c(0.225, 0.225, 0.225, 0.225), 
+  federal_health_outlays = c(0.225, 0.225, 0.225, 0.225), 
+  state_health_outlays = c(0.225, 0.225, 0.225, 0.225), 
+  social_benefits = c(0.225, 0.225, 0.225, 0.225), 
+  federal_social_benefits = c(0.225, 0.225, 0.225, 0.225), 
+  state_social_benefits = c(0.225, 0.225, 0.225, 0.225), 
+  corporate_taxes = rep(-0.0333333333333333, 12), 
+  federal_corporate_taxes = rep(-0.0333333333333333, 12), 
+  state_corporate_taxes = rep(-0.0333333333333333, 12), 
+  non_corporate_taxes = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
+  federal_non_corporate_taxes = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
+  state_non_corporate_taxes = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
+  rebate_checks_arp = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005), 
+  federal_other_direct_aid_arp = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005), 
+  federal_other_vulnerable_arp = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
+  federal_aid_to_small_businesses_arp = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017),
+  federal_student_loans = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
+  supply_side_ira = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+  rebate_checks = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
 )
-# (This will take more computing power than using a simple for loop for the
-# exceptions, but I think it will be more robust to future changes in the FIM)
-#post_mpc_df <- apply
+
+# Here, we're going to have an MPC data frame that contains the correct MPCs
+# to use at each period.
 
 
 consumption_pt3 <-
@@ -365,51 +327,44 @@ consumption_pt3 <-
   
   # Create social_benefits_post_mpc column
   mutate(social_benefits_post_mpc = mpc_lorae(x = social_benefits_minus_neutral,
-                                              mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
+                                              mpc = mpc_values$social_benefits)) %>%
   # Create federal_social_benefits_post_mpc
   mutate(federal_social_benefits_post_mpc = mpc_lorae(x = federal_social_benefits_minus_neutral,
-                                              mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
+                                                      mpc = mpc_values$federal_social_benefits)) %>%
   # Create state_social_benefits_post_mpc
   mutate(state_social_benefits_post_mpc = mpc_lorae(x = state_social_benefits_minus_neutral,
-                                                      mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  
+                                                    mpc = mpc_values$state_social_benefits)) %>%
   # rebate checks
   mutate(rebate_checks_post_mpc = mpc_lorae(x = rebate_checks_minus_neutral,
-                                             mpc = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08))) %>%
-  # Create subsidies_post_mpc, federal_subsidies_post_pc, and state_subsidies_post_mpc
-  mutate(subsidies_post_mpc = mpc_lorae(subsidies_minus_neutral, 
-                                        mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
-  mutate(federal_subsidies_post_mpc = mpc_lorae(federal_subsidies_minus_neutral, 
-                                                mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
-  mutate(state_subsidies_post_mpc = mpc_lorae(state_subsidies_minus_neutral, 
-                                              mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
-  # Create the health_outlays_post_mpc
+                                            mpc = mpc_values$rebate_checks)) %>%
+  # Create subsidies_post_mpc, federal_subsidies_post_mpc, and state_subsidies_post_mpc
+  mutate(subsidies_post_mpc = mpc_lorae(x = subsidies_minus_neutral, 
+                                        mpc = mpc_values$subsidies)) %>%
+  mutate(federal_subsidies_post_mpc = mpc_lorae(x = federal_subsidies_minus_neutral, 
+                                                mpc = mpc_values$federal_subsidies)) %>%
+  mutate(state_subsidies_post_mpc = mpc_lorae(x = state_subsidies_minus_neutral, 
+                                              mpc = mpc_values$state_subsidies)) %>%
+  # Create health_outlays_post_mpc and corresponding federal and state columns
   mutate(health_outlays_post_mpc = mpc_lorae(x = health_outlays_minus_neutral,
-                                            mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Create federal_health_outlays_post_mpc
+                                             mpc = mpc_values$health_outlays)) %>%
   mutate(federal_health_outlays_post_mpc = mpc_lorae(x = federal_health_outlays_minus_neutral,
-                                                      mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Create state_social_benefits_post_mpc
+                                                     mpc = mpc_values$federal_health_outlays)) %>%
   mutate(state_health_outlays_post_mpc = mpc_lorae(x = state_health_outlays_minus_neutral,
-                                                    mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Corporate taxes work the same as health outlays and social benefits.
-  # When I compare my mpc_lorae function to the original outputs, using the
-  # I get a miniscule difference, on the order of 10*(-15), which is the result 
-  # of computer rounding - not any theoretical / mathematical differences.
+                                                   mpc = mpc_values$state_health_outlays)) %>%
+  # corporate taxes adjustments
   mutate(corporate_taxes_post_mpc = mpc_lorae(x = corporate_taxes_minus_neutral,
-                                             mpc = rep(-0.0333333333333333, 12))) %>%
+                                              mpc = mpc_values$corporate_taxes)) %>%
   mutate(federal_corporate_taxes_post_mpc = mpc_lorae(x = federal_corporate_taxes_minus_neutral,
-                                                     mpc = rep(-0.0333333333333333, 12))) %>%
+                                                      mpc = mpc_values$federal_corporate_taxes)) %>%
   mutate(state_corporate_taxes_post_mpc = mpc_lorae(x = state_corporate_taxes_minus_neutral,
-                                                   mpc = rep(-0.0333333333333333, 12))) %>%
-  # Non-corporate taxes. As before, tiny difference that's near 0
+                                                    mpc = mpc_values$state_corporate_taxes)) %>%
+  # Non-corporate taxes adjustments
   mutate(non_corporate_taxes_post_mpc = mpc_lorae(x = non_corporate_taxes_minus_neutral,
-                                              mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
+                                                  mpc = mpc_values$non_corporate_taxes)) %>%
   mutate(federal_non_corporate_taxes_post_mpc = mpc_lorae(x = federal_non_corporate_taxes_minus_neutral,
-                                                      mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
+                                                          mpc = mpc_values$federal_non_corporate_taxes)) %>%
   mutate(state_non_corporate_taxes_post_mpc = mpc_lorae(x = state_non_corporate_taxes_minus_neutral,
-                                                    mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
-  # Calculate pandemic-adjusted MPC values for federal and state UI benefits
+                                                        mpc = mpc_values$state_non_corporate_taxes)) %>%
   # federal_ui_post_mpc
   mutate(federal_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
                                       # Use one MPC for dates before 2021 Q2
@@ -426,25 +381,24 @@ consumption_pt3 <-
                                        # Use another MPC for dates 2021 Q2 and beyond
                                        mpc_lorae(x = state_ui_minus_neutral,
                                                  mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
-  # generate rebate_checks_arp_post_mpc
+  # Generate rebate_checks_arp_post_mpc
   mutate(rebate_checks_arp_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
-                                                              mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
-  # generate federal_other_direct_aid_arp_post_mpc
+                                                mpc = mpc_values$rebate_checks_arp)) %>%
+  # Generate federal_other_direct_aid_arp_post_mpc
   mutate(federal_other_direct_aid_arp_post_mpc = mpc_lorae(x = federal_other_direct_aid_arp_minus_neutral, 
-                                                              mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
-  # generate federal_other_vulnerable_arp_post_mpc
+                                                           mpc = mpc_values$federal_other_direct_aid_arp)) %>%
+  # Generate federal_other_vulnerable_arp_post_mpc
   mutate(federal_other_vulnerable_arp_post_mpc = mpc_lorae(x = federal_other_vulnerable_arp_minus_neutral, 
-                                                                         mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
-  # generate federal_aid_to_small_businesses_arp_post_mpc
+                                                           mpc = mpc_values$federal_other_vulnerable_arp)) %>%
+  # Generate federal_aid_to_small_businesses_arp_post_mpc
   mutate(federal_aid_to_small_businesses_arp_post_mpc = mpc_lorae(x = federal_aid_to_small_businesses_arp_minus_neutral, 
-                                                                         mpc = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017))) %>%
-  # generate federal_student_loans_post_mpc
+                                                                  mpc = mpc_values$federal_aid_to_small_businesses_arp)) %>%
+  # Generate federal_student_loans_post_mpc
   mutate(federal_student_loans_post_mpc = mpc_lorae(x = federal_student_loans_minus_neutral, 
-                                                                                mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
-  # generate supply_side_ira_post_mpc
+                                                    mpc = mpc_values$federal_student_loans)) %>%
+  # Generate supply_side_ira_post_mpc
   mutate(supply_side_ira_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
-                                                                  mpc = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
-
+                                              mpc = mpc_values$supply_side_ira))
 # Apply column order to perfectly match old version of fim. These lines can be
 # deleted later if column order turns out to be irrelevant.
 load("TEMP_consumption_newnames.RData")
