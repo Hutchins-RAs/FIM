@@ -154,4 +154,20 @@ roll_mpc <- function(x, mpc_series, mpc_list) {
   return(result)
 }
 
+
+# A more efficient way to do this than a for loop is matrices. Here's an example
+# of applying an mpc of (0.8, 0.2) to a vector of (100, 100, 100, 100)
+# 
+# mat1 <- matrix(c(100, 100, 100, 100), nrow = 1, ncol = 4)
+# 
+# mat2 <- matrix(c(0.8, 0, 0, 0, 
+#                  0.2, 0.8, 0, 0, 
+#                  0, 0.2, 0.8, 0, 
+#                  0, 0, 0.2, 0.8), 
+#                nrow = 4, ncol = 4)
+# 
+# mat1 %*% mat2
+
+
+
   
