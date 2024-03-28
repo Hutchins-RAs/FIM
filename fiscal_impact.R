@@ -224,37 +224,36 @@ source("src/map_mpc_time_series.R")
 # This should also be much earlier in the final, refactored script.
 data_series <- names(mpc_series)
 
-# STEP 1: GET REAL LEVELS
-# TODO: refactor this section
+# we only keep this section for the purpose of integrating the refactored section
+# with the larger code.
 consumption_pt1 <-
   projections %>%
-  get_real_levels()
+  get_real_levels() 
+
+# Section D.0: Real levels -------------------------------------------------------------
+# For now, this code is a remnant of the old FIM. But eventually, it will use a list
+# of the 24 data series manipulated by the FIM, and take projections as an input and
+# output real_df
+# TODO: refactor this section
+real_df <-
+  consumption_pt1
 
 # Section D.1: Minus Neutral -------------------------------------------------------------
-
+# Using the list of 24 data_series that are manipulated by the FIM, we produce a 
+# minus_neutral_df, which contains the results of each of these 24 data_series
+# after they have been manipulated by this observation.
 minus_neutral_df <- apply(
   # consumption_pt1 contains many columns, so we isolate to only the entries
   # that exist in data_series, which are those which we want to calculate 
   # minus_neutral values for.
-                          X = consumption_pt1[data_series], 
+                          X = real_df[data_series], # eventually we will not need
+                          # to subset real_df by data_series, once real_df only
+                          # contains columns from data_series.
                           MARGIN = 2, # apply the function to the columns (1 = rows)
                           FUN = minus_neutral, # User-defined minus_neutral function
-                          rpgg = consumption_pt1$real_potential_gdp_growth, #arg from minus_neutral
-                          cdg = consumption_pt1$consumption_deflator_growth) %>% #arg from minus_neutral
+                          rpgg = real_df$real_potential_gdp_growth, #arg from minus_neutral
+                          cdg = real_df$consumption_deflator_growth) %>% #arg from minus_neutral
   as.data.frame()
-
-# Rename the columns by appending "_minus_neutral" to the end of each variable
-# name to make it consistent with the rest of the code. Eventually, we will no
-# longer do this because we will simply use the minus_neutral_df, rather than
-# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
-# refactoring to avoid unnecessary errors.
-minus_neutral_renamed_df <- minus_neutral_df
-colnames(minus_neutral_renamed_df) <- c(glue::glue('{data_series}_minus_neutral'))
-
-# Append the new _minus_neutral rows to the consumption_pt1 data frame to 
-# create the consumption_pt2 data frame.
-consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
-
 
 # Section D.2: Post MPC -------------------------------------------------------------
 
@@ -268,7 +267,7 @@ for (series in data_series) {
                                     mpc_list = mpc_list) # TODO: rename so arg and df don't have same name
   # Formatting the data as a vertical column matrix is not strictly necessary;
   # but it reinforces the point that this is matrix multiplication
-  data_vector <- matrix(consumption_pt2[[glue("{series}_minus_neutral")]], ncol = 1)
+  data_vector <- matrix(minus_neutral_df[[{series}]], ncol = 1)
   # ensuring proper NA handling by converting to zeroes
   # TODO: Make the product of an NA and a value equal NA in the matrix to prevent
   # undetected bugs arising from NA handling
@@ -281,16 +280,31 @@ for (series in data_series) {
 # Convert the list of vectors into a dataframe
 post_mpc_df <- as.data.frame(post_mpc_list)
 
-# Rename the columns by appending "_post_mpc" to the end of each variable
-# name to make it consistent with the rest of the code. Eventually, we will no
-# longer do this because we will simply use the minus_neutral_df, rather than
-# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
-# refactoring to avoid unnecessary errors.
+# Section D.3: Interface refactored code with rest of FIM--------------------------------
+# This section is temporary and meant to interface the new workflow of section D
+# back into the main FIM by making data structures align. In particular, the main
+# FIM uses one giant data frame with all the data_series ("federal_ui", "state_ui", etc)
+# appended with all sorts of _minus_neutral and _post_mpc column name suffixes,
+# producing a very large data frame. The new refactored code from this section instead
+# produces small, nimble data frames called _real_df, _minus_neutral, and _post_mpc,
+# which each contain only the 24 columns of data_series names with their respective
+# values.
+# In order to integrate this code back into the main FIM, we take each of these 
+# data frames, append back those suffixes, combine them together, and reorder the
+# columns so they exactly match the original FIM.
+# As downstream sections are refactored, this will no longer be necessary. This is a
+# temporary solution.
+
+# minus_neutral_renamed_df
+minus_neutral_renamed_df <- minus_neutral_df
+colnames(minus_neutral_renamed_df) <- c(glue::glue('{data_series}_minus_neutral'))
+# Append the new _minus_neutral columns to the consumption_pt1 df
+consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
+
+# post_mpc_renamed_df
 post_mpc_renamed_df <- post_mpc_df
 colnames(post_mpc_renamed_df) <- c(glue::glue('{data_series}_post_mpc'))
-
-# append new post_mpc_renamed_df columns to consumption_pt2 df to generate 
-# consumption_pt2 df
+# Append the new _post_mpc columns to consumption_pt2 df 
 consumption_pt3 <- bind_cols(consumption_pt2, post_mpc_renamed_df)
 
 # Apply column order to perfectly match old version of fim. These lines can be
