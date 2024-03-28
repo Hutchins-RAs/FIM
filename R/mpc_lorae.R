@@ -149,10 +149,7 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
     stop("mpc_list must be a list.")
   }
   # Check if all mpc names in mpc_series are also in mpc_list
-  if (any(unique(mpc_series) %in% names(mpc_list))) {
-    # reads TRUE if all elements of mpc_series in mpc_list. Do nothing here.
-  } else {
-    # If above condition is false, throw an error.
+  if (!all(mpc_series %in% names(mpc_list))) {
     stop("mpc_series contains entries not listed in mpc_list.")
   }
   
