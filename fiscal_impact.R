@@ -218,9 +218,7 @@ consumption_pt1 <-
   get_real_levels()
 
 # CALCULATE MINUS NEUTRALS
-# Initialize a list of mpcs that are referenced by the function. ui is not included
-# TODO: remove UI from entire workflow - for now this is a patch solution to perfectly
-# refactor
+# Initialize a list of mpcs that are referenced by the function.
 key_list <- names(mpc_series)
 
 minus_neutral_df <- apply(
@@ -259,12 +257,8 @@ print(any_false)
 
 # Initialize a list to temporarily hold the data before converting it to a dataframe
 post_mpc_list <- list()
-# Initialize a list of mpcs that are referenced by the function. ui is not included
-# TODO: remove UI from entire workflow - for now this is a patch solution to perfectly
-# refactor
+# Initialize a list of mpcs that are referenced by the function.
 key_list <- names(mpc_series)
-key_list <- key_list[key_list != "ui"] # there is no ui_minus_neutral entry
-# TODO: remove ui in general as a row from this entire workflow
 
 for (key in key_list) {
   print(key)
@@ -314,9 +308,8 @@ end <- nrow(consumption_newnames)
 # in NA entries. Thus, comparing the second entry onward is a more appropriate
 # check.
 old_data <- consumption_newnames[2:end,] %>%
-  select(-ui_minus_neutral)
-new_data <- consumption_new[2:end,] %>%
-  select(-ui_minus_neutral)
+  select(-ui_minus_neutral) # remove this column since we eliminated while refactoring
+new_data <- consumption_new[2:end,]
 # check if newly refactored result matches old result
 all.equal(old_data, new_data)
 
@@ -419,9 +412,8 @@ load("TEMP_contributions.RData") #old contributions
 contributions_new <- contributions_pt2 # new contributions
 
 old_data <- contributions[2:end,] %>%
-  select(-ui_minus_neutral)
-new_data <- contributions_new[2:end,] %>%
-  select(-ui_minus_neutral)
+  select(-ui_minus_neutral) # remove this column since we eliminated while refactoring
+new_data <- contributions_new[2:end,]
 
 all.equal(old_data, new_data)
 

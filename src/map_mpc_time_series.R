@@ -14,7 +14,7 @@
 n_periods <- 255 #Total number of periods in the data
 period_21q2 <- 206 # The index number of the 2021 Q2 period
 mpc_series <- list(
-  ui = rep("mpc00", times = n_periods),
+  #ui = rep("mpc00", times = n_periods),
   federal_ui = c(rep("mpc01", times = (period_21q2 - 1)), # pre-21Q2 mpc regime
                  rep("mpc02", times = (n_periods- period_21q2 + 1))), # post-21Q2 regime
   state_ui = c(rep("mpc01", times = (period_21q2 - 1)), # pre-21Q2 mpc regime
