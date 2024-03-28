@@ -177,6 +177,36 @@ roll_mpc <- function(x, mpc_series, mpc_list) {
 # mpc_matrix %*% data_matrix
 # 
 # # But for different mpcs, we need different matrices.
+# Assuming mpc_series and mpc_list are defined as in your example
+
+generate_mpc_matrix <- function(mpc_series, mpc_list) {
+  # Initialize an empty matrix of appropriate size
+  len <- length(mpc_series)
+  mpc_matrix <- matrix(0, nrow = len, ncol = len)
+  
+  # Iterate through each period's MPC regime
+  for (i in seq_len(len)) {
+    mpc_vector <- rev(mpc_list[[mpc_series[i]]]) # Retrieve and reverse the MPC vector for current period
+    mpc_len <- length(mpc_vector)
+    
+    # Determine the start and end indices for the current MPC vector in the matrix
+    start_index <- max(1, i - mpc_len + 1)
+    end_index <- i
+    
+    # Assign the reversed MPC vector to the appropriate matrix slice
+    # Note: The matrix is filled row by row, respecting the start and end indices
+    mpc_matrix[i, start_index:end_index] <- mpc_vector[1:(end_index - start_index + 1)]
+  }
+  
+  return(mpc_matrix)
+}
+
+# # Example usage
+# mpc_series <- c("mpc01", "mpc01", "mpc02", "mpc02")
+# mpc_list <- list(mpc01 = c(0.8, 0.2), mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2))
+# mpc_matrix <- generate_mpc_matrix(mpc_series, mpc_list)
+# 
+# print(mpc_matrix)
 
 
 
