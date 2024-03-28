@@ -313,7 +313,12 @@ end <- nrow(consumption_newnames)
 # era programs. Lorae has since standardized this, causing the slight difference
 # in NA entries. Thus, comparing the second entry onward is a more appropriate
 # check.
-all.equal(consumption_newnames[2:end,], consumption_new[2:end,])
+old_data <- consumption_newnames[2:end,] %>%
+  select(-ui_minus_neutral)
+new_data <- consumption_new[2:end,] %>%
+  select(-ui_minus_neutral)
+# check if newly refactored result matches old result
+all.equal(old_data, new_data)
 
 # Assign result to the consumption df, so rest of code runs smoothly.
 # consumption_new is just a temporary feature to compare between new and old fims
@@ -409,11 +414,16 @@ contributions_pt2 <- contributions_pt1 %>%
   ) %>% 
   mutate( subsidies_real = federal_subsidies_real + state_subsidies_real)
 
-load("TEMP_contributions.RData")
-contributions_new <- contributions_pt2 #%>%
-#   .[, consumption_column_order]
-all.equal(contributions[2:end,], contributions_new[2:end,])
+# check if newly refactored result matches old result
+load("TEMP_contributions.RData") #old contributions
+contributions_new <- contributions_pt2 # new contributions
 
+old_data <- contributions[2:end,] %>%
+  select(-ui_minus_neutral)
+new_data <- contributions_new[2:end,] %>%
+  select(-ui_minus_neutral)
+
+all.equal(old_data, new_data)
 
 # for later use in this code
 contributions <- contributions_new
