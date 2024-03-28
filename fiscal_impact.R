@@ -212,6 +212,7 @@ cbind(projections$social_benefits,
       projections$federal_social_benefits, 
       projections$state_social_benefits)
 
+# Section D: Consumption -------------------------------------------------------------
 # Generate the data frame which maps mpcs to specific FIM data time series (subsidies,
 # taxes, transfers, etc).
 # Running this module creates variables `mpc_series` and `mpc_list`
@@ -255,7 +256,7 @@ colnames(minus_neutral_renamed_df) <- c(glue::glue('{data_series}_minus_neutral'
 consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
 
 
-### CALCULATE MPCS
+# Section D.2: Post MPC -------------------------------------------------------------
 
 # Initialize a list to temporarily hold the data before converting it to a dataframe
 post_mpc_list <- list()
