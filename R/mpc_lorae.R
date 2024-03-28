@@ -1,4 +1,6 @@
-#new mpc_vulnerable_arp func 
+# TODO: Fold all of this documentation, as well as mpc regime switchover examples
+# in root/mpc_switchover_examples.xlsx, into one large RMarkdown or other 
+# file.
 
 # The mpcs variable contains how much of the impulse is spent x quarters after
 # disbursement of the funds. For example, an mpc = c(0.3, 0.2, 0.1) means that 
