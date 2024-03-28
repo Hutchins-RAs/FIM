@@ -203,7 +203,14 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                federal_student_loans = overrides$federal_student_loans_override)
 
-# Section D: Consumption -------------------------------------------------------------
+# Section C.1: Data validation -------------------------------------------------------
+## TODO: One would suppose that federal_social_benefits + state_social_benefits
+## = social_benefits, but it does not. This divergence starts in 2021 Q1, which
+## is row 205. Investigate. 
+cbind(projections$social_benefits, 
+      projections$federal_social_benefits + projections$state_social_benefits, 
+      projections$federal_social_benefits, 
+      projections$state_social_benefits)
 
 # Generate the data frame which maps mpcs to specific FIM data time series (subsidies,
 # taxes, transfers, etc).
@@ -246,14 +253,6 @@ colnames(minus_neutral_renamed_df) <- c(glue::glue('{data_series_list}_minus_neu
 # create the consumption_pt2 data frame.
 consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
 
-## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
-## = social_benefits, but it does not. TODO: Investigate later.
-logical_vector <- consumption_pt1$federal_social_benefits + consumption_pt1$state_social_benefits == consumption_pt1$social_benefits
-any_false <- any(!logical_vector)
-print(any_false)
-# as you can see, there are false elements in this vector comparing the two values
-# try subtracting or using all.equal() function - it's possible the differences
-# are miniscule.
 
 ### CALCULATE MPCS
 
