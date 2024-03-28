@@ -76,16 +76,57 @@ mps <- function(x, mps){
 #            mpc03 = c(0.5, 0.5)
 #          ))
   
-roll_mpc <- function(x, mpc_series, mpc_list) {
+# FUNCTIONAL CHECKS SAVED FOR LATER
+  # #  x is the time series of disbursements. Must be atomic vector and equal
+  # # length to mpc_series
+  # ## Input argument pre-checks
+  # # Check if x is a vector
+  # if (!is.atomic(x)) {
+  #   stop("x must be an atomic vector.")
+  # }
+  # # Check if x and mpc_series are the same length
+  # if (length(x) != length(mpc_series)) {
+  #   stop("x and mpc_series must have equal lengths.")
+  # }
+
+
+
+# ##  Proof of concept: MPC regimes as matrices
+# # Here's an example of applying an mpc of (0.8, 0.2) to a data vector of 
+# # c(100, 100, 100, 100), which represents a $100billion quarterly disbursement
+# # disbursed over the course of 4 quarters, where recipients spend 80% of the money
+# # in the quarter they receive it and the remaining 20% in the following quarter.
+
+# # a single column of data
+# x_vector <- matrix(c(100, 100, 100, 100), nrow = 4, ncol = 1)
+# 
+# # a matrix applying mpcs to each column
+# mpc_matrix <- matrix(c(0.8, 0, 0, 0,
+#                        0.2, 0.8, 0, 0,
+#                        0, 0.2, 0.8, 0,
+#                        0, 0, 0.2, 0.8),
+#                      nrow = 4, ncol = 4, byrow = TRUE)
+#
+# # Multiply the mpc_matrix by the data_matrix to obtain the effect of the disbursement
+# # on consumption.
+# mpc_matrix %*% data_matrix
+#
+# # Because of the simplicity of matrix algebra, the same mpc matrix can be applied
+# # to multiple data vectors at the same time.
+# data_matrix <- matrix(c(100, 100, 100, 100, 100, 0, 0, 0), nrow = 4, ncol = 2)
+# mpc_matrix %*% data_matrix
+
+
 generate_mpc_matrix <- function(mpc_series, mpc_list) {
   ## Notes on arguments:
-  #  x is the time series of disbursements. Must be atomic vector and equal
-  # length to mpc_series
-  #
-  # mpc_series is the time series of mpc regimes applied to x. mpcs are referred 
-  # to as character strings. For example, if x = c(100, 100, 100, 100) and mpc01 
-  # is applied to the first 2 quarters and mpc02 is applied to the second two 
-  # quarters, then mpc_series = c("mpc01", "mpc01", "mpc02", "mpc02")
+  # mpc_series is the time series of mpc regimes applied to the data series. 
+  # mpcs are referred to as character strings. For example, if mpc regime "mpc01"
+  # is applied to the first 2 quarters and mpc regime "mpc02" is applied to the 
+  # second two quarter of a four-period data series, then 
+  # mpc_series = c("mpc01", "mpc01", "mpc02", "mpc02")
+  # Note: the length of mpc_series must match the length of the data series to which
+  # it is applied - otherwise, the output mpc_matrix from this function will not
+  # multiply.
   #
   # mpc_list is the "dictionary" or "key" connecting what mpc vector each mpc
   # name refers to. This list must include all unique strings in mpc_series, otherwise,
