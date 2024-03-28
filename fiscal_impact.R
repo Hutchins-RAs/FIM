@@ -204,6 +204,13 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                federal_student_loans = overrides$federal_student_loans_override)
 
 # Section D: Consumption -------------------------------------------------------------
+
+# Generate the data frame which maps mpcs to specific FIM data variables (subsidies,
+# taxes, transfers, etc) and encodes mpc vectors as vectors.
+# creates mpc_series and mpc_list
+source("src/map_mpc_time_series.R")
+
+
 # Isolating the first part of consumption, which I will not attempt
 # to refactor (for now)
 consumption_pt1 <-
@@ -220,58 +227,6 @@ consumption_pt1 <-
   # output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
   return(output)
 }
-
-# Here, we're going to have an MPC data frame that contains the correct MPCs
-# to use at each period.
-# TODO: make the two period variables below less brittle
-n_periods <- nrow(consumption_pt1) #Total number of periods in the data
-period_21q2 <- 206 # The index number of the 2021 Q2 period
-mpc_series <- list(
-  ui = rep("mpc00", times = n_periods),
-  federal_ui = c(rep("mpc01", times = (period_21q2 - 1)), # pre-21Q2 mpc regime
-                 rep("mpc02", times = (n_periods- period_21q2 + 1))), # post-21Q2 regime
-  state_ui = c(rep("mpc01", times = (period_21q2 - 1)), # pre-21Q2 mpc regime
-               rep("mpc02", times = (n_periods- period_21q2 + 1))), # post-21Q2 regime
-  subsidies = rep("mpc03", times = n_periods),
-  federal_subsidies = rep("mpc03", times = n_periods),
-  state_subsidies = rep("mpc03", times = n_periods),
-  health_outlays = rep("mpc04", times = n_periods),
-  federal_health_outlays = rep("mpc04", times = n_periods), 
-  state_health_outlays = rep("mpc04", times = n_periods), 
-  social_benefits = rep("mpc04", times = n_periods), 
-  federal_social_benefits = rep("mpc04", times = n_periods), 
-  state_social_benefits = rep("mpc04", times = n_periods),
-  corporate_taxes = rep("mpc05", times = n_periods), 
-  federal_corporate_taxes = rep("mpc05", times = n_periods), 
-  state_corporate_taxes = rep("mpc05", times = n_periods),
-  non_corporate_taxes = rep("mpc06", times = n_periods), 
-  federal_non_corporate_taxes = rep("mpc06", times = n_periods), 
-  state_non_corporate_taxes = rep("mpc06", times = n_periods),
-  rebate_checks_arp = rep("mpc07", times = n_periods), 
-  federal_other_direct_aid_arp = rep("mpc07", times = n_periods),
-  federal_other_vulnerable_arp = rep("mpc02", times = n_periods),
-  federal_aid_to_small_businesses_arp = rep("mpc08", times = n_periods),
-  federal_student_loans = rep("mpc02", times = n_periods),
-  supply_side_ira = rep("mpc_direct", times = n_periods),
-  rebate_checks = rep("mpc09", times = n_periods)
-)
-
-mpc_list <- list(
-  mpc00 = c(), # Non-mpc
-  mpc01 = 0.9 * c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05),
-  mpc02 = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
-  mpc03 = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02),
-  mpc04 = c(0.225, 0.225, 0.225, 0.225),
-  mpc05 = rep(-0.0333333333333333, 12),
-  mpc06 = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06),
-  mpc07 = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005),
-  mpc08 = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017),
-  mpc09 = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08),
-  # This is a direct MPC: meaning we think all is spent in period it's disbursed
-  mpc_direct = c(1)
-)
-
-
 # CALCULATE MINUS NEUTRALS
 # Initialize a list of mpcs that are referenced by the function. ui is not included
 # TODO: remove UI from entire workflow - for now this is a patch solution to perfectly
