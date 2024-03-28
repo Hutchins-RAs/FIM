@@ -77,6 +77,7 @@ mps <- function(x, mps){
 #          ))
   
 roll_mpc <- function(x, mpc_series, mpc_list) {
+generate_mpc_matrix <- function(mpc_series, mpc_list) {
   ## Notes on arguments:
   #  x is the time series of disbursements. Must be atomic vector and equal
   # length to mpc_series
@@ -87,27 +88,22 @@ roll_mpc <- function(x, mpc_series, mpc_list) {
   # quarters, then mpc_series = c("mpc01", "mpc01", "mpc02", "mpc02")
   #
   # mpc_list is the "dictionary" or "key" connecting what mpc vector each mpc
-  # name refers to. This list must include all unique strings in mpc_series. So, 
-  # for example, if mpc01 = c(0.8, 0.2) and mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2), then 
+  # name refers to. This list must include all unique strings in mpc_series, otherwise,
+  # the function will stop and present an error. So, for example, if 
+  # mpc01 = c(0.8, 0.2) and mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2), then 
   # mpc_list = list(mpc01 = c(0.8, 0.2), 
   #                 mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2))
+  # Please note that any "extra" mpcs not named in mpc_series (e.g. "mpc03") are
+  # simply ignored and will not cause errors.
   #
   ## Input argument pre-checks
-  # Check if x is a vector
-  if (!is.atomic(x)) {
-    stop("x must be an atomic vector.")
-  }
-  # Check if if mpc_series is a vector
+  # Check if if mpc_series is an atomic vector
   if (!is.atomic(mpc_series)) {
     stop("mpc_series must be an atomic vector.")
   }
   # Check if mpc_list is a list
   if (!is.list(mpc_list)) {
     stop("mpc_list must be a list.")
-  }
-  # Check if x and mpc_series are the same length
-  if (length(x) != length(mpc_series)) {
-    stop("x and mpc_series must have equal lengths.")
   }
   # Check if all mpc names in mpc_series are also in mpc_list
   if (any(unique(mpc_series) %in% names(mpc_list))) {
@@ -116,88 +112,40 @@ roll_mpc <- function(x, mpc_series, mpc_list) {
     # If above condition is false, throw an error.
     stop("mpc_series contains entries not listed in mpc_list.")
   }
-
+  
   ## "Meat" of the function
-  # Each nth value of the output vector, which has the same length as the input data
-  # vector x, is the result of the dot product of the mpc vector, written backwards, 
-  # and the previous n elements of the x vector. If the length of the mpc vector
-  # exceeds the number of available data entries from x, then the mpc vector of 
-  # length n will be truncated to the length of available entries from x.
-  #
   # For more intuition on why this calculation leads to practical spending calculations
   # out of time series disbursements, please read comments preceding mpc_lorae() in `mpc_lorae.R`.
+  # TODO: write up an R Markdown notebook or some other documentation explaining
+  # how mpc_matrices work and how mpcs work in the FIM more generally.
   #
-  # Initialize the result vector
-  result <- c()
-  # Loop through each element of the x vector
-  for (i in seq_along(x)){
-    ## To calculate result, perform a dot product: v1 %*% v2
-    # v1 is the mpc vector corresponding with the i-th element of mpc_series, 
-    # but written in reverse order
+  # Initialize an empty matrix of appropriate dimension. This matrix will eventually
+  # contain the function output
+  dim <- length(mpc_series)
+  mpc_matrix <- matrix(0, nrow = dim, ncol = dim) # initialized matrix
+  
+  # Iterate through each period's MPC regime
+  for (i in seq_len(dim)) {
     mpc_name <- mpc_series[i] # get the name of the mpc vector used on this data point
+    # v1 is the mpc vector corresponding with the i-th element of mpc_series, 
+    # but written in reverse order. It comprises the nonzero portion of any mpc
+    # matrix row, and its contents are truncated to fit the dimensions of the matrix
     v1 <- rev(mpc_list[[mpc_name]]) # extract the mpc vector and reverse it
     n <- length(v1) # length of v1 vector is crucial for following logic
-    # if for the i-th element of mpc_series, the corresponding mpc vector (written
-    # in reverse order), v1, exceeds the number of entries so far of x, then 
-    # truncate the v1 vector to only include its last i elements.
     if (i < n) { 
       v1 <- tail(v1, i) # keep only the last i elements of v1
       n <- length(v1) # redefine the length of v1 to match corrected length
     }
-    # v2 is of a length matching the length of v1. It contains consecutive
-    # elements leading up to and including the i-th element of x. 
-    v2 <- tail(x, n) # choose the last n data points of x
-    dot <- v1 %*% v2 # dot product v1 and v2
-    result <- c(result, dot) # append new datum to results vector
-  }
-  
-  return(result)
-}
-
-
-# # A more efficient way to do this than a for loop is matrices. Here's an example
-# # of applying an mpc of (0.8, 0.2) to a vector of (100, 100, 100, 100)
-# 
-# # a single column of data, e.g. subsidy disbursements
-# x_vector <- matrix(c(100, 100, 100, 100), nrow = 4, ncol = 1)
-# 
-# # a matrix applying mpcs to each column
-# mpc_matrix <- matrix(c(0.8, 0, 0, 0,
-#                        0.2, 0.8, 0, 0,
-#                        0, 0.2, 0.8, 0,
-#                        0, 0, 0.2, 0.8), 
-#                      nrow = 4, ncol = 4, byrow = TRUE)
-# 
-# mpc_matrix %*% x_vector
-# 
-# # we can even apply this to multiple data columns at once, assuming they all share
-# # common mpcs:
-# data_matrix <- matrix(c(100, 100, 100, 100, 100, 0, 0, 0), nrow = 4, ncol = 2)
-# 
-# mpc_matrix %*% data_matrix
-# 
-# # But for different mpcs, we need different matrices.
-# Assuming mpc_series and mpc_list are defined as in your example
-
-generate_mpc_matrix <- function(mpc_series, mpc_list) {
-  # Initialize an empty matrix of appropriate size
-  len <- length(mpc_series)
-  mpc_matrix <- matrix(0, nrow = len, ncol = len)
-  
-  # Iterate through each period's MPC regime
-  for (i in seq_len(len)) {
-    mpc_vector <- rev(mpc_list[[mpc_series[i]]]) # Retrieve and reverse the MPC vector for current period
-    mpc_len <- length(mpc_vector)
     
-    # Determine the start and end indices for the current MPC vector in the matrix
-    start_index <- max(1, i - mpc_len + 1)
-    end_index <- i
-    
-    # Assign the reversed MPC vector to the appropriate matrix slice
-    # Note: The matrix is filled row by row, respecting the start and end indices
-    mpc_matrix[i, start_index:end_index] <- mpc_vector[1:(end_index - start_index + 1)]
+    # use v1, i, and n to overwrite matrix entries (which were initialized as 0)
+    # each row corresponds to a separate mpc period, so the row being overwritten
+    # is indexed by i. The diagonal entry will be changed by the mpc vector, as will
+    # n entries to the left of each diagonal entry.
+    row_index <- i
+    col_start_index <- i - n + 1
+    col_end_index <- i
+    mpc_matrix[row_index, col_start_index:col_end_index] <- v1
   }
-  
   return(mpc_matrix)
 }
 
