@@ -210,11 +210,6 @@ consumption_pt1 <-
   projections %>%
   get_real_levels()
 
-# generalized minus_neutral function
-minus_neutral <- function(x, # the data in question
-                          rpgg, # real potential gdp growth,
-                          cdg # consumption deflator growth
-) {
   output <- x - lag(x) * (1 + rpgg + cdg)
   # This is the correct, calculation, but it affects minus_neutral
   #output <- x - (lag(x) * (1 + rpgg) * (1 + cdg))
