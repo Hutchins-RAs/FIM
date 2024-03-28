@@ -217,6 +217,11 @@ cbind(projections$social_benefits,
 # Running this module creates variables `mpc_series` and `mpc_list`
 source("src/map_mpc_time_series.R")
 
+# Initialize a list of unique data series to which minus neutral and mpc will be applied to.
+# TODO: This list will be universal, from FIM start to FIM finish, so give it a more
+# intuitive name, and don't base it off mpc series: base it off something established earlier.
+# This should also be much earlier in the final, refactored script.
+data_series <- names(mpc_series)
 
 # STEP 1: GET REAL LEVELS
 # TODO: refactor this section
@@ -225,16 +230,12 @@ consumption_pt1 <-
   get_real_levels()
 
 # Section D.1: Minus Neutral -------------------------------------------------------------
-# Initialize a list of unique data series to which minus neutral and mpc will be applied to.
-# TODO: This list will be universal, from FIM start to FIM finish, so give it a more
-# intuitive name, and don't base it off mpc series: base it off something earlier.
-data_series_list <- names(mpc_series)
 
 minus_neutral_df <- apply(
   # consumption_pt1 contains many columns, so we isolate to only the entries
-  # that exist in data_series_list, which are those which we want to calculate 
+  # that exist in data_series, which are those which we want to calculate 
   # minus_neutral values for.
-                          X = consumption_pt1[data_series_list], 
+                          X = consumption_pt1[data_series], 
                           MARGIN = 2, # apply the function to the columns (1 = rows)
                           FUN = minus_neutral, # User-defined minus_neutral function
                           rpgg = consumption_pt1$real_potential_gdp_growth, #arg from minus_neutral
@@ -247,7 +248,7 @@ minus_neutral_df <- apply(
 # the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
 # refactoring to avoid unnecessary errors.
 minus_neutral_renamed_df <- minus_neutral_df
-colnames(minus_neutral_renamed_df) <- c(glue::glue('{data_series_list}_minus_neutral'))
+colnames(minus_neutral_renamed_df) <- c(glue::glue('{data_series}_minus_neutral'))
 
 # Append the new _minus_neutral rows to the consumption_pt1 data frame to 
 # create the consumption_pt2 data frame.
@@ -258,10 +259,8 @@ consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
 
 # Initialize a list to temporarily hold the data before converting it to a dataframe
 post_mpc_list <- list()
-# Initialize a list of mpcs that are referenced by the function.
-data_series_list <- names(mpc_series)
 
-for (series in data_series_list) {
+for (series in data_series) {
   print(series)
   # Generate the MPC matrix for the current series
   mpc_matrix <- generate_mpc_matrix(mpc_series = mpc_series[[series]], 
@@ -287,7 +286,7 @@ post_mpc_df <- as.data.frame(post_mpc_list)
 # the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
 # refactoring to avoid unnecessary errors.
 post_mpc_renamed_df <- post_mpc_df
-colnames(post_mpc_renamed_df) <- c(glue::glue('{data_series_list}_post_mpc'))
+colnames(post_mpc_renamed_df) <- c(glue::glue('{data_series}_post_mpc'))
 
 # append new post_mpc_renamed_df columns to consumption_pt2 df to generate 
 # consumption_pt2 df
