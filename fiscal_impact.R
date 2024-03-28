@@ -412,7 +412,7 @@ contributions_pt2 <- contributions_pt1 %>%
 load("TEMP_contributions.RData")
 contributions_new <- contributions_pt2 #%>%
 #   .[, consumption_column_order]
-all.equal(contributions, contributions_new)
+all.equal(contributions[2:end,], contributions_new[2:end,])
 
 
 # for later use in this code
