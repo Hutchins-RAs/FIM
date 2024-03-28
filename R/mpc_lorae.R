@@ -128,10 +128,10 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
   # mpc_series = c("mpc01", "mpc01", "mpc02", "mpc02")
   # Note: the length of mpc_series must match the length of the data series to which
   # it is applied - otherwise, the output mpc_matrix from this function will not
-  # multiply.
+  # be able to multiply with the original data series.
   #
   # mpc_list is the "dictionary" or "key" connecting what mpc vector each mpc
-  # name refers to. This list must include all unique strings in mpc_series, otherwise,
+  # name refers to. This list must include all entries in mpc_series, otherwise,
   # the function will stop and present an error. So, for example, if 
   # mpc01 = c(0.8, 0.2) and mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2), then 
   # mpc_list = list(mpc01 = c(0.8, 0.2), 
@@ -154,8 +154,8 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
   }
   
   ## "Meat" of the function
-  # For more intuition on why this calculation leads to practical spending calculations
-  # out of time series disbursements, please read comments preceding mpc_lorae() in `mpc_lorae.R`.
+  # For more intuition on why the matrix formed by this function represents mpcs.
+  # please read comments preceding mpc_lorae() in `mpc_lorae.R`.
   # TODO: write up an R Markdown notebook or some other documentation explaining
   # how mpc_matrices work and how mpcs work in the FIM more generally.
   #
@@ -177,13 +177,14 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
       n <- length(v1) # redefine the length of v1 to match corrected length
     }
     
-    # use v1, i, and n to overwrite matrix entries (which were initialized as 0)
-    # each row corresponds to a separate mpc period, so the row being overwritten
-    # is indexed by i. The diagonal entry will be changed by the mpc vector, as will
-    # n entries to the left of each diagonal entry.
+    # Use v1, i, and n to overwrite matrix entries (which were initialized as 0).
+    # Each row corresponds to a separate mpc period, so the row being overwritten
+    # is indexed by i. The diagonal entry is changed by the mpc vector, as are the
+    # (n-1) entries to the left of each diagonal entry.
     row_index <- i
     col_start_index <- i - n + 1
     col_end_index <- i
+    # overwrite certain indices of the matrix with the v1 vector
     mpc_matrix[row_index, col_start_index:col_end_index] <- v1
   }
   return(mpc_matrix)
