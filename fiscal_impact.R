@@ -360,10 +360,6 @@ post_mpc_df <- lapply(names(mpc_values), function(variable_name) {
 post_mpc_renamed_df <- post_mpc_df
 colnames(post_mpc_renamed_df) <- c(glue::glue('{names(mpc_values)}_post_mpc'))
 
-
-# Set the names of the dataframe columns to reflect the transformations
-names(mpc_transformed_df) <- paste0(names(mpc_values), "_post_mpc")
-
 consumption_pt4 <- consumption_pt3 %>%
   # Create social_benefits_post_mpc column
   mutate(social_benefits_post_mpc = mpc_lorae(x = social_benefits_minus_neutral,
