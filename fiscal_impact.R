@@ -205,27 +205,29 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
 
 # Section D: Consumption -------------------------------------------------------------
 
-# Generate the data frame which maps mpcs to specific FIM data variables (subsidies,
-# taxes, transfers, etc) and encodes mpc vectors as vectors.
-# creates mpc_series and mpc_list
+# Generate the data frame which maps mpcs to specific FIM data time series (subsidies,
+# taxes, transfers, etc).
+# Running this module creates variables `mpc_series` and `mpc_list`
 source("src/map_mpc_time_series.R")
 
 
-# Isolating the first part of consumption, which I will not attempt
-# to refactor (for now)
+# STEP 1: GET REAL LEVELS
+# TODO: refactor this section
 consumption_pt1 <-
   projections %>%
   get_real_levels()
 
-# CALCULATE MINUS NEUTRALS
-# Initialize a list of mpcs that are referenced by the function.
-key_list <- names(mpc_series)
+# Section D.1: Minus Neutral -------------------------------------------------------------
+# Initialize a list of unique data series to which minus neutral and mpc will be applied to.
+# TODO: This list will be universal, from FIM start to FIM finish, so give it a more
+# intuitive name, and don't base it off mpc series: base it off something earlier.
+data_series_list <- names(mpc_series)
 
 minus_neutral_df <- apply(
   # consumption_pt1 contains many columns, so we isolate to only the entries
-  # that exist in key_list, which are those which we want to calculate 
+  # that exist in data_series_list, which are those which we want to calculate 
   # minus_neutral values for.
-                          X = consumption_pt1[key_list], 
+                          X = consumption_pt1[data_series_list], 
                           MARGIN = 2, # apply the function to the columns (1 = rows)
                           FUN = minus_neutral, # User-defined minus_neutral function
                           rpgg = consumption_pt1$real_potential_gdp_growth, #arg from minus_neutral
@@ -238,7 +240,7 @@ minus_neutral_df <- apply(
 # the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
 # refactoring to avoid unnecessary errors.
 minus_neutral_renamed_df <- minus_neutral_df
-colnames(minus_neutral_renamed_df) <- c(glue::glue('{key_list}_minus_neutral'))
+colnames(minus_neutral_renamed_df) <- c(glue::glue('{data_series_list}_minus_neutral'))
 
 # Append the new _minus_neutral rows to the consumption_pt1 data frame to 
 # create the consumption_pt2 data frame.
@@ -258,24 +260,24 @@ print(any_false)
 # Initialize a list to temporarily hold the data before converting it to a dataframe
 post_mpc_list <- list()
 # Initialize a list of mpcs that are referenced by the function.
-key_list <- names(mpc_series)
+data_series_list <- names(mpc_series)
 
-for (key in key_list) {
-  print(key)
-  # Generate the MPC matrix for the current key
-  mpc_matrix <- generate_mpc_matrix(mpc_series = mpc_series[[key]], 
+for (series in data_series_list) {
+  print(series)
+  # Generate the MPC matrix for the current series
+  mpc_matrix <- generate_mpc_matrix(mpc_series = mpc_series[[series]], 
                                     mpc_list = mpc_list) # TODO: rename so arg and df don't have same name
   # Formatting the data as a vertical column matrix is not strictly necessary;
   # but it reinforces the point that this is matrix multiplication
-  data_vector <- matrix(consumption_pt2[[glue("{key}_minus_neutral")]], ncol = 1)
+  data_vector <- matrix(consumption_pt2[[glue("{series}_minus_neutral")]], ncol = 1)
   # ensuring proper NA handling by converting to zeroes
   # TODO: Make the product of an NA and a value equal NA in the matrix to prevent
   # undetected bugs arising from NA handling
   data_vector[is.na(data_vector)] <- 0
   post_mpc_series <- mpc_matrix %*% data_vector
   
-  # Add the result to the list, using the key as the list name
-  post_mpc_list[[key]] <- as.vector(post_mpc_series) # Convert matrix result to vector if necessary
+  # Add the result to the list, using the series as the list name
+  post_mpc_list[[series]] <- as.vector(post_mpc_series) # Convert matrix result to vector if necessary
 }
 # Convert the list of vectors into a dataframe
 post_mpc_df <- as.data.frame(post_mpc_list)
@@ -286,7 +288,7 @@ post_mpc_df <- as.data.frame(post_mpc_list)
 # the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
 # refactoring to avoid unnecessary errors.
 post_mpc_renamed_df <- post_mpc_df
-colnames(post_mpc_renamed_df) <- c(glue::glue('{key_list}_post_mpc'))
+colnames(post_mpc_renamed_df) <- c(glue::glue('{data_series_list}_post_mpc'))
 
 # append new post_mpc_renamed_df columns to consumption_pt2 df to generate 
 # consumption_pt2 df
