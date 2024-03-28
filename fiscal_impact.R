@@ -337,6 +337,22 @@ mpc_list <- list(
   # This is a direct MPC: meaning we think all is spent in period it's disbursed
   mpc_direct = c(1)
 )
+
+# Proof of concept using an mpc matrix generated from mpc_series and mpc_list
+# using generate_mpc_matrix
+mpc_matrix <- generate_mpc_matrix(mpc_series = mpc_series[["federal_ui"]], 
+                                  mpc_list = mpc_list)
+# Formatting the data as a vertical column matrix is not strictly necessary;
+# but it reinforces the point that this is matrix multiplication
+data_vector <- matrix(consumption_pt2[["federal_ui_minus_neutral"]], ncol = 1)
+# ensuring proper NA handling by converting to zeroes
+# TODO: Make the product of an NA and a value equal NA in the matrix to prevent
+# undetected bugs arising from NA handling
+data_vector[is.na(data_vector)] <- 0
+
+# post_mpc result!
+post_mpc_series <- mpc_matrix %*% data_vector
+
 mpc_values <- list(
   # ui = c(), # TODO: remove, this variable is never used in mpc. But it is created in the consumption
   # # dataframe so wait to remove until downstream code is checked.
