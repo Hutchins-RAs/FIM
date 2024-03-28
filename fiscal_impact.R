@@ -289,7 +289,53 @@ print(any_false)
 ### CALCULATE MPCS
 # Here, we're going to have an MPC data frame that contains the correct MPCs
 # to use at each period.
+n_periods <- 10#put it here!
+period_21q2 <- 4#put it here!
 # This data frame will contain MPC reference values
+mpc_series <- list(
+  ui = rep("mpc00", times = n_periods),
+  federal_ui = c(rep("mpc01", times = (period_21q2 - 1)), # pre-21Q2 mpc regime
+                 rep("mpc02", times = (n_periods- period_21q2 + 1))), # post-21Q2 regime
+  state_ui = c(rep("mpc01", times = (period_21q2 - 1)), # pre-21Q2 mpc regime
+                 rep("mpc02", times = (n_periods- period_21q2 + 1))), # post-21Q2 regime
+  subsidies = rep("mpc03", times = n_periods),
+  federal_subsidies = rep("mpc03", times = n_periods),
+  state_subsidies = rep("mpc03", times = n_periods),
+  health_outlays = rep("mpc04", times = n_periods),
+  federal_health_outlays = rep("mpc04", times = n_periods), 
+  state_health_outlays = rep("mpc04", times = n_periods), 
+  social_benefits = rep("mpc04", times = n_periods), 
+  federal_social_benefits = rep("mpc04", times = n_periods), 
+  state_social_benefits = rep("mpc04", times = n_periods),
+  corporate_taxes = rep("mpc05", times = n_periods), 
+  federal_corporate_taxes = rep("mpc05", times = n_periods), 
+  state_corporate_taxes = rep("mpc05", times = n_periods),
+  non_corporate_taxes = rep("mpc06", times = n_periods), 
+  federal_non_corporate_taxes = rep("mpc06", times = n_periods), 
+  state_non_corporate_taxes = rep("mpc06", times = n_periods),
+  rebate_checks_arp = rep("mpc07", times = n_periods), 
+  federal_other_direct_aid_arp = rep("mpc07", times = n_periods),
+  federal_other_vulnerable_arp = rep("mpc02", times = n_periods),
+  federal_aid_to_small_businesses_arp = rep("mpc08", times = n_periods),
+  federal_student_loans = rep("mpc02", times = n_periods),
+  supply_side_ira = rep("mpc_direct", times = n_periods),
+  rebate_checks = rep("mpc09", times = n_periods)
+)
+
+mpc_list <- list(
+  mpc00 = c(), # Non-mpc
+  mpc01 = 0.9 * c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05),
+  mpc02 = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
+  mpc03 = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02),
+  mpc04 = c(0.225, 0.225, 0.225, 0.225),
+  mpc05 = rep(-0.0333333333333333, 12),
+  mpc06 = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06),
+  mpc07 = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005),
+  mpc08 = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017),
+  mpc09 = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08),
+  # This is a direct MPC: meaning we think all is spent in period it's disbursed
+  mpc_direct = c(1)
+)
 mpc_values <- list(
   # ui = c(), # TODO: remove, this variable is never used in mpc. But it is created in the consumption
   # # dataframe so wait to remove until downstream code is checked.
