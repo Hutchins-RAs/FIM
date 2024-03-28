@@ -338,20 +338,43 @@ mpc_list <- list(
   mpc_direct = c(1)
 )
 
-# Proof of concept using an mpc matrix generated from mpc_series and mpc_list
-# using generate_mpc_matrix
-mpc_matrix <- generate_mpc_matrix(mpc_series = mpc_series[["federal_ui"]], 
-                                  mpc_list = mpc_list)
-# Formatting the data as a vertical column matrix is not strictly necessary;
-# but it reinforces the point that this is matrix multiplication
-data_vector <- matrix(consumption_pt2[["federal_ui_minus_neutral"]], ncol = 1)
-# ensuring proper NA handling by converting to zeroes
-# TODO: Make the product of an NA and a value equal NA in the matrix to prevent
-# undetected bugs arising from NA handling
-data_vector[is.na(data_vector)] <- 0
+# Initialize a list to temporarily hold the data before converting it to a dataframe
+post_mpc_list <- list()
+# Initialize a list of mpcs that are referenced by the function. ui is not included
+# TODO: remove UI from entire workflow - for now this is a patch solution to perfectly
+# refactor
+key_list <- names(mpc_series)
+key_list <- key_list[key_list != "ui"] # there is no ui_minus_neutral entry
+# TODO: remove ui in general as a row from this entire workflow
 
-# post_mpc result!
-post_mpc_series <- mpc_matrix %*% data_vector
+for (key in key_list) {
+  print(key)
+  # Generate the MPC matrix for the current key
+  mpc_matrix <- generate_mpc_matrix(mpc_series = mpc_series[[key]], 
+                                    mpc_list = mpc_list) # TODO: rename so arg and df don't have same name
+  # Formatting the data as a vertical column matrix is not strictly necessary;
+  # but it reinforces the point that this is matrix multiplication
+  data_vector <- matrix(consumption_pt2[[glue("{key}_minus_neutral")]], ncol = 1)
+  # ensuring proper NA handling by converting to zeroes
+  # TODO: Make the product of an NA and a value equal NA in the matrix to prevent
+  # undetected bugs arising from NA handling
+  data_vector[is.na(data_vector)] <- 0
+  post_mpc_series <- mpc_matrix %*% data_vector
+  
+  # Add the result to the list, using the key as the list name
+  post_mpc_list[[key]] <- as.vector(post_mpc_series) # Convert matrix result to vector if necessary
+}
+# Convert the list of vectors into a dataframe
+post_mpc_df <- as.data.frame(results_list)
+
+# Rename the columns by appending "_post_mpc" to the end of each variable
+# name to make it consistent with the rest of the code. Eventually, we will no
+# longer do this because we will simply use the minus_neutral_df, rather than
+# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
+# refactoring to avoid unnecessary errors.
+post_mpc_renamed_df <- post_mpc_df
+colnames(post_mpc_renamed_df) <- c(glue::glue('{key_list}_post_mpc'))
+
 
 mpc_values <- list(
   # ui = c(), # TODO: remove, this variable is never used in mpc. But it is created in the consumption
