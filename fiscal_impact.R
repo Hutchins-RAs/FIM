@@ -289,8 +289,9 @@ print(any_false)
 ### CALCULATE MPCS
 # Here, we're going to have an MPC data frame that contains the correct MPCs
 # to use at each period.
-n_periods <- 10#put it here!
-period_21q2 <- 4#put it here!
+# TODO: make the two period variables below less brittle
+n_periods <- nrow(consumption_pt2) #Total number of periods in the data
+period_21q2 <- 206 # The index number of the 2021 Q2 period
 # This data frame will contain MPC reference values
 mpc_series <- list(
   ui = rep("mpc00", times = n_periods),
