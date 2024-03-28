@@ -140,6 +140,7 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
   # simply ignored and will not cause errors.
   #
   ## Input argument pre-checks
+  # TODO: add a check to see if vector entries in mpc_list are of length 1 or greater
   # Check if if mpc_series is an atomic vector
   if (!is.atomic(mpc_series)) {
     stop("mpc_series must be an atomic vector.")
