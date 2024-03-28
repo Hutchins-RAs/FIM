@@ -204,13 +204,20 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                federal_student_loans = overrides$federal_student_loans_override)
 
 # Section D: Consumption -------------------------------------------------------------
- 
+# Isolating the first part of consumption, which I will not attempt
+# to refactor (for now)
+consumption_pt1 <-
+  projections %>%
+  get_real_levels()
+
 # generalized minus_neutral function
 minus_neutral <- function(x, # the data in question
                           rpgg, # real potential gdp growth,
                           cdg # consumption deflator growth
 ) {
-  output <- x - (lag(x) * (1 + rpgg) * (1 + cdg))
+  output <- x - lag(x) * (1 + rpgg + cdg)
+  # This is the correct, calculation, but it affects minus_neutral
+  #output <- x - (lag(x) * (1 + rpgg) * (1 + cdg))
   # This optional line will make the 1970 Q1 entries equal a numeric value, rather
   # than NA, by assuming that the 1969 Q4 value for each data series was 0. 
   # Prior versions of the FIM had this setting on for pandemic-era stimulus. We
@@ -219,86 +226,17 @@ minus_neutral <- function(x, # the data in question
   return(output)
 }
 
-# Isolating the first part of consumption, which I will not attempt
-# to refactor (for now)
-consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
-  projections %>%
-  get_real_levels()
-
-variable_list <- c(
-  "ui",
-  "federal_ui",
-  "state_ui",
-  "subsidies",
-  "federal_subsidies",
-  "state_subsidies",
-  "health_outlays",
-  "federal_health_outlays",
-  "state_health_outlays",
-  "social_benefits",
-  "federal_social_benefits",
-  "state_social_benefits",
-  "corporate_taxes",
-  "federal_corporate_taxes",
-  "state_corporate_taxes",
-  "non_corporate_taxes",
-  "federal_non_corporate_taxes",
-  "state_non_corporate_taxes",
-  "rebate_checks_arp",
-  "federal_other_direct_aid_arp",
-  "federal_other_vulnerable_arp",
-  "federal_aid_to_small_businesses_arp",
-  "federal_student_loans",
-  "supply_side_ira",
-  "rebate_checks"
-)
-
-# CALCULATE MINUS NEUTRALS
-minus_neutral_df <- apply(
-  # consumption_pt1 contains many columns, so we isolate to only the entries
-  # that exist in variable_list, which are those which we want to calculate 
-  # minus_neutral values for.
-                          X = consumption_pt1[variable_list], 
-                          MARGIN = 2, # apply the function to the columns (1 = rows)
-                          FUN = minus_neutral, # User-defined minus_neutral function
-                          rpgg = consumption_pt1$real_potential_gdp_growth, #arg from minus_neutral
-                          cdg = consumption_pt1$consumption_deflator_growth) %>% #arg from minus_neutral
-  as.data.frame()
-
-# Rename the columns by appending "_minus_neutral" to the end of each variable
-# name to make it consistent with the rest of the code. Eventually, we will no
-# longer do this because we will simply use the minus_neutral_df, rather than
-# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
-# refactoring to avoid unnecessary errors.
-minus_neutral_renamed_df <- minus_neutral_df
-colnames(minus_neutral_renamed_df) <- c(glue::glue('{variable_list}_minus_neutral'))
-
-# Append the new _minus_neutral rows to the consumption_pt1 data frame to 
-# create the consumption_pt2 data frame.
-consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
-
-## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
-## = social_benefits, but it does not. TODO: Investigate later.
-logical_vector <- consumption_pt1$federal_social_benefits + consumption_pt1$state_social_benefits == consumption_pt1$social_benefits
-any_false <- any(!logical_vector)
-print(any_false)
-# as you can see, there are false elements in this vector comparing the two values
-# try subtracting or using all.equal() function - it's possible the differences
-# are miniscule.
-
-### CALCULATE MPCS
 # Here, we're going to have an MPC data frame that contains the correct MPCs
 # to use at each period.
 # TODO: make the two period variables below less brittle
-n_periods <- nrow(consumption_pt2) #Total number of periods in the data
+n_periods <- nrow(consumption_pt1) #Total number of periods in the data
 period_21q2 <- 206 # The index number of the 2021 Q2 period
-# This data frame will contain MPC reference values
 mpc_series <- list(
   ui = rep("mpc00", times = n_periods),
   federal_ui = c(rep("mpc01", times = (period_21q2 - 1)), # pre-21Q2 mpc regime
                  rep("mpc02", times = (n_periods- period_21q2 + 1))), # post-21Q2 regime
   state_ui = c(rep("mpc01", times = (period_21q2 - 1)), # pre-21Q2 mpc regime
-                 rep("mpc02", times = (n_periods- period_21q2 + 1))), # post-21Q2 regime
+               rep("mpc02", times = (n_periods- period_21q2 + 1))), # post-21Q2 regime
   subsidies = rep("mpc03", times = n_periods),
   federal_subsidies = rep("mpc03", times = n_periods),
   state_subsidies = rep("mpc03", times = n_periods),
@@ -338,6 +276,47 @@ mpc_list <- list(
   mpc_direct = c(1)
 )
 
+
+# CALCULATE MINUS NEUTRALS
+# Initialize a list of mpcs that are referenced by the function. ui is not included
+# TODO: remove UI from entire workflow - for now this is a patch solution to perfectly
+# refactor
+key_list <- names(mpc_series)
+
+minus_neutral_df <- apply(
+  # consumption_pt1 contains many columns, so we isolate to only the entries
+  # that exist in key_list, which are those which we want to calculate 
+  # minus_neutral values for.
+                          X = consumption_pt1[key_list], 
+                          MARGIN = 2, # apply the function to the columns (1 = rows)
+                          FUN = minus_neutral, # User-defined minus_neutral function
+                          rpgg = consumption_pt1$real_potential_gdp_growth, #arg from minus_neutral
+                          cdg = consumption_pt1$consumption_deflator_growth) %>% #arg from minus_neutral
+  as.data.frame()
+
+# Rename the columns by appending "_minus_neutral" to the end of each variable
+# name to make it consistent with the rest of the code. Eventually, we will no
+# longer do this because we will simply use the minus_neutral_df, rather than
+# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
+# refactoring to avoid unnecessary errors.
+minus_neutral_renamed_df <- minus_neutral_df
+colnames(minus_neutral_renamed_df) <- c(glue::glue('{key_list}_minus_neutral'))
+
+# Append the new _minus_neutral rows to the consumption_pt1 data frame to 
+# create the consumption_pt2 data frame.
+consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
+
+## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
+## = social_benefits, but it does not. TODO: Investigate later.
+logical_vector <- consumption_pt1$federal_social_benefits + consumption_pt1$state_social_benefits == consumption_pt1$social_benefits
+any_false <- any(!logical_vector)
+print(any_false)
+# as you can see, there are false elements in this vector comparing the two values
+# try subtracting or using all.equal() function - it's possible the differences
+# are miniscule.
+
+### CALCULATE MPCS
+
 # Initialize a list to temporarily hold the data before converting it to a dataframe
 post_mpc_list <- list()
 # Initialize a list of mpcs that are referenced by the function. ui is not included
@@ -365,7 +344,7 @@ for (key in key_list) {
   post_mpc_list[[key]] <- as.vector(post_mpc_series) # Convert matrix result to vector if necessary
 }
 # Convert the list of vectors into a dataframe
-post_mpc_df <- as.data.frame(results_list)
+post_mpc_df <- as.data.frame(post_mpc_list)
 
 # Rename the columns by appending "_post_mpc" to the end of each variable
 # name to make it consistent with the rest of the code. Eventually, we will no
@@ -375,141 +354,15 @@ post_mpc_df <- as.data.frame(results_list)
 post_mpc_renamed_df <- post_mpc_df
 colnames(post_mpc_renamed_df) <- c(glue::glue('{key_list}_post_mpc'))
 
+# append new post_mpc_renamed_df columns to consumption_pt2 df to generate 
+# consumption_pt2 df
+consumption_pt3 <- bind_cols(consumption_pt2, post_mpc_renamed_df)
 
-mpc_values <- list(
-  # ui = c(), # TODO: remove, this variable is never used in mpc. But it is created in the consumption
-  # # dataframe so wait to remove until downstream code is checked.
-  # federal_ui = c(), 
-  # state_ui = c(), 
-  subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
-  federal_subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
-  state_subsidies = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02), 
-  health_outlays = c(0.225, 0.225, 0.225, 0.225), 
-  federal_health_outlays = c(0.225, 0.225, 0.225, 0.225), 
-  state_health_outlays = c(0.225, 0.225, 0.225, 0.225), 
-  social_benefits = c(0.225, 0.225, 0.225, 0.225), 
-  federal_social_benefits = c(0.225, 0.225, 0.225, 0.225), 
-  state_social_benefits = c(0.225, 0.225, 0.225, 0.225), 
-  corporate_taxes = rep(-0.0333333333333333, 12), 
-  federal_corporate_taxes = rep(-0.0333333333333333, 12), 
-  state_corporate_taxes = rep(-0.0333333333333333, 12), 
-  non_corporate_taxes = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
-  federal_non_corporate_taxes = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
-  state_non_corporate_taxes = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06), 
-  rebate_checks_arp = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005), 
-  federal_other_direct_aid_arp = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005), 
-  federal_other_vulnerable_arp = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
-  federal_aid_to_small_businesses_arp = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017),
-  federal_student_loans = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04),
-  supply_side_ira = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-  rebate_checks = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
-)
-
-# Here, we're going to have an MPC data frame that contains the correct MPCs
-# to use at each period.
-
-
-consumption_pt3 <-
-  consumption_pt2 %>%
-  # federal_ui_post_mpc
-  mutate(federal_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                       # Use one MPC for dates before 2021 Q2
-                                       mpc_lorae(x = federal_ui_minus_neutral,
-                                                 mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
-                                       # Use another MPC for dates 2021 Q2 and beyond
-                                       mpc_lorae(x = federal_ui_minus_neutral,
-                                                 mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
-  # state_ui_post_mpc
-  mutate(state_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                     # Use one MPC for dates before 2021 Q2
-                                     mpc_lorae(x = state_ui_minus_neutral,
-                                               mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
-                                     # Use another MPC for dates 2021 Q2 and beyond
-                                     mpc_lorae(x = state_ui_minus_neutral,
-                                               mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))))
-
-# Define a new dataframe to hold the results
-post_mpc_df <- lapply(names(mpc_values), function(variable_name) {
-  # apply the mpc_lorae function
-  mpc_lorae(x = minus_neutral_df[[variable_name]], 
-            mpc = mpc_values[[variable_name]]) # note that mpc_values only contains
-  # 22 of the 25 mpcs, because UI is more complicated
-  }) %>%
-  as.data.frame()
-  names(post_mpc_df) <- names(mpc_values)
-
-# Rename the columns by appending "_minus_neutral" to the end of each variable
-# name to make it consistent with the rest of the code. Eventually, we will no
-# longer do this because we will simply use the minus_neutral_df, rather than
-# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
-# refactoring to avoid unnecessary errors.
-post_mpc_renamed_df <- post_mpc_df
-colnames(post_mpc_renamed_df) <- c(glue::glue('{names(mpc_values)}_post_mpc'))
-
-consumption_pt4 <- consumption_pt3 %>%
-  # Create social_benefits_post_mpc column
-  mutate(social_benefits_post_mpc = mpc_lorae(x = social_benefits_minus_neutral,
-                                              mpc = mpc_values$social_benefits)) %>%
-  # Create federal_social_benefits_post_mpc
-  mutate(federal_social_benefits_post_mpc = mpc_lorae(x = federal_social_benefits_minus_neutral,
-                                                      mpc = mpc_values$federal_social_benefits)) %>%
-  # Create state_social_benefits_post_mpc
-  mutate(state_social_benefits_post_mpc = mpc_lorae(x = state_social_benefits_minus_neutral,
-                                                    mpc = mpc_values$state_social_benefits)) %>%
-  # rebate checks
-  mutate(rebate_checks_post_mpc = mpc_lorae(x = rebate_checks_minus_neutral,
-                                            mpc = mpc_values$rebate_checks)) %>%
-  # Create subsidies_post_mpc, federal_subsidies_post_mpc, and state_subsidies_post_mpc
-  mutate(subsidies_post_mpc = mpc_lorae(x = subsidies_minus_neutral, 
-                                        mpc = mpc_values$subsidies)) %>%
-  mutate(federal_subsidies_post_mpc = mpc_lorae(x = federal_subsidies_minus_neutral, 
-                                                mpc = mpc_values$federal_subsidies)) %>%
-  mutate(state_subsidies_post_mpc = mpc_lorae(x = state_subsidies_minus_neutral, 
-                                              mpc = mpc_values$state_subsidies)) %>%
-  # Create health_outlays_post_mpc and corresponding federal and state columns
-  mutate(health_outlays_post_mpc = mpc_lorae(x = health_outlays_minus_neutral,
-                                             mpc = mpc_values$health_outlays)) %>%
-  mutate(federal_health_outlays_post_mpc = mpc_lorae(x = federal_health_outlays_minus_neutral,
-                                                     mpc = mpc_values$federal_health_outlays)) %>%
-  mutate(state_health_outlays_post_mpc = mpc_lorae(x = state_health_outlays_minus_neutral,
-                                                   mpc = mpc_values$state_health_outlays)) %>%
-  # corporate taxes adjustments
-  mutate(corporate_taxes_post_mpc = mpc_lorae(x = corporate_taxes_minus_neutral,
-                                              mpc = mpc_values$corporate_taxes)) %>%
-  mutate(federal_corporate_taxes_post_mpc = mpc_lorae(x = federal_corporate_taxes_minus_neutral,
-                                                      mpc = mpc_values$federal_corporate_taxes)) %>%
-  mutate(state_corporate_taxes_post_mpc = mpc_lorae(x = state_corporate_taxes_minus_neutral,
-                                                    mpc = mpc_values$state_corporate_taxes)) %>%
-  # Non-corporate taxes adjustments
-  mutate(non_corporate_taxes_post_mpc = mpc_lorae(x = non_corporate_taxes_minus_neutral,
-                                                  mpc = mpc_values$non_corporate_taxes)) %>%
-  mutate(federal_non_corporate_taxes_post_mpc = mpc_lorae(x = federal_non_corporate_taxes_minus_neutral,
-                                                          mpc = mpc_values$federal_non_corporate_taxes)) %>%
-  mutate(state_non_corporate_taxes_post_mpc = mpc_lorae(x = state_non_corporate_taxes_minus_neutral,
-                                                        mpc = mpc_values$state_non_corporate_taxes)) %>%
-  # Generate rebate_checks_arp_post_mpc
-  mutate(rebate_checks_arp_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
-                                                mpc = mpc_values$rebate_checks_arp)) %>%
-  # Generate federal_other_direct_aid_arp_post_mpc
-  mutate(federal_other_direct_aid_arp_post_mpc = mpc_lorae(x = federal_other_direct_aid_arp_minus_neutral, 
-                                                           mpc = mpc_values$federal_other_direct_aid_arp)) %>%
-  # Generate federal_other_vulnerable_arp_post_mpc
-  mutate(federal_other_vulnerable_arp_post_mpc = mpc_lorae(x = federal_other_vulnerable_arp_minus_neutral, 
-                                                           mpc = mpc_values$federal_other_vulnerable_arp)) %>%
-  # Generate federal_aid_to_small_businesses_arp_post_mpc
-  mutate(federal_aid_to_small_businesses_arp_post_mpc = mpc_lorae(x = federal_aid_to_small_businesses_arp_minus_neutral, 
-                                                                  mpc = mpc_values$federal_aid_to_small_businesses_arp)) %>%
-  # Generate federal_student_loans_post_mpc
-  mutate(federal_student_loans_post_mpc = mpc_lorae(x = federal_student_loans_minus_neutral, 
-                                                    mpc = mpc_values$federal_student_loans)) %>%
-  # Generate supply_side_ira_post_mpc
-  mutate(supply_side_ira_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
-                                              mpc = mpc_values$supply_side_ira))
 # Apply column order to perfectly match old version of fim. These lines can be
 # deleted later if column order turns out to be irrelevant.
 load("TEMP_consumption_newnames.RData")
 load("TEMP_consumption_newnames_column_order.RData")
-consumption_new <- consumption_pt4 %>%
+consumption_new <- consumption_pt3 %>%
   .[, consumption_newnames_column_order]
 end <- nrow(consumption_newnames)
 # Comparing all but the first row of the two consumption data frames:
