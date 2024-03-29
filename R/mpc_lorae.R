@@ -216,15 +216,3 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
   }
   return(mpc_matrix)
 }
-
-## Example usage of generate_mpc_matrix
-mpc_series <- c("mpc01", "mpc01", "mpc02", "mpc02")
-mpc_list <- list(mpc01 = c(0.8, 0.2), mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2))
-mpc_matrix <- generate_mpc_matrix(mpc_series, mpc_list)
-
-data_matrix <- matrix(c(100, 100, 100, 100), nrow = 4, ncol = 1)
-
-# Multiply the mpc_matrix by the data_matrix to obtain the effect of the data series
-# on consumption
-mpc_matrix %*% data_matrix
-  
