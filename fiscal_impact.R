@@ -204,212 +204,89 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
                federal_student_loans = overrides$federal_student_loans_override)
 
 # Section D: Consumption -------------------------------------------------------------
- 
-# generalized minus_neutral function
-minus_neutral <- function(x, # the data in question
-                          rpgg, # real potential gdp growth,
-                          cdg # consumption deflator growth
-) {
-  output <- x - lag(x) * (1 + rpgg + cdg)
-  # This optional line will make the 1970 Q1 entries equal a numeric value, rather
-  # than NA, by assuming that the 1969 Q4 value for each data series was 0. 
-  # Prior versions of the FIM had this setting on for pandemic-era stimulus. We
-  # have chosen to remove it.
-  # output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
-  return(output)
-}
-
-# Isolating the first part of consumption, which I will not attempt
-# to refactor (for now)
-consumption_pt1 <- # Compute consumption out of transfers (apply MPC's)
+consumption <- # Compute consumption out of transfers (apply MPC's)
   projections %>%
-  get_real_levels()
-
-variable_list <- c(
-  "ui",
-  "federal_ui",
-  "state_ui",
-  "subsidies",
-  "federal_subsidies",
-  "state_subsidies",
-  "health_outlays",
-  "federal_health_outlays",
-  "state_health_outlays",
-  "social_benefits",
-  "federal_social_benefits",
-  "state_social_benefits",
-  "corporate_taxes",
-  "federal_corporate_taxes",
-  "state_corporate_taxes",
-  "non_corporate_taxes",
-  "federal_non_corporate_taxes",
-  "state_non_corporate_taxes",
-  "rebate_checks_arp",
-  "federal_other_direct_aid_arp",
-  "federal_other_vulnerable_arp",
-  "federal_aid_to_small_businesses_arp",
-  "federal_student_loans",
-  "supply_side_ira",
-  "rebate_checks"
-)
-
-# CALCULATE MINUS NEUTRALS
-minus_neutral_df <- apply(
-  # consumption_pt1 contains many columns, so we isolate to only the entries
-  # that exist in variable_list, which are those which we want to calculate 
-  # minus_neutral values for.
-                          X = consumption_pt1[variable_list], 
-                          MARGIN = 2, # apply the function to the columns (1 = rows)
-                          FUN = minus_neutral, # User-defined minus_neutral function
-                          rpgg = consumption_pt1$real_potential_gdp_growth, #arg from minus_neutral
-                          cdg = consumption_pt1$consumption_deflator_growth) %>% #arg from minus_neutral
-  as.data.frame()
-
-# Rename the columns by appending "_minus_neutral" to the end of each variable
-# name to make it consistent with the rest of the code. Eventually, we will no
-# longer do this because we will simply use the minus_neutral_df, rather than
-# the consumption_pt1, consumption_pt2, etc. data frames. But we're conservatively
-# refactoring to avoid unnecessary errors.
-minus_neutral_renamed_df <- minus_neutral_df
-colnames(minus_neutral_renamed_df) <- c(glue::glue('{variable_list}_minus_neutral'))
-
-# Append the new _minus_neutral rows to the consumption_pt1 data frame to 
-# create the consumption_pt2 data frame.
-consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
-
-## NOTE: So, one would suppose that federal_social_benefits + state_social_benefits
-## = social_benefits, but it does not. TODO: Investigate later.
-logical_vector <- consumption_pt1$federal_social_benefits + consumption_pt1$state_social_benefits == consumption_pt1$social_benefits
-any_false <- any(!logical_vector)
-print(any_false)
-# as you can see, there are false elements in this vector comparing the two values
-# try subtracting or using all.equal() function - it's possible the differences
-# are miniscule.
-
-### CALCULATE MPCS
-# Here, we're going to have an MPC data frame that contains the correct MPCs
-# to use at each period.
-mpc01 = c(0.225, 0.225, 0.225, 0.225)
-mpc02 = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08)
-# The columns will represent periods, so that a user can define MPCs in each 
-# quarter. This will allow for tweaks of MPCs over time without affecting our 
-# historic FIM estimates. It will also allow us to change the FIM if we believe
-# MPCs are different (which, for example, we did during COVID).
-test <- tibble(example1 = list(mpc01, mpc02), example2 = list(mpc02, mpc02))
-# (This will take more computing power than using a simple for loop for the
-# exceptions, but I think it will be more robust to future changes in the FIM)
-#post_mpc_df <- apply
-
-
-consumption_pt3 <-
-  consumption_pt2 %>%
+  get_real_levels() %>%
+  taxes_transfers_minus_neutral() %>%
+  calculate_mpc("social_benefits") %>% #apply the calculate_mpc function to the "social_benefits" column of projections df
+  mutate(rebate_checks_post_mpc = mpc_rebate_checks(rebate_checks_minus_neutral)) %>%
+  calculate_mpc("subsidies") %>%
+  calculate_mpc("health_outlays") %>%
+  calculate_mpc("corporate_taxes") %>%
+  calculate_mpc("non_corporate_taxes") %>% 
   
-  # Create social_benefits_post_mpc column
-  mutate(social_benefits_post_mpc = mpc_lorae(x = social_benefits_minus_neutral,
-                                              mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Create federal_social_benefits_post_mpc
-  mutate(federal_social_benefits_post_mpc = mpc_lorae(x = federal_social_benefits_minus_neutral,
-                                              mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Create state_social_benefits_post_mpc
-  mutate(state_social_benefits_post_mpc = mpc_lorae(x = state_social_benefits_minus_neutral,
-                                                      mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  
-  # rebate checks
-  mutate(rebate_checks_post_mpc = mpc_lorae(x = rebate_checks_minus_neutral,
-                                             mpc = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08))) %>%
-  # Create subsidies_post_mpc, federal_subsidies_post_pc, and state_subsidies_post_mpc
-  mutate(subsidies_post_mpc = mpc_lorae(subsidies_minus_neutral, 
-                                        mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
-  mutate(federal_subsidies_post_mpc = mpc_lorae(federal_subsidies_minus_neutral, 
-                                                mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
-  mutate(state_subsidies_post_mpc = mpc_lorae(state_subsidies_minus_neutral, 
-                                              mpc = 0.45 * c(0.11, 0.095, 0.09, 0.085, 0.075, 0.075, 0.075, 0.075, 0.06, 0.06, 0.06, 0.06, 0.02, 0.02, 0.02, 0.02))) %>%
-  # Create the health_outlays_post_mpc
-  mutate(health_outlays_post_mpc = mpc_lorae(x = health_outlays_minus_neutral,
-                                            mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Create federal_health_outlays_post_mpc
-  mutate(federal_health_outlays_post_mpc = mpc_lorae(x = federal_health_outlays_minus_neutral,
-                                                      mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Create state_social_benefits_post_mpc
-  mutate(state_health_outlays_post_mpc = mpc_lorae(x = state_health_outlays_minus_neutral,
-                                                    mpc = c(0.225, 0.225, 0.225, 0.225))) %>%
-  # Corporate taxes work the same as health outlays and social benefits.
-  # When I compare my mpc_lorae function to the original outputs, using the
-  # I get a miniscule difference, on the order of 10*(-15), which is the result 
-  # of computer rounding - not any theoretical / mathematical differences.
-  mutate(corporate_taxes_post_mpc = mpc_lorae(x = corporate_taxes_minus_neutral,
-                                             mpc = rep(-0.0333333333333333, 12))) %>%
-  mutate(federal_corporate_taxes_post_mpc = mpc_lorae(x = federal_corporate_taxes_minus_neutral,
-                                                     mpc = rep(-0.0333333333333333, 12))) %>%
-  mutate(state_corporate_taxes_post_mpc = mpc_lorae(x = state_corporate_taxes_minus_neutral,
-                                                   mpc = rep(-0.0333333333333333, 12))) %>%
-  # Non-corporate taxes. As before, tiny difference that's near 0
-  mutate(non_corporate_taxes_post_mpc = mpc_lorae(x = non_corporate_taxes_minus_neutral,
-                                              mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
-  mutate(federal_non_corporate_taxes_post_mpc = mpc_lorae(x = federal_non_corporate_taxes_minus_neutral,
-                                                      mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
-  mutate(state_non_corporate_taxes_post_mpc = mpc_lorae(x = state_non_corporate_taxes_minus_neutral,
-                                                    mpc = c(-0.12, -0.12, -0.06, -0.06, -0.06, -0.06, -0.06, -0.06))) %>%
   # Calculate pandemic-adjusted MPC values for federal and state UI benefits
-  # federal_ui_post_mpc
-  mutate(federal_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                      # Use one MPC for dates before 2021 Q2
-                                      mpc_lorae(x = federal_ui_minus_neutral,
-                                                mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
-                                      # Use another MPC for dates 2021 Q2 and beyond
-                                      mpc_lorae(x = federal_ui_minus_neutral,
-                                                mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
-  # state_ui_post_mpc
-  mutate(state_ui_post_mpc = if_else(date < yearquarter("2021 Q2"),
-                                       # Use one MPC for dates before 2021 Q2
-                                       mpc_lorae(x = state_ui_minus_neutral,
-                                                 mpc = 0.9* c(0.35, 0.35, 0.1, 0.1, 0.05, 0.05)),
-                                       # Use another MPC for dates 2021 Q2 and beyond
-                                       mpc_lorae(x = state_ui_minus_neutral,
-                                                 mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04)))) %>%
-  # generate rebate_checks_arp_post_mpc
-  mutate(rebate_checks_arp_post_mpc = mpc_lorae(x = rebate_checks_arp_minus_neutral, 
-                                                              mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
-  # generate federal_other_direct_aid_arp_post_mpc
-  mutate(federal_other_direct_aid_arp_post_mpc = mpc_lorae(x = federal_other_direct_aid_arp_minus_neutral, 
-                                                              mpc = c(0.14, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.03, 0.03, 0.03, 0.025, 0.02, 0.015, 0.01, 0.005))) %>%
-  # generate federal_other_vulnerable_arp_post_mpc
-  mutate(federal_other_vulnerable_arp_post_mpc = mpc_lorae(x = federal_other_vulnerable_arp_minus_neutral, 
-                                                                         mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
-  # generate federal_aid_to_small_businesses_arp_post_mpc
-  mutate(federal_aid_to_small_businesses_arp_post_mpc = mpc_lorae(x = federal_aid_to_small_businesses_arp_minus_neutral, 
-                                                                         mpc = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017))) %>%
-  # generate federal_student_loans_post_mpc
-  mutate(federal_student_loans_post_mpc = mpc_lorae(x = federal_student_loans_minus_neutral, 
-                                                                                mpc = c(0.2, 0.17, 0.16, 0.15, 0.09, 0.05, 0.05, 0.04))) %>%
-  # generate supply_side_ira_post_mpc
-  mutate(supply_side_ira_post_mpc = mpc_lorae(x = supply_side_ira_minus_neutral, 
-                                                                  mpc = c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
+  mutate(across(c(federal_ui_minus_neutral, state_ui_minus_neutral),
+                .fns = ~ if_else(date < yearquarter("2021 Q2"),
+                                 # Use MPC function for dates before 2021 Q2
+                                 mpc_ui(.x),
+                                 # Use MPC_ARP function for dates on or after 2021 Q2
+                                 mpc_ui_arp(.x)),
+                .names = '{.col}_post_mpc'))  %>% 
+  
+  #doing the same as above but for new variables 
+  mutate(across(
+    .cols = all_of(
+      c(
+        "rebate_checks_arp",
+        "federal_other_direct_aid_arp",
+        "federal_other_vulnerable_arp",
+        # "federal_ui_arp",
+        #"state_ui_arp",
+        "federal_aid_to_small_businesses_arp",
+        "federal_student_loans",
+        "supply_side_ira"
+      )
+    ),
+    #Getting the level minus neutral
+    .fns = ~ .x - dplyr::lag(.x, default = 0) * (1 + real_potential_gdp_growth + consumption_deflator_growth),
+    .names = "{.col}_minus_neutral"
+  )) %>% 
+  mutate(
+    across(
+      .cols = any_of(
+        c("federal_ui_arp", "state_ui_arp", "federal_other_vulnerable_arp") %>% paste0("_minus_neutral")
+      ),
+      #getting the post mpc levels for the ARP variables 
+      .fns = ~ mpc_vulnerable_arp(.x),
+      .names = "{.col}_post_mpc"
+    ),
+    across(
+      .cols = all_of(
+        c("rebate_checks_arp", "federal_other_direct_aid_arp") %>% paste0("_minus_neutral")
+      ),
+      #same as above, applying a different MPC function to these 
+      .fns = ~ mpc_direct_aid_arp(.),
+      .names = "{.col}_post_mpc"
+    ),
+    across(
+      .cols = all_of(
+        c("federal_student_loans") %>% paste0("_minus_neutral")
+      ),
+      #same as above, applying a different MPC function to these 
+      .fns = ~ mpc_student_loans(.),
+      .names = "{.col}_post_mpc"
+    ),
+    across(
+      .cols = any_of(
+        c("supply_side_ira") %>% paste0("_minus_neutral")
+      ),
+      #getting the post mpc levels for the ARP variables
+      .fns = ~ mpc_supply_side_ira(.x),
+      .names = "{.col}_post_mpc"
+    ),
+    #same as above, applying a different MPC function to this
+    federal_aid_to_small_businesses_arp_minus_neutral_post_mpc = 
+      mpc_small_businesses_arp ((federal_aid_to_small_businesses_arp_minus_neutral))
+  ) %>%
+  rename_with(~ str_replace(.x, "minus_neutral_post_mpc", "post_mpc"))
 
-# Apply column order to perfectly match old version of fim. These lines can be
-# deleted later if column order turns out to be irrelevant.
-load("TEMP_consumption_newnames.RData")
-load("TEMP_consumption_newnames_column_order.RData")
-consumption_new <- consumption_pt3 %>%
-  .[, consumption_newnames_column_order]
-end <- nrow(consumption_newnames)
-# Comparing all but the first row of the two consumption data frames:
-# consumption_newnames is the original FIM data frame from main branch with the
-# colnames edited slightly to match this standardized version; consumption_new
-# is the new df generated here. Their first rows do not match because of the
-# _minus_neutral function, which used to have a defauly lag = 0 for some pandemic-
-# era programs. Lorae has since standardized this, causing the slight difference
-# in NA entries. Thus, comparing the second entry onward is a more appropriate
-# check.
-all.equal(consumption_newnames[2:end,], consumption_new[2:end,])
-
-# Assign result to the consumption df, so rest of code runs smoothly.
-# consumption_new is just a temporary feature to compare between new and old fims
-consumption <- consumption_new
+consumption_newnames_column_order <- colnames(consumption)
+save(consumption_newnames_column_order, file = "TEMP_consumption_newnames_column_order.RData")
 
 # Section E: Contribution ------------------------------------------------------------
 
-contributions_pt1 <- # Calculate contributions
+contributions <- # Calculate contributions
   consumption %>%
   purchases_contributions() %>% 
   
@@ -419,12 +296,10 @@ contributions_pt1 <- # Calculate contributions
                 ~ 400 * .x / lag(gdp),
                 .names = "{.col}_contribution" 
   )) %>%
-  # TODO: Standardize this section so that retroactively renaming post_mpc_contribution
-  # columns to _contribution columns is unnecessary
+  rename_with(~ str_replace(.x, "_minus_neutral_post_mpc_contribution", "_contribution")) %>% 
   rename_with(~ str_replace(.x, "post_mpc_contribution", "contribution")) %>% 
-  sum_transfers_contributions() #%>% 
-
-contributions_pt2 <- contributions_pt1 %>%
+  sum_transfers_contributions() %>% 
+  
   #Define FIM variables for grants and purchases
   mutate(
     grants_contribution = consumption_grants_contribution + investment_grants_contribution,
@@ -496,15 +371,6 @@ contributions_pt2 <- contributions_pt1 %>%
       federal_corporate_taxes_real + state_corporate_taxes_real
   ) %>% 
   mutate( subsidies_real = federal_subsidies_real + state_subsidies_real)
-
-load("TEMP_contributions.RData")
-contributions_new <- contributions_pt2 #%>%
-#   .[, consumption_column_order]
-all.equal(contributions, contributions_new)
-
-
-# for later use in this code
-contributions <- contributions_new
 
 #openxlsx::write.xlsx: This function writes an R data object to an .xlsx file (an Excel spreadsheet).
 #file = glue('results/{month_year}/fim-{month_year}.xlsx'): This specifies the file path and name of the .xlsx file that the data will be written to. The glue() function is being used to dynamically create the file path and name using the month_year variable.
