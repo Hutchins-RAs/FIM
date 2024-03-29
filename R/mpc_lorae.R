@@ -216,3 +216,50 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
   }
   return(mpc_matrix)
 }
+
+# TODO: add mpc examples in documentation for TAXES, not just for DISBURSEMENTS.
+#' MPC Matrix
+#'
+#' This function generates a matrix representing one simple marginal propensity 
+#' to consume (MPC) regime applied over a series of perids. It constructs one 
+#' lower triangular matrix where each row applies an MPC regime to an input data
+#' vector.
+#'
+#' @param mpc_vector A vector of a marginal propensity to consume. For example,
+#' if consumers spend 80% of disbursed funds in the period it was disbursed and
+#' 20% of it in the next period, then the mpc_vector representing this pattern is 
+#' mpc_vector = (0.8, 0.2). If consumers don't spend any of the money in the period
+#' it was disbursed but then consume half of it the following period and the next 
+#' half in the third period, then mpc_vector = c(0, 0.5, 0.5)
+#' @param dim The dimension of the (square) output matrix, which should equal the
+#' number of periods in the data series to which the mpc_matrix will eventually 
+#' be applied.
+#' @return A square matrix of dimensions `dim` where each row represents the MPC 
+#'         effects for a specific period, allowing for the application
+#'         of these MPCs through matrix multiplication with a data series vector.
+#' @examples
+#' here
+#' @export
+mpc_matrix <- function(mpc_vector, dim) {
+  # Produce a vector v by appending zeroes to mpc_vector such that the total
+  # length of v is equal to (dim + 1).
+  v <- c(mpc_vector, rep(0, times = dim - length(mpc_vector)+1)) 
+  # Populate a matrix, column-wise, that has a width of (dim+1) and a length of 
+  # (dim) using vector v. This deposits desired values in the lower triangle.
+  M <- matrix(v, nrow=dim,ncol=dim+1, byrow = FALSE)
+  # Keep all but the last column to produce a square matrix.
+  M <- M[,1:dim]
+  # Overwrite any entries in the upper triangle with zeroes to produce a lower 
+  # triangular matrix
+  M[upper.tri(M)] <- 0
+  return(M)
+}
+
+# Make a new MPC matrix
+# Proof of concept
+# TODO: test edge cases, such as if length(x_base) <= dim, etc.
+dim <- 5
+x_base <- c(0.8, 0.2) # the base MPC vector
+x <- c(x_base, rep(0, times = dim - length(x_base)+1)) # dynamically adjust the length of x # so that x_base is followed by sufficient 0s so that the MPC matrix is fully populated #with 0s when the MPCs are not in effect (on the lower left corner)
+M1<-(matrix(x,nrow=dim,ncol=dim+1, byrow = FALSE))[,1:dim]
+M1
