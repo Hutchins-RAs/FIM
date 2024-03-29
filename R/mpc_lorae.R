@@ -119,6 +119,32 @@ mps <- function(x, mps){
 # mpc_matrix %*% data_matrix
 
 
+#' Generate MPC Matrix
+#'
+#' This function generates a matrix representing the marginal propensity to consume (MPC)
+#' regimes applied over a series of periods. It constructs a matrix where each row 
+#' corresponds to a period's MPC regime, allowing for the application of different MPCs 
+#' across different periods. The function facilitates dynamic MPC calculations over time,
+#' supporting regime switches and varying consumption patterns.
+#'
+#' @param mpc_series An atomic vector of character strings, each representing the MPC 
+#'        regime applied to a corresponding period in the data series. The length of 
+#'        `mpc_series` must match the length of the data series it is applied to.
+#' @param mpc_list A list mapping MPC regime names (as used in `mpc_series`) to their 
+#'        corresponding MPC vectors. Each entry in `mpc_list` should be a numeric vector 
+#'        representing the portion of an impulse spent across subsequent periods.
+#' @return A square matrix of dimensions equal to the length of `mpc_series`, where each 
+#'         row represents the MPC effects for a specific period, allowing for the application
+#'         of these MPCs through matrix multiplication with a data series vector.
+#' @examples
+#' mpc_series <- c("mpc01", "mpc01", "mpc02", "mpc02")
+#' mpc_list <- list(mpc01 = c(0.8, 0.2), mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2))
+#' mpc_matrix <- generate_mpc_matrix(mpc_series, mpc_list)
+#' data_matrix <- matrix(c(100, 100, 100, 100), nrow = 4, ncol = 1)
+#' # Apply the MPC matrix to the data matrix to calculate the effect on consumption
+#' mpc_matrix %*% data_matrix
+#'
+#' @export
 generate_mpc_matrix <- function(mpc_series, mpc_list) {
   ## Notes on arguments:
   # mpc_series is the time series of mpc regimes applied to the data series. 
