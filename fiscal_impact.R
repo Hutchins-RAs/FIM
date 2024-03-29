@@ -256,6 +256,8 @@ minus_neutral_df <- apply(
   as.data.frame()
 
 # Section D.2: Post MPC -------------------------------------------------------------
+# TODO: put vectorized operations here instead to cut computing time. Separate
+# matrix multiplication step from matrix production step.
 
 # Initialize a list to temporarily hold the data before converting it to a dataframe
 post_mpc_list <- list()
