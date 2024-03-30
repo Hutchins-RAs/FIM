@@ -241,6 +241,26 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
 #' here
 #' @export
 mpc_matrix <- function(mpc_vector, dim) {
+  ## Input argument pre-checks
+  # Check if mpc_vector is a numeric vector
+  if (!is.numeric(mpc_vector)) {
+    stop("mpc_vector must be a numeric vector.")
+  }
+  # Check if dim is a single positive integer
+  if (!is.numeric(dim) || length(dim) != 1 || dim <= 0 || dim %% 1 != 0) {
+    stop("dim must be a single positive integer.")
+  }
+  
+  # Check if the length of mpc_vector exceeds dim
+  if (length(mpc_vector) > dim) {
+    n <- length(mpc_vector) - dim
+    warning(glue::glue("The length of mpc_vector exceeds the specified dim by {n}. ",
+                       "The last {n} elements of mpc_vector do not appear in the",
+                       "output matrix."))
+    mpc_vector <- head(mpc_vector, -n) # Adjust mpc_vector to fit within dim
+  }
+  
+  ## "Meat" of the function
   # Produce a vector v by appending zeroes to mpc_vector such that the total
   # length of v is equal to (dim + 1).
   v <- c(mpc_vector, rep(0, times = dim - length(mpc_vector)+1)) 
