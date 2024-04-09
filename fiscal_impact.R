@@ -65,11 +65,12 @@ if(update_in_progress == TRUE){
 
 #Section B: Wrangle data ------------------------------------------------------------
 
+# Read in historical overrides from data/forecast.xlsx
 # Since BEA put all CARES act grants to S&L in Q2 2020 we need to
 # override the historical data and spread it out based on our best guess
 # for when the money was spent.
-overrides <- readxl::read_xlsx('data/forecast.xlsx',
-                               sheet = 'historical overrides') %>% # Read in overrides
+historical_overrides <- readxl::read_xlsx('data/forecast.xlsx',
+                               sheet = 'historical_overrides') %>% # Read in historical_overrides
   select(-name) %>% # Remove longer name since we don't need it
   pivot_longer(-variable,
                names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
@@ -77,11 +78,11 @@ overrides <- readxl::read_xlsx('data/forecast.xlsx',
               values_from = 'value') %>% 
   mutate(date = yearquarter(date))
 
-current_quarter <- overrides %>% slice_max(date) %>% pull(date) # Save current quarter for later
+current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) # Save current quarter for later
 
 ##
-deflators_override <- readxl::read_xlsx('data/forecast.xlsx',
-                                        sheet = 'deflators_override') %>% # Read in overrides for deflators
+deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
+                                        sheet = 'deflator_overrides') %>% # Read in overrides for deflators
   select(-name) %>% # Remove longer name since we don't need it
   pivot_longer(-variable,
                names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
@@ -140,18 +141,18 @@ usna <-
   
   #Overriding historical consumption and investment grant 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               consumption_grants = overrides$consumption_grants_override) %>% 
+               consumption_grants = historical_overrides$consumption_grants_override) %>% 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
-               investment_grants = overrides$investment_grants_override) %>%
+               investment_grants = historical_overrides$investment_grants_override) %>%
   
   #For the full period of the forecast (8 quarters out), replace CBO deflators with the ones from
-  #the deflators override sheet
-  mutate_where(date>current_quarter & date<=max(deflators_override$date), 
-               consumption_deflator_growth = deflators_override$consumption_deflator_growth_override,
-               federal_purchases_deflator_growth =deflators_override$federal_purchases_deflator_growth_override,
-               state_purchases_deflator_growth = deflators_override$state_purchases_deflator_growth_override,
-               consumption_grants_deflator_growth = deflators_override$consumption_grants_deflator_growth_override,
-               investment_grants_deflator_growth = deflators_override$investment_grants_deflator_growth_override)
+  #the deflator overrides sheet
+  mutate_where(date>current_quarter & date<=max(deflator_overrides$date), 
+               consumption_deflator_growth = deflator_overrides$consumption_deflator_growth_override,
+               federal_purchases_deflator_growth =deflator_overrides$federal_purchases_deflator_growth_override,
+               state_purchases_deflator_growth = deflator_overrides$state_purchases_deflator_growth_override,
+               consumption_grants_deflator_growth = deflator_overrides$consumption_grants_deflator_growth_override,
+               investment_grants_deflator_growth = deflator_overrides$investment_grants_deflator_growth_override)
 
 
 # Section C: Forecast ----------------------------------------------------------------
@@ -181,27 +182,27 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
     state_health_outlays = medicaid - medicaid_grants
   ) %>% 
   
-  #apply overrides for ARP 
+  #apply historical_overrides for ARP 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               federal_other_direct_aid_arp = overrides$federal_other_direct_aid_arp_override,
-               federal_other_vulnerable_arp = overrides$federal_other_vulnerable_arp_override,
-               federal_social_benefits = overrides$federal_social_benefits_override,
-               federal_aid_to_small_businesses_arp = overrides$federal_aid_to_small_businesses_arp_override) %>% 
+               federal_other_direct_aid_arp = historical_overrides$federal_other_direct_aid_arp_override,
+               federal_other_vulnerable_arp = historical_overrides$federal_other_vulnerable_arp_override,
+               federal_social_benefits = historical_overrides$federal_social_benefits_override,
+               federal_aid_to_small_businesses_arp = historical_overrides$federal_aid_to_small_businesses_arp_override) %>% 
   mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
-               federal_corporate_taxes = tail(overrides$federal_corporate_taxes_override, n = 1),
-               state_corporate_taxes = tail(overrides$state_corporate_taxes_override, n = 1)) %>% 
+               federal_corporate_taxes = tail(historical_overrides$federal_corporate_taxes_override, n = 1),
+               state_corporate_taxes = tail(historical_overrides$state_corporate_taxes_override, n = 1)) %>% 
   mutate_where(date == yearquarter("2021 Q1"),
                federal_social_benefits = federal_social_benefits + 203) %>% 
   # FIXME: Figure out why wrong number was pulled from Haver (like 400)
   mutate_where(date == yearquarter('2021 Q4'),
                federal_ui = 11, 
                state_ui = ui - federal_ui) %>%
-  #apply overrides for Supply Side IRA
+  #apply historical_overrides for Supply Side IRA
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               supply_side_ira = overrides$supply_side_ira_override) %>%
-  #apply overrides for Federal Student Loans
+               supply_side_ira = historical_overrides$supply_side_ira_override) %>%
+  #apply historical_overrides for Federal Student Loans
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               federal_student_loans = overrides$federal_student_loans_override)
+               federal_student_loans = historical_overrides$federal_student_loans_override)
 
 # Section C.1: Data validation -------------------------------------------------------
 ## TODO: One would suppose that federal_social_benefits + state_social_benefits
