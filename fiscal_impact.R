@@ -101,13 +101,28 @@ fim::national_accounts
 # Step 2: Get the projections. These will be appended to the national accounts.
 # this get_cbo_projections() function also requires some serious refactoring.
 projections <- fim::projections %>% 
-  cola_adjustment() %>%
+  # First we're going to do the section that was originally called 
+  # cola_adjustment()
+  # This subsection of cola_adjustment() used to be called `get_cola_rate`
+  mutate(cpiu_g = fim::q_a(cpiu) / 100,
+         cola_rate = if_else(lubridate::quarter(date) == 1,
+                             lag(cpiu_g, 2),
+                             NA)) %>%
+  tidyr::fill(cola_rate) %>%
+  # this subsection of cola_adjustment() used to be called 
+  # `smooth_transfers_net_health_ui`
+  mutate(gftfp_unadj = gftfp,
+         health_ui = TTR::SMA(yptmd + yptmr + yptu, n = 4),
+         smooth_gftfp_minus_health_ui = TTR::SMA((gftfp - health_ui) * (1 - cola_rate), n =4),
+         gftfp = smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui) %>%
+  # Next phases of the original process..
   smooth_budget_series() %>%
   implicit_price_deflators() %>%
   growth_rates() %>%
   alternative_tax_scenario() %>%
   format_tsibble() %>% 
   select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, unemployment_rate)
+
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
 # Step 3: Combine these two data frames.

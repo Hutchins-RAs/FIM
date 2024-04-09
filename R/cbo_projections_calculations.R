@@ -1,35 +1,4 @@
 
-#' Title
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cola_adjustment <- function(df){
-
-  get_cola_rate <- function(df){
-    df %>%
-      mutate(cpiu_g = fim::q_a(cpiu) / 100,
-             cola_rate = if_else(lubridate::quarter(date) == 1,
-                                 lag(cpiu_g, 2),
-                                 NA)) %>%
-      tidyr::fill(cola_rate)
-  }
-  smooth_transfers_net_health_ui <- function(df){
-    df %>%
-      mutate(gftfp_unadj = gftfp,
-             health_ui = TTR::SMA(yptmd + yptmr + yptu, n = 4),
-             smooth_gftfp_minus_health_ui = TTR::SMA((gftfp - health_ui) * (1 - cola_rate), n =4),
-             gftfp = smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui)
-  }
-  df %>%
-    get_cola_rate() %>%
-    smooth_transfers_net_health_ui()
-  
-}
-
 
 #' Alternative tax scenario
 #'
