@@ -1,17 +1,5 @@
 
 
-
-get_cbo_projections <- function(){
-  fim::projections %>% 
-    cola_adjustment() %>%
-    smooth_budget_series() %>%
-    implicit_price_deflators() %>%
-    growth_rates() %>%
-    alternative_tax_scenario() %>%
-    format_tsibble() %>% 
-    select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, unemployment_rate)
-}
-
 safe_quarter  <- function(df){
   df %>% 
     as_tibble() %>% 

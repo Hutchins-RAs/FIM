@@ -97,9 +97,17 @@ current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
 #### Section B.1: Read in raw data ---------------------------------------------
 # Step 1: Get the national accounts. These are part of the FIM package. These 
 # contain data that (I think?) is up to the present day, or something.
-national_accounts
+fim::national_accounts
 # Step 2: Get the projections. These will be appended to the national accounts.
-projections <- get_cbo_projections()
+# this get_cbo_projections() function also requires some serious refactoring.
+projections <- fim::projections %>% 
+  cola_adjustment() %>%
+  smooth_budget_series() %>%
+  implicit_price_deflators() %>%
+  growth_rates() %>%
+  alternative_tax_scenario() %>%
+  format_tsibble() %>% 
+  select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, unemployment_rate)
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
 # Step 3: Combine these two data frames.
