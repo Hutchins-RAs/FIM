@@ -273,13 +273,13 @@ for (series in data_series) {
   # but it reinforces the point that this is matrix multiplication
   data_vector <- matrix(minus_neutral_df[[{series}]], ncol = 1)
   # ensuring proper NA handling by converting to zeroes
-  # TODO: Make the product of an NA and a value equal NA in the matrix to prevent
-  # undetected bugs arising from NA handling
+  # TODO: Make only the first value of NA equal to 0. Keep the other NAs as NA
   data_vector[is.na(data_vector)] <- 0
   post_mpc_series <- mpc_matrix %*% data_vector
   
-  # Add the result to the list, using the series as the list name
-  post_mpc_list[[series]] <- as.vector(post_mpc_series) # Convert matrix result to vector if necessary
+  # Add the result to the list, using the series as the list name. Convert 
+  # matrix result to vector if necessary.
+  post_mpc_list[[series]] <- as.vector(post_mpc_series) 
 }
 # Convert the list of vectors into a dataframe
 post_mpc_df <- as.data.frame(post_mpc_list)
