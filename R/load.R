@@ -24,21 +24,6 @@ undo_safe_quarter <- function(df){
     as_tsibble(index = 'date')
 }
 
-#' Title
-#'
-#' @return
-#' @export
-#'
-#' @examples
-read_data <- function(){
-
-  projections <- get_cbo_projections()
-  
-  fim::national_accounts %>%
-    coalesce_join(projections, by = 'date') %>% 
-    as_tsibble(key = id, index = date)
-}
-
 
 
 #' Load contributions used in figures

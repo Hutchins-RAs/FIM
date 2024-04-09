@@ -78,9 +78,7 @@ historical_overrides <- readxl::read_xlsx('data/forecast.xlsx',
               values_from = 'value') %>% 
   mutate(date = yearquarter(date))
 
-current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) # Save current quarter for later
-
-##
+# Read in deflator overrides from data/forecast.xlsx
 deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
                                         sheet = 'deflator_overrides') %>% # Read in overrides for deflators
   select(-name) %>% # Remove longer name since we don't need it
@@ -90,9 +88,29 @@ deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
               values_from = 'value') %>% 
   mutate(date = yearquarter(date))
 
-##
-usna <-
-  read_data() %>% # Load raw BEA data from Haver and CBO projections
+
+# TODO: This current quarter should be calculated at the top, for the entirety
+# of the FIM, not buried down here.
+# Save current quarter for later
+current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) 
+
+#### Section B.1: Read in raw data ---------------------------------------------
+# Step 1: Get the national accounts. These are part of the FIM package. These 
+# contain data that (I think?) is up to the present day, or something.
+national_accounts
+# Step 2: Get the projections. These will be appended to the national accounts.
+projections <- get_cbo_projections()
+# TODO: coalesce_join() is a crazy complex function for what looks to be simple
+# (append some cols to a data frame). Will have to refactor this function.
+# Step 3: Combine these two data frames.
+usna1 <- coalesce_join(x = national_accounts,
+              y = projections,
+              by = 'date') %>%
+  as_tsibble(key = id, index = date)
+
+
+#### Section B.2: to be refactored
+usna2 <- usna1 %>%
   gdp_cbo_growth_rate()%>% #grows current data according to cbo growth rate: gdp and gdph 
   define_variables() %>%  # Rename Haver codes for clarity
   as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
@@ -154,6 +172,8 @@ usna <-
                consumption_grants_deflator_growth = deflator_overrides$consumption_grants_deflator_growth_override,
                investment_grants_deflator_growth = deflator_overrides$investment_grants_deflator_growth_override)
 
+# Redefine usna to be integrated back into the FIM
+usna <- usna2
 
 # Section C: Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values from the data folder
