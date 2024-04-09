@@ -11,7 +11,7 @@
 #
 # 
 # TODO: make the two period variables below less brittle
-n_periods <- 255 #Total number of periods in the data
+n_periods <- n_periods #Total number of periods in the data
 period_21q2 <- 206 # The index number of the 2021 Q2 period
 mpc_series <- list(
   #ui = rep("mpc00", times = n_periods),

@@ -213,9 +213,10 @@ cbind(projections$social_benefits,
       projections$state_social_benefits)
 
 # Section D: Consumption -------------------------------------------------------------
-# Generate the data frame which maps mpcs to specific FIM data time series (subsidies,
-# taxes, transfers, etc).
+# Generate the data frame which maps mpcs to specific FIM data time series 
+# (subsidies, taxes, transfers, etc).
 # Running this module creates variables `mpc_series` and `mpc_list`
+n_periods <- nrow(projections) #total number of periods in the data
 source("src/map_mpc_time_series.R")
 
 # Initialize a list of unique data series to which minus neutral and mpc will be applied to.
