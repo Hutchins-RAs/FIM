@@ -68,31 +68,6 @@ mps <- function(x, mps){
 }
   
 
-### roll_mpc: an mpc function that accommodates regime switches
-# Sample input below
-# roll_mpc(x = c(100, 100, 100, 100),
-#          mpc_series = c("mpc01", "mpc01", "mpc02", "mpc02"),
-#          mpc_list = list(
-#            mpc01 = c(0.8, 0.2),
-#            mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2),
-#            mpc03 = c(0.5, 0.5)
-#          ))
-  
-# FUNCTIONAL CHECKS SAVED FOR LATER
-  # #  x is the time series of disbursements. Must be atomic vector and equal
-  # # length to mpc_series
-  # ## Input argument pre-checks
-  # # Check if x is a vector
-  # if (!is.atomic(x)) {
-  #   stop("x must be an atomic vector.")
-  # }
-  # # Check if x and mpc_series are the same length
-  # if (length(x) != length(mpc_series)) {
-  #   stop("x and mpc_series must have equal lengths.")
-  # }
-
-
-
 # ##  Proof of concept: MPC regimes as matrices
 # # Here's an example of applying an mpc of (0.8, 0.2) to a data vector of 
 # # c(100, 100, 100, 100), which represents a $100billion quarterly disbursement
@@ -118,104 +93,6 @@ mps <- function(x, mps){
 # data_matrix <- matrix(c(100, 100, 100, 100, 100, 0, 0, 0), nrow = 4, ncol = 2)
 # mpc_matrix %*% data_matrix
 
-
-#' Generate MPC Matrix
-#'
-#' This function generates a matrix representing the marginal propensity to consume (MPC)
-#' regimes applied over a series of periods. It constructs a matrix where each row 
-#' corresponds to a period's MPC regime, allowing for the application of different MPCs 
-#' across different periods. The function facilitates dynamic MPC calculations over time,
-#' supporting regime switches and varying consumption patterns.
-#'
-#' @param mpc_series An atomic vector of character strings, each representing the MPC 
-#'        regime applied to a corresponding period in the data series. The length of 
-#'        `mpc_series` must match the length of the data series it is applied to.
-#' @param mpc_list A list mapping MPC regime names (as used in `mpc_series`) to their 
-#'        corresponding MPC vectors. Each entry in `mpc_list` should be a numeric vector 
-#'        representing the portion of an impulse spent across subsequent periods.
-#' @return A square matrix of dimensions equal to the length of `mpc_series`, where each 
-#'         row represents the MPC effects for a specific period, allowing for the application
-#'         of these MPCs through matrix multiplication with a data series vector.
-#' @examples
-#' mpc_series <- c("mpc01", "mpc01", "mpc02", "mpc02")
-#' mpc_list <- list(mpc01 = c(0.8, 0.2), mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2))
-#' mpc_matrix <- generate_mpc_matrix(mpc_series, mpc_list)
-#' data_matrix <- matrix(c(100, 100, 100, 100), nrow = 4, ncol = 1)
-#' # Apply the MPC matrix to the data matrix to calculate the effect on consumption
-#' mpc_matrix %*% data_matrix
-#'
-#' @export
-generate_mpc_matrix <- function(mpc_series, mpc_list) {
-  ## Notes on arguments:
-  # mpc_series is the time series of mpc regimes applied to the data series. 
-  # mpcs are referred to as character strings. For example, if mpc regime "mpc01"
-  # is applied to the first 2 quarters and mpc regime "mpc02" is applied to the 
-  # second two quarter of a four-period data series, then 
-  # mpc_series = c("mpc01", "mpc01", "mpc02", "mpc02")
-  # Note: the length of mpc_series must match the length of the data series to which
-  # it is applied - otherwise, the output mpc_matrix from this function will not
-  # be able to multiply with the original data series.
-  #
-  # mpc_list is the "dictionary" or "key" connecting what mpc vector each mpc
-  # name refers to. This list must include all entries in mpc_series, otherwise,
-  # the function will stop and present an error. So, for example, if 
-  # mpc01 = c(0.8, 0.2) and mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2), then 
-  # mpc_list = list(mpc01 = c(0.8, 0.2), 
-  #                 mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2))
-  # Please note that any "extra" mpcs not named in mpc_series (e.g. "mpc03") are
-  # simply ignored and will not cause errors.
-  #
-  ## Input argument pre-checks
-  # TODO: add a check to see if vector entries in mpc_list are of length 1 or greater
-  # Check if if mpc_series is an atomic vector
-  if (!is.atomic(mpc_series)) {
-    stop("mpc_series must be an atomic vector.")
-  }
-  # Check if mpc_list is a list
-  if (!is.list(mpc_list)) {
-    stop("mpc_list must be a list.")
-  }
-  # Check if all mpc names in mpc_series are also in mpc_list
-  if (!all(mpc_series %in% names(mpc_list))) {
-    stop("mpc_series contains entries not listed in mpc_list.")
-  }
-  
-  ## "Meat" of the function
-  # For more intuition on why the matrix formed by this function represents mpcs.
-  # please read comments preceding mpc_lorae() in `mpc_lorae.R`.
-  # TODO: write up an R Markdown notebook or some other documentation explaining
-  # how mpc_matrices work and how mpcs work in the FIM more generally.
-  #
-  # Initialize an empty matrix of appropriate dimension. This matrix will eventually
-  # contain the function output
-  dim <- length(mpc_series)
-  mpc_matrix <- matrix(0, nrow = dim, ncol = dim) # initialized matrix
-  
-  # Iterate through each period's MPC regime
-  for (i in seq_len(dim)) {
-    mpc_name <- mpc_series[i] # get the name of the mpc vector used on this data point
-    # v1 is the mpc vector corresponding with the i-th element of mpc_series, 
-    # but written in reverse order. It comprises the nonzero portion of any mpc
-    # matrix row, and its contents are truncated to fit the dimensions of the matrix
-    v1 <- rev(mpc_list[[mpc_name]]) # extract the mpc vector and reverse it
-    n <- length(v1) # length of v1 vector is crucial for following logic
-    if (i < n) { 
-      v1 <- tail(v1, i) # keep only the last i elements of v1
-      n <- length(v1) # redefine the length of v1 to match corrected length
-    }
-    
-    # Use v1, i, and n to overwrite matrix entries (which were initialized as 0).
-    # Each row corresponds to a separate mpc period, so the row being overwritten
-    # is indexed by i. The diagonal entry is changed by the mpc vector, as are the
-    # (n-1) entries to the left of each diagonal entry.
-    row_index <- i
-    col_start_index <- i - n + 1
-    col_end_index <- i
-    # overwrite certain indices of the matrix with the v1 vector
-    mpc_matrix[row_index, col_start_index:col_end_index] <- v1
-  }
-  return(mpc_matrix)
-}
 
 # TODO: add mpc examples in documentation for TAXES, not just for DISBURSEMENTS.
 #' Simple MPC Matrix
