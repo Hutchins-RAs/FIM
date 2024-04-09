@@ -218,12 +218,11 @@ generate_mpc_matrix <- function(mpc_series, mpc_list) {
 }
 
 # TODO: add mpc examples in documentation for TAXES, not just for DISBURSEMENTS.
-#' MPC Matrix
+#' Simple MPC Matrix
 #'
 #' This function generates a matrix representing one simple marginal propensity 
-#' to consume (MPC) regime applied over a series of perids. It constructs one 
-#' lower triangular matrix where each row applies an MPC regime to an input data
-#' vector.
+#' to consume (MPC) regime applied over a series of `dim` periods. It constructs one 
+#' lower triangular matrix.
 #'
 #' @param mpc_vector A vector of a marginal propensity to consume. For example,
 #' if consumers spend 80% of disbursed funds in the period it was disbursed and
@@ -275,11 +274,71 @@ mpc_matrix <- function(mpc_vector, dim) {
   return(M)
 }
 
-# Make a new MPC matrix
-# Proof of concept
-# TODO: test edge cases, such as if length(x_base) <= dim, etc.
-dim <- 5
-x_base <- c(0.8, 0.2) # the base MPC vector
-x <- c(x_base, rep(0, times = dim - length(x_base)+1)) # dynamically adjust the length of x # so that x_base is followed by sufficient 0s so that the MPC matrix is fully populated #with 0s when the MPCs are not in effect (on the lower left corner)
-M1<-(matrix(x,nrow=dim,ncol=dim+1, byrow = FALSE))[,1:dim]
-M1
+# TODO: add mpc examples in documentation for TAXES, not just for DISBURSEMENTS.
+#' Composite Marginal Propensity to Consume (MPC) Matrix
+#'
+#' Generates a matrix representing complex, variable MPC regimes over a series
+#' of periods. Constructs a lower triangular matrix by combining MPC matrices
+#' from specified regimes. Intended for applying varying MPC effects across
+#' different time periods.
+#'
+#' @param mpc_vector_list A list where each element is a named vector representing
+#'        an MPC regime (e.g., how consumers distribute spending of disbursed funds
+#'        over time). Names correspond to MPC regime identifiers.
+#'        Example: `mpc_vector_list$mpc01 = c(0.315, 0.315, 0.090)`
+#'        signifies that under regime `mpc01`, consumers spend 31.5% of cash in the
+#'        first period, another 31.5% in the next, followed by 9%.
+#' @param mpc_series A character vector indicating the MPC regime applied in each
+#'        period. Length equals the number of periods and the dimension of the
+#'        output matrix. Example: `mpc_series = c("mpc01", "mpc01", "mpc02", "mpc02")`
+#'        applies `mpc01` to the first two periods and `mpc02` to the next two.
+#' @return A square lower triangular matrix representing the composite MPC effect
+#'         over time. Matrix multiplication with a data series vector applies
+#'         the MPC effects.
+#' @examples
+#' # Define MPC regimes
+#' mpc_vector_list = list(mpc01 = c(0.8, 0.2), mpc02 = c(0.2, 0.2, 0.2, 0.2, 0.2))
+#' # Define series of regimes
+#' mpc_series = c("mpc01", "mpc01", "mpc01", "mpc02", "mpc02", "mpc02")
+#' # Generate composite MPC matrix
+#' comp_mpc_matrix = comp_mpc_matrix(mpc_vector_list, mpc_series)
+#' @export
+comp_mpc_matrix <- function(mpc_vector_list, mpc_series) {
+  ## Input argument pre-checks
+  # TODO: add a check to see if vector entries in mpc_list are of length 1 or greater
+  # Check if if mpc_series is an atomic vector
+  if (!is.atomic(mpc_series)) {
+    stop("mpc_series must be an atomic vector.")
+  }
+  # Check if mpc_list is a list
+  # TODO: check if it is a list of vectors
+  if (!is.list(mpc_vector_list)) {
+    stop("mpc__vector_list must be a list of vector.")
+  }
+  # Check if all mpc names in mpc_series are also in mpc_list
+  if (!all(mpc_series %in% names(mpc_vector_list))) {
+    stop("mpc_series contains entries not listed in mpc_vector_list.")
+  }
+
+  ## "Meat" of the function
+  # Determine the dimensions based on the length of mpc_series
+  dim <- length(mpc_series)
+  # Initialize the composite MPC matrix
+  comp_mpc_mat <- matrix(0, nrow = dim, ncol = dim)
+  
+  # Iterate over each unique regime in mpc_series
+  unique_regimes <- unique(mpc_series)
+  for (regime in unique_regimes) {
+    mpc_vector <- mpc_vector_list[[regime]]
+    if (!is.null(mpc_vector)) {
+      # Construct the individual MPC matrix for the current regime
+      mpc_mat <- mpc_matrix(mpc_vector, dim)
+      # Identify rows to be replaced based on the current regime
+      rows_to_replace <- which(mpc_series == regime)
+      # Apply the regime's effects for all its occurrences at once
+      comp_mpc_mat[rows_to_replace, ] <- mpc_mat[rows_to_replace, ]
+    }
+  }
+  
+  return(comp_mpc_mat)
+}

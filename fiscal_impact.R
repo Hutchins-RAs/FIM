@@ -251,6 +251,7 @@ minus_neutral_df <- apply(
                           # contains columns from data_series.
                           MARGIN = 2, # apply the function to the columns (1 = rows)
                           FUN = minus_neutral, # User-defined minus_neutral function
+                          # found in /R/minus_neutral.R
                           rpgg = real_df$real_potential_gdp_growth, #arg from minus_neutral
                           cdg = real_df$consumption_deflator_growth) %>% #arg from minus_neutral
   as.data.frame()
@@ -265,8 +266,8 @@ post_mpc_list <- list()
 for (series in data_series) {
   print(series)
   # Generate the MPC matrix for the current series
-  mpc_matrix <- generate_mpc_matrix(mpc_series = mpc_series[[series]], 
-                                    mpc_list = mpc_list) # TODO: rename so arg and df don't have same name
+  mpc_matrix <- comp_mpc_matrix(mpc_vector_list = mpc_list,
+                                mpc_series = mpc_series[[series]]) 
   # Formatting the data as a vertical column matrix is not strictly necessary;
   # but it reinforces the point that this is matrix multiplication
   data_vector <- matrix(minus_neutral_df[[{series}]], ncol = 1)

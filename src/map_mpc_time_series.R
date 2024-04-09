@@ -1,11 +1,11 @@
 # map_mpc_time_series.R
 # 
-# The purpose of this script is to generate an mpc_series list - which maps periods
-# of a FIM data series with an mpc - and mpc_list - which lists all the mpcs used
-# in the FIM project.
+# The purpose of this script is to generate an mpc_series list - which maps 
+# periods of a FIM data series with an mpc - and mpc_list - which lists all the 
+# mpcs used in the FIM project.
 #
-# This code may eventually be supplanted with an Excel sheet for an improved user
-# experience
+# This code may eventually be supplanted with an Excel sheet for an improved 
+# user experience.
 # TODO: explore mpc_series and mpc_list presentation options in the R Shiny app.
 #
 #
