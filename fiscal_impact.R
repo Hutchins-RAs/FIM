@@ -193,9 +193,24 @@ projections <- fim::projections %>%
          gfrpt  = if_else(date >= yearquarter('2025 Q3'),
                           lag(gfrpt) * (1 + gfrpt_growth / 400),
                           gfrpt)) %>%
-  #alternative_tax_scenario() %>%
-  format_tsibble() %>% 
-  select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, unemployment_rate)
+  # function was formerly called format_tsibble
+  # Turn date into time series
+  mutate(date = tsibble::yearquarter(date)) %>%
+  # reorder the id column before the date column
+  relocate(id, .before = date) %>%
+  # convert the projections df into a tsibble data frame type
+  tsibble::as_tsibble(key = id, index = date) %>%
+  # TODO: as you can see from the select function, many columns are not kept.
+  # Perhaps the code can be refactored to exclude the data processing steps 
+  # in the first place.
+  # These are the columns that are explicitly dropped in this step:
+  # c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", "yptmd", 
+  # "yptu", "federal_ui_timing", "gh", "gfh", "gsh", "g", "gf", "gs", 
+  # "cpiu_g", "cola_rate", "gftfp_unadj", "health_ui", 
+  # "smooth_gftfp_minus_health_ui", "gfrptCurrentLaw")
+  select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), 
+         dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, 
+         unemployment_rate)
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
