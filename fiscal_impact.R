@@ -101,11 +101,10 @@ fim::national_accounts
 # Step 2: Get the projections. These will be appended to the national accounts.
 # this get_cbo_projections() function also requires some serious refactoring.
 projections <- fim::projections %>% 
-  # First we're going to do the section that was originally called 
-  # cola_adjustment()
-  # This subsection of cola_adjustment() used to be called `get_cola_rate`
-  mutate(cpiu_g = fim::q_a(cpiu) / 100,
-         cola_rate = if_else(lubridate::quarter(date) == 1,
+  # Generate a row of quarterly annualized growth rates for the CPI-U series
+  # called `cpiu_g` by applying the qagr function
+  mutate(cpiu_g = qagr(cpiu)) %>%
+  mutate(cola_rate = if_else(lubridate::quarter(date) == 1,
                              lag(cpiu_g, 2),
                              NA)) %>%
   tidyr::fill(cola_rate) %>%
