@@ -101,24 +101,86 @@ fim::national_accounts
 # Step 2: Get the projections. These will be appended to the national accounts.
 # this get_cbo_projections() function also requires some serious refactoring.
 projections <- fim::projections %>% 
+  # TODO: We're generating rows here. Refactor and move this to a different 
+  # module!
   # Generate a row of quarterly annualized growth rates for the CPI-U series
   # called `cpiu_g` by applying the qagr function
   mutate(cpiu_g = qagr(cpiu)) %>%
+  # Calculate 'cola_rate' for each row: If the quarter is Q1, set 'cola_rate' to
+  # the annualized CPI-U growth rate from two quarters ago. Otherwise, set to 
+  # NA. This represents the cost-of-living adjustment rate applicable only in 
+  # the first quarter of each year, based on CPI-U growth at the end of the 
+  # prior year.
   mutate(cola_rate = if_else(lubridate::quarter(date) == 1,
                              lag(cpiu_g, 2),
                              NA)) %>%
+  # Fills missing `cola_rate` values forward. Once a `cola_rate` is specified 
+  # for Q1, it is carried forward to Q2, Q3, and Q4, applying the same rate 
+  # throughout the year until a new rate is defined in the following Q1. 
   tidyr::fill(cola_rate) %>%
   # this subsection of cola_adjustment() used to be called 
   # `smooth_transfers_net_health_ui`
+  # Adjusts government final transfer payments (gftfp) for cost-of-living 
+  # adjustments (COLA) and health/unemployment insurance smoothing.
+         # 1. 'gftfp_unadj' stores the original gftfp values before adjustments.
   mutate(gftfp_unadj = gftfp,
+         # 2. 'health_ui' computes a 4-quarter simple moving average (SMA) of 
+         # health and unemployment insurance payments to smooth out 
+         # fluctuations.
          health_ui = TTR::SMA(yptmd + yptmr + yptu, n = 4),
+         # 3. 'smooth_gftfp_minus_health_ui' calculates a smoothed version of 
+         # gftfp excluding health_ui, adjusted by the COLA rate to reflect the 
+         # change in purchasing power.
          smooth_gftfp_minus_health_ui = TTR::SMA((gftfp - health_ui) * (1 - cola_rate), n =4),
+         # 4. Finally, 'gftfp' is recalculated by adding the smoothed, COLA-
+         # adjusted gftfp (excluding health_ui) back to the smoothed health_ui, 
+         # providing an overall adjusted gftfp that accounts for both cost-of-
+         # living adjustments and smoothed health/unemployment insurance 
+         # payments. This ensures gftfp reflects both the impact of inflation 
+         # adjustments and more stable health and unemployment insurance figures
+         # across quarters.
          gftfp = smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui) %>%
-  # Next phases of the original process..
-  smooth_budget_series() %>%
-  implicit_price_deflators() %>%
-  growth_rates() %>%
   alternative_tax_scenario() %>%
+  # Smooth budget series
+  # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
+  # health outlays, and unemployment insurance data. For each selected column, 
+  # the rolling mean is calculated using the current and previous three 
+  # quarters' data, aligning the window to the current quarter. If less than 
+  # four observations are available (at the data series start), the mean of 
+  # available observations is used instead, ensuring no initial data is left 
+  # without a smoothed value.
+  mutate(across(all_of(c('gfrpt', 'gfrpri', 'gfrcp', 'gfrs', # federal taxes
+                         'yptmd', 'yptmr', # health outlays
+                         'yptu')), # unemployment insurance
+                ~ zoo::rollapply(.x, 
+                                 width = 4, 
+                                 mean, 
+                                 fill = NA,
+                                 min_obs = 1, 
+                                 align = 'right'))) %>%
+  # Implicit price deflators
+  mutate(jgf =  gf/gfh,
+         jgs = gs/gsh,
+         jc = c/ch) %>%
+  # Growth rates
+  # adds 36 new columns
+  mutate(
+    across(
+      .cols = c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
+                "yptmd", "yptu", "state_ui", "federal_ui_timing", "federal_ui", 
+                "gdp", "gdph", "gdppothq", "gdppotq", "dc", "jgdp", "c", "ch", 
+                "gh", "gfh", "gsh", "g", "gf", "gs", "cpiu", 
+                "unemployment_rate", "cpiu_g", "cola_rate", "gftfp_unadj", 
+                "health_ui", "smooth_gftfp_minus_health_ui", "jgf", "jgs", "jc"),
+      # Equivalent criteria to the above, but the above is more explicit about
+      # which columns are added for later refactoring
+      #.cols = where(is.numeric) & !ends_with('_growth'),
+      # Calculate quarter growth rate using qgr() function, equal to x/lag(x), 
+      # then subtract 1.
+      .fns = ~ qgr(.) - 1,
+      .names = "{.col}_growth"
+    ) 
+  ) %>%
   format_tsibble() %>% 
   select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, unemployment_rate)
 

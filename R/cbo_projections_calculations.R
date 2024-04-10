@@ -62,26 +62,7 @@
         )
       )
   }
-#' Calculate growth rates
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-  growth_rates <- function(df){
-    df %>%
-      mutate(
-        across(
-          .cols = where(is.numeric) & !ends_with('_growth'),
-          .fns = ~ q_g(.),
-          .names = "{.col}_growth"
-        ) 
-      )
-  }
-  
-  
+
 
 #' Get growth rates of federal transfers
 #'

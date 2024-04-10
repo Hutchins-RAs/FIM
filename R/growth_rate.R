@@ -50,6 +50,8 @@ growth_rate <- function(x, period) {
 #'
 #' @export 
 qagr <- function(x) {
+  # TODO: Build in checks that length(x) > 1 and x is atomic
+  
   n <- length(x) # Calculate the length of the input vector
   # Calculate the growth factor for each quarter, except for the first. Vector
   # x[-1] is every element of x except for the first element. Vector x[-n] is 
@@ -62,6 +64,8 @@ qagr <- function(x) {
   
   # Prepend a 0 for the first quarter, as there is no prior quarter to compare 
   # to
+  # TODO: Standardize this first element to 0 or NA, just like the qagr() and 
+  # deprecating q_a() function
   result <- c(0, annualized_growth_rate)
   
   return(result)
@@ -114,6 +118,51 @@ q_g_fourthlag = function(x) {
   j[4] = j[5]
   j
 }
+
+#' Quarter over Quarter Growth Rate
+#'
+#' Calculates the quarter-over-quarter growth rate for a given numeric vector 
+#' representing a quarterly time series.
+#'
+#' @param x A numeric vector where each element represents a value for a 
+#' quarter.
+#' @return A numeric vector of quarter-over-quarter growth rates, where each 
+#' rate is calculated as `(current quarter / previous quarter)`. The first 
+#' element is set equal to the second element's growth rate to maintain 
+#' consistent vector length.
+#' TODO: Change this treatment of first element to standardize with qagr() 
+#' function
+#' TODO: Add input data checks for x vector
+#' @details This function is useful for analyzing the growth rate from one quarter to the next in a time series data. It effectively captures the immediate rate of change, allowing for the identification of trends and patterns over shorter periods.
+#' @examples
+#' \dontrun{
+#'   # Example time series data
+#'   quarterly_values <- c(100, 105, 110, 115)
+#'   # Calculate quarter-over-quarter growth rates
+#'   growth_rates <- qgr(quarterly_values)
+#'   print(growth_rates)
+#' }
+#' @export
+qgr <- function(x) {
+  
+  # TODO: Build in checks that length(x) > 1 and x is atomic
+  n <- length(x) # Calculate the length of the input vector
+  # Calculate the growth factor for each quarter, except for the first. Vector
+  # x[-1] is every element of x except for the first element. Vector x[-n] is 
+  # every element of x except for the last element. The ratio between these two
+  # vectors gives the growth rate for elements 2 through n of vector x.
+  growth_rate <- x[-1] / x[-n]
+  
+  # Prepend a the first element of growth_rate for the first quarter, as there 
+  # is no prior quarter to compare to
+  # TODO: Standardize this first element to 0 or NA, just like the qagr() and 
+  # deprecating q_a() function
+  growth_rate <- c(growth_rate[1], growth_rate)
+  
+  return(growth_rate)
+}
+
+
 
 #' @title Quarter over quarter growth rate
 #' @description Calculates quarter over quarter growth rate.
