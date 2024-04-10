@@ -1,31 +1,4 @@
 
-
-#' Alternative tax scenario
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-  alternative_tax_scenario <- function(df){
-    # Construct alternative scenario for personal current taxes, under which the TCJA provisions for income taxes don't
-    # expire in 2025
-    expdate <- tsibble::yearquarter('2025 Q3')
-    
-    df %>%
-      mutate(gfrptCurrentLaw = gfrpt,
-             gfrptCurrentLaw_growth = gfrpt_growth,
-             gfrpt_growth =
-               if_else(date > expdate,
-                       lag(gfrpt_growth),
-                       gfrpt_growth,
-                       missing = NULL
-               ),
-             gfrpt  = if_else(date >= expdate,
-                              lag(gfrpt) * (1 + gfrpt_growth / 400),
-                              gfrpt))
-  }
 #' Implicit price deflators
 #'
 #' @param df 

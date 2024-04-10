@@ -140,7 +140,6 @@ projections <- fim::projections %>%
          # adjustments and more stable health and unemployment insurance figures
          # across quarters.
          gftfp = smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui) %>%
-  alternative_tax_scenario() %>%
   # Smooth budget series
   # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
   # health outlays, and unemployment insurance data. For each selected column, 
@@ -181,6 +180,20 @@ projections <- fim::projections %>%
       .names = "{.col}_growth"
     ) 
   ) %>%
+  # Construct alternative scenario for personal current taxes, under which the
+  # TCJA provisions for income taxes don't expire in 2025
+  mutate(gfrptCurrentLaw = gfrpt,
+         gfrptCurrentLaw_growth = gfrpt_growth,
+         gfrpt_growth =
+           if_else(date > yearquarter('2025 Q3'),
+                   lag(gfrpt_growth),
+                   gfrpt_growth,
+                   missing = NULL
+           ),
+         gfrpt  = if_else(date >= yearquarter('2025 Q3'),
+                          lag(gfrpt) * (1 + gfrpt_growth / 400),
+                          gfrpt)) %>%
+  #alternative_tax_scenario() %>%
   format_tsibble() %>% 
   select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, unemployment_rate)
 
