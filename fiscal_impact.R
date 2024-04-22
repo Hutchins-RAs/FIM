@@ -352,10 +352,12 @@ cbind(projections$social_benefits,
 n_periods <- nrow(projections) #total number of periods in the data
 source("src/map_mpc_time_series.R")
 
-# Initialize a list of unique data series to which minus neutral and mpc will be applied to.
-# TODO: This list will be universal, from FIM start to FIM finish, so give it a more
-# intuitive name, and don't base it off mpc series: base it off something established earlier.
-# This should also be much earlier in the final, refactored script.
+# Initialize a list of unique data series to which minus neutral and mpc will be
+# applied to.
+# TODO: This list will be universal, from FIM start to FIM finish, so give it a 
+# more intuitive name, and don't base it off mpc series: base it off something 
+# established earlier. This step should come much earlier in the final, 
+# refactored script.
 data_series <- names(mpc_series)
 
 # we only keep this section for the purpose of integrating the refactored section
