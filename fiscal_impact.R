@@ -94,13 +94,19 @@ deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
 # Save current quarter for later
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) 
 
-#### Section B.1: Read in raw data ---------------------------------------------
-# Step 1: Get the national accounts. These are part of the FIM package. These 
-# contain data that (I think?) is up to the present day, or something.
-fim::national_accounts
-# Step 2: Get the projections. These will be appended to the national accounts.
-# this get_cbo_projections() function also requires some serious refactoring.
-projections <- fim::projections %>% 
+#### Section B.0: Read in raw data ---------------------------------------------
+# Load in national accounts
+fim::national_accounts # this is the literal df
+load("data/national_accounts.rda") # this loads in a df named national_accounts
+
+# Load in projections
+fim::projections # this is the literal df
+load("data/projections.rda") # this loads in a df named projections
+
+
+#### Section B.1: Manipulate projections dataframe------------------------------
+load("data/projections.rda")
+projections <- projections %>% 
   # TODO: We're generating rows here. Refactor and move this to a different 
   # module!
   # Generate a row of quarterly annualized growth rates for the CPI-U series
@@ -295,9 +301,9 @@ usna2 <- usna1 %>%
 
 # Redefine usna to be integrated back into the FIM
 usna <- usna2
-# My refactored code is buggy, so using old usna file
+# check against old usna file
 load("usna_old.RData")
-usna <- usna_old
+all.equal(usna, usna_old)
 
 # Section C: Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values from the data folder
