@@ -70,7 +70,7 @@ if(update_in_progress == TRUE){
 # override the historical data and spread it out based on our best guess
 # for when the money was spent.
 historical_overrides <- readxl::read_xlsx('data/forecast.xlsx',
-                               sheet = 'historical_overrides') %>% # Read in historical_overrides
+                               sheet = 'historical overrides') %>% # Read in historical_overrides
   select(-name) %>% # Remove longer name since we don't need it
   pivot_longer(-variable,
                names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
@@ -80,7 +80,7 @@ historical_overrides <- readxl::read_xlsx('data/forecast.xlsx',
 
 # Read in deflator overrides from data/forecast.xlsx
 deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
-                                        sheet = 'deflator_overrides') %>% # Read in overrides for deflators
+                                        sheet = 'deflators_override') %>% # Read in overrides for deflators
   select(-name) %>% # Remove longer name since we don't need it
   pivot_longer(-variable,
                names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
