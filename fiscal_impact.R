@@ -295,6 +295,9 @@ usna2 <- usna1 %>%
 
 # Redefine usna to be integrated back into the FIM
 usna <- usna2
+# My refactored code is buggy, so using old usna file
+load("usna_old.RData")
+usna <- usna_old
 
 # Section C: Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values from the data folder
