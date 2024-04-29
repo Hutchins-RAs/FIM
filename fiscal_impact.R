@@ -63,7 +63,14 @@ if(update_in_progress == TRUE){
 }
 
 
-#Section B: Wrangle data ------------------------------------------------------------
+#### Section B.0: Read in raw data ---------------------------------------------
+# Load in national accounts
+fim::national_accounts # this is the literal df
+load("data/national_accounts.rda") # this loads in a df named national_accounts
+
+# Load in projections
+fim::projections # this is the literal df
+load("data/projections.rda") # this loads in a df named projections
 
 # Read in historical overrides from data/forecast.xlsx
 # Since BEA put all CARES act grants to S&L in Q2 2020 we need to
@@ -93,16 +100,6 @@ deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
 # of the FIM, not buried down here.
 # Save current quarter for later
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) 
-
-#### Section B.0: Read in raw data ---------------------------------------------
-# Load in national accounts
-fim::national_accounts # this is the literal df
-load("data/national_accounts.rda") # this loads in a df named national_accounts
-
-# Load in projections
-fim::projections # this is the literal df
-load("data/projections.rda") # this loads in a df named projections
-
 
 #### Section B.1: Manipulate projections dataframe------------------------------
 load("data/projections.rda")
