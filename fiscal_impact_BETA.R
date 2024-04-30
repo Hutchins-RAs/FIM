@@ -98,6 +98,14 @@ health_ui <- TTR::SMA(yptmd + yptmr + yptu, n = 4)
 # gftfp excluding health_ui, adjusted by the COLA rate to reflect the 
 # change in purchasing power.
 smooth_gftfp_minus_health_ui <- TTR::SMA((gftfp_unadj - health_ui) * (1 - cola_rate), n = 4)
+# 4. Finally, 'gftfp' is recalculated by adding the smoothed, COLA-
+# adjusted gftfp (excluding health_ui) back to the smoothed health_ui, 
+# providing an overall adjusted gftfp that accounts for both cost-of-
+# living adjustments and smoothed health/unemployment insurance 
+# payments. This ensures gftfp reflects both the impact of inflation 
+# adjustments and more stable health and unemployment insurance figures
+# across quarters.
+gftfp <- smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui
 
 # Smooth budget series
 # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
