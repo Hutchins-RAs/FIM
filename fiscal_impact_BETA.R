@@ -1,6 +1,6 @@
-#Section A: prep for new update ----------------------
+# Section A: prep for new update -----------------------------------------------
 
-# Miscellaneous: set up for Eli because has a different library directory -----
+# Miscellaneous: set up for Eli because has a different library directory
 #Get system information
 sys_info <- Sys.info()
 
@@ -59,4 +59,39 @@ if(update_in_progress == TRUE){
   file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
 }
 
+# Section B: load in data ------------------------------------------------------
+# Load in projections
+# I still need to figure out why this data series starts in 2016!!! WHY???
+fim::projections # this is the literal df
+load("data/projections.rda") # this loads in a df named projections
+all.equal(projections, fim::projections)
+
+# CPI-U
+cpiu <- projections$cpiu # cpiu
+cpiu_g <- qagr(cpiu) # cpiu_g
+
+# Date
+date <- projections$date
+
+# COLA rate
+# If the current quarter is quarter 1, take the CPI-U from the most recent
+# quarter 3 and assign it to the current observation.
+cola_rate <- if_else(lubridate::quarter(date) == 1,
+                    lag(cpiu_g, 2),
+                    NA) %>%
+  # Fill forward NAs with most recent value. Preserves initial NAs in vector
+  na.locf(cola_rate, fromLast = FALSE, na.rm = FALSE)
+
+# GFTFP
+# Adjusts government final transfer payments (gftfp) for cost-of-living 
+# adjustments (COLA) and health/unemployment insurance smoothing.
+# 1. 'gftfp_unadj' stores the original gftfp values before adjustments.
+gftfp_unadj <- projections$gftfp
+# 2. 'health_ui' computes a 4-quarter simple moving average (SMA) of 
+# health and unemployment insurance payments to smooth out 
+# fluctuations.
+yptmd <- projections$yptmd
+yptmr <- projections$yptmr
+yptu <- projections$yptu
+health_ui <- TTR::SMA(yptmd + yptmr + yptu, n = 4)
 
