@@ -191,7 +191,8 @@ gfrpt <- if_else(date >= yearquarter('2025 Q3'), lag(gfrpt) * (1 + gfrpt_growth 
 # Note: I believe these new rows are not even used later. Determine if this is true
 # or not
 
-
+# Turn date into time series
+date <- tsibble::yearquarter(date) # this may be unnecessary since date already is a time series
 
 
 
