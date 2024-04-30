@@ -94,4 +94,31 @@ yptmd <- projections$yptmd
 yptmr <- projections$yptmr
 yptu <- projections$yptu
 health_ui <- TTR::SMA(yptmd + yptmr + yptu, n = 4)
+# 3. 'smooth_gftfp_minus_health_ui' calculates a smoothed version of 
+# gftfp excluding health_ui, adjusted by the COLA rate to reflect the 
+# change in purchasing power.
+smooth_gftfp_minus_health_ui <- TTR::SMA((gftfp_unadj - health_ui) * (1 - cola_rate), n = 4)
+
+# Smooth budget series
+# Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
+# health outlays, and unemployment insurance data. For each selected column, 
+# the rolling mean is calculated using the current and previous three 
+# quarters' data, aligning the window to the current quarter. If less than 
+# four observations are available (at the data series start), the mean of 
+# available observations is used instead, ensuring no initial data is left 
+# without a smoothed value.
+# TODO: This code OVERWRITES existing rows with smoothed data. For later refactoring,
+# I may want to create a new row rather than overwrite an existing one.
+#
+# federal taxes
+gfrpt <- zoo::rollapply(projections$gfrpt, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+gfrpri <- zoo::rollapply(projections$gfrpri, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+gfrcp <- zoo::rollapply(projections$gfrcp, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+gfrs <- zoo::rollapply(projections$gfrs, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+# health outlays
+yptmd <- zoo::rollapply(projections$yptmd, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+yptmr <- zoo::rollapply(projections$yptmr, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+# unemployment insurance
+yptu <- zoo::rollapply(projections$yptu, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+
 
