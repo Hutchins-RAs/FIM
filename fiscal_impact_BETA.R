@@ -173,6 +173,25 @@ gf_growth <- qgr(projections$gf) - 1
 gs_growth <- qgr(projections$gs) - 1
 unemployment_rate_growth <- qgr(projections$unemployment_rate) - 1
 
+# Construct alternative scenario for personal current taxes, under which the
+# TCJA provisions for income taxes don't expire in 2025
+# TODO: I think this code has a mistake. Currently, code replaces gfrpt_growth
+# with the lag of itself starting in 2025 Q3. This doesn't make much sense- 
+# I think original authors wanted to keep the same growth rate continuing into
+# perpetuity after 2025 Q3. Figure out what we intend to do here.
+# TODO: figure out if this growth rate is even used later.
+#
+# keep the current law version (where TCJA measures sunset in 2025 Q3)
+gfrptCurrentLaw <- gfrpt
+# keep the current law growth
+gfrptCurrentLaw_growth <- gfrpt_growth
+# redefine the growth to be the lag of itself? (I believe this is a mistake)
+gfrpt_growth <- if_else(date > yearquarter('2025 Q3'), lag(gfrpt_growth), gfrpt_growth, missing = NULL)
+gfrpt <- if_else(date >= yearquarter('2025 Q3'), lag(gfrpt) * (1 + gfrpt_growth / 400), gfrpt)
+# Note: I believe these new rows are not even used later. Determine if this is true
+# or not
+
+
 
 
 
