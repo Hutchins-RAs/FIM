@@ -194,5 +194,47 @@ gfrpt <- if_else(date >= yearquarter('2025 Q3'), lag(gfrpt) * (1 + gfrpt_growth 
 # Turn date into time series
 date <- tsibble::yearquarter(date) # this may be unnecessary since date already is a time series
 
+# Generate a few other columns we'll need for projections_beta
+id <- projections$id
+gdp <- projections$gdp
+gdph <- projections$gdph
+gdppothq <- projections$gdppothq
+gdppotq <- projections$gdppotq
+jgdp <- projections$jgdp
+dc <- projections$dc
+c <- projections$c
+ch <- projections$ch
+federal_ui <- projections$federal_ui
+state_ui <- projections$state_ui
+unemployment_rate <- projections$unemployment_rate
 
+# Create the 'projections' data frame that matches the previous version from the
+# FIM
+projections_beta <- tibble(id, date, gdp, gdph, gdppothq, gdppotq, jgdp, jgf, jgs, 
+                           jc, jgdp_growth, jgf_growth, jgs_growth, jc_growth, dc,
+                           c, ch, 
+                           fy_growth, # this one is silly and should be removed
+                           gftfp_growth, gfrpt_growth, gfrpri_growth, gfrcp_growth,
+                           gfrs_growth, yptmr_growth, yptmd_growth, yptu_growth,
+                           state_ui_growth, 
+                           federal_ui_timing_growth, # this one is silly and should be removed
+                           federal_ui_growth,
+                           gdp_growth, gdph_growth, gdppothq_growth, gdppotq_growth,
+                           dc_growth, c_growth, ch_growth, gh_growth, gfh_growth,
+                           gsh_growth, g_growth, gf_growth, gs_growth,
+                           cpiu_growth, # probably not needed
+                           unemployment_rate_growth,
+                           cpiu_g_growth, # certainly nonsensical
+                           cola_rate_growth, # almost certainly not needed
+                           gftfp_unadj_growth, # probably not needed
+                           health_ui_growth, # perhaps not needed
+                           smooth_gftfp_minus_health_ui_growth, # almost certainly not needed
+                           gfrptCurrentLaw_growth, # probably not needed
+                           cpiu, federal_ui, state_ui, unemployment_rate
+                )
+
+# Convert projections_beta to a tsibble
+projections_beta <- as_tsibble(projections_beta, index = date)
+# Assuming 'id' should be the key and 'date' the index
+projections_beta <- as_tsibble(projections_beta, index = date, key = id)
 
