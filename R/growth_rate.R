@@ -66,7 +66,7 @@ qagr <- function(x) {
   # to
   # TODO: Standardize this first element to 0 or NA, just like the qagr() and 
   # deprecating q_a() function
-  result <- c(0, annualized_growth_rate)
+  result <- c(NA, annualized_growth_rate)
   
   return(result)
 }
