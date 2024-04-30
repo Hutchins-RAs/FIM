@@ -67,16 +67,16 @@ load("data/projections.rda") # this loads in a df named projections
 all.equal(projections, fim::projections)
 
 # CPI-U
-cpiu <- projections$cpiu # cpiu
-cpiu_g <- qagr(cpiu) # cpiu_g
+cpiu <- projections$cpiu # carried over into projections
+cpiu_g <- qagr(cpiu) # used later to calculate cola_rate
 
 # Date
-date <- projections$date
+date <- projections$date # carried over into projections
 
 # COLA rate
 # If the current quarter is quarter 1, take the CPI-U from the most recent
 # quarter 3 and assign it to the current observation.
-cola_rate <- if_else(lubridate::quarter(date) == 1,
+cola_rate <- if_else(lubridate::quarter(date) == 1, # used later to calculate other vars
                     lag(cpiu_g, 2),
                     NA) %>%
   # Fill forward NAs with most recent value. Preserves initial NAs in vector
@@ -86,18 +86,18 @@ cola_rate <- if_else(lubridate::quarter(date) == 1,
 # Adjusts government final transfer payments (gftfp) for cost-of-living 
 # adjustments (COLA) and health/unemployment insurance smoothing.
 # 1. 'gftfp_unadj' stores the original gftfp values before adjustments.
-gftfp_unadj <- projections$gftfp
+gftfp_unadj <- projections$gftfp # used later to calculate other vars
 # 2. 'health_ui' computes a 4-quarter simple moving average (SMA) of 
 # health and unemployment insurance payments to smooth out 
 # fluctuations.
-yptmd <- projections$yptmd
-yptmr <- projections$yptmr
-yptu <- projections$yptu
-health_ui <- TTR::SMA(yptmd + yptmr + yptu, n = 4)
+yptmd <- projections$yptmd # used later to calculate other vars
+yptmr <- projections$yptmr # used later to calculate other vars
+yptu <- projections$yptu # used later to calculate other vars
+health_ui <- TTR::SMA(yptmd + yptmr + yptu, n = 4) # used later to calculate other vars
 # 3. 'smooth_gftfp_minus_health_ui' calculates a smoothed version of 
 # gftfp excluding health_ui, adjusted by the COLA rate to reflect the 
 # change in purchasing power.
-smooth_gftfp_minus_health_ui <- TTR::SMA((gftfp_unadj - health_ui) * (1 - cola_rate), n = 4)
+smooth_gftfp_minus_health_ui <- TTR::SMA((gftfp_unadj - health_ui) * (1 - cola_rate), n = 4) # used later to calculate other vars
 # 4. Finally, 'gftfp' is recalculated by adding the smoothed, COLA-
 # adjusted gftfp (excluding health_ui) back to the smoothed health_ui, 
 # providing an overall adjusted gftfp that accounts for both cost-of-
@@ -105,7 +105,7 @@ smooth_gftfp_minus_health_ui <- TTR::SMA((gftfp_unadj - health_ui) * (1 - cola_r
 # payments. This ensures gftfp reflects both the impact of inflation 
 # adjustments and more stable health and unemployment insurance figures
 # across quarters.
-gftfp <- smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui
+gftfp <- smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui # used later to calculate other vars
 
 # Smooth budget series
 # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
@@ -119,59 +119,68 @@ gftfp <- smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui
 # I may want to create a new row rather than overwrite an existing one.
 #
 # federal taxes
-gfrpt <- zoo::rollapply(projections$gfrpt, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
-gfrpri <- zoo::rollapply(projections$gfrpri, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
-gfrcp <- zoo::rollapply(projections$gfrcp, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
-gfrs <- zoo::rollapply(projections$gfrs, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+gfrpt <- zoo::rollapply(projections$gfrpt, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
+gfrpri <- zoo::rollapply(projections$gfrpri, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
+gfrcp <- zoo::rollapply(projections$gfrcp, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
+gfrs <- zoo::rollapply(projections$gfrs, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
 # health outlays
-yptmd <- zoo::rollapply(projections$yptmd, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
-yptmr <- zoo::rollapply(projections$yptmr, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+yptmd <- zoo::rollapply(yptmd, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
+yptmr <- zoo::rollapply(projections$yptmr, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
 # unemployment insurance
-yptu <- zoo::rollapply(projections$yptu, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
+yptu <- zoo::rollapply(projections$yptu, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
 
 # Implicit price deflators
-jgf <- projections$gf/projections$gfh
-jgs <- projections$gs/projections$gsh
-jc <- projections$c/projections$ch
+jgf <- projections$gf/projections$gfh # used in projections
+jgs <- projections$gs/projections$gsh # used in projections
+jc <- projections$c/projections$ch # used in projections
 
 # adds 36 new columns
-gftfp_growth <- qgr(gftfp) - 1
-gfrpt_growth <- qgr(gfrpt) - 1
-gfrpri_growth <- qgr(gfrpri) - 1
-gfrcp_growth <- qgr(gfrcp) - 1
-gfrs_growth <- qgr(gfrs) - 1
-yptmr_growth <- qgr(yptmr) - 1
-yptmd_growth <- qgr(yptmd) - 1
-yptu_growth <- qgr(yptu) - 1
+gftfp_growth <- qgr(gftfp) - 1 # used in projections
+gfrpt_growth <- qgr(gfrpt) - 1 # used to calculate gfrptCurrentLaw_growth
+gfrpri_growth <- qgr(gfrpri) - 1 # used in projections
+gfrcp_growth <- qgr(gfrcp) - 1 # used in projections
+gfrs_growth <- qgr(gfrs) - 1 # used in projections
+yptmr_growth <- qgr(yptmr) - 1 # used in projections
+yptmd_growth <- qgr(yptmd) - 1 # used in projections
+yptu_growth <- qgr(yptu) - 1 # used in projections
 cpiu_growth <- qgr(cpiu) - 1 # I think we already do something similar to this and we call it cpiu_g
+# used in projections
 cpiu_g_growth <- qgr(cpiu_g) - 1 # This probably doesn't make sense
+# used in projections
 cola_rate_growth <- qgr(cola_rate) - 1 # This probably doesn't make sense
+# used in projections
 gftfp_unadj_growth <- qgr(gftfp_unadj) - 1 # I don't think we use this
+# used in projections
 health_ui_growth <- qgr(health_ui) - 1 # I don't think we use this
+# used in projections
 smooth_gftfp_minus_health_ui_growth <- qgr(smooth_gftfp_minus_health_ui) - 1 # I don't think we use this
-jgf_growth <- qgr(jgf) - 1
-jgs_growth <- qgr(jgs) - 1
-jc_growth <- qgr(jc) - 1
+# used in projections
+jgf_growth <- qgr(jgf) - 1 # used in projections
+jgs_growth <- qgr(jgs) - 1 # used in projections
+jc_growth <- qgr(jc) - 1 # used in projections
+
 
 fy_growth <- qgr(projections$fy) - 1 # This, for example, is nonsense and should be removed
-state_ui_growth <- qgr(projections$state_ui) - 1
+# used in projections
+state_ui_growth <- qgr(projections$state_ui) - 1 # used in projections
 federal_ui_timing_growth <- qgr(projections$federal_ui_timing) - 1 # This probably doesn't make sense
-federal_ui_growth <- qgr(projections$federal_ui) - 1
-gdp_growth <- qgr(projections$gdp) - 1
-gdph_growth <- qgr(projections$gdph) - 1
-gdppothq_growth <- qgr(projections$gdppothq) - 1
-gdppotq_growth <- qgr(projections$gdppotq) - 1
-dc_growth <- qgr(projections$dc) - 1
-jgdp_growth <- qgr(projections$jgdp) - 1
-c_growth <- qgr(projections$c) - 1
-ch_growth <- qgr(projections$ch) - 1
-gh_growth <- qgr(projections$gh) - 1
-gfh_growth <- qgr(projections$gfh) - 1
-gsh_growth <- qgr(projections$gsh) - 1
-g_growth <- qgr(projections$g) - 1
-gf_growth <- qgr(projections$gf) - 1
-gs_growth <- qgr(projections$gs) - 1
-unemployment_rate_growth <- qgr(projections$unemployment_rate) - 1
+# used in projections
+federal_ui_growth <- qgr(projections$federal_ui) - 1 # used in projections
+gdp_growth <- qgr(projections$gdp) - 1 # used in projections
+gdph_growth <- qgr(projections$gdph) - 1 # used in projections
+gdppothq_growth <- qgr(projections$gdppothq) - 1 # used in projections
+gdppotq_growth <- qgr(projections$gdppotq) - 1 # used in projections
+dc_growth <- qgr(projections$dc) - 1 # used in projections
+jgdp_growth <- qgr(projections$jgdp) - 1 # used in projections
+c_growth <- qgr(projections$c) - 1 # used in projections
+ch_growth <- qgr(projections$ch) - 1 # used in projections
+gh_growth <- qgr(projections$gh) - 1 # used in projections
+gfh_growth <- qgr(projections$gfh) - 1 # used in projections
+gsh_growth <- qgr(projections$gsh) - 1 # used in projections
+g_growth <- qgr(projections$g) - 1 # used in projections
+gf_growth <- qgr(projections$gf) - 1 # used in projections
+gs_growth <- qgr(projections$gs) - 1 # used in projections
+unemployment_rate_growth <- qgr(projections$unemployment_rate) - 1 # used in projections
 
 # Construct alternative scenario for personal current taxes, under which the
 # TCJA provisions for income taxes don't expire in 2025
@@ -182,17 +191,13 @@ unemployment_rate_growth <- qgr(projections$unemployment_rate) - 1
 # TODO: figure out if this growth rate is even used later.
 #
 # keep the current law version (where TCJA measures sunset in 2025 Q3)
-gfrptCurrentLaw <- gfrpt
+gfrptCurrentLaw <- gfrpt # used later to calculate other vars
 # keep the current law growth
-gfrptCurrentLaw_growth <- gfrpt_growth
+gfrptCurrentLaw_growth <- gfrpt_growth # used in projections
 # redefine the growth to be the lag of itself? (I believe this is a mistake)
-gfrpt_growth <- if_else(date > yearquarter('2025 Q3'), lag(gfrpt_growth), gfrpt_growth, missing = NULL)
-gfrpt <- if_else(date >= yearquarter('2025 Q3'), lag(gfrpt) * (1 + gfrpt_growth / 400), gfrpt)
+gfrpt_growth <- if_else(date > yearquarter('2025 Q3'), lag(gfrpt_growth), gfrpt_growth, missing = NULL) # used in projections
 # Note: I believe these new rows are not even used later. Determine if this is true
 # or not
-
-# Turn date into time series
-date <- tsibble::yearquarter(date) # this may be unnecessary since date already is a time series
 
 # Generate a few other columns we'll need for projections_beta
 id <- projections$id
