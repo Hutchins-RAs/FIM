@@ -69,6 +69,7 @@ fim::national_accounts # this is the literal df
 load("data/national_accounts.rda") # this loads in a df named national_accounts
 
 # Load in projections
+# SOME HOW THESE AREN"T THE SAME! try fim::projections$gftfp vs projections$gftfp
 fim::projections # this is the literal df
 load("data/projections.rda") # this loads in a df named projections
 
@@ -102,10 +103,8 @@ deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) 
 
 #### Section B.1: Manipulate projections dataframe------------------------------
-load("data/projections.rda")
+
 projections <- projections %>% 
-  # TODO: We're generating rows here. Refactor and move this to a different 
-  # module!
   # Generate a row of quarterly annualized growth rates for the CPI-U series
   # called `cpiu_g` by applying the qagr function
   mutate(cpiu_g = qagr(cpiu)) %>%
