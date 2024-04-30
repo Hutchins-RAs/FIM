@@ -134,4 +134,45 @@ jgf <- projections$gf/projections$gfh
 jgs <- projections$gs/projections$gsh
 jc <- projections$c/projections$ch
 
+# adds 36 new columns
+gftfp_growth <- qgr(gftfp) - 1
+gfrpt_growth <- qgr(gfrpt) - 1
+gfrpri_growth <- qgr(gfrpri) - 1
+gfrcp_growth <- qgr(gfrcp) - 1
+gfrs_growth <- qgr(gfrs) - 1
+yptmr_growth <- qgr(yptmr) - 1
+yptmd_growth <- qgr(yptmd) - 1
+yptu_growth <- qgr(yptu) - 1
+cpiu_growth <- qgr(cpiu) - 1 # I think we already do something similar to this and we call it cpiu_g
+cpiu_g_growth <- qgr(cpiu_g) - 1 # This probably doesn't make sense
+cola_rate_growth <- qgr(cola_rate) - 1 # This probably doesn't make sense
+gftfp_unadj_growth <- qgr(gftfp_unadj) - 1 # I don't think we use this
+health_ui_growth <- qgr(health_ui) - 1 # I don't think we use this
+smooth_gftfp_minus_health_ui_growth <- qgr(smooth_gftfp_minus_health_ui) - 1 # I don't think we use this
+jgf_growth <- qgr(jgf) - 1
+jgs_growth <- qgr(jgs) - 1
+jc_growth <- qgr(jc) - 1
+
+fy_growth <- qgr(projections$fy) - 1 # This, for example, is nonsense and should be removed
+state_ui_growth <- qgr(projections$state_ui) - 1
+federal_ui_timing_growth <- qgr(projections$federal_ui_timing) - 1 # This probably doesn't make sense
+federal_ui_growth <- qgr(projections$federal_ui) - 1
+gdp_growth <- qgr(projections$gdp) - 1
+gdph_growth <- qgr(projections$gdph) - 1
+gdppothq_growth <- qgr(projections$gdppothq) - 1
+gdppotq_growth <- qgr(projections$gdppotq) - 1
+dc_growth <- qgr(projections$dc) - 1
+jgdp_growth <- qgr(projections$jgdp) - 1
+c_growth <- qgr(projections$c) - 1
+ch_growth <- qgr(projections$ch) - 1
+gh_growth <- qgr(projections$gh) - 1
+gfh_growth <- qgr(projections$gfh) - 1
+gsh_growth <- qgr(projections$gsh) - 1
+g_growth <- qgr(projections$g) - 1
+gf_growth <- qgr(projections$gf) - 1
+gs_growth <- qgr(projections$gs) - 1
+unemployment_rate_growth <- qgr(projections$unemployment_rate) - 1
+
+
+
 
