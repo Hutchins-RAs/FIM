@@ -121,4 +121,9 @@ yptmr <- zoo::rollapply(projections$yptmr, width = 4, mean, fill = NA, min_obs =
 # unemployment insurance
 yptu <- zoo::rollapply(projections$yptu, width = 4, mean, fill = NA, min_obs = 1, align = 'right')
 
+# Implicit price deflators
+jgf <- projections$gf/projections$gfh
+jgs <- projections$gs/projections$gsh
+jc <- projections$c/projections$ch
+
 
