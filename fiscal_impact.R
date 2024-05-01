@@ -69,7 +69,6 @@ fim::national_accounts # this is the literal df
 load("data/national_accounts.rda") # this loads in a df named national_accounts
 
 # Load in projections
-# SOME HOW THESE AREN"T THE SAME! try fim::projections$gftfp vs projections$gftfp
 fim::projections # this is the literal df
 load("data/projections.rda") # this loads in a df named projections
 
