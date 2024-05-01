@@ -321,4 +321,9 @@ usna1_beta <- coalesce_join(x = national_accounts,
 # incorrect projections of GDP that are off by about $1.2 trillion.
 # TODO: I'm concerned the gdp_growth column from projections that we use is actually
 # drawing from very outdated CBO data. 
+
+# TODO: I think it makes no sense to have projections and historic data in the same
+# data frame. Consider splitting these up into two data frames to avoid contrived
+# if-else logic involving row entries of the usna data frame.
+
             
