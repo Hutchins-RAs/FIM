@@ -243,3 +243,66 @@ projections_beta <- as_tsibble(projections_beta, index = date)
 # Assuming 'id' should be the key and 'date' the index
 projections_beta <- as_tsibble(projections_beta, index = date, key = id)
 
+# rename the variables in projections_beta
+projections_beta_renamed <- projections_beta %>%
+  transmute(date,
+            id,
+            gdp,
+            real_gdp = gdph,
+            real_potential_gdp = gdppothq,
+            potential_gdp = gdppotq,
+            gdp_deflator = jgdp,
+            federal_purchases_deflator = jgf,
+            state_purchases_deflator = jgs,
+            consumption_deflator = jc,
+            gdp_deflator_growth = jgdp_growth,
+            federal_purchases_deflator_growth = jgf_growth,
+            state_purchases_deflator_growth = jgs_growth,
+            consumption_deflator_growth = jc_growth,
+            # idk what to do about dc. I think it gets deleted when this 
+            # define_variables function is run on usna1
+            dc, # should delete
+            consumption = c,
+            real_consumption = ch,
+            fy_growth, # should delete
+            federal_social_benefits_growth = gftfp_growth,
+            federal_personal_taxes_growth =  gfrpt_growth,
+            federal_production_taxes_growth = gfrpri_growth,
+            federal_corporate_taxes_growth = gfrcp_growth,
+            federal_payroll_taxes_growth = gfrs_growth,
+            medicare_growth = yptmr_growth,
+            medicaid_growth = yptmd_growth,
+            ui_growth = yptu_growth,
+            state_ui_growth, # for some reason this one doesn't have its haver name
+            federal_ui_timing_growth, # should delete
+            federal_ui_growth,
+            gdp_growth,
+            real_gdp_growth = gdph_growth,
+            real_potential_gdp_growth = gdppothq_growth,
+            potential_gdp_growth = gdppotq_growth,
+            # idk what to do about dc. I think it gets deleted when this 
+            # define_variables function is run on usna1
+            dc_growth, # should delete
+            consumption_growth = c_growth,
+            real_consumption_growth = ch_growth,
+            real_purchases_growth =  gh_growth,
+            real_federal_purchases_growth = gfh_growth,
+            real_state_purchases_growth = gsh_growth,
+            purchases_growth = g_growth,
+            federal_purchases_growth = gf_growth,
+            state_purchases_growth = gs_growth,
+            cpiu_growth, # CPI-U
+            unemployment_rate_growth,
+            cpiu_g_growth, # shouild be deleted
+            cola_rate_growth, # should be deleted
+            gftfp_unadj_growth, # keeping this name bc I think we will drop this var
+            health_ui_growth,
+            smooth_gftfp_minus_health_ui_growth,
+            gfrptCurrentLaw_growth, # keeping this name bc I think we will drop this var
+            cpiu,
+            federal_ui,
+            state_ui,
+            unemployment_rate
+  )
+            
+            
