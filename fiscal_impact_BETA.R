@@ -304,5 +304,13 @@ projections_beta_renamed <- projections_beta %>%
             state_ui,
             unemployment_rate
   )
-            
+
+# TODO: coalesce_join() is a crazy complex function for what looks to be simple
+# (append some cols to a data frame). Will have to refactor this function.
+# Step 3: Combine these two data frames.
+# TODO: for now, joining with projections_beta. Could potentiall join with projections_beta_renamed
+usna1_beta <- coalesce_join(x = national_accounts,
+                       y = projections_beta,
+                       by = 'date') %>%
+  as_tsibble(key = id, index = date)  
             
