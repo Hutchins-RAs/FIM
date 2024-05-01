@@ -313,4 +313,12 @@ usna1_beta <- coalesce_join(x = national_accounts,
                        y = projections_beta,
                        by = 'date') %>%
   as_tsibble(key = id, index = date)  
+
+## When we produce usna1_beta, we append the old data to the new data, overriding 
+# any projections with what we have in national_accounts, which contains actual data.
+# in doing so, we get the most recent data point. We then update our GDP projection
+# to grow by the gdp_growth column in projections, which - by the way - has SUPER
+# incorrect projections of GDP that are off by about $1.2 trillion.
+# TODO: I'm concerned the gdp_growth column from projections that we use is actually
+# drawing from very outdated CBO data. 
             
