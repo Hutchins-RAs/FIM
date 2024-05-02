@@ -55,7 +55,7 @@ mpc_list <- list(
   mpc08 = c(0.04, 0.04, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017, 0.017),
   mpc09 = 0.7 * c(0.35, 0.15, 0.08, 0.08, 0.08, 0.08, 0.08, 0.08),
   # This is a direct MPC: meaning we think all is spent in period it's disbursed
-  mpc_direct = c(1)
+  mpc_direct = c(1),
   # This is a direct MPC for taxes: Analogous to the above, but negative, since 
   # we assign taxes a negative mpc.
   mpc_direct_tax = c(-1)
