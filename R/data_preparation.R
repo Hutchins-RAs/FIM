@@ -171,6 +171,38 @@ reallocate_legislation <- function(.data){
     ) 
 }
 
+
+#' Generate a Cumulative Series Based on a Seed and Growth Rates
+#'
+#' This function calculates a cumulative series starting from a seed value and
+#' applying a sequence of growth rates. 
+#'
+#' @param seed The initial starting value for the series.
+#' @param growth_rates A vector of growth rates to apply to the seed. Values are
+#' represented as a proportion, such as 1.02 (2% growth) or 0.98 (2% decline). The 
+#' first element represents the growth rate between the seed period and the subsequent
+#' period; the second element represents the growth rate between the second and 
+#' third period; and so on.
+#'
+#' @return A numeric vector representing the cumulative series. The result is one
+#' element longer than the growth rate input vector, because the first element is
+#' always assigned to be the seed input value.
+#' 
+#' @export
+#'
+#' @examples
+#' seed <- 100
+#' growth_rates <- c(1.05, 1.03, -0.98, 1.04)
+#' generate_series(seed, growth_rates)
+cumulative_series <- function(seed, growth_rates) {
+  result <- c(seed, seed*cumprod(growth_rates))
+  return(result)
+}
+
+
+#' 
+#' 
+#' 
 #' GROW CURRENT GDP WITH CBO GROWTH RATE
 #'
 #' @param df 
