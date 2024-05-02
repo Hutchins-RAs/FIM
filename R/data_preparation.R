@@ -184,9 +184,8 @@ reallocate_legislation <- function(.data){
 #' period; the second element represents the growth rate between the second and 
 #' third period; and so on.
 #'
-#' @return A numeric vector representing the cumulative series. The result is one
-#' element longer than the growth rate input vector, because the first element is
-#' always assigned to be the seed input value.
+#' @return A numeric vector representing the cumulative series. The result is the same
+#' length as the growth_rates vector and excludes the seed value.
 #' 
 #' @export
 #'
@@ -194,8 +193,10 @@ reallocate_legislation <- function(.data){
 #' seed <- 100
 #' growth_rates <- c(1.05, 1.03, -0.98, 1.04)
 #' generate_series(seed, growth_rates)
+#' TODO: add an option to append or not append seed value to beginning of result
+#' vector. Also, add data input checks.
 cumulative_series <- function(seed, growth_rates) {
-  result <- c(seed, seed*cumprod(growth_rates))
+  result <- c(seed*cumprod(growth_rates))
   return(result)
 }
 

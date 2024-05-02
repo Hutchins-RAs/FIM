@@ -325,5 +325,21 @@ usna1_beta <- coalesce_join(x = national_accounts,
 # TODO: I think it makes no sense to have projections and historic data in the same
 # data frame. Consider splitting these up into two data frames to avoid contrived
 # if-else logic involving row entries of the usna data frame.
+#
+# First define the index number of the current quarter observation
+current_obs <- which(usna1_beta$date == current_quarter)
+# Next define the seed gdp and gdph
+seed_gdp <- usna1_beta$gdp[current_obs]
+seed_gdph <- usna1_beta$gdph[current_obs]
+# Then define the input growth rates. Only keep observations AFTER current_obs and
+# add 1 to the values
+growth_rates_gdp <- 1 + usna1_beta$gdp_growth[-(1:current_obs)]
+growth_rates_gdph <- 1 + usna1_beta$gdph_growth[-(1:current_obs)]
+# Now calculate the new series using cumulative_series function
+new_gdp <- cumulative_series(seed = seed_gdp, growth_rates = growth_rates_gdp)
+new_gdph <- cumulative_series(seed = seed_gdph, growth_rates = growth_rates_gdph)
+# Now replace relevant values of gdp and gdph using the new, grown values
+usna1_beta$gdp[-(1:current_obs)] <- new_gdp
+usna1_beta$gdph[-(1:current_obs)] <- new_gdph
 
-            
+
