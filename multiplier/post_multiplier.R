@@ -20,7 +20,10 @@ fim_raw <- read_xlsx("results/04-2024/fim-04-2024.xlsx",
                     col_types = c("text", "text", rep("numeric", times = 227)))
 
 data <- fim_raw[c("date", "id", "gdp", "real_gdp", "gdp_deflator", "fiscal_impact")] %>%
-  mutate(date = as.yearqtr(date, format = "%Y Q%q"))
+  # Format `date` as yearquarter data type
+  mutate(date = as.yearqtr(date, format = "%Y Q%q")) %>%
+  # Rename `gdp` as `nom_gdp` to better reflect is nature
+  rename(nom_gdp = gdp)
 
 #### STEP 2: Data transformation -----------------------------------------------
 
@@ -30,3 +33,4 @@ data <- data %>%
   mutate(fiscal_impact = fiscal_impact/100,
   # Produce nominal nominal fiscal impulse (in $ B)
     nom_impulse = (gdp*fiscal_impact) / (1 + fiscal_impact))
+  mutate(nom_post_multiplier)
