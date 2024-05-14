@@ -40,10 +40,26 @@ mpc_lorae <- function (x, # A vector of cash disbursement data
                      min_obs = 1)
 }
 
-# 2.0: Calculate nominal counterfactual GDP
+# 2.B: Calculate nominal fiscal impulse
 data <- data %>%
-  # Convert fiscal_impact to a decimal from percent
-  mutate(fiscal_impact = fiscal_impact/100,
   # Produce nominal nominal fiscal impulse (in $ B)
-    nom_impulse = (gdp*fiscal_impact) / (1 + fiscal_impact))
-  mutate(nom_post_multiplier)
+  mutate(nom_impulse = (nom_gdp*fiscal_impact) / (1 + fiscal_impact))
+
+# 2.C: Define & calculate post-multiplier nominal fiscal impulse
+# Define the multiplier as a vector. Based upon Table 2 from:
+# https://www.cbo.gov/sites/default/files/114th-congress-2015-2016/workingpaper/49925-FiscalMultiplier_1.pdf
+# Low multiplier scenario
+mult_low <- c(0.5, -0.03, -0.04, -0.05, -0.06, -0.06, -0.05, -0.05) 
+# High multiplier scenario
+mult_high <- c(1.43, 0.48, 0.10, -0.10, -0.30, -0.28, -0.25, -0.25)
+
+# Generate nominal post-multiplier time series
+data <- data %>%
+  mutate(
+    # Generate col representing low multiplier scenario
+    nom_post_multiplier_low = mpc_lorae(x = nom_impulse, mpc = mult_low),
+    # Generate col representing high multiplier scenario
+    nom_post_multiplier_high = mpc_lorae(x = nom_impulse, mpc = mult_high)
+    )
+
+
