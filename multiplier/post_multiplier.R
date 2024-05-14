@@ -7,7 +7,7 @@ library(dplyr)
 # accordingly before proceeding with code. You can check by running:
 # getwd()
 
-#### STEP 1: Load in FIM data --------------------------------------------------
+#### STEP 1: Load & clean FIM data ---------------------------------------------
 # We use 2024-04 FIM results here. Feel free to adjust according to your needs.
 fim_raw <- read_xlsx("results/04-2024/fim-04-2024.xlsx",
                     range = "A1:HU260",
@@ -23,7 +23,9 @@ data <- fim_raw[c("date", "id", "gdp", "real_gdp", "gdp_deflator", "fiscal_impac
   # Format `date` as yearquarter data type
   mutate(date = as.yearqtr(date, format = "%Y Q%q")) %>%
   # Rename `gdp` as `nom_gdp` to better reflect is nature
-  rename(nom_gdp = gdp)
+  rename(nom_gdp = gdp) %>%
+  # Convert fiscal_impact to a decimal from percent
+  mutate(fiscal_impact = fiscal_impact/100)
 
 #### STEP 2: Data transformation -----------------------------------------------
 
