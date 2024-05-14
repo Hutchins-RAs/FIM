@@ -3,6 +3,10 @@ library(readxl)
 library(magrittr)
 library(zoo)
 library(dplyr)
+library(roll)
+library(tibble)
+library(ggplot2)
+
 # We assume your current working directory is fim/. If not, please adjust 
 # accordingly before proceeding with code. You can check by running:
 # getwd()
@@ -62,4 +66,60 @@ data <- data %>%
     nom_post_multiplier_high = mpc_lorae(x = nom_impulse, mpc = mult_high)
     )
 
+
+# 2.D: Prepare data for graphing
+data$date <- yq(data$date)
+data_filtered <- data %>%
+  filter(year(date) >= 2000 & year(date) <= 2025)
+
+# 2.E: Graph nominal FIM, post multiplier
+
+ggplot(data_filtered) +
+  geom_line(aes(x = date, y = nom_post_multiplier_low, color = "Low")) +
+  geom_point(aes(x = date, y = nom_post_multiplier_low, color = "Low")) +
+  geom_line(aes(x = date, y = nom_post_multiplier_high, color = "High")) +
+  geom_point(aes(x = date, y = nom_post_multiplier_high, color = "High")) +
+  labs(title = "Nominal FIM, Post-Multiplier (2000-2025)",
+       x = "Date",
+       y = "Billions USD, Nominal",
+       color = "Legend") +
+  theme_minimal()
+
+ggplot(data_filtered) +
+  geom_ribbon(aes(x = date, ymin = nom_post_multiplier_low, ymax = nom_post_multiplier_high), fill = "grey70", alpha = 0.5) +
+  geom_line(aes(x = date, y = nom_impulse), color = "black") +
+  labs(title = "Nominal FIM, Post-Multiplier (2000-2025)",
+       x = "Date",
+       y = "Billions USD, Nominal",
+       color = "Legend") +
+  theme_minimal()
+
+# 2.F: Convert to nominal FIM, post-multiplier to reals
+data <- data %>%
+  mutate(
+    real_post_multiplier_low = nom_post_multiplier_low / (gdp_deflator/100),
+    real_post_multiplier_high = nom_post_multiplier_high / (gdp_deflator/100),
+    real_impulse = nom_impulse / (gdp_deflator/100)
+  )
+
+# 2.G: Graph real FIM, post multiplier
+ggplot(data_filtered) +
+  geom_line(aes(x = date, y = real_post_multiplier_low, color = "Low")) +
+  geom_point(aes(x = date, y = real_post_multiplier_low, color = "Low")) +
+  geom_line(aes(x = date, y = real_post_multiplier_high, color = "High")) +
+  geom_point(aes(x = date, y = real_post_multiplier_high, color = "High")) +
+  labs(title = "Real FIM, Post-Multiplier (2000-2025)",
+       x = "Date",
+       y = "Billions USD, Nominal",
+       color = "Legend") +
+  theme_minimal()
+
+ggplot(data_filtered) +
+  geom_ribbon(aes(x = date, ymin = real_post_multiplier_low, ymax = real_post_multiplier_high), fill = "grey70", alpha = 0.5) +
+  geom_line(aes(x = date, y = real_impulse), color = "black") +
+  labs(title = "Real FIM, Post-Multiplier (2000-2025)",
+       x = "Date",
+       y = "Billions USD, Real",
+       color = "Legend") +
+  theme_minimal()
 
