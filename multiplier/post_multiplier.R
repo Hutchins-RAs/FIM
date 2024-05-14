@@ -28,6 +28,17 @@ data <- fim_raw[c("date", "id", "gdp", "real_gdp", "gdp_deflator", "fiscal_impac
   mutate(fiscal_impact = fiscal_impact/100)
 
 #### STEP 2: Data transformation -----------------------------------------------
+# 2.A: Define a function that calculates rolling MPCs (or multipliers: they both
+# have the same arithmetic backbone)
+mpc_lorae <- function (x, # A vector of cash disbursement data
+                       mpc) # A vector of MPCs
+{
+  1 * roll::roll_sum(x, 
+                     width = length(mpc), 
+                     weights = rev(mpc), 
+                     online = FALSE, 
+                     min_obs = 1)
+}
 
 # 2.0: Calculate nominal counterfactual GDP
 data <- data %>%
