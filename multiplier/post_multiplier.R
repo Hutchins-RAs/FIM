@@ -22,3 +22,11 @@ fim_raw <- read_xlsx("results/04-2024/fim-04-2024.xlsx",
 data <- fim_raw[c("date", "id", "gdp", "real_gdp", "gdp_deflator", "fiscal_impact")] %>%
   mutate(date = as.yearqtr(date, format = "%Y Q%q"))
 
+#### STEP 2: Data transformation -----------------------------------------------
+
+# 2.0: Calculate nominal counterfactual GDP
+data <- data %>%
+  # Convert fiscal_impact to a decimal from percent
+  mutate(fiscal_impact = fiscal_impact/100,
+  # Produce nominal nominal fiscal impulse (in $ B)
+    nom_impulse = (gdp*fiscal_impact) / (1 + fiscal_impact))
