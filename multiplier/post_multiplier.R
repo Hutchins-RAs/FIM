@@ -66,13 +66,27 @@ data <- data %>%
     nom_post_multiplier_high = mpc_lorae(x = nom_impulse, mpc = mult_high)
     )
 
+# 2.D: Calculate post-multiplier real fiscal impulse
+data <- data %>%
+  mutate(
+    real_post_multiplier_low = nom_post_multiplier_low / (gdp_deflator/100),
+    real_post_multiplier_high = nom_post_multiplier_high / (gdp_deflator/100),
+  )
 
-# 2.D: Prepare data for graphing
-data$date <- yq(data$date)
-data_filtered <- data %>%
+# 2.E: Calculate post-multiplier FIM (as % GDP)
+data <- data %>%
+  mutate(
+    real_post_multiplier_FIM_low = real_post_multiplier_low / real_gdp,
+    real_post_multiplier_FIM_high = real_post_multiplier_high / real_gdp
+  )
+
+# STEP 3: Graphing -------------------------------------------------------------
+# Prepare data for graphing
+data$date <- yq(data$date) # format dates
+data_filtered <- data %>% # filter date range
   filter(year(date) >= 2000 & year(date) <= 2025)
 
-# 2.E: Graph nominal FIM, post multiplier
+# 3.A: Graph nominal FIM, post multiplier
 
 ggplot(data_filtered) +
   geom_line(aes(x = date, y = nom_post_multiplier_low, color = "Low")) +
@@ -94,15 +108,7 @@ ggplot(data_filtered) +
        color = "Legend") +
   theme_minimal()
 
-# 2.F: Convert to nominal FIM, post-multiplier to reals
-data <- data %>%
-  mutate(
-    real_post_multiplier_low = nom_post_multiplier_low / (gdp_deflator/100),
-    real_post_multiplier_high = nom_post_multiplier_high / (gdp_deflator/100),
-    real_impulse = nom_impulse / (gdp_deflator/100)
-  )
-
-# 2.G: Graph real FIM, post multiplier
+# 3.B: Graph real FIM, post multiplier
 ggplot(data_filtered) +
   geom_line(aes(x = date, y = real_post_multiplier_low, color = "Low")) +
   geom_point(aes(x = date, y = real_post_multiplier_low, color = "Low")) +
@@ -114,12 +120,16 @@ ggplot(data_filtered) +
        color = "Legend") +
   theme_minimal()
 
+# 3.C: Graph real post-multiplier FIM against real FIM
 ggplot(data_filtered) +
-  geom_ribbon(aes(x = date, ymin = real_post_multiplier_low, ymax = real_post_multiplier_high), fill = "grey70", alpha = 0.5) +
-  geom_line(aes(x = date, y = real_impulse), color = "black") +
-  labs(title = "Real FIM, Post-Multiplier (2000-2025)",
+  geom_line(aes(x = date, y = real_post_multiplier_FIM_low*100, color = "Low multipliers")) +
+  geom_point(aes(x = date, y = real_post_multiplier_FIM_low*100, color = "Low multipliers")) +
+  geom_line(aes(x = date, y = real_post_multiplier_FIM_high*100, color = "High multipliers")) +
+  geom_point(aes(x = date, y = real_post_multiplier_FIM_high*100, color = "High multipliers")) +
+  geom_line(aes(x = date, y = fiscal_impact*100, color = "Original FIM")) +
+  geom_point(aes(x = date, y = fiscal_impact*100, color = "Original FIM")) +
+  labs(title = "Original FIM and FIM Post-Multiplier (2000-2025)",
        x = "Date",
-       y = "Billions USD, Real",
+       y = "Percentage Points of GDP",
        color = "Legend") +
   theme_minimal()
-
