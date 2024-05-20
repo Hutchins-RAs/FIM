@@ -11,8 +11,8 @@ Federal Aid to Small Businesses Arp Contribution,previous,0.0416,0.1832,0.0467,-
 Federal Contribution,current,-0.3147,-0.492,0.2061,-0.1514,0.3853,-0.3518,-0.2561,NA,NA,NA,NA,NA,-0.3996,-0.1087,-0.1253,-0.4667,-0.3414
 Federal Contribution,difference,-0,-0,0,-0,0,-0,-0,NA,NA,NA,NA,NA,-0.0398,-0.0413,-0.0415,-0.0446,-0.0431
 Federal Contribution,previous,-0.3147,-0.492,0.2061,-0.1514,0.3853,-0.3518,-0.2561,NA,NA,NA,NA,NA,-0.3599,-0.0673,-0.0838,-0.4221,-0.2982
-Federal Corporate Taxes Contribution,current,-0.016,-0.0135,-0.0221,-0.0484,-0.0708,0.1067,-0.0452,NA,NA,NA,NA,NA,-0.1221,-0.2406,-0.226,-0.2871,-0.2221
-Federal Corporate Taxes Contribution,difference,0,-0,0,-0,-0,-0,0,NA,NA,NA,NA,NA,-0.0018,-0.0024,-0.0025,-0.0032,-0.0026
+Federal Corporate Taxes Contribution,current,-0.016,-0.0135,-0.0221,-0.0484,-0.0708,0.0969,-0.045,NA,NA,NA,NA,NA,0.0027,-0.0924,-0.0876,-0.1505,-0.0734
+Federal Corporate Taxes Contribution,difference,0,-0,0,-0,-0,-0.0098,2e-4,NA,NA,NA,NA,NA,0.1229,0.1457,0.1359,0.1334,0.146
 Federal Corporate Taxes Contribution,previous,-0.016,-0.0135,-0.0221,-0.0484,-0.0708,0.1067,-0.0452,NA,NA,NA,NA,NA,-0.1203,-0.2381,-0.2235,-0.2839,-0.2195
 Federal Health Outlays Contribution,current,-0.0149,0.1127,0.0635,0.1594,0.0114,-0.0474,-0.1384,NA,NA,NA,NA,NA,-0.1893,0.0271,-0.0196,0.031,0.0205
 Federal Health Outlays Contribution,difference,0,-0,-0,-0,-0,0,-0,NA,NA,NA,NA,NA,-0.006,-0.0121,-0.0185,-0.0241,-0.0242
@@ -41,8 +41,8 @@ Federal Subsidies Contribution,previous,0.3546,0.1911,0.0198,-0.0667,-0.1693,-0.
 Federal Ui Contribution,current,0.0698,-0.9679,-1.0281,-0.9516,-1.4056,-0.9559,-0.3929,NA,NA,NA,NA,NA,-7e-4,-3e-4,-2e-4,0,0
 Federal Ui Contribution,difference,-0,-0,-0,0,0,-0,0,NA,NA,NA,NA,NA,0,-0,-0,0,0
 Federal Ui Contribution,previous,0.0698,-0.9679,-1.0281,-0.9516,-1.4056,-0.9559,-0.3929,NA,NA,NA,NA,NA,-7e-4,-3e-4,-2e-4,0,0
-Fiscal Impact,current,-2.4568,-2.9731,-3.1497,-3.7536,-4.5905,-2.2874,-0.5607,NA,NA,NA,NA,NA,-0.7614,-0.4572,-0.2208,-0.8013,-0.9297
-Fiscal Impact,difference,0,-0,-0,0,0,-0,0,NA,NA,NA,NA,NA,-0.0876,-0.0942,-0.1018,-0.1151,-0.1102
+Fiscal Impact,current,-2.4568,-2.9731,-3.1497,-3.7536,-4.5905,-2.2972,-0.5605,NA,NA,NA,NA,NA,-0.6367,-0.309,-0.0824,-0.6647,-0.7811
+Fiscal Impact,difference,0,-0,-0,0,0,-0.0098,2e-4,NA,NA,NA,NA,NA,0.0371,0.054,0.0367,0.0215,0.0384
 Fiscal Impact,previous,-2.4568,-2.9731,-3.1497,-3.7536,-4.5905,-2.2874,-0.5607,NA,NA,NA,NA,NA,-0.6738,-0.363,-0.119,-0.6862,-0.8195
 Gdp,current,23292.4,23829,24654.6,25029.1,25544.3,25994.6,26408.4,NA,NA,NA,NA,NA,28521.5094,28783.7326,29054.2258,29343.8816,29655.9272
 Gdp,difference,0,0,0,0,0,0,0,NA,NA,NA,NA,NA,-100.9646,-183.6044,-270.1862,-344.39,-387.5407
