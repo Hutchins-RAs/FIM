@@ -13,7 +13,7 @@ library(ggplot2)
 
 #### STEP 1: Load & clean FIM data ---------------------------------------------
 # We use 2024-04 FIM results here. Feel free to adjust according to your needs.
-fim_raw <- read_xlsx("results/04-2024/fim-04-2024.xlsx",
+fim_raw <- read_xlsx("results/05-2024 - CORRECTED CBO + SUPPLY SIDE/fim-05-2024.xlsx",
                     range = "A1:HU260",
                     col_names = TRUE,
                     # The first column is a date column, the second column "id"
