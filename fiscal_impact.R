@@ -173,7 +173,7 @@ projections <- projections %>%
   # "yptu", "federal_ui_timing", "gh", "gfh", "gsh", "g", "gf", "gs", 
   # "cpiu_g", "cola_rate", "health_ui")
   select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), 
-         dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, 
+         dc, c, ch ,ends_with('growth'), cpiu, cpiu_g, federal_ui, state_ui, 
          unemployment_rate)
 
 ## Testing section
