@@ -163,14 +163,14 @@ projections <- projections %>%
          jgs = gs/gsh,
          jc = c/ch) %>%
   # Growth rates
-  # adds 36 new columns
+  # adds 32 new columns
   mutate(
     across(
-      .cols = c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
-                "yptmd", "yptu", "state_ui", "federal_ui_timing", "federal_ui", 
+      .cols = c("gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
+                "yptmd", "yptu", "state_ui", "federal_ui", 
                 "gdp", "gdph", "gdppothq", "gdppotq", "dc", "jgdp", "c", "ch", 
                 "gh", "gfh", "gsh", "g", "gf", "gs", "cpiu", 
-                "unemployment_rate", "cpiu_g", "cola_rate", "gftfp_unadj", 
+                "unemployment_rate", "gftfp_unadj", 
                 "health_ui", "smooth_gftfp_minus_health_ui", "jgf", "jgs", "jc"),
       # Equivalent criteria to the above, but the above is more explicit about
       # which columns are added for later refactoring
@@ -224,12 +224,12 @@ projections <- projections %>%
 
 ## Testing section
 projections <- projections %>%
-  select(-cola_rate_growth) %>% # Successfully removed
-  select(-cpiu_g_growth) %>% # Successfully removed
+  #select(-cola_rate_growth) %>% # Successfully removed
+  #select(-cpiu_g_growth) %>% # Successfully removed
   select(-gfrptCurrentLaw_growth) %>% # Successfully removed
-  select(-smooth_gftfp_minus_health_ui_growth) %>% 
-  select(-federal_ui_timing_growth) %>%
-  select(-fy_growth)
+  select(-smooth_gftfp_minus_health_ui_growth) # Successfully removed
+  #select(-federal_ui_timing_growth) %>% # Successfully removed
+  #select(-fy_growth) # Successfully removed
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
