@@ -224,7 +224,7 @@ projections <- projections %>%
 
 ## Testing section
 projections <- projections %>%
-  select(-cola_rate_growth)
+  select(-cola_rate_growth) %>% # Successfully removed
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
