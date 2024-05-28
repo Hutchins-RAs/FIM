@@ -1,62 +1,4 @@
 
-#' Title
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-cola_adjustment <- function(df){
-
-  get_cola_rate <- function(df){
-    df %>%
-      mutate(cpiu_g = fim::q_a(cpiu) / 100,
-             cola_rate = if_else(lubridate::quarter(date) == 1,
-                                 lag(cpiu_g, 2),
-                                 NA)) %>%
-      tidyr::fill(cola_rate)
-  }
-  smooth_transfers_net_health_ui <- function(df){
-    df %>%
-      mutate(gftfp_unadj = gftfp,
-             health_ui = TTR::SMA(yptmd + yptmr + yptu, n = 4),
-             smooth_gftfp_minus_health_ui = TTR::SMA((gftfp - health_ui) * (1 - cola_rate), n =4),
-             gftfp = smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui)
-  }
-  df %>%
-    get_cola_rate() %>%
-    smooth_transfers_net_health_ui()
-  
-}
-
-
-#' Alternative tax scenario
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-  alternative_tax_scenario <- function(df){
-    # Construct alternative scenario for personal current taxes, under which the TCJA provisions for income taxes don't
-    # expire in 2025
-    expdate <- tsibble::yearquarter('2025 Q3')
-    
-    df %>%
-      mutate(gfrptCurrentLaw = gfrpt,
-             gfrptCurrentLaw_growth = gfrpt_growth,
-             gfrpt_growth =
-               if_else(date > expdate,
-                       lag(gfrpt_growth),
-                       gfrpt_growth,
-                       missing = NULL
-               ),
-             gfrpt  = if_else(date >= expdate,
-                              lag(gfrpt) * (1 + gfrpt_growth / 400),
-                              gfrpt))
-  }
 #' Implicit price deflators
 #'
 #' @param df 
@@ -93,26 +35,7 @@ cola_adjustment <- function(df){
         )
       )
   }
-#' Calculate growth rates
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-  growth_rates <- function(df){
-    df %>%
-      mutate(
-        across(
-          .cols = where(is.numeric) & !ends_with('_growth'),
-          .fns = ~ q_g(.),
-          .names = "{.col}_growth"
-        ) 
-      )
-  }
-  
-  
+
 
 #' Get growth rates of federal transfers
 #'

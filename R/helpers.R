@@ -1,19 +1,4 @@
 
-#' Title
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-format_tsibble <- function(df){
-  df %>%
-    mutate(date = tsibble::yearquarter(date)) %>%
-    relocate(id, .before = date) %>%
-    tsibble::as_tsibble(key = id, index = date)
-}
-
 annual_to_quarter <- function(df){
   year <-
     df %>%
