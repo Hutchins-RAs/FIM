@@ -223,7 +223,8 @@ projections <- projections %>%
          unemployment_rate)
 
 ## Testing section
-projections <- projections
+projections <- projections %>%
+  select(-cola_rate_growth)
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
