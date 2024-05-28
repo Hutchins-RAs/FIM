@@ -224,12 +224,9 @@ projections <- projections %>%
 
 ## Testing section
 projections <- projections %>%
-  #select(-cola_rate_growth) %>% # Successfully removed
-  #select(-cpiu_g_growth) %>% # Successfully removed
   select(-gfrptCurrentLaw_growth) %>% # Successfully removed
   select(-smooth_gftfp_minus_health_ui_growth) # Successfully removed
-  #select(-federal_ui_timing_growth) %>% # Successfully removed
-  #select(-fy_growth) # Successfully removed
+
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
