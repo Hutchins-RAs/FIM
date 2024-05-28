@@ -178,6 +178,7 @@ projections <- projections %>%
 
 ## Testing section
 projections <- projections 
+# TODO: figure out why cpiu_g and cpiu_growth are different
 
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
