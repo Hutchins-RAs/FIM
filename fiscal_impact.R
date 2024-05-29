@@ -104,21 +104,6 @@ current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
 #### Section B.1: Manipulate projections dataframe------------------------------
 
 projections <- projections %>% 
-  # Generate a row of quarterly annualized growth rates for the CPI-U series
-  # called `cpiu_g` by applying the qagr function
-  mutate(cpiu_g = qagr(cpiu)) %>%
-  # Calculate 'cola_rate' for each row: If the quarter is Q1, set 'cola_rate' to
-  # the annualized CPI-U growth rate from two quarters ago. Otherwise, set to 
-  # NA. This represents the cost-of-living adjustment rate applicable only in 
-  # the first quarter of each year, based on CPI-U growth at the end of the 
-  # prior year.
-  mutate(cola_rate = if_else(lubridate::quarter(date) == 1,
-                             lag(cpiu_g, 2),
-                             NA)) %>%
-  # Fills missing `cola_rate` values forward. Once a `cola_rate` is specified 
-  # for Q1, it is carried forward to Q2, Q3, and Q4, applying the same rate 
-  # throughout the year until a new rate is defined in the following Q1. 
-  tidyr::fill(cola_rate) %>%
   # Smooth budget series
   # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
   # health outlays, and unemployment insurance data. For each selected column, 
@@ -147,7 +132,7 @@ projections <- projections %>%
       .cols = c("gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
                 "yptmd", "yptu", "state_ui", "federal_ui", 
                 "gdp", "gdph", "gdppothq", "gdppotq", "dc", "jgdp", "c", "ch", 
-                "gh", "gfh", "gsh", "g", "gf", "gs", "cpiu", 
+                "gh", "gfh", "gsh", "g", "gf", "gs",
                 "unemployment_rate", 
                 "jgf", "jgs", "jc"),
       # Equivalent criteria to the above, but the above is more explicit about
@@ -171,14 +156,13 @@ projections <- projections %>%
   # These are the columns that are explicitly dropped in this step:
   # c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", "yptmd", 
   # "yptu", "federal_ui_timing", "gh", "gfh", "gsh", "g", "gf", "gs", 
-  # "cpiu_g", "cola_rate", "health_ui")
+  # "cpiu_g", "cola_rate", "health_ui", "cpiu") (and maybe a few others)
   select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), 
-         dc, c, ch ,ends_with('growth'), cpiu, cpiu_g, federal_ui, state_ui, 
+         dc, c, ch ,ends_with('growth'), federal_ui, state_ui, 
          unemployment_rate)
 
 ## Testing section
-projections <- projections 
-# TODO: figure out why cpiu_g and cpiu_growth are different
+projections <- projections
 
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
