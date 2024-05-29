@@ -119,28 +119,6 @@ projections <- projections %>%
   # for Q1, it is carried forward to Q2, Q3, and Q4, applying the same rate 
   # throughout the year until a new rate is defined in the following Q1. 
   tidyr::fill(cola_rate) %>%
-  # this subsection of cola_adjustment() used to be called 
-  # `smooth_transfers_net_health_ui`
-  # Adjusts government final transfer payments (gftfp) for cost-of-living 
-  # adjustments (COLA) and health/unemployment insurance smoothing.
-         # 1. 'gftfp_unadj' stores the original gftfp values before adjustments.
-  mutate(gftfp_unadj = gftfp,
-         # 2. 'health_ui' computes a 4-quarter simple moving average (SMA) of 
-         # health and unemployment insurance payments to smooth out 
-         # fluctuations.
-         health_ui = TTR::SMA(yptmd + yptmr + yptu, n = 4),
-         # 3. 'smooth_gftfp_minus_health_ui' calculates a smoothed version of 
-         # gftfp excluding health_ui, adjusted by the COLA rate to reflect the 
-         # change in purchasing power.
-         smooth_gftfp_minus_health_ui = TTR::SMA((gftfp - health_ui) * (1 - cola_rate), n =4),
-         # 4. Finally, 'gftfp' is recalculated by adding the smoothed, COLA-
-         # adjusted gftfp (excluding health_ui) back to the smoothed health_ui, 
-         # providing an overall adjusted gftfp that accounts for both cost-of-
-         # living adjustments and smoothed health/unemployment insurance 
-         # payments. This ensures gftfp reflects both the impact of inflation 
-         # adjustments and more stable health and unemployment insurance figures
-         # across quarters.
-         gftfp = smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui) %>%
   # Smooth budget series
   # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
   # health outlays, and unemployment insurance data. For each selected column, 
@@ -163,15 +141,15 @@ projections <- projections %>%
          jgs = gs/gsh,
          jc = c/ch) %>%
   # Growth rates
-  # adds 36 new columns
+  # adds 32 new columns
   mutate(
     across(
-      .cols = c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
-                "yptmd", "yptu", "state_ui", "federal_ui_timing", "federal_ui", 
+      .cols = c("gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
+                "yptmd", "yptu", "state_ui", "federal_ui", 
                 "gdp", "gdph", "gdppothq", "gdppotq", "dc", "jgdp", "c", "ch", 
                 "gh", "gfh", "gsh", "g", "gf", "gs", "cpiu", 
-                "unemployment_rate", "cpiu_g", "cola_rate", "gftfp_unadj", 
-                "health_ui", "smooth_gftfp_minus_health_ui", "jgf", "jgs", "jc"),
+                "unemployment_rate", 
+                "jgf", "jgs", "jc"),
       # Equivalent criteria to the above, but the above is more explicit about
       # which columns are added for later refactoring
       #.cols = where(is.numeric) & !ends_with('_growth'),
@@ -181,29 +159,6 @@ projections <- projections %>%
       .names = "{.col}_growth"
     ) 
   ) %>%
-  # Construct alternative scenario for personal current taxes, under which the
-  # TCJA provisions for income taxes don't expire in 2025
-  # TODO: I think this code has a mistake. Currently, code replaces gfrpt_growth
-  # with the lag of itself starting in 2025 Q3. This doesn't make much sense- 
-  # I think original authors wanted to keep the same growth rate continuing into
-  # perpetuity after 2025 Q3. Figure out what we intend to do here.
-  # TODO: figure out if this growth rate is even used later.
-  #
-  # keep the current law version (where TCJA measures sunset in 2025 Q3)
-  mutate(gfrptCurrentLaw = gfrpt,
-         # keep the current law growth
-         gfrptCurrentLaw_growth = gfrpt_growth,
-         # redefine the growth to be the lag of itself? (I believe this is a mistake)
-         gfrpt_growth =
-           if_else(date > yearquarter('2025 Q3'),
-                   lag(gfrpt_growth),
-                   gfrpt_growth,
-                   missing = NULL
-           ),
-         gfrpt  = if_else(date >= yearquarter('2025 Q3'),
-                          lag(gfrpt) * (1 + gfrpt_growth / 400),
-                          gfrpt)) %>%
-  # function was formerly called format_tsibble
   # Turn date into time series
   mutate(date = tsibble::yearquarter(date)) %>%
   # reorder the id column before the date column
@@ -216,11 +171,15 @@ projections <- projections %>%
   # These are the columns that are explicitly dropped in this step:
   # c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", "yptmd", 
   # "yptu", "federal_ui_timing", "gh", "gfh", "gsh", "g", "gf", "gs", 
-  # "cpiu_g", "cola_rate", "gftfp_unadj", "health_ui", 
-  # "smooth_gftfp_minus_health_ui", "gfrptCurrentLaw")
+  # "cpiu_g", "cola_rate", "health_ui")
   select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), 
-         dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, 
+         dc, c, ch ,ends_with('growth'), cpiu, cpiu_g, federal_ui, state_ui, 
          unemployment_rate)
+
+## Testing section
+projections <- projections 
+# TODO: figure out why cpiu_g and cpiu_growth are different
+
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
