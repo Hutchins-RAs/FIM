@@ -132,7 +132,7 @@ projections <- projections %>%
       .cols = c("gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
                 "yptmd", "yptu", "state_ui", "federal_ui", 
                 "gdp", "gdph", "gdppothq", "gdppotq", "dc", "jgdp", "c", "ch", 
-                "gh", "gfh", "gsh", "g", "gf", "gs", "cpiu", 
+                "gh", "gfh", "gsh", "g", "gf", "gs",
                 "unemployment_rate", 
                 "jgf", "jgs", "jc"),
       # Equivalent criteria to the above, but the above is more explicit about
@@ -156,13 +156,13 @@ projections <- projections %>%
   # These are the columns that are explicitly dropped in this step:
   # c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", "yptmd", 
   # "yptu", "federal_ui_timing", "gh", "gfh", "gsh", "g", "gf", "gs", 
-  # "cpiu_g", "cola_rate", "health_ui")
+  # "cpiu_g", "cola_rate", "health_ui", "cpiu") (and maybe a few others)
   select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), 
-         dc, c, ch ,ends_with('growth'), cpiu, federal_ui, state_ui, 
+         dc, c, ch ,ends_with('growth'), federal_ui, state_ui, 
          unemployment_rate)
 
 ## Testing section
-projections <- projections 
+projections <- projections
 
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
