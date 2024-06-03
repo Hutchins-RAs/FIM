@@ -357,8 +357,17 @@ real_df <- projections %>%
     federal_purchases_real = federal_purchases - lag(federal_purchases) * consumption_deflator_growth,
     state_purchases_real = state_purchases - lag(state_purchases) * consumption_deflator_growth,
     consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_deflator_growth,
-    investment_grants_real = investment_grants - lag(investment_grants) * consumption_deflator_growth
+    investment_grants_real = investment_grants - lag(investment_grants) * consumption_deflator_growth,
+    supply_side_ira_real = supply_side_ira - lag(supply_side_ira) * consumption_deflator_growth
   )
+
+
+# Temporary "beta" data frame that includes consumption deflated reals with only cols
+# belonging to `data_series`
+real_df_beta <- real_df %>%
+  select(ends_with("_real")) %>%
+  rename_with(~ str_remove(., "_real"))
+
 
 # Section D.1: Minus Neutral -------------------------------------------------------------
 # Using the list of 24 data_series that are manipulated by the FIM, we produce a 
