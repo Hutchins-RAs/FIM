@@ -316,19 +316,49 @@ source("src/map_mpc_time_series.R")
 # refactored script.
 data_series <- names(mpc_series)
 
-# we only keep this section for the purpose of integrating the refactored section
-# with the larger code.
-consumption_pt1 <-
-  projections %>%
-  get_real_levels() 
-
 # Section D.0: Real levels -------------------------------------------------------------
 # For now, this code is a remnant of the old FIM. But eventually, it will use a list
 # of the 24 data series manipulated by the FIM, and take projections as an input and
 # output real_df
-# TODO: refactor this section
-real_df <-
-  consumption_pt1
+# TODO: This code is refactored from the get_real_levels() legacy function. It has
+# 31 data cols it produces, some of which must be redundant. Also, I'm not sure
+# it produces all the data cols we need. And the other problem is that it produces
+# a large df rather than one with 24 cols. So all of these issues need to be resolved
+# to modularize this step.
+real_df <- projections %>%
+  mutate(
+    corporate_taxes_real = corporate_taxes - lag(corporate_taxes) * consumption_deflator_growth,
+    federal_corporate_taxes_real = federal_corporate_taxes - lag(federal_corporate_taxes) * consumption_deflator_growth,
+    state_corporate_taxes_real = state_corporate_taxes - lag(state_corporate_taxes) * consumption_deflator_growth,
+    non_corporate_taxes_real = non_corporate_taxes - lag(non_corporate_taxes) * consumption_deflator_growth,
+    federal_non_corporate_taxes_real = federal_non_corporate_taxes - lag(federal_non_corporate_taxes) * consumption_deflator_growth,
+    state_non_corporate_taxes_real = state_non_corporate_taxes - lag(state_non_corporate_taxes) * consumption_deflator_growth,
+    social_benefits_real = social_benefits - lag(social_benefits) * consumption_deflator_growth,
+    federal_social_benefits_real = federal_social_benefits - lag(federal_social_benefits) * consumption_deflator_growth,
+    state_social_benefits_real = state_social_benefits - lag(state_social_benefits) * consumption_deflator_growth,
+    health_outlays_real = health_outlays - lag(health_outlays) * consumption_deflator_growth,
+    federal_health_outlays_real = federal_health_outlays - lag(federal_health_outlays) * consumption_deflator_growth,
+    state_health_outlays_real = state_health_outlays - lag(state_health_outlays) * consumption_deflator_growth,
+    subsidies_real = subsidies - lag(subsidies) * consumption_deflator_growth,
+    federal_subsidies_real = federal_subsidies - lag(federal_subsidies) * consumption_deflator_growth,
+    state_subsidies_real = state_subsidies - lag(state_subsidies) * consumption_deflator_growth,
+    ui_real = ui - lag(ui) * consumption_deflator_growth,
+    federal_ui_real = federal_ui - lag(federal_ui) * consumption_deflator_growth,
+    state_ui_real = state_ui - lag(state_ui) * consumption_deflator_growth,
+    rebate_checks_real = rebate_checks - lag(rebate_checks) * consumption_deflator_growth,
+    rebate_checks_arp_real = rebate_checks_arp - lag(rebate_checks_arp) * consumption_deflator_growth,
+    federal_other_direct_aid_arp_real = federal_other_direct_aid_arp - lag(federal_other_direct_aid_arp) * consumption_deflator_growth,
+    federal_other_vulnerable_arp_real = federal_other_vulnerable_arp - lag(federal_other_vulnerable_arp) * consumption_deflator_growth,
+    federal_aid_to_small_businesses_arp_real = federal_aid_to_small_businesses_arp - lag(federal_aid_to_small_businesses_arp) * consumption_deflator_growth,
+    federal_student_loans_real = federal_student_loans - lag(federal_student_loans) * consumption_deflator_growth,
+    medicaid_real = medicaid - lag(medicaid) * consumption_deflator_growth,
+    medicaid_grants_real = medicaid_grants - lag(medicaid_grants) * consumption_deflator_growth,
+    medicare_real = medicare - lag(medicare) * consumption_deflator_growth,
+    federal_purchases_real = federal_purchases - lag(federal_purchases) * federal_purchases_deflator_growth,
+    state_purchases_real = state_purchases - lag(state_purchases) * state_purchases_deflator_growth,
+    consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_grants_deflator_growth,
+    investment_grants_real = investment_grants - lag(investment_grants) * investment_grants_deflator_growth
+  )
 
 # Section D.1: Minus Neutral -------------------------------------------------------------
 # Using the list of 24 data_series that are manipulated by the FIM, we produce a 
