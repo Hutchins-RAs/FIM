@@ -354,10 +354,10 @@ real_df <- projections %>%
     medicaid_real = medicaid - lag(medicaid) * consumption_deflator_growth,
     medicaid_grants_real = medicaid_grants - lag(medicaid_grants) * consumption_deflator_growth,
     medicare_real = medicare - lag(medicare) * consumption_deflator_growth,
-    federal_purchases_real = federal_purchases - lag(federal_purchases) * federal_purchases_deflator_growth,
-    state_purchases_real = state_purchases - lag(state_purchases) * state_purchases_deflator_growth,
-    consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_grants_deflator_growth,
-    investment_grants_real = investment_grants - lag(investment_grants) * investment_grants_deflator_growth
+    federal_purchases_real = federal_purchases - lag(federal_purchases) * consumption_deflator_growth,
+    state_purchases_real = state_purchases - lag(state_purchases) * consumption_deflator_growth,
+    consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_deflator_growth,
+    investment_grants_real = investment_grants - lag(investment_grants) * consumption_deflator_growth
   )
 
 # Section D.1: Minus Neutral -------------------------------------------------------------
