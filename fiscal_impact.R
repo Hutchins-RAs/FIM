@@ -360,6 +360,9 @@ real_df <- projections %>%
     investment_grants_real = investment_grants - lag(investment_grants) * investment_grants_deflator_growth
   )
 
+# for integration into the FIM
+consumption_pt1 <- real_df
+
 # Section D.1: Minus Neutral -------------------------------------------------------------
 # Using the list of 24 data_series that are manipulated by the FIM, we produce a 
 # minus_neutral_df, which contains the results of each of these 24 data_series
