@@ -361,6 +361,8 @@ real_df <- projections %>%
     supply_side_ira_real = supply_side_ira - lag(supply_side_ira) * consumption_deflator_growth
   )
 
+# for integration into the FIM
+consumption_pt1 <- real_df
 
 # Temporary "beta" data frame that includes consumption deflated reals with only cols
 # belonging to `data_series`
