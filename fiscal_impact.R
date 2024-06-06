@@ -488,17 +488,32 @@ contributions_pt1 <- consumption %>%
     federal_contribution = federal_purchases_contribution + grants_contribution,
     state_contribution = state_purchases_contribution  - grants_contribution
     ) %>% 
-  
-  mutate(across(ends_with("post_mpc"),
-                #multiplies each value for all post_mpc cols by 400 and divides by the corresponding value in the "gdp" column from the previous row 
-                #The resulting values are given new column names, adding "{.col}_contribution" to the original column names
-                ~ 400 * .x / lag(gdp),
-                .names = "{.col}_contribution" 
-  )) %>%
-  # TODO: Standardize this section so that retroactively renaming post_mpc_contribution
-  # columns to _contribution columns is unnecessary
-  rename_with(~ str_replace(.x, "post_mpc_contribution", "contribution")) %>% 
-  sum_transfers_contributions() #%>% 
+  mutate(
+    social_benefits_contribution = 400 * social_benefits_post_mpc / lag(gdp),
+    federal_social_benefits_contribution = 400 * federal_social_benefits_post_mpc / lag(gdp),
+    state_social_benefits_contribution = 400 * state_social_benefits_post_mpc / lag(gdp),
+    rebate_checks_contribution = 400 * rebate_checks_post_mpc / lag(gdp),
+    subsidies_contribution = 400 * subsidies_post_mpc / lag(gdp),
+    federal_subsidies_contribution = 400 * federal_subsidies_post_mpc / lag(gdp),
+    state_subsidies_contribution = 400 * state_subsidies_post_mpc / lag(gdp),
+    health_outlays_contribution = 400 * health_outlays_post_mpc / lag(gdp),
+    federal_health_outlays_contribution = 400 * federal_health_outlays_post_mpc / lag(gdp),
+    state_health_outlays_contribution = 400 * state_health_outlays_post_mpc / lag(gdp),
+    corporate_taxes_contribution = 400 * corporate_taxes_post_mpc / lag(gdp),
+    federal_corporate_taxes_contribution = 400 * federal_corporate_taxes_post_mpc / lag(gdp),
+    state_corporate_taxes_contribution = 400 * state_corporate_taxes_post_mpc / lag(gdp),
+    non_corporate_taxes_contribution = 400 * non_corporate_taxes_post_mpc / lag(gdp),
+    federal_non_corporate_taxes_contribution = 400 * federal_non_corporate_taxes_post_mpc / lag(gdp),
+    state_non_corporate_taxes_contribution = 400 * state_non_corporate_taxes_post_mpc / lag(gdp),
+    federal_ui_contribution = 400 * federal_ui_post_mpc / lag(gdp),
+    state_ui_contribution = 400 * state_ui_post_mpc / lag(gdp),
+    federal_other_vulnerable_arp_contribution = 400 * federal_other_vulnerable_arp_post_mpc / lag(gdp),
+    rebate_checks_arp_contribution = 400 * rebate_checks_arp_post_mpc / lag(gdp),
+    federal_other_direct_aid_arp_contribution = 400 * federal_other_direct_aid_arp_post_mpc / lag(gdp),
+    federal_student_loans_contribution = 400 * federal_student_loans_post_mpc / lag(gdp),
+    supply_side_ira_contribution = 400 * supply_side_ira_post_mpc / lag(gdp),
+    federal_aid_to_small_businesses_arp_contribution = 400 * federal_aid_to_small_businesses_arp_post_mpc / lag(gdp)
+  )
 
 contributions_pt2 <- contributions_pt1 %>%
   #Define FIM variables for grants and purchases
