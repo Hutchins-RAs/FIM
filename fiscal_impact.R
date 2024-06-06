@@ -475,7 +475,7 @@ consumption <- consumption_new
 # state_purchases, consumption_grants, and investment_grants, which are used
 # to then calculate grants, federal, and state contributions.
 # TODO: are we accidentally not applying MPCs to these contributions?!
-contributions_pt1_new <- consumption %>%
+contributions_pt1 <- consumption %>%
   mutate(
     federal_purchases_contribution = 400 * (federal_purchases - lag(federal_purchases) * (1 + federal_purchases_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
     state_purchases_contribution = 400 * (state_purchases - lag(state_purchases) * (1 + state_purchases_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
