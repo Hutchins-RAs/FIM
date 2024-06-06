@@ -487,9 +487,7 @@ contributions_pt1 <- consumption %>%
     # and the grants variable.
     federal_contribution = federal_purchases_contribution + grants_contribution,
     state_contribution = state_purchases_contribution  - grants_contribution
-    )
-
-contributions_pt2 <- contributions_pt1 %>% 
+    ) %>% 
   
   mutate(across(ends_with("post_mpc"),
                 #multiplies each value for all post_mpc cols by 400 and divides by the corresponding value in the "gdp" column from the previous row 
