@@ -239,9 +239,6 @@ usna2 <- usna1 %>%
 
 # Redefine usna to be integrated back into the FIM
 usna <- usna2
-# check against old usna file
-load("usna_old.RData")
-all.equal(usna, usna_old)
 
 # Section C: Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values from the data folder
@@ -450,20 +447,6 @@ load("TEMP_consumption_newnames.RData")
 load("TEMP_consumption_newnames_column_order.RData")
 consumption_new <- consumption_pt3 %>%
   .[, consumption_newnames_column_order]
-end <- nrow(consumption_newnames)
-# Comparing all but the first row of the two consumption data frames:
-# consumption_newnames is the original FIM data frame from main branch with the
-# colnames edited slightly to match this standardized version; consumption_new
-# is the new df generated here. Their first rows do not match because of the
-# _minus_neutral function, which used to have a defauly lag = 0 for some pandemic-
-# era programs. Lorae has since standardized this, causing the slight difference
-# in NA entries. Thus, comparing the second entry onward is a more appropriate
-# check.
-old_data <- consumption_newnames[2:end,] %>%
-  select(-ui_minus_neutral) # remove this column since we eliminated while refactoring
-new_data <- consumption_new[2:end,]
-# check if newly refactored result matches old result
-all.equal(old_data, new_data)
 
 # Assign result to the consumption df, so rest of code runs smoothly.
 # consumption_new is just a temporary feature to compare between new and old fims
@@ -574,18 +557,8 @@ contributions_pt2 <- contributions_pt1 %>%
   ) %>% 
   mutate( subsidies_real = federal_subsidies_real + state_subsidies_real)
 
-# check if newly refactored result matches old result
-load("TEMP_contributions.RData") #old contributions
-contributions_new <- contributions_pt2 # new contributions
-
-old_data <- contributions[2:end,] %>%
-  select(-ui_minus_neutral) # remove this column since we eliminated while refactoring
-new_data <- contributions_new[2:end,]
-
-all.equal(old_data, new_data)
-
 # for later use in this code
-contributions <- contributions_new
+contributions <- contributions_pt2
 
 #openxlsx::write.xlsx: This function writes an R data object to an .xlsx file (an Excel spreadsheet).
 #file = glue('results/{month_year}/fim-{month_year}.xlsx'): This specifies the file path and name of the .xlsx file that the data will be written to. The glue() function is being used to dynamically create the file path and name using the month_year variable.
