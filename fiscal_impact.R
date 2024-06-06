@@ -516,13 +516,6 @@ contributions_pt1 <- consumption %>%
   )
 
 contributions_pt2 <- contributions_pt1 %>%
-  #Define FIM variables for grants and purchases
-  mutate(
-    grants_contribution = consumption_grants_contribution + investment_grants_contribution,
-    federal_contribution = federal_purchases_contribution + grants_contribution,
-    state_contribution = state_purchases_contribution - grants_contribution
-  ) %>%
-  
   #Define FIM variables for social benefits 
   mutate(social_benefits_contribution = federal_social_benefits_contribution + 
            state_social_benefits_contribution) %>%
