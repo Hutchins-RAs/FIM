@@ -1,27 +1,3 @@
-#' Title
-#'
-#' @param df 
-#'
-#' @return
-#' @export
-#'
-#' @examples
-purchases_contributions <- function(df){
-  df %>%
-    mutate(over(c('federal_purchases', 
-                  'state_purchases', 
-                  'consumption_grants', 
-                  'investment_grants'),
-                
-                .fns =  ~ 400 * (.("{.x}") - lag(.("{.x}")) * (1 + .("{.x}_deflator_growth") + real_potential_gdp_growth)) 
-                / lag(gdp),
-                
-                .names = "{x}_contribution"),
-           grants_contribution = consumption_grants_contribution + investment_grants_contribution,
-           federal_contribution = federal_purchases_contribution + grants_contribution,
-           state_contribution = state_purchases_contribution  - grants_contribution)
-  
-}
 
 #' Calculate contributions of grants and purchases
 #'

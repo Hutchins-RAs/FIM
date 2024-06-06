@@ -471,9 +471,25 @@ consumption <- consumption_new
 
 # Section E: Contribution ------------------------------------------------------------
 
-contributions_pt1 <- # Calculate contributions
-  consumption %>%
-  purchases_contributions() %>% 
+# Here we calculate contributions. We start with federal_purchases,
+# state_purchases, consumption_grants, and investment_grants, which are used
+# to then calculate grants, federal, and state contributions.
+# TODO: are we accidentally not applying MPCs to these contributions?!
+contributions_pt1_new <- consumption %>%
+  mutate(
+    federal_purchases_contribution = 400 * (federal_purchases - lag(federal_purchases) * (1 + federal_purchases_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
+    state_purchases_contribution = 400 * (state_purchases - lag(state_purchases) * (1 + state_purchases_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
+    consumption_grants_contribution = 400 * (consumption_grants - lag(consumption_grants) * (1 + consumption_grants_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
+    investment_grants_contribution = 400 * (investment_grants - lag(investment_grants) * (1 + investment_grants_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
+    # The grants variable is the sum of variables just generated
+    grants_contribution = consumption_grants_contribution + investment_grants_contribution,
+    # The federal and state variables are the sum of variables just generated 
+    # and the grants variable.
+    federal_contribution = federal_purchases_contribution + grants_contribution,
+    state_contribution = state_purchases_contribution  - grants_contribution
+    )
+
+contributions_pt2 <- contributions_pt1 %>% 
   
   mutate(across(ends_with("post_mpc"),
                 #multiplies each value for all post_mpc cols by 400 and divides by the corresponding value in the "gdp" column from the previous row 
