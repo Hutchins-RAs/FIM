@@ -480,13 +480,7 @@ contributions_pt1 <- consumption %>%
     federal_purchases_contribution = 400 * (federal_purchases - lag(federal_purchases) * (1 + federal_purchases_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
     state_purchases_contribution = 400 * (state_purchases - lag(state_purchases) * (1 + state_purchases_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
     consumption_grants_contribution = 400 * (consumption_grants - lag(consumption_grants) * (1 + consumption_grants_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
-    investment_grants_contribution = 400 * (investment_grants - lag(investment_grants) * (1 + investment_grants_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
-    # The grants variable is the sum of variables just generated
-    grants_contribution = consumption_grants_contribution + investment_grants_contribution,
-    # The federal and state variables are the sum of variables just generated 
-    # and the grants variable.
-    federal_contribution = federal_purchases_contribution + grants_contribution,
-    state_contribution = state_purchases_contribution  - grants_contribution
+    investment_grants_contribution = 400 * (investment_grants - lag(investment_grants) * (1 + investment_grants_deflator_growth + real_potential_gdp_growth)) / lag(gdp)
     ) %>% 
   mutate(
     social_benefits_contribution = 400 * social_benefits_post_mpc / lag(gdp),
@@ -516,20 +510,18 @@ contributions_pt1 <- consumption %>%
   )
 
 contributions_pt2 <- contributions_pt1 %>%
-  #Define FIM variables for social benefits 
-  mutate(social_benefits_contribution = federal_social_benefits_contribution + 
-           state_social_benefits_contribution) %>%
-  
-  #Define FIM variables for taxes 
-  mutate(non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + 
-           state_non_corporate_taxes_contribution) %>%
-  mutate(federal_corporate_taxes_contribution = federal_corporate_taxes_contribution +
-           supply_side_ira_contribution) %>%
-  mutate(taxes_contribution = non_corporate_taxes_contribution + 
-           corporate_taxes_contribution) %>%
-  
-  #Define FIM variables for taxes and transfers  
   mutate(
+    # Sum other vars to get grants, federal, state contributions
+    grants_contribution = consumption_grants_contribution + investment_grants_contribution,
+    federal_contribution = federal_purchases_contribution + grants_contribution,
+    state_contribution = state_purchases_contribution  - grants_contribution,
+    # Social benefits contributions
+    social_benefits_contribution = federal_social_benefits_contribution + state_social_benefits_contribution,
+    # Taxes contributions
+    non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution,
+    federal_corporate_taxes_contribution = federal_corporate_taxes_contribution + supply_side_ira_contribution,
+    taxes_contribution = non_corporate_taxes_contribution + corporate_taxes_contribution,
+    # Transfers contribution
     transfers_contribution = federal_social_benefits_contribution + 
       state_social_benefits_contribution +
       rebate_checks_contribution + 
@@ -544,20 +536,21 @@ contributions_pt2 <- contributions_pt1 %>%
       federal_other_direct_aid_arp_contribution + 
       federal_other_vulnerable_arp_contribution +
       federal_student_loans_contribution,
-    
+    # TODO: WHY DO WE DEFINE TAXES TWICE?! DOES IT MAKE A DIFFERENCE?
     taxes_contribution = federal_non_corporate_taxes_contribution + 
       state_non_corporate_taxes_contribution +
       federal_corporate_taxes_contribution + 
-      state_corporate_taxes_contribution
+      state_corporate_taxes_contribution,
+    # TODO: WHY ARE SUBSIDIES (not subsidies_contribution) DEFINED HERE?
+    subsidies = federal_subsidies + state_subsidies,
+    subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution
   ) %>%
   
+  # TODO: DOES THIS COMMENTED OUT CODE MATTER?
   #Add student loans to federal transfers 
   # mutate(federal_transfers_contribution = federal_transfers_contribution +
   #   federal_student_loans_contribution)%>%
   
-  #Define FIM subsidies 
-  mutate(subsidies = federal_subsidies + state_subsidies,
-         subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution) %>% 
   
   #Calculate the FIM for the defined variables 
   get_fiscal_impact() %>%
