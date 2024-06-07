@@ -33,16 +33,20 @@ if(post_cbo_baseline == TRUE){
 }
 
 
+# Calculate the current date minus 7 days
+current_date <- today() - dweeks(1)
+# Calculate the previous month date, handling wraparound (i.e. previous
+# month to January ("01") is December ("12"), not month "0")
+last_month_date <- current_date %m-% months(1)
+# Extract and format the month as a two-digit string
+last_month_2digit <- sprintf("%02d", month(last_month_date))
+# Extract the year from the last_month_date
+last_year <- year(last_month_date)
+# Create last_month_year string for file naming
+last_month_year <- glue('{last_month_2digit}-{last_year}')
 
-# If the month of the previous month is less than 10, set the value of 'last_month_year' to the previous month and year (in the format "0m-yyyy")
-# Otherwise, set the value of 'last_month_year' to the previous month and year (in the format "mm-yyyy")
-if((month(today() - 7 
-         -months(1)) < 10)){
-  last_month_year <- glue('0{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
-} else{
-  last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
-  
-}
+print(last_month_year)
+
 
 #setting our reference period to be the post-cbo files if we've already produced fim output incorporating the cbo update
 if(file.exists(glue('results/{month_year}-post-cbo'))){
