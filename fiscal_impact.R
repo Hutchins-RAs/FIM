@@ -502,13 +502,10 @@ contributions_pt2 <- contributions_pt1 %>%
     grants_contribution = consumption_grants_contribution + investment_grants_contribution,
     federal_contribution = federal_purchases_contribution + grants_contribution,
     state_contribution = state_purchases_contribution  - grants_contribution,
-    # Social benefits contributions
+    # Other contributions
     social_benefits_contribution = federal_social_benefits_contribution + state_social_benefits_contribution,
-    # Taxes contributions
     non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution,
     federal_corporate_taxes_contribution = federal_corporate_taxes_contribution + supply_side_ira_contribution,
-    taxes_contribution = non_corporate_taxes_contribution + corporate_taxes_contribution,
-    # Transfers contribution
     transfers_contribution = federal_social_benefits_contribution + 
       state_social_benefits_contribution +
       rebate_checks_contribution + 
@@ -523,7 +520,6 @@ contributions_pt2 <- contributions_pt1 %>%
       federal_other_direct_aid_arp_contribution + 
       federal_other_vulnerable_arp_contribution +
       federal_student_loans_contribution,
-    # TODO: WHY DO WE DEFINE TAXES TWICE?! DOES IT MAKE A DIFFERENCE?
     taxes_contribution = federal_non_corporate_taxes_contribution + 
       state_non_corporate_taxes_contribution +
       federal_corporate_taxes_contribution + 
