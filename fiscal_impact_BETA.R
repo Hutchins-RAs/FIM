@@ -355,13 +355,24 @@ federal_purchases <- projections$federal_purchases
 #'   gdp = c(29314, 29626, 29942, 30268, 30577)
 #' )
 
+federal_purchases_contribution <- function(x, fpdg, rpgg, gdp) {
+  # Ensure input vectors are numeric and of the same length
+  stopifnot(is.numeric(x), is.numeric(fpdg), is.numeric(rpgg), is.numeric(gdp))
+  stopifnot(length(x) == length(fpdg), length(fpdg) == length(rpgg), length(rpgg) == length(gdp))
+  
+  # Calculate the output
+  output <- 400 * (x - lag(x) * (1 + fpdg + rpgg)) / lag(gdp)
+  
   return(output)
 }
+
+
 
 test <- federal_purchases_contribution(x = federal_purchases,
                                        fpdg = federal_purchases_deflator_growth,
                                        rpgg = real_potential_gdp_growth,
                                        gdp = gdp) %>%
   as.data.frame()
-
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+
