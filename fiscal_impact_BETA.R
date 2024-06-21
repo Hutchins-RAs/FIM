@@ -340,4 +340,7 @@ federal_purchases_contribution <- function(x, # input series (federal purchases)
 test <- federal_purchases_contribution(x = federal_purchases,
                                        fpdg = federal_purchases_deflator_growth,
                                        rpgg = real_potential_gdp_growth,
-                                       gdp = gdp)
+                                       gdp = gdp) %>%
+  as.data.frame()
+
+write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
