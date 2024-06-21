@@ -301,7 +301,9 @@ cbind(projections$social_benefits,
       projections$federal_social_benefits + projections$state_social_benefits, 
       projections$federal_social_benefits, 
       projections$state_social_benefits)
-
+######################################################################################
+# This is the point where we go from generating a data frame to actually calculating the FIM
+######################################################################################
 # Section D: Consumption -------------------------------------------------------------
 # Generate the data frame which maps mpcs to specific FIM data time series 
 # (subsidies, taxes, transfers, etc).
