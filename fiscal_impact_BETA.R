@@ -304,7 +304,9 @@ cbind(projections$social_benefits,
 ######################################################################################
 # This is the point where we go from generating a data frame to actually calculating the FIM
 ######################################################################################
-# Section D: Consumption -------------------------------------------------------------
+# This is the data we will use to calculate the FIM
+projections
+
 # Generate the data frame which maps mpcs to specific FIM data time series 
 # (subsidies, taxes, transfers, etc).
 # Running this module creates variables `mpc_series` and `mpc_list`
@@ -319,3 +321,7 @@ source("src/map_mpc_time_series.R")
 # refactored script.
 data_series <- names(mpc_series)
 
+test <- federal_purchases_contribution(x = federal_purchases,
+                                       fpdg = federal_purchases_deflator_growth,
+                                       rpgg = real_potential_gdp_growth,
+                                       gdp = gdp)
