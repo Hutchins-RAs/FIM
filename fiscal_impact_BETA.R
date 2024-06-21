@@ -1,6 +1,5 @@
-# Section A: prep for new update -----------------------------------------------
 
-# Miscellaneous: set up for Eli because has a different library directory
+# Miscellaneous: set up for Eli because has a different library directory -----
 #Get system information
 sys_info <- Sys.info()
 
@@ -11,6 +10,8 @@ if (sys_info['user'] == 'easdourian') {
 } else {
   print("The code is not being run by 'easdourian'")
 }
+
+#Section A: prep for new update ----------------------
 
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
 
@@ -31,15 +32,21 @@ if(post_cbo_baseline == TRUE){
   month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
 }
 
-# If the month of the previous month is less than 10, set the value of 'last_month_year' to the previous month and year (in the format "0m-yyyy")
-# Otherwise, set the value of 'last_month_year' to the previous month and year (in the format "mm-yyyy")
-if((month(today() - 7 
-          -months(1)) < 10)){
-  last_month_year <- glue('0{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
-} else{
-  last_month_year <- glue('{month(today() - 7 -months(1))}-{year(today() - dmonths(1) - dweeks(1))}')
-  
-}
+
+# Calculate the current date minus 7 days
+current_date <- today() - dweeks(1)
+# Calculate the previous month date, handling wraparound (i.e. previous
+# month to January ("01") is December ("12"), not month "0")
+last_month_date <- current_date %m-% months(1)
+# Extract and format the month as a two-digit string
+last_month_2digit <- sprintf("%02d", month(last_month_date))
+# Extract the year from the last_month_date
+last_year <- year(last_month_date)
+# Create last_month_year string for file naming
+last_month_year <- glue('{last_month_2digit}-{last_year}')
+
+print(last_month_year)
+
 
 #setting our reference period to be the post-cbo files if we've already produced fim output incorporating the cbo update
 if(file.exists(glue('results/{month_year}-post-cbo'))){
@@ -59,287 +66,613 @@ if(update_in_progress == TRUE){
   file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
 }
 
-# Section B: load in data ------------------------------------------------------
+
+#### Section B.0: Read in raw data ---------------------------------------------
+# Load in national accounts
+fim::national_accounts # this is the literal df
+load("data/national_accounts.rda") # this loads in a df named national_accounts
+
 # Load in projections
-# I still need to figure out why this data series starts in 2016!!! WHY???
 fim::projections # this is the literal df
 load("data/projections.rda") # this loads in a df named projections
-all.equal(projections, fim::projections)
 
-# CPI-U
-cpiu <- projections$cpiu # carried over into projections
-cpiu_g <- qagr(cpiu) # used later to calculate cola_rate
+# Read in historical overrides from data/forecast.xlsx
+# Since BEA put all CARES act grants to S&L in Q2 2020 we need to
+# override the historical data and spread it out based on our best guess
+# for when the money was spent.
+historical_overrides <- readxl::read_xlsx('data/forecast.xlsx',
+                                          sheet = 'historical overrides') %>% # Read in historical_overrides
+  select(-name) %>% # Remove longer name since we don't need it
+  pivot_longer(-variable,
+               names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  mutate(date = yearquarter(date))
 
-# Date
-date <- projections$date # carried over into projections
-
-# COLA rate
-# If the current quarter is quarter 1, take the CPI-U from the most recent
-# quarter 3 and assign it to the current observation.
-cola_rate <- if_else(lubridate::quarter(date) == 1, # used later to calculate other vars
-                    lag(cpiu_g, 2),
-                    NA) %>%
-  # Fill forward NAs with most recent value. Preserves initial NAs in vector
-  na.locf(cola_rate, fromLast = FALSE, na.rm = FALSE)
-
-# GFTFP
-# Adjusts government final transfer payments (gftfp) for cost-of-living 
-# adjustments (COLA) and health/unemployment insurance smoothing.
-# 1. 'gftfp_unadj' stores the original gftfp values before adjustments.
-gftfp_unadj <- projections$gftfp # used later to calculate other vars
-# 2. 'health_ui' computes a 4-quarter simple moving average (SMA) of 
-# health and unemployment insurance payments to smooth out 
-# fluctuations.
-yptmd <- projections$yptmd # used later to calculate other vars
-yptmr <- projections$yptmr # used later to calculate other vars
-yptu <- projections$yptu # used later to calculate other vars
-health_ui <- TTR::SMA(yptmd + yptmr + yptu, n = 4) # used later to calculate other vars
-# 3. 'smooth_gftfp_minus_health_ui' calculates a smoothed version of 
-# gftfp excluding health_ui, adjusted by the COLA rate to reflect the 
-# change in purchasing power.
-smooth_gftfp_minus_health_ui <- TTR::SMA((gftfp_unadj - health_ui) * (1 - cola_rate), n = 4) # used later to calculate other vars
-# 4. Finally, 'gftfp' is recalculated by adding the smoothed, COLA-
-# adjusted gftfp (excluding health_ui) back to the smoothed health_ui, 
-# providing an overall adjusted gftfp that accounts for both cost-of-
-# living adjustments and smoothed health/unemployment insurance 
-# payments. This ensures gftfp reflects both the impact of inflation 
-# adjustments and more stable health and unemployment insurance figures
-# across quarters.
-gftfp <- smooth_gftfp_minus_health_ui * (1 + cola_rate) + health_ui # used later to calculate other vars
-
-# Smooth budget series
-# Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
-# health outlays, and unemployment insurance data. For each selected column, 
-# the rolling mean is calculated using the current and previous three 
-# quarters' data, aligning the window to the current quarter. If less than 
-# four observations are available (at the data series start), the mean of 
-# available observations is used instead, ensuring no initial data is left 
-# without a smoothed value.
-# TODO: This code OVERWRITES existing rows with smoothed data. For later refactoring,
-# I may want to create a new row rather than overwrite an existing one.
-#
-# federal taxes
-gfrpt <- zoo::rollapply(projections$gfrpt, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
-gfrpri <- zoo::rollapply(projections$gfrpri, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
-gfrcp <- zoo::rollapply(projections$gfrcp, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
-gfrs <- zoo::rollapply(projections$gfrs, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
-# health outlays
-yptmd <- zoo::rollapply(yptmd, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
-yptmr <- zoo::rollapply(projections$yptmr, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
-# unemployment insurance
-yptu <- zoo::rollapply(projections$yptu, width = 4, mean, fill = NA, min_obs = 1, align = 'right') # used later to calculate other vars
-
-# Implicit price deflators
-jgf <- projections$gf/projections$gfh # used in projections
-jgs <- projections$gs/projections$gsh # used in projections
-jc <- projections$c/projections$ch # used in projections
-
-# adds 36 new columns
-gftfp_growth <- qgr(gftfp) - 1 # used in projections
-gfrpt_growth <- qgr(gfrpt) - 1 # used to calculate gfrptCurrentLaw_growth
-gfrpri_growth <- qgr(gfrpri) - 1 # used in projections
-gfrcp_growth <- qgr(gfrcp) - 1 # used in projections
-gfrs_growth <- qgr(gfrs) - 1 # used in projections
-yptmr_growth <- qgr(yptmr) - 1 # used in projections
-yptmd_growth <- qgr(yptmd) - 1 # used in projections
-yptu_growth <- qgr(yptu) - 1 # used in projections
-cpiu_growth <- qgr(cpiu) - 1 # I think we already do something similar to this and we call it cpiu_g
-# used in projections
-cpiu_g_growth <- qgr(cpiu_g) - 1 # This probably doesn't make sense
-# used in projections
-cola_rate_growth <- qgr(cola_rate) - 1 # This probably doesn't make sense
-# used in projections
-gftfp_unadj_growth <- qgr(gftfp_unadj) - 1 # I don't think we use this
-# used in projections
-health_ui_growth <- qgr(health_ui) - 1 # I don't think we use this
-# used in projections
-smooth_gftfp_minus_health_ui_growth <- qgr(smooth_gftfp_minus_health_ui) - 1 # I don't think we use this
-# used in projections
-jgf_growth <- qgr(jgf) - 1 # used in projections
-jgs_growth <- qgr(jgs) - 1 # used in projections
-jc_growth <- qgr(jc) - 1 # used in projections
+# Read in deflator overrides from data/forecast.xlsx
+deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
+                                        sheet = 'deflators_override') %>% # Read in overrides for deflators
+  select(-name) %>% # Remove longer name since we don't need it
+  pivot_longer(-variable,
+               names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  mutate(date = yearquarter(date))
 
 
-fy_growth <- qgr(projections$fy) - 1 # This, for example, is nonsense and should be removed
-# used in projections
-state_ui_growth <- qgr(projections$state_ui) - 1 # used in projections
-federal_ui_timing_growth <- qgr(projections$federal_ui_timing) - 1 # This probably doesn't make sense
-# used in projections
-federal_ui_growth <- qgr(projections$federal_ui) - 1 # used in projections
-gdp_growth <- qgr(projections$gdp) - 1 # used in projections
-gdph_growth <- qgr(projections$gdph) - 1 # used in projections
-gdppothq_growth <- qgr(projections$gdppothq) - 1 # used in projections
-gdppotq_growth <- qgr(projections$gdppotq) - 1 # used in projections
-dc_growth <- qgr(projections$dc) - 1 # used in projections
-jgdp_growth <- qgr(projections$jgdp) - 1 # used in projections
-c_growth <- qgr(projections$c) - 1 # used in projections
-ch_growth <- qgr(projections$ch) - 1 # used in projections
-gh_growth <- qgr(projections$gh) - 1 # used in projections
-gfh_growth <- qgr(projections$gfh) - 1 # used in projections
-gsh_growth <- qgr(projections$gsh) - 1 # used in projections
-g_growth <- qgr(projections$g) - 1 # used in projections
-gf_growth <- qgr(projections$gf) - 1 # used in projections
-gs_growth <- qgr(projections$gs) - 1 # used in projections
-unemployment_rate_growth <- qgr(projections$unemployment_rate) - 1 # used in projections
+# TODO: This current quarter should be calculated at the top, for the entirety
+# of the FIM, not buried down here.
+# Save current quarter for later
+current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) 
 
-# Construct alternative scenario for personal current taxes, under which the
-# TCJA provisions for income taxes don't expire in 2025
-# TODO: I think this code has a mistake. Currently, code replaces gfrpt_growth
-# with the lag of itself starting in 2025 Q3. This doesn't make much sense- 
-# I think original authors wanted to keep the same growth rate continuing into
-# perpetuity after 2025 Q3. Figure out what we intend to do here.
-# TODO: figure out if this growth rate is even used later.
-#
-# keep the current law version (where TCJA measures sunset in 2025 Q3)
-gfrptCurrentLaw <- gfrpt # used later to calculate other vars
-# keep the current law growth
-gfrptCurrentLaw_growth <- gfrpt_growth # used in projections
-# redefine the growth to be the lag of itself? (I believe this is a mistake)
-gfrpt_growth <- if_else(date > yearquarter('2025 Q3'), lag(gfrpt_growth), gfrpt_growth, missing = NULL) # used in projections
-# Note: I believe these new rows are not even used later. Determine if this is true
-# or not
+#### Section B.1: Manipulate projections dataframe------------------------------
 
-# Generate a few other columns we'll need for projections_beta
-id <- projections$id
-gdp <- projections$gdp
-gdph <- projections$gdph
-gdppothq <- projections$gdppothq
-gdppotq <- projections$gdppotq
-jgdp <- projections$jgdp
-dc <- projections$dc
-c <- projections$c
-ch <- projections$ch
-federal_ui <- projections$federal_ui
-state_ui <- projections$state_ui
-unemployment_rate <- projections$unemployment_rate
+projections <- projections %>% 
+  # Smooth budget series
+  # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
+  # health outlays, and unemployment insurance data. For each selected column, 
+  # the rolling mean is calculated using the current and previous three 
+  # quarters' data, aligning the window to the current quarter. If less than 
+  # four observations are available (at the data series start), the mean of 
+  # available observations is used instead, ensuring no initial data is left 
+  # without a smoothed value.
+  mutate(across(all_of(c('gfrpt', 'gfrpri', 'gfrcp', 'gfrs', # federal taxes
+                         'yptmd', 'yptmr', # health outlays
+                         'yptu')), # unemployment insurance
+                ~ zoo::rollapply(.x, 
+                                 width = 4, 
+                                 mean, 
+                                 fill = NA,
+                                 min_obs = 1, 
+                                 align = 'right'))) %>%
+  # Implicit price deflators
+  mutate(jgf =  gf/gfh,
+         jgs = gs/gsh,
+         jc = c/ch) %>%
+  # Growth rates
+  # adds 32 new columns
+  mutate(
+    across(
+      .cols = c("gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
+                "yptmd", "yptu", "state_ui", "federal_ui", 
+                "gdp", "gdph", "gdppothq", "gdppotq", "dc", "jgdp", "c", "ch", 
+                "gh", "gfh", "gsh", "g", "gf", "gs",
+                "unemployment_rate", 
+                "jgf", "jgs", "jc"),
+      # Equivalent criteria to the above, but the above is more explicit about
+      # which columns are added for later refactoring
+      #.cols = where(is.numeric) & !ends_with('_growth'),
+      # Calculate quarter growth rate using qgr() function, equal to x/lag(x), 
+      # then subtract 1.
+      .fns = ~ qgr(.) - 1,
+      .names = "{.col}_growth"
+    ) 
+  ) %>%
+  # Turn date into time series
+  mutate(date = tsibble::yearquarter(date)) %>%
+  # reorder the id column before the date column
+  relocate(id, .before = date) %>%
+  # convert the projections df into a tsibble data frame type
+  tsibble::as_tsibble(key = id, index = date) %>%
+  # TODO: as you can see from the select function, many columns are not kept.
+  # Perhaps the code can be refactored to exclude the data processing steps 
+  # in the first place.
+  # These are the columns that are explicitly dropped in this step:
+  # c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", "yptmd", 
+  # "yptu", "federal_ui_timing", "gh", "gfh", "gsh", "g", "gf", "gs", 
+  # "cpiu_g", "cola_rate", "health_ui", "cpiu") (and maybe a few others)
+  select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), 
+         dc, c, ch ,ends_with('growth'), federal_ui, state_ui, 
+         unemployment_rate)
 
-# Create the 'projections' data frame that matches the previous version from the
-# FIM
-projections_beta <- tibble(id, date, gdp, gdph, gdppothq, gdppotq, jgdp, jgf, jgs, 
-                           jc, jgdp_growth, jgf_growth, jgs_growth, jc_growth, dc,
-                           c, ch, 
-                           fy_growth, # this one is silly and should be removed
-                           gftfp_growth, gfrpt_growth, gfrpri_growth, gfrcp_growth,
-                           gfrs_growth, yptmr_growth, yptmd_growth, yptu_growth,
-                           state_ui_growth, 
-                           federal_ui_timing_growth, # this one is silly and should be removed
-                           federal_ui_growth,
-                           gdp_growth, gdph_growth, gdppothq_growth, gdppotq_growth,
-                           dc_growth, c_growth, ch_growth, gh_growth, gfh_growth,
-                           gsh_growth, g_growth, gf_growth, gs_growth,
-                           cpiu_growth, # probably not needed
-                           unemployment_rate_growth,
-                           cpiu_g_growth, # certainly nonsensical
-                           cola_rate_growth, # almost certainly not needed
-                           gftfp_unadj_growth, # probably not needed
-                           health_ui_growth, # perhaps not needed
-                           smooth_gftfp_minus_health_ui_growth, # almost certainly not needed
-                           gfrptCurrentLaw_growth, # probably not needed
-                           cpiu, federal_ui, state_ui, unemployment_rate
-                )
+## Testing section
+projections <- projections
 
-# Convert projections_beta to a tsibble
-projections_beta <- as_tsibble(projections_beta, index = date)
-# Assuming 'id' should be the key and 'date' the index
-projections_beta <- as_tsibble(projections_beta, index = date, key = id)
-
-# rename the variables in projections_beta
-projections_beta_renamed <- projections_beta %>%
-  transmute(date,
-            id,
-            gdp,
-            real_gdp = gdph,
-            real_potential_gdp = gdppothq,
-            potential_gdp = gdppotq,
-            gdp_deflator = jgdp,
-            federal_purchases_deflator = jgf,
-            state_purchases_deflator = jgs,
-            consumption_deflator = jc,
-            gdp_deflator_growth = jgdp_growth,
-            federal_purchases_deflator_growth = jgf_growth,
-            state_purchases_deflator_growth = jgs_growth,
-            consumption_deflator_growth = jc_growth,
-            # idk what to do about dc. I think it gets deleted when this 
-            # define_variables function is run on usna1
-            dc, # should delete
-            consumption = c,
-            real_consumption = ch,
-            fy_growth, # should delete
-            federal_social_benefits_growth = gftfp_growth,
-            federal_personal_taxes_growth =  gfrpt_growth,
-            federal_production_taxes_growth = gfrpri_growth,
-            federal_corporate_taxes_growth = gfrcp_growth,
-            federal_payroll_taxes_growth = gfrs_growth,
-            medicare_growth = yptmr_growth,
-            medicaid_growth = yptmd_growth,
-            ui_growth = yptu_growth,
-            state_ui_growth, # for some reason this one doesn't have its haver name
-            federal_ui_timing_growth, # should delete
-            federal_ui_growth,
-            gdp_growth,
-            real_gdp_growth = gdph_growth,
-            real_potential_gdp_growth = gdppothq_growth,
-            potential_gdp_growth = gdppotq_growth,
-            # idk what to do about dc. I think it gets deleted when this 
-            # define_variables function is run on usna1
-            dc_growth, # should delete
-            consumption_growth = c_growth,
-            real_consumption_growth = ch_growth,
-            real_purchases_growth =  gh_growth,
-            real_federal_purchases_growth = gfh_growth,
-            real_state_purchases_growth = gsh_growth,
-            purchases_growth = g_growth,
-            federal_purchases_growth = gf_growth,
-            state_purchases_growth = gs_growth,
-            cpiu_growth, # CPI-U
-            unemployment_rate_growth,
-            cpiu_g_growth, # shouild be deleted
-            cola_rate_growth, # should be deleted
-            gftfp_unadj_growth, # keeping this name bc I think we will drop this var
-            health_ui_growth,
-            smooth_gftfp_minus_health_ui_growth,
-            gfrptCurrentLaw_growth, # keeping this name bc I think we will drop this var
-            cpiu,
-            federal_ui,
-            state_ui,
-            unemployment_rate
-  )
 
 # TODO: coalesce_join() is a crazy complex function for what looks to be simple
 # (append some cols to a data frame). Will have to refactor this function.
 # Step 3: Combine these two data frames.
-# TODO: for now, joining with projections_beta. Could potentiall join with projections_beta_renamed
-usna1_beta <- coalesce_join(x = national_accounts,
-                       y = projections_beta,
+usna1 <- coalesce_join(x = national_accounts,
+                       y = projections,
                        by = 'date') %>%
-  as_tsibble(key = id, index = date)  
+  as_tsibble(key = id, index = date)
 
-## When we produce usna1_beta, we append the old data to the new data, overriding 
-# any projections with what we have in national_accounts, which contains actual data.
-# in doing so, we get the most recent data point. We then update our GDP projection
-# to grow by the gdp_growth column in projections, which - by the way - has SUPER
-# incorrect projections of GDP that are off by about $1.2 trillion.
-# TODO: I'm concerned the gdp_growth column from projections that we use is actually
-# drawing from very outdated CBO data. 
 
-# TODO: I think it makes no sense to have projections and historic data in the same
-# data frame. Consider splitting these up into two data frames to avoid contrived
-# if-else logic involving row entries of the usna data frame.
-#
-# First define the index number of the current quarter observation
-current_obs <- which(usna1_beta$date == current_quarter)
-# Next define the seed gdp and gdph
-seed_gdp <- usna1_beta$gdp[current_obs]
-seed_gdph <- usna1_beta$gdph[current_obs]
-# Then define the input growth rates. Only keep observations AFTER current_obs and
-# add 1 to the values
-growth_rates_gdp <- 1 + usna1_beta$gdp_growth[-(1:current_obs)]
-growth_rates_gdph <- 1 + usna1_beta$gdph_growth[-(1:current_obs)]
-# Now calculate the new series using cumulative_series function
-new_gdp <- cumulative_series(seed = seed_gdp, growth_rates = growth_rates_gdp)
-new_gdph <- cumulative_series(seed = seed_gdph, growth_rates = growth_rates_gdph)
-# Now replace relevant values of gdp and gdph using the new, grown values
-usna1_beta$gdp[-(1:current_obs)] <- new_gdp
-usna1_beta$gdph[-(1:current_obs)] <- new_gdph
+#### Section B.2: to be refactored
+usna2 <- usna1 %>%
+  gdp_cbo_growth_rate()%>% #grows current data according to cbo growth rate: gdp and gdph 
+  define_variables() %>%  # Rename Haver codes for clarity
+  as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
+  
+  mutate_where(id == 'historical',  # Calculate GDP growth for data 
+               real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
+  
+  #Define FIM variables 
+  mutate( 
+    # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
+    federal_social_benefits_gross = federal_social_benefits, # Save original value
+    federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare - nonprofit_provider_relief_fund,
+    state_social_benefits = state_social_benefits - medicaid,
+    social_benefits = federal_social_benefits + state_social_benefits,
+    consumption_grants = gross_consumption_grants - medicaid_grants,
+  ) %>% 
+  
+  mutate(rebate_checks_arp = if_else(date == yearquarter("2021 Q1"), #hardcoding arp rebate checks for one period
+                                     1348.1,
+                                     0)) %>%
+  
+  #Set rebate checks ARP to NA because we don't have a projection for them
+  mutate_where(id == 'projection',
+               rebate_checks_arp = NA,
+               federal_ui = NA,
+               state_ui = NA) %>%
+  
+  ##Adjusting data in 2021 because of arp(?)
+  mutate_where(date == yearquarter('2021 Q1'),
+               rebate_checks = rebate_checks - rebate_checks_arp,
+               federal_social_benefits = federal_social_benefits + 203
+  ) %>% 
+  mutate_where(date == yearquarter("2021 Q4"),
+               rebate_checks_arp = 14.2,
+               rebate_checks = 0) %>% 
+  mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
+         
+         # Aggregate taxes
+         corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
+         non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes) %>% 
+  
+  ##Set the grants deflator the same as state purchases deflator (the same is done in the forecast/deflators sheet)
+  mutate_where(id == 'projection',
+               consumption_grants_deflator_growth = state_purchases_deflator_growth,
+               investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
+  
+  #Overriding historical consumption and investment grant 
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+               consumption_grants = historical_overrides$consumption_grants_override) %>% 
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
+               investment_grants = historical_overrides$investment_grants_override) %>%
+  
+  #For the full period of the forecast (8 quarters out), replace CBO deflators with the ones from
+  #the deflator overrides sheet
+  mutate_where(date>current_quarter & date<=max(deflator_overrides$date), 
+               consumption_deflator_growth = deflator_overrides$consumption_deflator_growth_override,
+               federal_purchases_deflator_growth =deflator_overrides$federal_purchases_deflator_growth_override,
+               state_purchases_deflator_growth = deflator_overrides$state_purchases_deflator_growth_override,
+               consumption_grants_deflator_growth = deflator_overrides$consumption_grants_deflator_growth_override,
+               investment_grants_deflator_growth = deflator_overrides$investment_grants_deflator_growth_override)
 
+# Redefine usna to be integrated back into the FIM
+usna <- usna2
+
+# Section C: Forecast ----------------------------------------------------------------
+forecast <- # Read in sheet with our forecasted values from the data folder
+  readxl::read_xlsx('data/forecast.xlsx',
+                    sheet = 'forecast') %>% 
+  select(-name) %>% #Remove the 'name' column from the data.
+  pivot_longer(-variable,
+               names_to = 'date') %>%  #reshape the data 
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  mutate(date = yearquarter(date)) #convert date to year-quarter format 
+
+
+projections <- # Merge forecast w BEA + CBO on the 'date' column, 
+  #filling in NA values with the corresponding value from the other data frame
+  coalesce_join(usna, forecast, by = 'date') %>%  
+  
+  mutate(# Coalesce NA's to 0 for all numeric values 
+    across(where(is.numeric),
+           ~ coalesce(.x, 0))) %>%
+  
+  #Define FIM variables 
+  mutate(
+    health_outlays = medicare + medicaid,
+    federal_health_outlays = medicare + medicaid_grants,
+    state_health_outlays = medicaid - medicaid_grants
+  ) %>% 
+  
+  #apply historical_overrides for ARP 
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+               federal_other_direct_aid_arp = historical_overrides$federal_other_direct_aid_arp_override,
+               federal_other_vulnerable_arp = historical_overrides$federal_other_vulnerable_arp_override,
+               federal_social_benefits = historical_overrides$federal_social_benefits_override,
+               federal_aid_to_small_businesses_arp = historical_overrides$federal_aid_to_small_businesses_arp_override) %>% 
+  mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
+               federal_corporate_taxes = tail(historical_overrides$federal_corporate_taxes_override, n = 1),
+               state_corporate_taxes = tail(historical_overrides$state_corporate_taxes_override, n = 1)) %>% 
+  mutate_where(date == yearquarter("2021 Q1"),
+               federal_social_benefits = federal_social_benefits + 203) %>% 
+  # FIXME: Figure out why wrong number was pulled from Haver (like 400)
+  mutate_where(date == yearquarter('2021 Q4'),
+               federal_ui = 11, 
+               state_ui = ui - federal_ui) %>%
+  #apply historical_overrides for Supply Side IRA
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+               supply_side_ira = historical_overrides$supply_side_ira_override) %>%
+  #apply historical_overrides for Federal Student Loans
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+               federal_student_loans = historical_overrides$federal_student_loans_override)
+
+# Section C.1: Data validation -------------------------------------------------------
+## TODO: One would suppose that federal_social_benefits + state_social_benefits
+## = social_benefits, but it does not. This divergence starts in 2021 Q1, which
+## is row 205. Investigate. 
+cbind(projections$social_benefits, 
+      projections$federal_social_benefits + projections$state_social_benefits, 
+      projections$federal_social_benefits, 
+      projections$state_social_benefits)
+######################################################################################
+# This is the point where we go from generating a data frame to actually calculating the FIM
+######################################################################################
+# Section D: Consumption -------------------------------------------------------------
+# Generate the data frame which maps mpcs to specific FIM data time series 
+# (subsidies, taxes, transfers, etc).
+# Running this module creates variables `mpc_series` and `mpc_list`
+n_periods <- nrow(projections) #total number of periods in the data
+source("src/map_mpc_time_series.R")
+
+# Initialize a list of unique data series to which minus neutral and mpc will be
+# applied to.
+# TODO: This list will be universal, from FIM start to FIM finish, so give it a 
+# more intuitive name, and don't base it off mpc series: base it off something 
+# established earlier. This step should come much earlier in the final, 
+# refactored script.
+data_series <- names(mpc_series)
+
+# Section D.0: Real levels -------------------------------------------------------------
+# For now, this code is a remnant of the old FIM. But eventually, it will use a list
+# of the 24 data series manipulated by the FIM, and take projections as an input and
+# output real_df
+# TODO: This code is refactored from the get_real_levels() legacy function. It has
+# 31 data cols it produces, some of which must be redundant. Also, I'm not sure
+# it produces all the data cols we need. And the other problem is that it produces
+# a large df rather than one with 24 cols. So all of these issues need to be resolved
+# to modularize this step.
+real_df <- projections %>%
+  mutate(
+    federal_ui_real = federal_ui - lag(federal_ui) * consumption_deflator_growth,
+    state_ui_real = state_ui - lag(state_ui) * consumption_deflator_growth,
+    subsidies_real = subsidies - lag(subsidies) * consumption_deflator_growth,
+    federal_subsidies_real = federal_subsidies - lag(federal_subsidies) * consumption_deflator_growth,
+    state_subsidies_real = state_subsidies - lag(state_subsidies) * consumption_deflator_growth,
+    health_outlays_real = health_outlays - lag(health_outlays) * consumption_deflator_growth,
+    federal_health_outlays_real = federal_health_outlays - lag(federal_health_outlays) * consumption_deflator_growth,
+    state_health_outlays_real = state_health_outlays - lag(state_health_outlays) * consumption_deflator_growth,
+    social_benefits_real = social_benefits - lag(social_benefits) * consumption_deflator_growth,
+    federal_social_benefits_real = federal_social_benefits - lag(federal_social_benefits) * consumption_deflator_growth,
+    state_social_benefits_real = state_social_benefits - lag(state_social_benefits) * consumption_deflator_growth,
+    corporate_taxes_real = corporate_taxes - lag(corporate_taxes) * consumption_deflator_growth,
+    federal_corporate_taxes_real = federal_corporate_taxes - lag(federal_corporate_taxes) * consumption_deflator_growth,
+    state_corporate_taxes_real = state_corporate_taxes - lag(state_corporate_taxes) * consumption_deflator_growth,
+    non_corporate_taxes_real = non_corporate_taxes - lag(non_corporate_taxes) * consumption_deflator_growth,
+    federal_non_corporate_taxes_real = federal_non_corporate_taxes - lag(federal_non_corporate_taxes) * consumption_deflator_growth,
+    state_non_corporate_taxes_real = state_non_corporate_taxes - lag(state_non_corporate_taxes) * consumption_deflator_growth,
+    rebate_checks_arp_real = rebate_checks_arp - lag(rebate_checks_arp) * consumption_deflator_growth,
+    federal_other_direct_aid_arp_real = federal_other_direct_aid_arp - lag(federal_other_direct_aid_arp) * consumption_deflator_growth,
+    federal_other_vulnerable_arp_real = federal_other_vulnerable_arp - lag(federal_other_vulnerable_arp) * consumption_deflator_growth,
+    federal_aid_to_small_businesses_arp_real = federal_aid_to_small_businesses_arp - lag(federal_aid_to_small_businesses_arp) * consumption_deflator_growth,
+    federal_student_loans_real = federal_student_loans - lag(federal_student_loans) * consumption_deflator_growth,
+    supply_side_ira_real = supply_side_ira - lag(supply_side_ira) * consumption_deflator_growth,
+    
+    ui_real = ui - lag(ui) * consumption_deflator_growth,
+    rebate_checks_real = rebate_checks - lag(rebate_checks) * consumption_deflator_growth,
+    medicaid_real = medicaid - lag(medicaid) * consumption_deflator_growth,
+    medicaid_grants_real = medicaid_grants - lag(medicaid_grants) * consumption_deflator_growth,
+    medicare_real = medicare - lag(medicare) * consumption_deflator_growth,
+    federal_purchases_real = federal_purchases - lag(federal_purchases) * consumption_deflator_growth,
+    state_purchases_real = state_purchases - lag(state_purchases) * consumption_deflator_growth,
+    consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_deflator_growth,
+    investment_grants_real = investment_grants - lag(investment_grants) * consumption_deflator_growth
+  )
+
+# for integration into the FIM
+consumption_pt1 <- real_df
+
+# Temporary "beta" data frame that includes consumption deflated reals with only cols
+# belonging to `data_series`
+real_df_beta <- real_df %>%
+  select(ends_with("_real")) %>%
+  rename_with(~ str_remove(., "_real"))
+
+
+# Section D.1: Minus Neutral -------------------------------------------------------------
+# Using the list of 24 data_series that are manipulated by the FIM, we produce a 
+# minus_neutral_df, which contains the results of each of these 24 data_series
+# after they have been manipulated by this observation.
+minus_neutral_df <- apply(
+  # consumption_pt1 contains many columns, so we isolate to only the entries
+  # that exist in data_series, which are those which we want to calculate 
+  # minus_neutral values for.
+  X = real_df[data_series], # eventually we will not need
+  # to subset real_df by data_series, once real_df only
+  # contains columns from data_series.
+  MARGIN = 2, # apply the function to the columns (1 = rows)
+  FUN = minus_neutral, # User-defined minus_neutral function
+  # found in /R/minus_neutral.R
+  rpgg = real_df$real_potential_gdp_growth, #arg from minus_neutral
+  cdg = real_df$consumption_deflator_growth) %>% #arg from minus_neutral
+  as.data.frame()
+
+# Section D.2: Post MPC -------------------------------------------------------------
+# TODO: put vectorized operations here instead to cut computing time. Separate
+# matrix multiplication step from matrix production step.
+
+# Initialize a list to temporarily hold the data before converting it to a dataframe
+post_mpc_list <- list()
+
+for (series in data_series) {
+  print(series)
+  # Generate the MPC matrix for the current series
+  mpc_matrix <- comp_mpc_matrix(mpc_vector_list = mpc_list,
+                                mpc_series = mpc_series[[series]]) 
+  # Formatting the data as a vertical column matrix is not strictly necessary;
+  # but it reinforces the point that this is matrix multiplication
+  data_vector <- matrix(minus_neutral_df[[{series}]], ncol = 1)
+  # ensuring proper NA handling by converting to zeroes
+  # TODO: Make only the first value of NA equal to 0. Keep the other NAs as NA
+  data_vector[is.na(data_vector)] <- 0
+  post_mpc_series <- mpc_matrix %*% data_vector
+  
+  # Add the result to the list, using the series as the list name. Convert 
+  # matrix result to vector if necessary.
+  post_mpc_list[[series]] <- as.vector(post_mpc_series) 
+}
+# Convert the list of vectors into a dataframe
+post_mpc_df <- as.data.frame(post_mpc_list)
+
+# Section D.3: Interface refactored code with rest of FIM--------------------------------
+# This section is temporary and meant to interface the new workflow of section D
+# back into the main FIM by making data structures align. In particular, the main
+# FIM uses one giant data frame with all the data_series ("federal_ui", "state_ui", etc)
+# appended with all sorts of _minus_neutral and _post_mpc column name suffixes,
+# producing a very large data frame. The new refactored code from this section instead
+# produces small, nimble data frames called _real_df, _minus_neutral, and _post_mpc,
+# which each contain only the 24 columns of data_series names with their respective
+# values.
+# In order to integrate this code back into the main FIM, we take each of these 
+# data frames, append back those suffixes, combine them together, and reorder the
+# columns so they exactly match the original FIM.
+# As downstream sections are refactored, this will no longer be necessary. This is a
+# temporary solution.
+
+# minus_neutral_renamed_df
+minus_neutral_renamed_df <- minus_neutral_df
+colnames(minus_neutral_renamed_df) <- c(glue::glue('{data_series}_minus_neutral'))
+# Append the new _minus_neutral columns to the consumption_pt1 df
+consumption_pt2 <- dplyr::bind_cols(consumption_pt1, minus_neutral_renamed_df)
+
+# post_mpc_renamed_df
+post_mpc_renamed_df <- post_mpc_df
+colnames(post_mpc_renamed_df) <- c(glue::glue('{data_series}_post_mpc'))
+# Append the new _post_mpc columns to consumption_pt2 df 
+consumption_pt3 <- bind_cols(consumption_pt2, post_mpc_renamed_df)
+
+# Apply column order to perfectly match old version of fim. These lines can be
+# deleted later if column order turns out to be irrelevant.
+load("TEMP_consumption_newnames.RData")
+load("TEMP_consumption_newnames_column_order.RData")
+consumption_new <- consumption_pt3 %>%
+  .[, consumption_newnames_column_order]
+
+# Assign result to the consumption df, so rest of code runs smoothly.
+# consumption_new is just a temporary feature to compare between new and old fims
+consumption <- consumption_new
+
+# Section E: Contribution ------------------------------------------------------------
+
+# Here we calculate contributions. We start with federal_purchases,
+# state_purchases, consumption_grants, and investment_grants, which are used
+# to then calculate grants, federal, and state contributions.
+# TODO: are we accidentally not applying MPCs to these contributions?!
+contributions_pt1 <- consumption %>%
+  mutate(
+    federal_purchases_contribution = 400 * (federal_purchases - lag(federal_purchases) * (1 + federal_purchases_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
+    state_purchases_contribution = 400 * (state_purchases - lag(state_purchases) * (1 + state_purchases_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
+    consumption_grants_contribution = 400 * (consumption_grants - lag(consumption_grants) * (1 + consumption_grants_deflator_growth + real_potential_gdp_growth)) / lag(gdp),
+    investment_grants_contribution = 400 * (investment_grants - lag(investment_grants) * (1 + investment_grants_deflator_growth + real_potential_gdp_growth)) / lag(gdp)
+  ) %>% 
+  mutate(
+    social_benefits_contribution = 400 * social_benefits_post_mpc / lag(gdp),
+    federal_social_benefits_contribution = 400 * federal_social_benefits_post_mpc / lag(gdp),
+    state_social_benefits_contribution = 400 * state_social_benefits_post_mpc / lag(gdp),
+    rebate_checks_contribution = 400 * rebate_checks_post_mpc / lag(gdp),
+    subsidies_contribution = 400 * subsidies_post_mpc / lag(gdp),
+    federal_subsidies_contribution = 400 * federal_subsidies_post_mpc / lag(gdp),
+    state_subsidies_contribution = 400 * state_subsidies_post_mpc / lag(gdp),
+    health_outlays_contribution = 400 * health_outlays_post_mpc / lag(gdp),
+    federal_health_outlays_contribution = 400 * federal_health_outlays_post_mpc / lag(gdp),
+    state_health_outlays_contribution = 400 * state_health_outlays_post_mpc / lag(gdp),
+    corporate_taxes_contribution = 400 * corporate_taxes_post_mpc / lag(gdp),
+    federal_corporate_taxes_contribution = 400 * federal_corporate_taxes_post_mpc / lag(gdp),
+    state_corporate_taxes_contribution = 400 * state_corporate_taxes_post_mpc / lag(gdp),
+    non_corporate_taxes_contribution = 400 * non_corporate_taxes_post_mpc / lag(gdp),
+    federal_non_corporate_taxes_contribution = 400 * federal_non_corporate_taxes_post_mpc / lag(gdp),
+    state_non_corporate_taxes_contribution = 400 * state_non_corporate_taxes_post_mpc / lag(gdp),
+    federal_ui_contribution = 400 * federal_ui_post_mpc / lag(gdp),
+    state_ui_contribution = 400 * state_ui_post_mpc / lag(gdp),
+    federal_other_vulnerable_arp_contribution = 400 * federal_other_vulnerable_arp_post_mpc / lag(gdp),
+    rebate_checks_arp_contribution = 400 * rebate_checks_arp_post_mpc / lag(gdp),
+    federal_other_direct_aid_arp_contribution = 400 * federal_other_direct_aid_arp_post_mpc / lag(gdp),
+    federal_student_loans_contribution = 400 * federal_student_loans_post_mpc / lag(gdp),
+    supply_side_ira_contribution = 400 * supply_side_ira_post_mpc / lag(gdp),
+    federal_aid_to_small_businesses_arp_contribution = 400 * federal_aid_to_small_businesses_arp_post_mpc / lag(gdp)
+  )
+
+contributions_pt2 <- contributions_pt1 %>%
+  mutate(
+    # Sum other vars to get grants, federal, state contributions
+    grants_contribution = consumption_grants_contribution + investment_grants_contribution,
+    federal_contribution = federal_purchases_contribution + grants_contribution,
+    state_contribution = state_purchases_contribution  - grants_contribution,
+    # Other contributions
+    social_benefits_contribution = federal_social_benefits_contribution + state_social_benefits_contribution,
+    non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution + state_non_corporate_taxes_contribution,
+    federal_corporate_taxes_contribution = federal_corporate_taxes_contribution + supply_side_ira_contribution,
+    transfers_contribution = federal_social_benefits_contribution + 
+      state_social_benefits_contribution +
+      rebate_checks_contribution + 
+      rebate_checks_arp_contribution + 
+      federal_ui_contribution + 
+      state_ui_contribution +
+      federal_subsidies_contribution + 
+      federal_aid_to_small_businesses_arp_contribution +  
+      state_subsidies_contribution + 
+      federal_health_outlays_contribution +
+      state_health_outlays_contribution + 
+      federal_other_direct_aid_arp_contribution + 
+      federal_other_vulnerable_arp_contribution +
+      federal_student_loans_contribution,
+    taxes_contribution = federal_non_corporate_taxes_contribution + 
+      state_non_corporate_taxes_contribution +
+      federal_corporate_taxes_contribution + 
+      state_corporate_taxes_contribution,
+    # TODO: WHY ARE SUBSIDIES (not subsidies_contribution) DEFINED HERE?
+    subsidies = federal_subsidies + state_subsidies,
+    subsidies_contribution = federal_subsidies_contribution + state_subsidies_contribution
+  ) %>%
+  
+  # TODO: DOES THIS COMMENTED OUT CODE MATTER?
+  #Add student loans to federal transfers 
+  # mutate(federal_transfers_contribution = federal_transfers_contribution +
+  #   federal_student_loans_contribution)%>%
+  
+  
+  #Calculate the FIM for the defined variables 
+  get_fiscal_impact() %>%
+  
+  #Do the same aggregation of the real levels 
+  mutate(
+    grants_real = consumption_grants_real + investment_grants_real,
+    federal_real = federal_purchases_real + grants_real,
+    state_real = state_purchases_real - grants_real
+  ) %>%
+  mutate(social_benefits_real = federal_social_benefits_real + state_social_benefits_real) %>%
+  mutate(non_corporate_taxes_real = federal_non_corporate_taxes_real + state_non_corporate_taxes_real) %>%
+  mutate(taxes_real = non_corporate_taxes_real + corporate_taxes_real) %>%
+  mutate(
+    transfers_real = federal_social_benefits_real + state_social_benefits_real +
+      rebate_checks_real + rebate_checks_arp_real + federal_ui_real + state_ui_real +
+      federal_subsidies_real + federal_aid_to_small_businesses_arp_real +  state_subsidies_real + federal_health_outlays_real +
+      state_health_outlays_real + federal_other_direct_aid_arp_real + federal_other_vulnerable_arp_real +federal_student_loans_real,
+    taxes_real = federal_non_corporate_taxes_real + state_non_corporate_taxes_real +
+      federal_corporate_taxes_real + state_corporate_taxes_real
+  ) %>% 
+  mutate( subsidies_real = federal_subsidies_real + state_subsidies_real)
+
+# for later use in this code
+contributions <- contributions_pt2
+
+#openxlsx::write.xlsx: This function writes an R data object to an .xlsx file (an Excel spreadsheet).
+#file = glue('results/{month_year}/fim-{month_year}.xlsx'): This specifies the file path and name of the .xlsx file that the data will be written to. The glue() function is being used to dynamically create the file path and name using the month_year variable.
+#overwrite = TRUE: This specifies that if the .xlsx file already exists, it should be overwritten with the new data.
+#write_rds(contributions, file = 'data/contributions.rds'): This function writes the contributions data object to an .rds file (an R binary file) with the file path and name specified by the file argument.
+#usethis::use_data(contributions, overwrite = TRUE): This function writes the contributions data object to a .RData file in the current working directory and makes it available in the global environment. The overwrite = TRUE argument specifies that if a .RData file with the same name already exists, it should be overwritten with the new data.
+
+openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)
+write_rds(contributions, file = 'data/contributions.rds')
+usethis::use_data(contributions, overwrite = TRUE)
+
+
+# Section F: Web materials  -------------------------------------------------------------
+
+# Interactive data
+# Generate interactive data frame from contributions
+interactive <- 
+  contributions %>% 
+  # Filter rows of contributions by date, keeping only those between 1999 Q4 and current quarter + 8
+  filter_index('1999 Q4' ~ as.character(current_quarter + 8)) %>% 
+  
+  # Create new columns in data frame:
+  # - consumption: sum of transfers_contribution and taxes_contribution
+  # - recession: recode recession column such that -1 is replaced with 0
+  # - recession: replace NA values in recession column with 0
+  # - id: recode id column such that "historical" is replaced with 0 and "projection" is replaced with 1
+  mutate(consumption = transfers_contribution + taxes_contribution,
+         recession = recode(recession, `-1` = 0),
+         recession = replace_na(recession, 0),
+         id = recode(id, 
+                     historical = 0,
+                     projection = 1)) %>% 
+  
+  # Select only specific columns:
+  # date, impact (renamed from fiscal_impact_moving_average), recession, total (renamed from fiscal_impact), 
+  # federal (renamed from federal_contribution), state_local (renamed from state_contribution), 
+  # consumption, projection (renamed from id)
+  select(date, 
+         impact = fiscal_impact_moving_average,
+         recession,
+         total = fiscal_impact,
+         federal = federal_contribution,
+         state_local = state_contribution,
+         consumption,
+         projection = id) %>% 
+  
+  # Split date column into year and quarter columns
+  separate(date, c('year', 'quarter'))
+
+# Write interactive data frame to CSV file
+readr::write_csv(interactive,  file = glue('results/{month_year}/interactive-{month_year}.csv'))
+
+# Figures for website
+rmarkdown::render('Fiscal-Impact.Rmd',
+                  # Render R Markdown document to PDF file
+                  output_file = 'Fiscal-Impact.html',
+                  clean = TRUE,
+                  params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8))
+
+# Copy html file to new location, overwriting any existing file
+file_copy(path = 'Fiscal-Impact.html',
+          new_path = glue('results/{month_year}/Fiscal-Impact-{month_year}.html'),
+          overwrite = TRUE)
+
+# Section G: Comparison ------------------------------------------------------------
+
+source('scripts/revision_figures.R')
+source('scripts/revision_table.R')
+source('scripts/revision_deflators.R')
+
+rmarkdown::render(input = 'update-comparison.Rmd',
+                  output_file = glue('results/{month_year}/update-comparison-{month_year}'),
+                  clean = TRUE)
+
+file_copy(
+  path = glue('results/{month_year}/update-comparison-{month_year}.html'),
+  new_path = 'index.html',
+  overwrite = TRUE
+)
+
+#nasiha-added-temp
+ns_hist<- comparison_wide[, 1:10] 
+ns_proj<- comparison_wide[, c(1:3, 11:20)]
+
+ns_hist <- ns_hist %>% filter(id == "historical") %>% select(-"id")
+ns_proj <- ns_proj %>% filter(id == "projection")%>% select(-"id")
+
+ns_comparison<- left_join(ns_hist, ns_proj, by = c("name", "source")) %>% arrange(name)
+readr::write_csv(ns_comparison,  file = glue('results/{month_year}/ns_comparison-{month_year}.csv'))
+
+
+# # State and local employment ------------------------------------------------------------------
+# 
+# # In order to use the API, you first need to create an account here: http://api.stlouisfed.org/api_key.html. 
+# # Once you have the account, store the API key in your R environment. This protects your API key so it's not shared on GitHub or anywhere else. You can store your key by running usethis::edit_r_environ() to open your .Renviron file and typing FRED_API_KEY=YOUR-API-KEY. Finally save and close the .Renviron file and restart your R Session. 
+# # You can also use the hutchinsras@gmail.com FRED account's API key. 
+# # For more information see http://sboysel.github.io/fredr/articles/fredr.html
+# 
+# # Data comes from: 
+# # - State govt employment: https://fred.stlouisfed.org/series/CES9092000001
+# # - Local govt employment: https://fred.stlouisfed.org/series/CES9093000001
+# fredr_series_search_tags(
+#   series_search_text = "All Employees, Local Government",
+#   limit = 100L
+# ) %>% View()
+# 
+# # Calculate percentage change in state + local employment relative to February 2020 (pre-pandemic)
+# map_dfr(c("CES9092000001", "CES9093000001"), fredr, frequency = 'm', observation_start = as_date('2020-02-01')) %>% 
+#   select(date, series_id, value) %>% 
+#   group_by(date) %>% 
+#   summarise(employment = sum(value), .groups = 'drop') %>% 
+#   filter(date == first(date) | date == last(date)) %>% 
+#   summarise(employment_growth = scales::percent((employment / lag(employment) - 1), accuracy = 0.01)) %>% 
+#   drop_na()
 
