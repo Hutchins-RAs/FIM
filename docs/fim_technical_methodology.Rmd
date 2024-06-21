@@ -79,6 +79,9 @@ datatable(data, colnames = c("Name", "Variable Name"), caption = "FIM Project Va
 ## Step 2: Reals
 After we import the variables we need, we get their real levels. For some reason, we get real levels on more than 23 variables. Here are the variables we get real levels from.
 
+Actually, this step doesn't even matter. Right now, we don't use the real levels
+at all.
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Load necessary libraries
 library(DT)
@@ -103,3 +106,4 @@ real_variables <- data.frame(
 
 # Create the interactive table showing all real variables
 datatable(real_variables, colnames = c("Number", "Variable Name"), options = list(pageLength = 32))
+```
