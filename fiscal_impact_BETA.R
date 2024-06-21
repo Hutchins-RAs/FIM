@@ -323,6 +323,19 @@ real_potential_gdp_growth <- projections$real_potential_gdp_growth
 consumption_deflator_growth <- projections$consumption_deflator_growth
 gdp <- projections$gdp
 
+### CALCULATE THE FIM variable-by-variable ########################################
+# Define FIM inputs
+federal_purchases <- projections$federal_purchases
+
+
+# Define FIM functions
+federal_purchases_contribution <- function(x, # input series (federal purchases)
+                                           fpdg, # federal purchases deflator growth
+                                           rpgg, # real potential GDP growth
+                                           gdp) {
+  output = 400*(x - lag(x)*(1 + fpdg + rpgg))/lag(gdp)
+  return(output)
+}
 
 test <- federal_purchases_contribution(x = federal_purchases,
                                        fpdg = federal_purchases_deflator_growth,
