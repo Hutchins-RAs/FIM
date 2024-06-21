@@ -328,12 +328,33 @@ gdp <- projections$gdp
 federal_purchases <- projections$federal_purchases
 
 
-# Define FIM functions
-federal_purchases_contribution <- function(x, # input series (federal purchases)
-                                           fpdg, # federal purchases deflator growth
-                                           rpgg, # real potential GDP growth
-                                           gdp) {
-  output = 400*(x - lag(x)*(1 + fpdg + rpgg))/lag(gdp)
+#' Calculate Federal Purchases Contribution
+#'
+#' This function calculates the contribution of federal purchases to GDP growth.
+#'
+#' @param x A numeric vector representing the input series for federal purchases,
+#' in billions USD.
+#' @param fpdg A numeric vector representing the federal purchases deflator growth,
+#' as an annualized proportion. For example, 1% annualized federal purchases deflator
+#' growth would be represented as 0.01.
+#' @param rpgg A numeric vector representing the real potential GDP growth, as an
+#' annualized proportion. For example, 3% annualized real potential GDP growth would
+#' be represented as 0.03.
+#' @param gdp A numeric vector representing the GDP, in billions USD.
+#'
+#' @return A numeric vector representing the contribution of federal purchases to
+#' GDP growth.
+#' @export
+#'
+#' @examples
+#' # Example usage:
+#' federal_purchases_contribution(
+#'   x = c(1890.1, 1902.2, 1915.2, 1929.3, 1943.6),
+#'   fpdg = c(0.0064488, 0.0063423, 0.0062568, 0.0061065, 0.0054337),
+#'   rpgg = c(0.005559, 0.005580, 0.005601, 0.005596, 0.005586),
+#'   gdp = c(29314, 29626, 29942, 30268, 30577)
+#' )
+
   return(output)
 }
 
