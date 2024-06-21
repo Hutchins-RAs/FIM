@@ -313,6 +313,16 @@ projections
 n_periods <- nrow(projections) #total number of periods in the data
 source("src/map_mpc_time_series.R")
 
+### Define accessory variables. These are non-core data series that are still
+# required to calculate the FIM.
+federal_purchases_deflator_growth <- projections$federal_purchases_deflator_growth
+consumption_grants_deflator_growth <- projections$consumption_grants_deflator_growth
+investment_grants_deflator_growth <- projections$investment_grants_deflator_growth
+state_purchases_deflator_growth <- projections$state_purchases_deflator_growth
+real_potential_gdp_growth <- projections$real_potential_gdp_growth
+consumption_deflator_growth <- projections$consumption_deflator_growth
+gdp <- projections$gdp
+
 
 test <- federal_purchases_contribution(x = federal_purchases,
                                        fpdg = federal_purchases_deflator_growth,
