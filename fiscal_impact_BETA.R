@@ -313,13 +313,6 @@ projections
 n_periods <- nrow(projections) #total number of periods in the data
 source("src/map_mpc_time_series.R")
 
-# Initialize a list of unique data series to which minus neutral and mpc will be
-# applied to.
-# TODO: This list will be universal, from FIM start to FIM finish, so give it a 
-# more intuitive name, and don't base it off mpc series: base it off something 
-# established earlier. This step should come much earlier in the final, 
-# refactored script.
-data_series <- names(mpc_series)
 
 test <- federal_purchases_contribution(x = federal_purchases,
                                        fpdg = federal_purchases_deflator_growth,
