@@ -304,11 +304,26 @@ cbind(projections$social_benefits,
 ######################################################################################
 # This is the point where we go from generating a data frame to actually calculating the FIM
 ######################################################################################
-# This is the data we will use to calculate the FIM
+# The `projections` data frame, at this point, contains all of the data we need
+# in order to calculate the FIM. We're going to streamline it later: it contains
+# hundreds of columns, of which we only need a subset.
 projections
 
-### Define accessory variables. These are non-core data series that are still
-# required to calculate the FIM.
+# We divide the subset of columns that we need into two categories: "accessory" 
+# and "main" variables. Both types of columns are inputs for the FIM. The "main"
+# columns comprise the key variables that directly lead to a FIM contribution 
+# output, like the state_ui series and the federal_non_corporate_taxes series. The
+# "accessory" columns comprise additional variables that are used to calculate 
+# the FIM, but do not directly themselves produce a requisite contribution variable:
+# gdp, various deflators,  and real potential gdp growth.
+#
+# All variables, accessory and main, are vectors of the same length: roughly
+# 200something elements. This is because they all inherit their length from the 
+# `projections` data frame, whose length is determined by the number of periods 
+# in the time series from 1970 Q1 to the final projection date (which, as of this
+# writing, was sometime in 2034).
+
+### Accessory variables
 federal_purchases_deflator_growth <- projections$federal_purchases_deflator_growth
 consumption_grants_deflator_growth <- projections$consumption_grants_deflator_growth
 investment_grants_deflator_growth <- projections$investment_grants_deflator_growth
@@ -317,26 +332,44 @@ real_potential_gdp_growth <- projections$real_potential_gdp_growth
 consumption_deflator_growth <- projections$consumption_deflator_growth
 gdp <- projections$gdp
 
-### CALCULATE THE FIM variable-by-variable ########################################
-# Define FIM inputs
+### Main variables
 federal_purchases <- projections$federal_purchases
 consumption_grants <- projections$consumption_grants
 investment_grants <- projections$investment_grants
 state_purchases <- projections$state_purchases
 federal_non_corporate_taxes <- projections$federal_non_corporate_taxes
 
+# Another type of variable we need is MPC matrices. If you read the documentation,
+# [WHERE?], you'll develop a clearer understanding of how these matrices produce
+# an MPC operation. We cache these matrices so that they do not need to be
+# regenerated each time the code is run. This saves us some computing time.
+
 # Load MPC matrices from cache
 federal_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds")
 
-# Source functions from src/calculate_contributions.R that are used to convert
-# the 24 raw data series + 7 accessory series into 24 output contributions series
+# Next, we source essential functions we need to calculate the FIM in this section.
+# All of these files contain nothing but functions. No actual code is executed
+# when you run the files. Instead, the code is executed in this script.
+
+# These files need better names
 source("src/calculate_contributions.R")
-# Source functions from src/intermediate_fim_calculations.R that are used for 
-# calculations that eventually produce contributions
 source("src/intermediate_fim_calculations.R")
 
-# Example usages. I copy the results to the clipboard so that I can view
-# and compare the results to prior results in Excel. These four examples
+### CALCULATE THE FIM variable-by-variable ########################################
+
+# The following section calculates FIM contributions for each of the 24 FIM
+# output variables sequentially. 
+
+# NOTE: I should actually cache all of the FIM input variables - "accessory" and
+# "main" - as well as all of the FIM outputs. Ideally, the FIM is triggered by
+# an observer function, which sees a change in the state of an input variable or
+# an MPC assumption, which then triggers a cascade of functions that re-calculate
+# the FIM. The output is then shown on the Shiny app.
+
+# Example FIM outputs, or "contributions", as we call them, since summing the
+# 24 "contributions" leads to the top line FIM.
+# For now, I copy the results to the clipboard so that I can view
+# and compare the results to prior FIM results in Excel. These four examples
 # use functions from the calculate_contributions.R script.
 test <- federal_purchases_contribution(x = federal_purchases,
                                        fpdg = federal_purchases_deflator_growth,
@@ -366,9 +399,8 @@ test <- state_purchases_contribution(x = state_purchases,
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-# Example usage. I copy the results to the clipboard so that I can view
-# and compare the results to prior results in Excel. This example uses 
-# functions from the intermediate_fim_calculations.R script.
+# This example FIM output uses functions from the intermediate_fim_calculations.R 
+# script.
 test <- calculate_contribution(x = federal_non_corporate_taxes, 
                                mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
                                rpgg = real_potential_gdp_growth, 
