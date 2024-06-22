@@ -335,7 +335,9 @@ source("src/calculate_contributions.R")
 # calculations that eventually produce contributions
 source("src/intermediate_fim_calculations.R")
 
-# Example usage
+# Example usages. I copy the results to the clipboard so that I can view
+# and compare the results to prior results in Excel. These four examples
+# use functions from the calculate_contributions.R script.
 test <- federal_purchases_contribution(x = federal_purchases,
                                        fpdg = federal_purchases_deflator_growth,
                                        rpgg = real_potential_gdp_growth,
@@ -364,7 +366,9 @@ test <- state_purchases_contribution(x = state_purchases,
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-# Example usage
+# Example usage. I copy the results to the clipboard so that I can view
+# and compare the results to prior results in Excel. This example uses 
+# functions from the intermediate_fim_calculations.R script.
 test <- calculate_contribution(x = federal_non_corporate_taxes, 
                                mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
                                rpgg = real_potential_gdp_growth, 
