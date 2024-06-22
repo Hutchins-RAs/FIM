@@ -1,13 +1,13 @@
 # src/intermediate_fim_calculations.R
 
+# ---- post_minus_neutral ----
 #' Calculate Post-Minus Neutral Series
 #' 
-#' This function takes time series data, real potential gdp growth, and
+#' This function takes time series data, real potential GDP growth, and
 #' consumption deflator growth as input. It calculates a counterfactual 
-#' situation where each subsequent data is the product of the previous 
-#' observation, the consumption deflator, and potential gdp growth. It then
-#' calculates how quickly in excess of or below real potential gdp growth a 
-#' data series is growing.
+#' situation where each subsequent point in the input time series is the 
+#' product of the previous observation, the consumption deflator, and 
+#' potential GDP growth. It then calculates how quickly in excess of or below
 #' real potential GDP growth the input data series is growing. The output 
 #' can be interpreted as [WHAT? POPULATE THIS? WHAT UNITS? BUILLIONS USD? REAL
 #' OR NOT?]
@@ -15,6 +15,7 @@
 #' @param x A numeric vector representing the input series in billions USD.
 #' @param rpgg A numeric vector representing the real potential GDP growth, as an
 #' annualized proportion. For example, 3% annualized real potential GDP growth would
+#' be represented as 0.03. [A -1$ anualized rpgg would bre represented as YY]
 #' @param cdg A numeric vector representing the consumption deflator growth, as an
 #' annualized proportion. For example, 3% annualized rconsumption deflator growth
 #' would be represented as 0.03. [give negative example too]
@@ -23,9 +24,7 @@
 #' # TODO: improve this description of output. too vague
 #' @export
 minus_neutral <- function(x, # the data in question
-                          rpgg, # real potential gdp growth,
-                          cdg # consumption deflator growth
-) {
+                               rpgg, # real potential gdp growth,
                                cdg # consumption deflator growth
                                ) {
   output <- x - lag(x) * (1 + rpgg + cdg)
@@ -44,7 +43,7 @@ minus_neutral <- function(x, # the data in question
 #'
 #' This function takes a time series and marginal propensity to consume (MPC)
 #' matrix as inputs and calculates the post-MPC series using using matrix 
-#' multiplication.
+#' multiplication. [HOW IS THE RESULT INTERPRETED?!?!?]
 #'
 #' @param x A numeric vector representing the input series.
 #' @param mpc_matrix A numeric matrix representing the MPC matrix. The number of rows
@@ -63,6 +62,7 @@ minus_neutral <- function(x, # the data in question
 #'                        0.2, 0.2, 0.2, 0.4), nrow = 4, byrow = TRUE)
 #' calculate_mpc(x = series, mpc_matrix)
 
+mpc <- function(x, mpc_matrix) {
   # Input check that the dimensions of the matrix equal the length of the series
   if (nrow(mpc_matrix) != length(x)) {
     stop("The number of rows in the mpc_matrix must equal the length of the series.")
@@ -82,22 +82,13 @@ minus_neutral <- function(x, # the data in question
   return(output)
 }
 
-
-#' Calculate Post-Minus Neutral Series
-#' 
-#' This function takes time series data, real potential gdp growth, and
-#' consumption deflator growth as input. It calculates a counterfactual 
-#' situation where each subsequent data is the product of the previous 
-#' observation, the consumption deflator, and potential gdp growth. It then
-#' calculates how quickly in excess of or below real potential gdp growth a 
-#' data series is growing.
-#' 
+# ---- scale_to_gdp ----
+#' Scale to GDP
+#'
+#' This function calculates the the generic contribution of a time series to GDP
+#' growth.
+#'
 #' @param x A numeric vector representing the input series in billions USD.
-#' @param rpgg A numeric vector representing the real potential GDP growth, as an
-#' annualized proportion. For example, 3% annualized real potential GDP growth would
-#' be represented as 0.03.
-#' @param cdg A numeric vector representing the consumption deflator growth, as an
-#' annualized proportion. For example, 3% annualized rconsumption deflator growth
 #' @param gdp A numeric vector representing the GDP, in billions USD.
 #'
 #' @return A numeric vector representing the contribution of the input series to
