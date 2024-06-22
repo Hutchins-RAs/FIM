@@ -331,10 +331,11 @@ source("src/calculate_contributions.R")
 # Define FIM inputs
 federal_purchases <- projections$federal_purchases
 consumption_grants <- projections$consumption_grants
+investment_grants <- projections$investment_grants
 
 
-test <- consumption_grants_contribution(x = consumption_grants,
-                                       cgdg = consumption_grants_deflator_growth,
+test <- investment_grants_contribution(x = investment_grants,
+                                       igdg = investment_grants_deflator_growth,
                                        rpgg = real_potential_gdp_growth,
                                        gdp = gdp) %>%
   as.data.frame()
