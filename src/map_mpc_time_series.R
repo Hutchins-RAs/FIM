@@ -16,7 +16,9 @@
 # user experience.
 # TODO: explore mpc_series and mpc_list presentation options in the R Shiny app.
 #
-#
+# This code requires loading functions from mpc_lorae.R, currently located in
+# src/mpc_lorae.R
+source("src/mpc_lorae.R")
 # 
 # TODO: make the two period variables below less brittle
 n_periods <- n_periods #Total number of periods in the data
@@ -69,4 +71,16 @@ mpc_list <- list(
   mpc_direct_tax = c(-1)
 )
 
-
+# Overwrite cache with current data
+# note: comp_mpc_matrix function comes from mpc_lorae.R, sourced above.
+for (name in names(mpc_series)) {
+  print(name)
+  
+  # Calculate the mpc matrix
+  mpc_matrix <- comp_mpc_matrix(mpc_vector_list = mpc_list,
+                                mpc_series = mpc_series[[name]])
+  
+  # Construct the file path for saving the matrix
+  file_path <- paste0("cache/mpc_matrices/", name, ".rds")
+  saveRDS(mpc_matrix, file = file_path)
+}
