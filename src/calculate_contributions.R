@@ -110,3 +110,41 @@ investment_grants_contribution <- function(x, igdg, rpgg, gdp) {
   
   return(output)
 }
+
+
+#' Calculate State Purchases Contribution
+#'
+#' This function calculates the contribution of state purchases to GDP growth.
+#'
+#' @param x A numeric vector representing the input series for state purchases,
+#' in billions USD.
+#' @param spdg A numeric vector representing the state purchases deflator growth,
+#' as an annualized proportion. For example, 1% annualized state purchases deflator
+#' growth would be represented as 0.01.
+#' @param rpgg A numeric vector representing the real potential GDP growth, as an
+#' annualized proportion. For example, 3% annualized real potential GDP growth would
+#' be represented as 0.03.
+#' @param gdp A numeric vector representing the GDP, in billions USD.
+#'
+#' @return A numeric vector representing the contribution of state purchases to
+#' GDP growth.
+#' @export
+#'
+#' @examples
+#' # Example usage:
+#' state_purchases_contribution(
+#'   x = c(3219.7, 3249.7, 3280.6, 3311.4, 3343.7 ,
+#'   spdg = c(0.00661279, 0.00656692, 0.00658182, 0.00658482, 0.00683044),
+#'   rpgg = c(0.005559, 0.005580, 0.005601, 0.005596, 0.005586),
+#'   gdp = c(29314, 29626, 29942, 30268, 30577)
+#' )
+state_purchases_contribution <- function(x, spdg, rpgg, gdp) {
+  # Ensure input vectors are numeric and of the same length
+  stopifnot(is.numeric(x), is.numeric(spdg), is.numeric(rpgg), is.numeric(gdp))
+  stopifnot(length(x) == length(spdg), length(spdg) == length(rpgg), length(rpgg) == length(gdp))
+  
+  # Calculate the output
+  output <- 400 * (x - lag(x) * (1 + spdg + rpgg)) / lag(gdp)
+  
+  return(output)
+}

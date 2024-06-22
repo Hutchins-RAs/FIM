@@ -332,10 +332,11 @@ source("src/calculate_contributions.R")
 federal_purchases <- projections$federal_purchases
 consumption_grants <- projections$consumption_grants
 investment_grants <- projections$investment_grants
+state_purchases <- projections$state_purchases
 
 
-test <- investment_grants_contribution(x = investment_grants,
-                                       igdg = investment_grants_deflator_growth,
+test <- state_purchases_contribution(x = state_purchases,
+                                       spdg = state_purchases_deflator_growth,
                                        rpgg = real_potential_gdp_growth,
                                        gdp = gdp) %>%
   as.data.frame()
