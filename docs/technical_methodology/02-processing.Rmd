@@ -1,0 +1,57 @@
+---
+title: "Data Processing Steps"
+---
+# Data Processing
+
+## Input data
+
+The FIM has many inputs. But when we run the FIM, we typically take into account 23 main data series, which are found in the "forecast" section of the sheet.
+
+!["An image of the 'forecast' page of the 'forecast.xlsx' workbook."](images/forecast_sheet.png)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Create the data frame
+data <- data.frame(
+  Name = c(
+    "Consumption Grants", "Investment Grants", "Federal Purchases (NIPA Consistent)",
+    "State Purchases (NIPA Consistent)", "Non-ARP Subsidies + ARP Provider Relief and PPP",
+    "ARP Subsidies less Provider Relief and PPP", "Federal UI", "State UI", "Federal Medicaid",
+    "Total Medicaid", "Medicare", "Non-ARP Rebate Checks", "ARP Rebate Checks",
+    "ARP Other Vulnerable", "ARP Other Direct Aid plus Provider Relief",
+    "Other Federal Social Benefits (including all SNAP)", "State Social Benefits ex Medicaid",
+    "Federal Non-Corporate Taxes", "State Non-Corporate Taxes", "Federal Corporate Taxes",
+    "State Corporate Taxes", "Federal Student Loans", "Supply Side IRA"
+  ),
+  VariableName = c(
+    "consumption_grants", "investment_grants", "federal_purchases",
+    "state_purchases", "federal_subsidies", "federal_aid_to_small_businesses_arp",
+    "federal_ui", "state_ui", "medicaid_grants", "medicaid", "medicare",
+    "rebate_checks", "rebate_checks_arp", "federal_other_vulnerable_arp",
+    "federal_other_direct_aid_arp", "federal_social_benefits", "state_social_benefits",
+    "federal_non_corporate_taxes", "state_non_corporate_taxes", "federal_corporate_taxes",
+    "state_corporate_taxes", "federal_student_loans", "supply_side_ira"
+  )
+)
+
+# Create the interactive table
+datatable(data, colnames = c("Name", "Variable Name"), caption = "FIM Project Variables", options = list(pageLength = 23))
+```
+
+## The equations that actually fovern the FIM
+
+Your best source for data processing steps as they stand (in late June 2024) is to look at docs/variables_tracker.
+
+It maps out how each input leads to each output and what operations are done along the way. I'm using it to completely refactor the computation section of the FIM.
+
+We'll have to write up this section later.
+
+### MPC subsection
+
+There's a lot of cool documentation about how we calculate MPCs using matrices in the src/mpc_lorae.R file. Please refer to that to write about how the economic concept of MPCs translates into code.
+
+### minus neutral subsection
+
+I'm sure we'll have stuff about our reasoning here
+
+### other stuff section
+more content

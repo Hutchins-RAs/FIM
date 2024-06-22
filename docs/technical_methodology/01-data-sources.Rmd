@@ -1,0 +1,27 @@
+---
+title: "Data Sources"
+---
+
+# Data Sources
+
+## Data sources
+
+We will have to figure this section out. We draw from BEA, CBO, haver, etc. But we will need a flow chart of all the scripts, all the dependencies, and explain why each source is used for each item. When do we overwrite history?
+
+We'll probably have one sub section for each source, like:
+
+### CBO
+stuff here. Which reports do we use? Budget? Economic? How do we input their data into the FIM?
+
+### BEA
+Same questions as above
+
+### Haver
+Discuss Haver package, etc.
+
+## Combining & wrangling
+
+I have no idea how this is done, and we will have to refactor this section in depth. 
+
+## The clean data
+We use the "projections" data frame (at least for now) in the remainder of the code. In its current refactored state in the fiscal_impact_BETA script, we select columns of interest from the lonnngggg "projections" data frame and use those as we calculate the FIM.

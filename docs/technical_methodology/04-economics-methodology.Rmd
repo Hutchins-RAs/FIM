@@ -1,0 +1,20 @@
+---
+title: "Economics Methodology"
+---
+
+# Economics Methodology
+
+In this chapter, we will delve into the economics behind the FIM, including the theoretical foundations and the specific methodologies used to calculate various economic impacts.
+
+### Marginal Propensities to Consume
+
+#### Calculation
+
+Explain how the marginal propensities to consume are calculated using matrices and provide relevant examples.
+
+```{r example_calculation, echo=TRUE}
+# Example code for calculating MPC
+series <- c(100, 200, 300, 400)
+1+1
+```
+testing

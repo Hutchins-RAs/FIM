@@ -1,0 +1,58 @@
+---
+title: "FIM Technical Methodology"
+author: "Lorae Stojanovic"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::gitbook:
+    split_by: chapter
+site: bookdown::bookdown_site
+documentclass: book
+# Bookdown is a required package to run this document. If you don't already
+# have it installed, simply run:
+# install.packages("bookdown")
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(DiagrammeR)
+library(DT)
+
+```
+
+To serve this book, run the following code in the R console:
+```
+bookdown::render_book("index.Rmd")
+```
+
+# Welcome!
+The purpose of this document is to explain, in depth, how the FIM works. It is intended to encapsulate the technical elements of the project arising from the programming design as well as the economic design.
+
+Chapter 1 documents the sources of data.
+
+Chapter 2 documents how the FIM is calculated.
+
+Chapter 3 documents how the UI interface is constructed.
+
+Chapter 4 describes the economic intuition for the FIM.
+
+```{r flow_chart, echo=FALSE}
+grViz("
+digraph flowchart {
+  node [fontname = Helvetica, shape = box]
+
+  Start [label = 'Start']
+  Data_Input [label = 'Data Input']
+  Data_Cleaning [label = 'Data Cleaning']
+  Analysis [label = 'Analysis']
+  Report_Generation [label = 'Report Generation']
+  End [label = 'End']
+
+  Start -> Data_Input
+  Data_Input -> Data_Cleaning
+  Data_Cleaning -> Analysis
+  Analysis -> Report_Generation
+  Report_Generation -> End
+}
+")
+```
