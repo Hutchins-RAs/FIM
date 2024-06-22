@@ -311,17 +311,17 @@ projections
 
 # We divide the subset of columns that we need into two categories: "accessory" 
 # and "main" variables. Both types of columns are inputs for the FIM. The "main"
-# columns comprise the key variables that directly lead to a FIM contribution 
-# output, like the state_ui series and the federal_non_corporate_taxes series. The
-# "accessory" columns comprise additional variables that are used to calculate 
-# the FIM, but do not directly themselves produce a requisite contribution variable:
-# gdp, various deflators,  and real potential gdp growth.
+# columns are key variables that directly lead to a FIM "contribution" output, 
+# like the `state_ui` series and the `federal_non_corporate_taxes` series. The
+# "accessory" columns are additional macroeconomic variables that are needed to
+# calculate the FIM, but do not directly themselves produce a direct contribution
+# variables: GDP, various deflators,  and real potential GDP growth.
 #
-# All variables, accessory and main, are vectors of the same length: roughly
-# 200something elements. This is because they all inherit their length from the 
-# `projections` data frame, whose length is determined by the number of periods 
-# in the time series from 1970 Q1 to the final projection date (which, as of this
-# writing, was sometime in 2034).
+# All variables, accessory and main, are vectors of the same length: about
+# 270 elements. This is because they all inherit their length from the `projections` 
+# data frame, whose length is determined by the number of periods in the time 
+# series from 1970 Q1 to the final projection date (which, as of this writing, 
+# was sometime in 2034. But that number increases as time goes by).
 
 ### Accessory variables
 federal_purchases_deflator_growth <- projections$federal_purchases_deflator_growth
@@ -339,10 +339,12 @@ investment_grants <- projections$investment_grants
 state_purchases <- projections$state_purchases
 federal_non_corporate_taxes <- projections$federal_non_corporate_taxes
 
-# Another type of variable we need is MPC matrices. If you read the documentation,
-# [WHERE?], you'll develop a clearer understanding of how these matrices produce
-# an MPC operation. We cache these matrices so that they do not need to be
-# regenerated each time the code is run. This saves us some computing time.
+# Another type of variable we need is MPC matrices. If you read the documentation
+# in `src/mpc_lorae.R`, you'll develop a clearer understanding of how these 
+# matrices produce an MPC operation. We cache these matrices so that they do not 
+# need to be regenerated each time the code is run. Instead, in the future, we'll
+# only rebuild these matrices when MPC inputs are changed using an "observer" 
+# design pattern. This will save us a lot of computing time.
 
 # Load MPC matrices from cache
 federal_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds")
@@ -360,7 +362,7 @@ source("src/intermediate_fim_calculations.R")
 # The following section calculates FIM contributions for each of the 24 FIM
 # output variables sequentially. 
 
-# NOTE: I should actually cache all of the FIM input variables - "accessory" and
+# TOO: We should actually cache all of the FIM input variables - "accessory" and
 # "main" - as well as all of the FIM outputs. Ideally, the FIM is triggered by
 # an observer function, which sees a change in the state of an input variable or
 # an MPC assumption, which then triggers a cascade of functions that re-calculate
