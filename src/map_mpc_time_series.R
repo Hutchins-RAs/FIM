@@ -1,8 +1,16 @@
 # map_mpc_time_series.R
 # 
+# IMPORTANT NOTE: For this script to run, n_periods must be predefined elsewhere.
+# TODO: Make this n_periods less brittle, perhaps by converting this script
+# into a function that can be run with n_periods as an argument.
+#
 # The purpose of this script is to generate an mpc_series list - which maps 
 # periods of a FIM data series with an mpc - and mpc_list - which lists all the 
 # mpcs used in the FIM project.
+#
+# Using these lists, the script then generates mpc vectors which are saved in
+# cache/mpc_matrices/name_of_series.rds, where the `name_of_series.rds` is
+# replaced with a series name, like federal_ui, state_ui, subsidies, etc.
 #
 # This code may eventually be supplanted with an Excel sheet for an improved 
 # user experience.
@@ -60,3 +68,5 @@ mpc_list <- list(
   # we assign taxes a negative mpc.
   mpc_direct_tax = c(-1)
 )
+
+
