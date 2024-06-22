@@ -1,15 +1,23 @@
-#' minus_neutral
+#' Calculate Post-Minus Neutral Series
 #' 
-#' `minus_neutral` takes time series data, real potential gdp growth, and
+#' This function takes time series data, real potential gdp growth, and
 #' consumption deflator growth as input. It calculates a counterfactual 
 #' situation where each subsequent data is the product of the previous 
 #' observation, the consumption deflator, and potential gdp growth. It then
 #' calculates how quickly in excess of or below real potential gdp growth a 
 #' data series is growing.
 #' 
-# generalized minus_neutral function
-# TODO: revisit this and clean up minus neutral. Should minus neutral
-# counterfactual be subtracted from x, or divided into x?
+#' @param x A numeric vector representing the input series in billions USD.
+#' @param rpgg A numeric vector representing the real potential GDP growth, as an
+#' annualized proportion. For example, 3% annualized real potential GDP growth would
+#' be represented as 0.03.
+#' @param cdg A numeric vector representing the consumption deflator growth, as an
+#' annualized proportion. For example, 3% annualized rconsumption deflator growth
+#' would be represented as 0.03.
+#'
+#' @return A numeric vector representing the "minus neutral" series
+#' # TODO: improve this description of output. too vague
+#' @export
 minus_neutral <- function(x, # the data in question
                           rpgg, # real potential gdp growth,
                           cdg # consumption deflator growth
