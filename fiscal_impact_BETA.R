@@ -335,14 +335,41 @@ source("src/calculate_contributions.R")
 # calculations that eventually produce contributions
 source("src/intermediate_fim_calculations.R")
 
-test <- federal_non_corporate_taxes %>%
-  minus_neutral(x = .,
-                rpgg = real_potential_gdp_growth,
-                cdg = consumption_deflator_growth) %>%
-  calculate_mpc(x = .,
-                mpc_matrix = federal_non_corporate_taxes_mpc_matrix) %>%
-  generic_contribution(x = .,
-                       gdp = gdp) %>%
+# Example usage
+test <- federal_purchases_contribution(x = federal_purchases,
+                                       fpdg = federal_purchases_deflator_growth,
+                                       rpgg = real_potential_gdp_growth,
+                                       gdp = gdp) %>%
+  as.data.frame()
+write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+test <- consumption_grants_contribution(x = consumption_grants,
+                                       cgdg = consumption_grants_deflator_growth,
+                                       rpgg = real_potential_gdp_growth,
+                                       gdp = gdp) %>%
+  as.data.frame()
+write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+test <- investment_grants_contribution(x = investment_grants,
+                                        igdg = investment_grants_deflator_growth,
+                                        rpgg = real_potential_gdp_growth,
+                                        gdp = gdp) %>%
+  as.data.frame()
+write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+test <- state_purchases_contribution(x = state_purchases,
+                                       spdg = state_purchases_deflator_growth,
+                                       rpgg = real_potential_gdp_growth,
+                                       gdp = gdp) %>%
+  as.data.frame()
+write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# Example usage
+test <- calculate_contribution(x = federal_non_corporate_taxes, 
+                               mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
+                               rpgg = real_potential_gdp_growth, 
+                               cdg = consumption_deflator_growth, 
+                               gdp = gdp) %>%
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
