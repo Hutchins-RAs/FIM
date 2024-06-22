@@ -318,22 +318,35 @@ consumption_deflator_growth <- projections$consumption_deflator_growth
 gdp <- projections$gdp
 
 ### CALCULATE THE FIM variable-by-variable ########################################
-# Source functions from src/calculate_contributions.R that are used to convert
-# the 24 raw data series + 7 accessory series into 24 output contributions series
-source("src/calculate_contributions.R")
-
 # Define FIM inputs
 federal_purchases <- projections$federal_purchases
 consumption_grants <- projections$consumption_grants
 investment_grants <- projections$investment_grants
 state_purchases <- projections$state_purchases
+federal_non_corporate_taxes <- projections$federal_non_corporate_taxes
 
+# Load MPC matrices from cache
+federal_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds")
 
-test <- state_purchases_contribution(x = state_purchases,
-                                       spdg = state_purchases_deflator_growth,
-                                       rpgg = real_potential_gdp_growth,
-                                       gdp = gdp) %>%
+# Source functions from src/calculate_contributions.R that are used to convert
+# the 24 raw data series + 7 accessory series into 24 output contributions series
+source("src/calculate_contributions.R")
+# Source functions from src/intermediate_fim_calculations.R that are used for 
+# calculations that eventually produce contributions
+source("src/intermediate_fim_calculations.R")
+
+test <- federal_non_corporate_taxes %>%
+  minus_neutral(x = .,
+                rpgg = real_potential_gdp_growth,
+                cdg = consumption_deflator_growth) %>%
+  calculate_mpc(x = .,
+                mpc_matrix = federal_non_corporate_taxes_mpc_matrix) %>%
+  generic_contribution(x = .,
+                       gdp = gdp) %>%
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+
+
 
 
