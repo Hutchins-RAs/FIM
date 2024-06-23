@@ -352,10 +352,7 @@ federal_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_no
 # Next, we source essential functions we need to calculate the FIM in this section.
 # All of these files contain nothing but functions. No actual code is executed
 # when you run the files. Instead, the code is executed in this script.
-
-# These files need better names
-source("src/calculate_contributions.R")
-source("src/intermediate_fim_calculations.R")
+source("src/contributions.R")
 
 ### CALCULATE THE FIM variable-by-variable ########################################
 
@@ -373,41 +370,52 @@ source("src/intermediate_fim_calculations.R")
 # For now, I copy the results to the clipboard so that I can view
 # and compare the results to prior FIM results in Excel. These four examples
 # use functions from the calculate_contributions.R script.
-test <- federal_purchases_contribution(x = federal_purchases,
-                                       fpdg = federal_purchases_deflator_growth,
-                                       rpgg = real_potential_gdp_growth,
-                                       gdp = gdp) %>%
+# Federal purchases contribution
+test <- contribution_no_mpc(x = federal_purchases,
+                             # for the consumption deflator growth we sub in
+                             # the federal purchases deflator growth
+                             cdg = federal_purchases_deflator_growth,
+                             rpgg = real_potential_gdp_growth,
+                             gdp = gdp) %>%
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-test <- consumption_grants_contribution(x = consumption_grants,
-                                       cgdg = consumption_grants_deflator_growth,
-                                       rpgg = real_potential_gdp_growth,
-                                       gdp = gdp) %>%
+# Consumption grants contirbution
+test <- contribution_no_mpc(x = consumption_grants,
+                            # for the consumption deflator growth we sub in
+                            # the consumption grants deflator growth
+                            cdg = consumption_grants_deflator_growth,
+                            rpgg = real_potential_gdp_growth,
+                            gdp = gdp) %>%
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-test <- investment_grants_contribution(x = investment_grants,
-                                        igdg = investment_grants_deflator_growth,
-                                        rpgg = real_potential_gdp_growth,
-                                        gdp = gdp) %>%
+# Investment grants contribution
+test <- contribution_no_mpc(x = investment_grants,
+                            # for the consumption deflator growth we sub in
+                            # the consumption grants deflator growth
+                            cdg = investment_grants_deflator_growth,
+                            rpgg = real_potential_gdp_growth,
+                            gdp = gdp) %>%
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-test <- state_purchases_contribution(x = state_purchases,
-                                       spdg = state_purchases_deflator_growth,
-                                       rpgg = real_potential_gdp_growth,
-                                       gdp = gdp) %>%
+# State purchases
+test <- contribution_no_mpc(x = state_purchases,
+                            # for the consumption deflator growth we sub in
+                            # the consumption grants deflator growth
+                            cdg = state_purchases_deflator_growth,
+                            rpgg = real_potential_gdp_growth,
+                            gdp = gdp) %>%
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-# This example FIM output uses functions from the intermediate_fim_calculations.R 
-# script.
-test <- calculate_contribution(x = federal_non_corporate_taxes, 
-                               mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
-                               rpgg = real_potential_gdp_growth, 
-                               cdg = consumption_deflator_growth, 
-                               gdp = gdp) %>%
+# Federal non corporate taxes
+test <- contribution_w_mpc(x = federal_non_corporate_taxes, 
+                            mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
+                            rpgg = real_potential_gdp_growth, 
+                            cdg = consumption_deflator_growth, 
+                            gdp = gdp) %>%
   as.data.frame()
 write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
