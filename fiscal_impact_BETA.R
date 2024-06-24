@@ -371,53 +371,50 @@ source("src/contributions.R")
 # and compare the results to prior FIM results in Excel. These four examples
 # use functions from the calculate_contributions.R script.
 # Federal purchases contribution
-test <- contribution_no_mpc(x = federal_purchases,
-                             # for the consumption deflator growth we sub in
-                             # the federal purchases deflator growth
-                             cdg = federal_purchases_deflator_growth,
-                             rpgg = real_potential_gdp_growth,
-                             gdp = gdp) %>%
-  as.data.frame()
-write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+federal_purchases_contribution <- contribution_no_mpc(
+  x = federal_purchases,
+  dg = federal_purchases_deflator_growth,
+  rpgg = real_potential_gdp_growth,
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-# Consumption grants contirbution
-test <- contribution_no_mpc(x = consumption_grants,
-                            # for the consumption deflator growth we sub in
-                            # the consumption grants deflator growth
-                            cdg = consumption_grants_deflator_growth,
-                            rpgg = real_potential_gdp_growth,
-                            gdp = gdp) %>%
-  as.data.frame()
-write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+# Consumption grants contribution
+consumption_grants_contribution <- contribution_no_mpc(
+  x = consumption_grants,
+  dg = consumption_grants_deflator_growth,
+  rpgg = real_potential_gdp_growth,
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
 # Investment grants contribution
-test <- contribution_no_mpc(x = investment_grants,
-                            # for the consumption deflator growth we sub in
-                            # the consumption grants deflator growth
-                            cdg = investment_grants_deflator_growth,
-                            rpgg = real_potential_gdp_growth,
-                            gdp = gdp) %>%
-  as.data.frame()
-write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+investment_grants_contribution <- contribution_no_mpc(
+  x = investment_grants,
+  dg = investment_grants_deflator_growth,
+  rpgg = real_potential_gdp_growth,
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-# State purchases
-test <- contribution_no_mpc(x = state_purchases,
-                            # for the consumption deflator growth we sub in
-                            # the consumption grants deflator growth
-                            cdg = state_purchases_deflator_growth,
-                            rpgg = real_potential_gdp_growth,
-                            gdp = gdp) %>%
-  as.data.frame()
-write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+# State purchases contribution
+state_purchases_contribution <- contribution_no_mpc(
+  x = state_purchases,
+  dg = state_purchases_deflator_growth,
+  rpgg = real_potential_gdp_growth,
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
 # Federal non corporate taxes
-test <- contribution_w_mpc(x = federal_non_corporate_taxes, 
-                            mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
-                            rpgg = real_potential_gdp_growth, 
-                            cdg = consumption_deflator_growth, 
-                            gdp = gdp) %>%
-  as.data.frame()
-write.table(test, "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+federal_non_corporate_taxes_contribution <- contribution_w_mpc(
+  x = federal_non_corporate_taxes, 
+  mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
 
 

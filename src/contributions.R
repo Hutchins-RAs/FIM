@@ -56,25 +56,25 @@
 #' @param rpgg A numeric vector representing the real potential GDP growth, as an
 #' annualized proportion. For example, 3% annualized real potential GDP growth would
 #' be represented as 0.03. [A -1$ anualized rpgg would bre represented as YY]
-#' @param cdg A numeric vector representing the consumption deflator growth, as an
-#' annualized proportion. For example, 3% annualized rconsumption deflator growth
-#' would be represented as 0.03. [give negative example too]
+#' @param dg A numeric vector representing the deflator growth, as an annualized 
+#' proportion. For example, 3% annualized deflator growth would be represented 
+#' as 0.03. [give negative example too]
 #'
 #' @return A numeric vector representing the "minus neutral" series
 #' # TODO: improve this description of output. too vague
 #' @export
 minus_neutral <- function(x, # the data in question
                                rpgg, # real potential gdp growth,
-                               cdg # consumption deflator growth
+                               dg # consumption deflator growth
                                ) {
-  output <- x - lag(x) * (1 + rpgg + cdg)
+  output <- x - lag(x) * (1 + rpgg + dg)
   # This is the correct, calculation, but it affects minus_neutral
-  #output <- x - (lag(x) * (1 + rpgg) * (1 + cdg))
+  #output <- x - (lag(x) * (1 + rpgg) * (1 + dg))
   # This optional line will make the 1970 Q1 entries equal a numeric value, rather
   # than NA, by assuming that the 1969 Q4 value for each data series was 0. 
   # Prior versions of the FIM had this setting on for pandemic-era stimulus. We
   # have chosen to remove it.
-  # output <- x - lag(x, default = 0) * (1 + rpgg + cdg)
+  # output <- x - lag(x, default = 0) * (1 + rpgg + dg)
   return(output)
 }
 
@@ -161,7 +161,9 @@ scale_to_gdp <- function(x, gdp) {
 #' @param x A numeric vector representing the input series in billions USD.
 #' @param gdp A numeric vector representing the GDP, in billions USD.
 #' @param rpgg TODO
-#' @param cdg TODO
+#' @param dg A numeric vector representing the deflator growth, as an annualized 
+#' proportion. For example, 3% annualized deflator growth would be represented 
+#' as 0.03. [give negative example too]
 #' @param mpc_matrix TODO
 #' 
 #'
@@ -172,13 +174,13 @@ scale_to_gdp <- function(x, gdp) {
 #' @examples
 #' # Example usage:
 #' #TODO
-contribution_w_mpc <- function(x, mpc_matrix, rpgg, cdg, gdp) {
+contribution_w_mpc <- function(x, mpc_matrix, rpgg, dg, gdp) {
   # Take the input data series, x
   x %>%
     # First, apply the minus_neutral function to x, setting real potential
     # GDP growth and consumption deflator growth inputs to those specified
     # by the arguments.
-    minus_neutral(x = ., rpgg = rpgg, cdg = cdg) %>%
+    minus_neutral(x = ., rpgg = rpgg, dg = dg) %>%
     # Next, take the output series from minus neutral as an input for the
     # mpc function. Use the mpc matrix specified in the above arguments.
     mpc(x = ., mpc_matrix = mpc_matrix) %>%
@@ -201,7 +203,9 @@ contribution_w_mpc <- function(x, mpc_matrix, rpgg, cdg, gdp) {
 #' @param x A numeric vector representing the input series in billions USD.
 #' @param gdp A numeric vector representing the GDP, in billions USD.
 #' @param rpgg TODO
-#' @param cdg TODO
+#' @param dg A numeric vector representing the deflator growth, as an annualized 
+#' proportion. For example, 3% annualized deflator growth would be represented 
+#' as 0.03. [give negative example too]
 #' @param mpc_matrix TODO
 #' 
 #'
@@ -212,13 +216,12 @@ contribution_w_mpc <- function(x, mpc_matrix, rpgg, cdg, gdp) {
 #' @examples
 #' # Example usage:
 #' #TODO
-contribution_no_mpc <- function(x, mpc_matrix, rpgg, cdg, gdp) {
+contribution_no_mpc <- function(x, mpc_matrix, rpgg, dg, gdp) {
   # Take the input data series, x
   x %>%
     # First, apply the minus_neutral function to x, setting real potential
-    # GDP growth and consumption deflator growth inputs to those specified
-    # by the arguments.
-    minus_neutral(x = ., rpgg = rpgg, cdg = cdg) %>%
+    # GDP growth and deflator growth inputs to those specified in the arguments.
+    minus_neutral(x = ., rpgg = rpgg, dg = dg) %>%
     # Second, take the output series from minus neutral as an input for the
     # scale_to_gdp function. Specify the GDP using the input from the 
     # arguments.
