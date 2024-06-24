@@ -505,3 +505,14 @@ federal_ui_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# State UI
+state_ui_contribution <- contribution(
+  x = projections$state_ui, 
+  mpc_matrix = readRDS("cache/mpc_matrices/state_ui.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
