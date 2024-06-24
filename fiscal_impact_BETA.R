@@ -485,4 +485,13 @@ rebate_checks_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# Rebate checks ARP
+rebate_checks_arp_contribution <- contribution(
+  x = projections$rebate_checks_arp, 
+  mpc_matrix = readRDS("cache/mpc_matrices/rebate_checks_arp.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
