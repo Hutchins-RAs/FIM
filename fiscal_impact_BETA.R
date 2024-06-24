@@ -465,3 +465,13 @@ federal_social_benefits_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# State social benefits
+state_social_benefits_contribution <- contribution(
+  x = projections$state_social_benefits, 
+  mpc_matrix = readRDS("cache/mpc_matrices/state_social_benefits.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
