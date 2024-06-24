@@ -559,7 +559,6 @@ state_health_outlays_contribution <- contribution(
   gdp = gdp)
 
 ### AGGREGATE contributions ########################################
-# this is somehow incorrect
 federal_contribution <- 
   (federal_purchases_contribution + 
   consumption_grants_contribution + 
