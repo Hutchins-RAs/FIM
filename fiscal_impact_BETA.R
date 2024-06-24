@@ -557,3 +557,33 @@ state_health_outlays_contribution <- contribution(
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
   gdp = gdp)
+
+# Combine all the contributions into a data frame
+contributions_df <- data.frame(
+  federal_purchases_contribution = federal_purchases_contribution,
+  consumption_grants_contribution = consumption_grants_contribution,
+  investment_grants_contribution = investment_grants_contribution,
+  state_purchases_contribution = state_purchases_contribution,
+  federal_non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution,
+  state_non_corporate_taxes_contribution = state_non_corporate_taxes_contribution,
+  federal_corporate_taxes_contribution = federal_corporate_taxes_contribution,
+  supply_side_ira_contribution = supply_side_ira_contribution,
+  state_corporate_taxes_contribution = state_corporate_taxes_contribution,
+  federal_social_benefits_contribution = federal_social_benefits_contribution,
+  state_social_benefits_contribution = state_social_benefits_contribution,
+  rebate_checks_contribution = rebate_checks_contribution,
+  rebate_checks_arp_contribution = rebate_checks_arp_contribution,
+  federal_ui_contribution = federal_ui_contribution,
+  state_ui_contribution = state_ui_contribution,
+  federal_subsidies_contribution = federal_subsidies_contribution,
+  federal_aid_to_small_businesses_arp_contribution = federal_aid_to_small_businesses_arp_contribution,
+  federal_other_direct_aid_arp_contribution = federal_other_direct_aid_arp_contribution,
+  federal_other_vulnerable_arp_contribution = federal_other_vulnerable_arp_contribution,
+  federal_student_loans_contribution = federal_student_loans_contribution,
+  state_subsidies_contribution = state_subsidies_contribution,
+  federal_health_outlays_contribution = federal_health_outlays_contribution,
+  state_health_outlays_contribution = state_health_outlays_contribution
+)
+
+# View the data frame
+print(contributions_df)
