@@ -1,6 +1,5 @@
 # src/contributions.R
-# This module defines 5 functions, categorized into two sections: unit functions
-# and wrapper functions. Ultimately, all 5 are used to transform a raw data series
+# This module defines 4 functions, used to transform a raw data series
 # into a FIM contribution. Read more to find out what each function does.
 #
 # UNIT FUNCTIONS
@@ -12,29 +11,30 @@
 # For more information on what each step's purpose is, read the Roxygen documentation
 # below.
 #
-# WRAPPER FUNCTIONS
+# WRAPPER FUNCTIONS (there's only one)
+# 4. contribution
+# contribution is a wrapper function that bundles the first 3 functions together
+# to produce FIM output ("contributions"). As an input, it takes the raw data 
+# vector and necessary accessory variables. Its output is the quarterly FIM contribution
+# from that variable. 
+# 
 # Not all input data needs to go through all 3 unit functions in order to produce
-# FIM output ("contributions"). Some input data needs to only go through 2 unite
-# functions, which is why we have two wrapper functions. They are called:
-# contribution_no_mpc
-# contribution_w_mpc
+# FIM output. Some input data needs to only go through the minus_neutral and the
+# scale_to_gdp step. The mpc step can be optionally skipped by assigning the mpc_matrix
+# argument to NULL.
+# 
+# Why no MPC? Federal purchases, state purchases, investment grants, and consumption 
+# grants all fall in this category, since they measure direct effects of government 
+# spending on output. (In other words, their effects on GDP are instantaneous). 
+# Our supply side IRA variable also falls in this category since it already represents
+# a direct estimate of how the CHIPS/IRA legislation increased manufacturing output.
 #
-# contribution_no_mpc applies the minus_neutral function and then the scale_to_gdp
-# function. It skips the mpc() step, because the series is operates on already measure
-# direct effects on MPC. 
-# Federal purchases, state purchases, investment grants, and consumption grants 
-# all fall in this category, since they measure direct effects of government spending
-# on output. (In other words, their effects on GDP are instantaneous). Our supply
-# side IRA variable also falls in this category since it already represents a
-# direct estimate of how the CHIPS/IRA legislation increased manufacturing 
-# output.
-#
-# contribution_w_mpc applies to most of the FIM variables, since we do not believe
-# that the effect of the cash flow on GDP is immediate. For example, unemployment 
-# benefits might be received in quarter 1, but not spent until quarter 2. And some
-# of the initial disbursement might be saved permanently. Thus, MPCs capture timing
-# effects of taxes/transfers on GDP as well as the fact that these taxes and transfers
-# may not have a 1:1 impact on output.
+# Why use an MPC? We apply MPCs when we do believe that the effect of a cash flow 
+# on GDP is not immediate. For example, unemployment benefits might be received 
+# in quarter 1, but not spent until quarter 2. And some of the initial disbursement
+# might be saved permanently. Thus, MPCs capture timing effects of taxes/transfers
+# on GDP as well as the fact that these taxes and transfers may not have a 1:1 or
+# immediate effect on output.
 #
 # ===========================
 # Unit-Level Functions
@@ -151,12 +151,12 @@ scale_to_gdp <- function(x, gdp) {
 # Wrapper Functions
 # ===========================
 
-# ---- contribution_w_mpc ----
-#' Calculate FIM Contributions, with MPCs
+# ---- contribution ----
+#' Calculate FIM Contributions, with optional MPCs
 #'
-#' This function calculates the the generic contribution of a time series to GDP
-#' growth. It assumes that the raw time series must be transformed via the MPC
-#' function before calculating the effect on GDP.
+#' This function calculates the generic contribution of a time series to GDP
+#' growth. It optionally applies an MPC transformation to the input series before
+#' calculating the effect on GDP.
 #'
 #' @param x A numeric vector representing the input series in billions USD.
 #' @param gdp A numeric vector representing the GDP, in billions USD.
@@ -164,8 +164,8 @@ scale_to_gdp <- function(x, gdp) {
 #' @param dg A numeric vector representing the deflator growth, as an annualized 
 #' proportion. For example, 3% annualized deflator growth would be represented 
 #' as 0.03. [give negative example too]
-#' @param mpc_matrix TODO
-#' 
+#' @param mpc_matrix A matrix representing the MPCs. If set to NULL, the MPC step 
+#' will be skipped.
 #'
 #' @return A numeric vector representing the contribution of the input series to
 #' GDP growth.
@@ -174,58 +174,19 @@ scale_to_gdp <- function(x, gdp) {
 #' @examples
 #' # Example usage:
 #' #TODO
-contribution_w_mpc <- function(x, mpc_matrix, rpgg, dg, gdp) {
-  # Take the input data series, x
-  x %>%
-    # First, apply the minus_neutral function to x, setting real potential
-    # GDP growth and consumption deflator growth inputs to those specified
-    # by the arguments.
-    minus_neutral(x = ., rpgg = rpgg, dg = dg) %>%
-    # Next, take the output series from minus neutral as an input for the
-    # mpc function. Use the mpc matrix specified in the above arguments.
-    mpc(x = ., mpc_matrix = mpc_matrix) %>%
-    # Finally, take the output series from the mpc function as an input for
-    # the scale to gdp function. Specify the GDP using the input from the 
-    # arguments.
+contribution <- function(x, mpc_matrix = NULL, rpgg, dg, gdp) {
+  # Apply the minus_neutral function to x, setting real potential GDP growth
+  # and deflator growth inputs to those specified by the arguments.
+  result <- x %>%
+    minus_neutral(x = ., rpgg = rpgg, dg = dg)
+  
+  # If mpc_matrix is not NULL, apply the mpc function
+  if (!is.null(mpc_matrix)) {
+    result <- result %>%
+      mpc(x = ., mpc_matrix = mpc_matrix)
+  }
+  
+  # Apply the scale_to_gdp function
+  result %>%
     scale_to_gdp(x = ., gdp = gdp)
-  # After these three steps, your output will be the FIM contribution, as 
-  # specified in our methodology.
-}
-
-
-# ---- contribution_no_mpc ----
-#' Calculate FIM Contributions, without(!) MPCs
-#'
-#' This function calculates the the generic contribution of a time series to GDP
-#' growth. It assumes that the raw time series directly contributes to output, and
-#' that therefore no MPC transformations are required.
-#'
-#' @param x A numeric vector representing the input series in billions USD.
-#' @param gdp A numeric vector representing the GDP, in billions USD.
-#' @param rpgg TODO
-#' @param dg A numeric vector representing the deflator growth, as an annualized 
-#' proportion. For example, 3% annualized deflator growth would be represented 
-#' as 0.03. [give negative example too]
-#' @param mpc_matrix TODO
-#' 
-#'
-#' @return A numeric vector representing the contribution of the input series to
-#' GDP growth.
-#' @export
-#'
-#' @examples
-#' # Example usage:
-#' #TODO
-contribution_no_mpc <- function(x, mpc_matrix, rpgg, dg, gdp) {
-  # Take the input data series, x
-  x %>%
-    # First, apply the minus_neutral function to x, setting real potential
-    # GDP growth and deflator growth inputs to those specified in the arguments.
-    minus_neutral(x = ., rpgg = rpgg, dg = dg) %>%
-    # Second, take the output series from minus neutral as an input for the
-    # scale_to_gdp function. Specify the GDP using the input from the 
-    # arguments.
-    scale_to_gdp(x = ., gdp = gdp)
-  # After these three steps, your output will be the FIM contribution, as 
-  # specified in our methodology.
 }

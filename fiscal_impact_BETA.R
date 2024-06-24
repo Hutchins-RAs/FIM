@@ -373,8 +373,9 @@ source("src/contributions.R")
 # and compare the results to prior FIM results in Excel. These four examples
 # use functions from the calculate_contributions.R script.
 # Federal purchases contribution
-federal_purchases_contribution <- contribution_no_mpc(
+federal_purchases_contribution <- contribution(
   x = federal_purchases,
+  mpc_matrix = NULL,
   dg = federal_purchases_deflator_growth,
   rpgg = real_potential_gdp_growth,
   gdp = gdp) %>%
@@ -382,8 +383,9 @@ federal_purchases_contribution <- contribution_no_mpc(
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
 # Consumption grants contribution
-consumption_grants_contribution <- contribution_no_mpc(
+consumption_grants_contribution <- contribution(
   x = consumption_grants,
+  mpc_matrix = NULL,
   dg = consumption_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
   gdp = gdp) %>%
@@ -391,8 +393,9 @@ consumption_grants_contribution <- contribution_no_mpc(
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
 # Investment grants contribution
-investment_grants_contribution <- contribution_no_mpc(
+investment_grants_contribution <- contribution(
   x = investment_grants,
+  mpc_matrix = NULL,
   dg = investment_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
   gdp = gdp) %>%
@@ -400,8 +403,9 @@ investment_grants_contribution <- contribution_no_mpc(
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
 # State purchases contribution
-state_purchases_contribution <- contribution_no_mpc(
+state_purchases_contribution <- contribution(
   x = state_purchases,
+  mpc_matrix = NULL,
   dg = state_purchases_deflator_growth,
   rpgg = real_potential_gdp_growth,
   gdp = gdp) %>%
@@ -409,7 +413,7 @@ state_purchases_contribution <- contribution_no_mpc(
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
 # Federal non corporate taxes
-federal_non_corporate_taxes_contribution <- contribution_w_mpc(
+federal_non_corporate_taxes_contribution <- contribution(
   x = federal_non_corporate_taxes, 
   mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
   rpgg = real_potential_gdp_growth, 
