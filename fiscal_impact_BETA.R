@@ -455,3 +455,13 @@ state_corporate_taxes_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# Federal social benefits
+federal_social_benefits_contribution <- contribution(
+  x = projections$federal_social_benefits, 
+  mpc_matrix = readRDS("cache/mpc_matrices/federal_social_benefits.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
