@@ -495,3 +495,13 @@ rebate_checks_arp_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# Federal UI
+federal_ui_contribution <- contribution(
+  x = projections$federal_ui, 
+  mpc_matrix = readRDS("cache/mpc_matrices/federal_ui.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
