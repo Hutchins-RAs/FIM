@@ -516,3 +516,12 @@ state_ui_contribution <- contribution(
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
+# Federal subsidies
+federal_subsidies_contribution <- contribution(
+  x = projections$federal_subsidies, 
+  mpc_matrix = readRDS("cache/mpc_matrices/federal_subsidies.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
