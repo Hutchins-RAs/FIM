@@ -78,7 +78,7 @@ minus_neutral <- function(x, # the data in question
   return(output)
 }
 
-# ---- post_mpc ----
+# ---- mpc ----
 #' Calculate Post-Marginal Propensity to Consume (MPC) Series
 #'
 #' This function takes a time series and marginal propensity to consume (MPC)
