@@ -324,12 +324,14 @@ projections
 # was sometime in 2034. But that number increases as time goes by).
 
 ### Accessory variables
+# Deflators
 federal_purchases_deflator_growth <- projections$federal_purchases_deflator_growth
 consumption_grants_deflator_growth <- projections$consumption_grants_deflator_growth
 investment_grants_deflator_growth <- projections$investment_grants_deflator_growth
 state_purchases_deflator_growth <- projections$state_purchases_deflator_growth
-real_potential_gdp_growth <- projections$real_potential_gdp_growth
 consumption_deflator_growth <- projections$consumption_deflator_growth
+# GDP
+real_potential_gdp_growth <- projections$real_potential_gdp_growth
 gdp <- projections$gdp
 
 ### Main variables
