@@ -343,6 +343,7 @@ federal_non_corporate_taxes <- projections$federal_non_corporate_taxes
 state_non_corporate_taxes <- projections$state_non_corporate_taxes
 federal_corporate_taxes <- projections$federal_corporate_taxes
 supply_side_ira <- projections$supply_side_ira
+state_corporate_taxes <- projections$state_corporate_taxes
 
 # Another type of variable we need is MPC matrices. If you read the documentation
 # in `src/mpc_lorae.R`, you'll develop a clearer understanding of how these 
@@ -355,6 +356,7 @@ supply_side_ira <- projections$supply_side_ira
 federal_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds")
 state_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/state_non_corporate_taxes.rds")
 federal_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_corporate_taxes.rds")
+state_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/state_corporate_taxes.rds")
 
 # Next, we source essential functions we need to calculate the FIM in this section.
 # All of these files contain nothing but functions. No actual code is executed
@@ -461,4 +463,12 @@ supply_side_ira_contribution <- contribution(
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-
+# State corporate taxes
+state_corporate_taxes_contribution <- contribution(
+  x = state_corporate_taxes, 
+  mpc_matrix = state_corporate_taxes_mpc_matrix, 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
