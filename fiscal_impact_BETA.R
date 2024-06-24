@@ -525,3 +525,13 @@ federal_subsidies_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# Federal aid to small businesses
+federal_aid_to_small_businesses_arp_contribution <- contribution(
+  x = projections$federal_aid_to_small_businesses_arp, 
+  mpc_matrix = readRDS("cache/mpc_matrices/federal_aid_to_small_businesses_arp.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
