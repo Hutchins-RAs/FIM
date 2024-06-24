@@ -342,6 +342,7 @@ state_purchases <- projections$state_purchases
 federal_non_corporate_taxes <- projections$federal_non_corporate_taxes
 state_non_corporate_taxes <- projections$state_non_corporate_taxes
 federal_corporate_taxes <- projections$federal_corporate_taxes
+supply_side_ira <- projections$supply_side_ira
 
 # Another type of variable we need is MPC matrices. If you read the documentation
 # in `src/mpc_lorae.R`, you'll develop a clearer understanding of how these 
@@ -446,6 +447,16 @@ federal_corporate_taxes_contribution <- contribution(
   mpc_matrix = federal_corporate_taxes_mpc_matrix, 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# Supply side IRA contribution
+supply_side_ira_contribution <- contribution(
+  x = supply_side_ira,
+  mpc_matrix = NULL,
+  dg = consumption_deflator_growth,
+  rpgg = real_potential_gdp_growth,
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
