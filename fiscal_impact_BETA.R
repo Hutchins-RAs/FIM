@@ -341,6 +341,7 @@ investment_grants <- projections$investment_grants
 state_purchases <- projections$state_purchases
 federal_non_corporate_taxes <- projections$federal_non_corporate_taxes
 state_non_corporate_taxes <- projections$state_non_corporate_taxes
+federal_corporate_taxes <- projections$federal_corporate_taxes
 
 # Another type of variable we need is MPC matrices. If you read the documentation
 # in `src/mpc_lorae.R`, you'll develop a clearer understanding of how these 
@@ -352,6 +353,7 @@ state_non_corporate_taxes <- projections$state_non_corporate_taxes
 # Load MPC matrices from cache
 federal_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds")
 state_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/state_non_corporate_taxes.rds")
+federal_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_corporate_taxes.rds")
 
 # Next, we source essential functions we need to calculate the FIM in this section.
 # All of these files contain nothing but functions. No actual code is executed
@@ -434,6 +436,18 @@ state_non_corporate_taxes_contribution <- contribution(
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
-
+# Federal corporate taxes
+# IMPORTANT NOTE: This DOES produce the correct federal corporate taxes contribution,
+# however, it diverges from 2022 Q3 to 2026 Q2 because federal corporate taxes are
+# later added to supply side IRA in the FIM script and redefined as 
+# "federal_corporate_taxes_contribution".
+federal_corporate_taxes_contribution <- contribution(
+  x = federal_corporate_taxes, 
+  mpc_matrix = federal_corporate_taxes_mpc_matrix, 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
 
 
