@@ -334,29 +334,12 @@ consumption_deflator_growth <- projections$consumption_deflator_growth
 real_potential_gdp_growth <- projections$real_potential_gdp_growth
 gdp <- projections$gdp
 
-### Main variables
-federal_purchases <- projections$federal_purchases
-consumption_grants <- projections$consumption_grants
-investment_grants <- projections$investment_grants
-state_purchases <- projections$state_purchases
-federal_non_corporate_taxes <- projections$federal_non_corporate_taxes
-state_non_corporate_taxes <- projections$state_non_corporate_taxes
-federal_corporate_taxes <- projections$federal_corporate_taxes
-supply_side_ira <- projections$supply_side_ira
-state_corporate_taxes <- projections$state_corporate_taxes
-
 # Another type of variable we need is MPC matrices. If you read the documentation
 # in `src/mpc_lorae.R`, you'll develop a clearer understanding of how these 
 # matrices produce an MPC operation. We cache these matrices so that they do not 
 # need to be regenerated each time the code is run. Instead, in the future, we'll
 # only rebuild these matrices when MPC inputs are changed using an "observer" 
 # design pattern. This will save us a lot of computing time.
-
-# Load MPC matrices from cache
-federal_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds")
-state_non_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/state_non_corporate_taxes.rds")
-federal_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/federal_corporate_taxes.rds")
-state_corporate_taxes_mpc_matrix <- readRDS("cache/mpc_matrices/state_corporate_taxes.rds")
 
 # Next, we source essential functions we need to calculate the FIM in this section.
 # All of these files contain nothing but functions. No actual code is executed
@@ -381,7 +364,7 @@ source("src/contributions.R")
 # use functions from the calculate_contributions.R script.
 # Federal purchases contribution
 federal_purchases_contribution <- contribution(
-  x = federal_purchases,
+  x = projections$federal_purchases,
   mpc_matrix = NULL,
   dg = federal_purchases_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -391,7 +374,7 @@ federal_purchases_contribution <- contribution(
 
 # Consumption grants contribution
 consumption_grants_contribution <- contribution(
-  x = consumption_grants,
+  x = projections$consumption_grants,
   mpc_matrix = NULL,
   dg = consumption_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -401,7 +384,7 @@ consumption_grants_contribution <- contribution(
 
 # Investment grants contribution
 investment_grants_contribution <- contribution(
-  x = investment_grants,
+  x = projections$investment_grants,
   mpc_matrix = NULL,
   dg = investment_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -411,7 +394,7 @@ investment_grants_contribution <- contribution(
 
 # State purchases contribution
 state_purchases_contribution <- contribution(
-  x = state_purchases,
+  x = projections$state_purchases,
   mpc_matrix = NULL,
   dg = state_purchases_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -421,8 +404,8 @@ state_purchases_contribution <- contribution(
 
 # Federal non corporate taxes
 federal_non_corporate_taxes_contribution <- contribution(
-  x = federal_non_corporate_taxes, 
-  mpc_matrix = federal_non_corporate_taxes_mpc_matrix, 
+  x = projections$federal_non_corporate_taxes, 
+  mpc_matrix = readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
   gdp = gdp) %>%
@@ -431,8 +414,8 @@ federal_non_corporate_taxes_contribution <- contribution(
 
 # State non corporate taxes
 state_non_corporate_taxes_contribution <- contribution(
-  x = state_non_corporate_taxes, 
-  mpc_matrix = state_non_corporate_taxes_mpc_matrix, 
+  x = projections$state_non_corporate_taxes, 
+  mpc_matrix = readRDS("cache/mpc_matrices/state_non_corporate_taxes.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
   gdp = gdp) %>%
@@ -445,8 +428,8 @@ state_non_corporate_taxes_contribution <- contribution(
 # later added to supply side IRA in the FIM script and redefined as 
 # "federal_corporate_taxes_contribution".
 federal_corporate_taxes_contribution <- contribution(
-  x = federal_corporate_taxes, 
-  mpc_matrix = federal_corporate_taxes_mpc_matrix, 
+  x = projections$federal_corporate_taxes, 
+  mpc_matrix = readRDS("cache/mpc_matrices/federal_corporate_taxes.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
   gdp = gdp) %>%
@@ -455,7 +438,7 @@ federal_corporate_taxes_contribution <- contribution(
 
 # Supply side IRA contribution
 supply_side_ira_contribution <- contribution(
-  x = supply_side_ira,
+  x = projections$supply_side_ira,
   mpc_matrix = NULL,
   dg = consumption_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -465,8 +448,8 @@ supply_side_ira_contribution <- contribution(
 
 # State corporate taxes
 state_corporate_taxes_contribution <- contribution(
-  x = state_corporate_taxes, 
-  mpc_matrix = state_corporate_taxes_mpc_matrix, 
+  x = projections$state_corporate_taxes, 
+  mpc_matrix = readRDS("cache/mpc_matrices/state_corporate_taxes.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
   gdp = gdp) %>%
