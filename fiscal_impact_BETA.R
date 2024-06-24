@@ -475,3 +475,14 @@ state_social_benefits_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# Rebate checks
+rebate_checks_contribution <- contribution(
+  x = projections$rebate_checks, 
+  mpc_matrix = readRDS("cache/mpc_matrices/rebate_checks.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
