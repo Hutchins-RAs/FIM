@@ -595,3 +595,13 @@ federal_health_outlays_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# State health outlays contribution
+state_health_outlays_contribution <- contribution(
+  x = projections$state_health_outlays, 
+  mpc_matrix = readRDS("cache/mpc_matrices/state_health_outlays.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
