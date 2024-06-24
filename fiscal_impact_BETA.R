@@ -565,3 +565,24 @@ federal_student_loans_contribution <- contribution(
   gdp = gdp) %>%
   as.data.frame() %>%
   write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# Federal student loans
+federal_student_loans_contribution <- contribution(
+  x = projections$federal_student_loans, 
+  mpc_matrix = readRDS("cache/mpc_matrices/federal_student_loans.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
+# State subsidies contribution
+state_subsidies_contribution <- contribution(
+  x = projections$state_subsidies, 
+  mpc_matrix = readRDS("cache/mpc_matrices/state_subsidies.rds"), 
+  rpgg = real_potential_gdp_growth, 
+  dg = consumption_deflator_growth, 
+  gdp = gdp) %>%
+  as.data.frame() %>%
+  write.table(., "clipboard", sep="\t", row.names=FALSE, col.names=FALSE)
+
