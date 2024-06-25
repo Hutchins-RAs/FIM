@@ -309,30 +309,13 @@ cbind(projections$social_benefits,
 # hundreds of columns, of which we only need a subset.
 projections
 
-# We divide the subset of columns that we need into two categories: "accessory" 
-# and "main" variables. Both types of columns are inputs for the FIM. The "main"
-# columns are key variables that directly lead to a FIM "contribution" output, 
-# like the `state_ui` series and the `federal_non_corporate_taxes` series. The
-# "accessory" columns are additional macroeconomic variables that are needed to
-# calculate the FIM, but do not directly themselves produce a direct contribution
-# variables: GDP, various deflators,  and real potential GDP growth.
-#
-# All variables, accessory and main, are vectors of the same length: about
-# 270 elements. This is because they all inherit their length from the `projections` 
-# data frame, whose length is determined by the number of periods in the time 
-# series from 1970 Q1 to the final projection date (which, as of this writing, 
-# was sometime in 2034. But that number increases as time goes by).
+# This script defines the 31 input variables used in the FIM.
+source("define_inputs.R")
 
-### Accessory variables
-# Deflators
-federal_purchases_deflator_growth <- projections$federal_purchases_deflator_growth
-consumption_grants_deflator_growth <- projections$consumption_grants_deflator_growth
-investment_grants_deflator_growth <- projections$investment_grants_deflator_growth
-state_purchases_deflator_growth <- projections$state_purchases_deflator_growth
-consumption_deflator_growth <- projections$consumption_deflator_growth
-# GDP
-real_potential_gdp_growth <- projections$real_potential_gdp_growth
-gdp <- projections$gdp
+# Next, we source essential functions we need to calculate the FIM in this section.
+# All of these files contain nothing but functions. No actual code is executed
+# when you run the files. Instead, the code is executed in this script.
+source("src/contributions.R")
 
 # Another type of variable we need is MPC matrices. If you read the documentation
 # in `src/mpc_lorae.R`, you'll develop a clearer understanding of how these 
@@ -340,11 +323,6 @@ gdp <- projections$gdp
 # need to be regenerated each time the code is run. Instead, in the future, we'll
 # only rebuild these matrices when MPC inputs are changed using an "observer" 
 # design pattern. This will save us a lot of computing time.
-
-# Next, we source essential functions we need to calculate the FIM in this section.
-# All of these files contain nothing but functions. No actual code is executed
-# when you run the files. Instead, the code is executed in this script.
-source("src/contributions.R")
 
 ### CALCULATE THE FIM variable-by-variable ########################################
 
@@ -514,14 +492,6 @@ federal_other_direct_aid_arp_contribution <- contribution(
 federal_other_vulnerable_arp_contribution <- contribution(
   x = projections$federal_other_vulnerable_arp, 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_other_vulnerable_arp.rds"), 
-  rpgg = real_potential_gdp_growth, 
-  dg = consumption_deflator_growth, 
-  gdp = gdp)
-
-# Federal student loans
-federal_student_loans_contribution <- contribution(
-  x = projections$federal_student_loans, 
-  mpc_matrix = readRDS("cache/mpc_matrices/federal_student_loans.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
   gdp = gdp)
