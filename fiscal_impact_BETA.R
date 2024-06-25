@@ -659,4 +659,31 @@ openxlsx::write.xlsx(inputs_df, file = glue('results/{month_year}/beta/inputs-{m
 write_rds(contributions_df, file = 'data/contributions-BETA.rds')
 usethis::use_data(contributions_df, overwrite = TRUE)
 
+# Section F: Web materials  -------------------------------------------------------------
+
+# Generate interactive data frame from contributions
+interactive <- contributions_df %>% 
+  # Filter rows of contributions by date, keeping only those between 1999 Q4 and
+  # current quarter + 8
+  filter_index('1999 Q4' ~ as.character(current_quarter + 8)) %>% 
+  # Select only specific columns
+  select(date, 
+         impact = fiscal_impact_4q_ma,
+         recession,
+         total = fiscal_impact_measure,
+         federal = federal_contribution,
+         state_local = state_contribution,
+         consumption = consumption_contribution,
+         projection = id
+         ) %>% 
+  # Recode `recession` and `projection` variables to 0 and 1 binaries
+  mutate(recession = recode(recession, `-1` = 0),
+         recession = replace_na(recession, 0),
+         projection = recode(projection, historical = 0, projection = 1)
+         ) %>%
+  # Split date column into year and quarter columns
+  separate(date, c('year', 'quarter'))
+
+# Write interactive data frame to CSV file
+readr::write_csv(interactive,  file = glue('results/{month_year}/beta/interactive-{month_year}-beta.csv'))
 
