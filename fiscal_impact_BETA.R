@@ -562,6 +562,10 @@ transfers_contribution <-
   federal_health_outlays_contribution + 
   state_health_outlays_contribution) 
 
+consumption_contribution <-
+  (taxes_contribution +
+  transfers_contribution)
+
 fiscal_impact_measure <-
   (federal_contribution +
   state_contribution +
