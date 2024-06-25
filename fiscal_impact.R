@@ -570,6 +570,7 @@ contributions <- contributions_pt2
 
 openxlsx::write.xlsx(contributions, file = glue('results/{month_year}/fim-{month_year}.xlsx'), overwrite = TRUE)
 write_rds(contributions, file = 'data/contributions.rds')
+#### I think this is the part where the data in the R package gets overwritten!
 usethis::use_data(contributions, overwrite = TRUE)
 
 
