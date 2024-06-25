@@ -645,7 +645,9 @@ contributions_df <- data.frame(
   state_contribution,
   taxes_contribution,
   transfers_contribution,
-  fiscal_impact_measure
+  consumption_contribution,
+  fiscal_impact_measure,
+  fiscal_impact_4q_ma
 ) %>%
   as_tsibble(index = date)
 
