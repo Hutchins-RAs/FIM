@@ -568,6 +568,40 @@ fiscal_impact_measure <-
   taxes_contribution +
   transfers_contribution)
 
+# Combine all the inputs into a data frame
+inputs_df <- data.frame(
+  federal_purchases_deflator_growth,
+  consumption_grants_deflator_growth,
+  investment_grants_deflator_growth,
+  state_purchases_deflator_growth,
+  consumption_deflator_growth,
+  real_potential_gdp_growth,
+  gdp,
+  federal_purchases,
+  consumption_grants,
+  investment_grants,
+  state_purchases,
+  federal_non_corporate_taxes,
+  state_non_corporate_taxes,
+  federal_corporate_taxes,
+  supply_side_ira,
+  state_corporate_taxes,
+  federal_social_benefits,
+  state_social_benefits,
+  rebate_checks,
+  rebate_checks_arp,
+  federal_ui,
+  state_ui,
+  federal_subsidies,
+  federal_aid_to_small_businesses_arp,
+  federal_other_direct_aid_arp,
+  federal_other_vulnerable_arp,
+  federal_student_loans,
+  state_subsidies,
+  federal_health_outlays,
+  state_health_outlays
+)
+
 # Combine all the contributions into a data frame
 contributions_df <- data.frame(
   federal_purchases_contribution = federal_purchases_contribution,
