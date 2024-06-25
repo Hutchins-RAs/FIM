@@ -310,7 +310,7 @@ cbind(projections$social_benefits,
 projections
 
 # This script defines the 31 input variables used in the FIM.
-source("define_inputs.R")
+source("src/define_inputs.R")
 
 # Next, we source essential functions we need to calculate the FIM in this section.
 # All of these files contain nothing but functions. No actual code is executed
