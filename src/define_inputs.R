@@ -28,6 +28,9 @@ consumption_deflator_growth <- projections$consumption_deflator_growth
 # GDP
 real_potential_gdp_growth <- projections$real_potential_gdp_growth
 gdp <- projections$gdp
+# Extras
+date <- projections$date
+id <- projections$id
 
 ### Main variables
 # Federal purchases contribution
