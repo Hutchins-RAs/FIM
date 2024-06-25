@@ -576,6 +576,7 @@ fiscal_impact_measure <-
 inputs_df <- data.frame(
   date,
   id,
+  recession,
   federal_purchases_deflator_growth,
   consumption_grants_deflator_growth,
   investment_grants_deflator_growth,
@@ -613,6 +614,7 @@ inputs_df <- data.frame(
 contributions_df <- data.frame(
   date,
   id,
+  recession,
   federal_purchases_contribution,
   consumption_grants_contribution,
   investment_grants_contribution,

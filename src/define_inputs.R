@@ -31,6 +31,7 @@ gdp <- projections$gdp
 # Extras
 date <- projections$date
 id <- projections$id
+recession <- projections$recession
 
 ### Main variables
 # Federal purchases contribution
