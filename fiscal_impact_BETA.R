@@ -572,6 +572,9 @@ fiscal_impact_measure <-
   taxes_contribution +
   transfers_contribution)
 
+fiscal_impact_4q_ma <- fiscal_impact_measure %>%
+  SMA(zoo::na.locf(., na.rm = F), n=4)
+
 # Combine all the inputs into a data frame
 inputs_df <- data.frame(
   date,
