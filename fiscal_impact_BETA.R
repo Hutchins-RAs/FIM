@@ -634,14 +634,8 @@ contributions_df <- data.frame(
   fiscal_impact_measure
 )
 
-
-#openxlsx::write.xlsx: This function writes an R data object to an .xlsx file (an Excel spreadsheet).
-#file = glue('results/{month_year}/fim-{month_year}.xlsx'): This specifies the file path and name of the .xlsx file that the data will be written to. The glue() function is being used to dynamically create the file path and name using the month_year variable.
-#overwrite = TRUE: This specifies that if the .xlsx file already exists, it should be overwritten with the new data.
-#write_rds(contributions, file = 'data/contributions.rds'): This function writes the contributions data object to an .rds file (an R binary file) with the file path and name specified by the file argument.
-#usethis::use_data(contributions, overwrite = TRUE): This function writes the contributions data object to a .RData file in the current working directory and makes it available in the global environment. The overwrite = TRUE argument specifies that if a .RData file with the same name already exists, it should be overwritten with the new data.
-
 # Write the contributions and inputs to an Excel file in results/{month_year}/beta
+# TODO: This code only works if the beta/ directory already exists. 
 openxlsx::write.xlsx(contributions_df, file = glue('results/{month_year}/beta/contributions-{month_year}.xlsx'), overwrite = TRUE)
 openxlsx::write.xlsx(inputs_df, file = glue('results/{month_year}/beta/inputs-{month_year}.xlsx'), overwrite = TRUE)
 
