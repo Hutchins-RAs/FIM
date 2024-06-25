@@ -606,7 +606,8 @@ inputs_df <- data.frame(
   state_subsidies,
   federal_health_outlays,
   state_health_outlays
-)
+) %>%
+  as_tsibble(index = date)
 
 # Combine all the contributions into a data frame
 contributions_df <- data.frame(
@@ -640,7 +641,8 @@ contributions_df <- data.frame(
   taxes_contribution,
   transfers_contribution,
   fiscal_impact_measure
-)
+) %>%
+  as_tsibble(index = date)
 
 # Write the contributions and inputs to an Excel file in results/{month_year}/beta
 # TODO: This code only works if the beta/ directory already exists. 
