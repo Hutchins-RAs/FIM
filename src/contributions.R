@@ -175,16 +175,16 @@ scale_to_gdp <- function(x, gdp) {
 #' # Example usage:
 #' #TODO
 contribution <- function(x, mpc_matrix = NULL, rpgg, dg, gdp) {
+  # If mpc_matrix is not NULL, apply the mpc function first
+  if (!is.null(mpc_matrix)) {
+    x <- x %>%
+      mpc(x = ., mpc_matrix = mpc_matrix)
+  }
+  
   # Apply the minus_neutral function to x, setting real potential GDP growth
   # and deflator growth inputs to those specified by the arguments.
   result <- x %>%
     minus_neutral(x = ., rpgg = rpgg, dg = dg)
-  
-  # If mpc_matrix is not NULL, apply the mpc function
-  if (!is.null(mpc_matrix)) {
-    result <- result %>%
-      mpc(x = ., mpc_matrix = mpc_matrix)
-  }
   
   # Apply the scale_to_gdp function
   result %>%

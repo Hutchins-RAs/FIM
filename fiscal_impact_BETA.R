@@ -313,8 +313,8 @@ projections
 source("src/define_inputs.R")
 
 # Next, we source essential functions we need to calculate the FIM in this section.
-# All of these files contain nothing but functions. No actual code is executed
-# when you run the files. Instead, the code is executed in this script.
+# All of these modules contain nothing but functions. No actual code is executed
+# when you source them. Instead, the code is executed in this script.
 source("src/contributions.R")
 
 # Another type of variable we need is MPC matrices. If you read the documentation
