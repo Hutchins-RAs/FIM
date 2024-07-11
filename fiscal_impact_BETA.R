@@ -60,6 +60,7 @@ update_in_progress <- TRUE #set this to false if you're not running the code for
 if(update_in_progress == TRUE){
   dir_create(glue('results/{month_year}')) # Create folder for current update in the results directory
   dir_create(glue('results/{month_year}/input_data')) # Folder to store forecast sheet from current update
+  dir_create(glue('results/{month_year}/beta'))
   
   # Copy the file 'forecast.xlsx' from the 'data' directory to the 'input_data' directory
   # This is the copy we keep for the current update
