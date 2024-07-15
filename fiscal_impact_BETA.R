@@ -12,14 +12,9 @@ options(scipen = 20)# Turn off scientific notation under 20 digits
 
 #are we running this after a cbo baseline and pre-bea update?
 post_cbo_baseline<- FALSE
-
-if(post_cbo_baseline == TRUE){
-  month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}-post-cbo')
-}else{
-  # Set the value of 'month_year' to the current month and year (in the format "mm-yyyy")
-  month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
-}
-
+# Set the value of 'month_year' to the current month and year (in the format "mm-yyyy")
+month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
+print(month_year)
 
 # Calculate the current date minus 7 days
 current_date <- today() - dweeks(1)
@@ -42,7 +37,6 @@ if(file.exists(glue('results/{month_year}-post-cbo'))){
 }
 
 # Create updatglibe folders
-
 update_in_progress <- TRUE #set this to false if you're not running the code for a new month
 
 if(update_in_progress == TRUE){
