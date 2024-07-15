@@ -688,3 +688,14 @@ interactive <- contributions_df %>%
 # Write interactive data frame to CSV file
 readr::write_csv(interactive,  file = glue('results/{month_year}/beta/interactive-{month_year}-beta.csv'))
 
+# Make HTML FIM graphs for website and email. Save as FIM/Fiscal-Impact.html
+rmarkdown::render('Fiscal-Impact.Rmd',
+                  # Render R Markdown document to PDF file
+                  output_file = 'Fiscal-Impact.html',
+                  clean = TRUE,
+                  params = list(start = yearquarter('1999 Q4'), end = current_quarter + 8))
+
+# Copy FIM/Fiscal-Impact.html graphs to the results/month-year/beta folder
+file_copy(path = 'Fiscal-Impact.html',
+          new_path = glue('results/{month_year}/beta/Fiscal-Impact-{month_year}.html'),
+          overwrite = TRUE)

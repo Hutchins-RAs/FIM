@@ -29,7 +29,7 @@ devtools::load_all()
 
 ```{r data, echo = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
 fim <- 
- readr::read_rds('data/contributions.RDS') %>% 
+ readr::read_rds('data/contributions-BETA.RDS') %>% 
  filter(date >= params$start & date <= params$end)
 ```
 
@@ -65,8 +65,8 @@ guidez <- guides(
 
 headline <-
   fim %>%
-  select(date, fiscal_impact, fiscal_impact_moving_average) %>%
-  pivot_longer(fiscal_impact) 
+  select(date, fiscal_impact_measure, fiscal_impact_4q_ma) %>%
+  pivot_longer(fiscal_impact_measure) 
 
 recessions <-
   recessions %>% 
@@ -93,10 +93,10 @@ headline_plot <-
   geom_col(aes(x = date, y = value, fill = name),
            width = 50) +
   geom_line(aes(x = date, 
-                y = fiscal_impact_moving_average,
+                y = fiscal_impact_4q_ma,
                 colour = "4-quarter moving-average")) +
   geom_point(aes(x = date,
-                 y = fiscal_impact_moving_average,
+                 y = fiscal_impact_4q_ma,
                  colour = "4-quarter moving-average"),
              size = 1) +
   ggtext::geom_richtext(aes(x = yearquarter(today()) + 4,
@@ -159,7 +159,7 @@ expanded <-
     state_contribution,
     taxes_transfers_contribution = transfers_contribution + federal_corporate_taxes_contribution +
       federal_non_corporate_taxes_contribution + state_corporate_taxes_contribution + state_non_corporate_taxes_contribution,
-    fiscal_impact_moving_average
+    fiscal_impact_4q_ma
   ) %>%
   pivot_longer(cols = ends_with('contribution'),
                names_to = 'variable')
@@ -177,10 +177,10 @@ expanded <-
       geom_col(aes(x = date, y = value, fill = variable),
                width = 50) +
       geom_line(aes(x = date,
-                    y = fiscal_impact_moving_average,
+                    y = fiscal_impact_4q_ma,
                     colour = "4-quarter moving-average")) +
       geom_point(aes(x = date,
-                     y = fiscal_impact_moving_average,
+                     y = fiscal_impact_4q_ma,
                      colour = "4-quarter moving-average"),
                 size = 1) +
       geom_richtext(aes(x = yearquarter(today()) + 4,
@@ -235,10 +235,10 @@ template <-
       geom_col(aes(x = date, y = value, fill = variable),
                width = 50),
       geom_line(aes(x = date,
-                    y = fiscal_impact_moving_average,
+                    y = fiscal_impact_4q_ma,
                     colour = "4-quarter moving-average")),
       geom_point(aes(x = date,
-                     y = fiscal_impact_moving_average,
+                     y = fiscal_impact_4q_ma,
                      colour = "4-quarter moving-average"),
                 size = 1),
       geom_richtext(aes(x = yearquarter(today()) + 1,
