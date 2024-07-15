@@ -31,13 +31,38 @@ Note that this code is important and should be handled carefully. For example, v
 # fiscal_impact_BETA.R
 ```
 
-This next section of code primarily serves to define empty folders that will be populated upon running the FIM.
+This next section of code primarily serves to define empty folders that will be populated upon running the FIM. This section could also use a clean-up, but it relies on some variables produced in the previous code chunk. Perhaps the two sections should be bundled together upon refactoring.
 
 ```{r section-A.2-create-empty-directories, eval=FALSE, echo=TRUE}
 # This code block prints the chunk entitled "section-A.2-create-empty-directories" 
 # from fiscal_impact_BETA.R
 ```
 
+This next section reads in raw data. I've taken pains to attempt to trace back where the inputs in this project arise. As you can see, there are two crucial .rds files saved in the FIM. I'm not exactly sure how they are overwritten, and understanding where they are replaced is a crucial part of the FIM restructuring process.
+
+```{r section-B.0-read-raw-rds-data, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B.0-read-raw-rds-data" 
+# from fiscal_impact_BETA.R
+```
+
+This section reads in historical overrides. Historical overrides are data observations in the past that we take as given. Every time this code runs, it extracts raw historic data from Haver and attempts to use that. However, for some time series, we do not want to use what Haver gives us. Instead, we override that data. These overrides are crucial to that process.
+
+If we have to override each time, why do we even bother reading in the raw data? It's history, right? Well, not really. The data series we use as inputs in the FIM occasionally get revised. We want that most recent revision, because it's most accurate. However, we want to make sure that these revisions don't overwrite our historical overrides.
+
+```{r section-B.1-read-overrides, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B.1-read-overrides" 
+# from fiscal_impact_BETA.R
+```
+
+This next code chunk seriously needs attention. We certainly should not be setting the current quarter this far down in the code and intermingling it with our data pipeline. It should be somewhere in the top of the code.
+
+Why haven't I changed it yet? Well, it relies on the data frames we load. I haven't had time to come up with a better way of doing it. But this one line of code needs serious attention.
+```{r section-B.2-set-current-quarter, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B.2-set-current-quarter" 
+# from fiscal_impact_BETA.R
+```
+
+---- end of code walk through, for now!
 
 We'll probably have one sub section for each source, like:
 

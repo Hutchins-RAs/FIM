@@ -10,9 +10,24 @@
 
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
 
-librarian::shelf(tidyverse, tsibble, lubridate, glue, TimTeaFan/dplyover, zoo, TTR, fs, gt, openxlsx, 
-                 snakecase, rlang, BrookingsInstitution/ggbrookings) # Load packages
-devtools::load_all() # Load all functions in package
+# Load packages
+librarian::shelf(
+  tidyverse, 
+  tsibble, 
+  lubridate, 
+  glue, 
+  TimTeaFan/dplyover, 
+  zoo, 
+  TTR, 
+  fs, 
+  gt, 
+  openxlsx, 
+  snakecase, 
+  rlang, 
+  BrookingsInstitution/ggbrookings
+  )
+# Load all functions in package (?!?)
+devtools::load_all() 
 
 options(digits = 4) # Limit number of digits
 options(scipen = 20)# Turn off scientific notation under 20 digits 
@@ -54,21 +69,14 @@ dir_create(glue('results/{month_year}/beta'))
   
 # Copy the file 'forecast.xlsx' from the 'data' directory to the 'input_data' directory
 # This is the copy we keep for the current update
-file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
+file_copy(
+  path = 'data/forecast.xlsx', 
+  new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), 
+  overwrite = TRUE
+  )
 
+# ---- section-B.0-read-raw-rds-data ----
 
-# ---- chunk-label-1 ----
-x <- rnorm(100)
-y <- rnorm(100)
-plot(x, y)
-
-# ---- chunk-label-2 ----
-summary(x)
-summary(y)
-
-# ---- chunk-label-3 ----
-
-#### Section B.0: Read in raw data ---------------------------------------------
 # Load in national accounts
 fim::national_accounts # this is the literal df
 load("data/national_accounts.rda") # this loads in a df named national_accounts
@@ -76,6 +84,8 @@ load("data/national_accounts.rda") # this loads in a df named national_accounts
 # Load in projections
 fim::projections # this is the literal df
 load("data/projections.rda") # this loads in a df named projections
+
+# ---- section-B.1-read-overrides ----
 
 # Read in historical overrides from data/forecast.xlsx
 # Since BEA put all CARES act grants to S&L in Q2 2020 we need to
@@ -100,13 +110,13 @@ deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
               values_from = 'value') %>% 
   mutate(date = yearquarter(date))
 
-
+# ---- section-B.2-set-current-quarter ----
 # TODO: This current quarter should be calculated at the top, for the entirety
 # of the FIM, not buried down here.
 # Save current quarter for later
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) 
 
-#### Section B.1: Manipulate projections dataframe------------------------------
+# ---- section-B.3-manipulate-projections-dataframe ----
 
 projections <- projections %>% 
   # Smooth budget series
