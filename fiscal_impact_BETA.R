@@ -181,9 +181,6 @@ projections <- projections %>%
 ## Testing section
 projections <- projections
 
-
-# TODO: coalesce_join() is a crazy complex function for what looks to be simple
-# (append some cols to a data frame). Will have to refactor this function.
 # Step 3: Combine these two data frames.
 usna1 <- coalesce_join(x = national_accounts,
                        y = projections,
