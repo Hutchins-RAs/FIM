@@ -299,14 +299,6 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                federal_student_loans = historical_overrides$federal_student_loans_override)
 
-# Section C.1: Data validation -------------------------------------------------------
-## TODO: One would suppose that federal_social_benefits + state_social_benefits
-## = social_benefits, but it does not. This divergence starts in 2021 Q1, which
-## is row 205. Investigate. 
-cbind(projections$social_benefits, 
-      projections$federal_social_benefits + projections$state_social_benefits, 
-      projections$federal_social_benefits, 
-      projections$state_social_benefits)
 ######################################################################################
 # This is the point where we go from generating a data frame to actually calculating the FIM
 ######################################################################################
