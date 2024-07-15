@@ -1,5 +1,5 @@
 
-#Section A: prep for new update ----------------------
+# ---- section-A.1-prep-for-update ----
 
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
 
@@ -30,7 +30,7 @@ last_month_year <- glue('{last_month_2digit}-{last_year}')
 
 print(last_month_year)
 
-
+# ---- section-A.2-create-empty-directories ----
 #setting our reference period to be the post-cbo files if we've already produced fim output incorporating the cbo update
 if(file.exists(glue('results/{month_year}-post-cbo'))){
   last_month_year<- glue('{month_year}-post-cbo')
@@ -49,6 +49,17 @@ if(update_in_progress == TRUE){
   file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
 }
 
+
+# ---- chunk-label-1 ----
+x <- rnorm(100)
+y <- rnorm(100)
+plot(x, y)
+
+# ---- chunk-label-2 ----
+summary(x)
+summary(y)
+
+# ---- chunk-label-3 ----
 
 #### Section B.0: Read in raw data ---------------------------------------------
 # Load in national accounts

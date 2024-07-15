@@ -10,6 +10,37 @@ We will have to figure this section out. We draw from BEA, CBO, haver, etc. But 
 
 We'll probably have one sub section for each source, like:
 
+The FIM draws from several sources of data each time it runs. It uses the BEA's National Accounts data, accessed through Haver, to get history. It uses our own predictions for the forecast period. And it uses CBO for past and future potential GDP and GDP predictions.
+
+## Code walk-through
+
+```{r setup-01, include=FALSE}
+# This chunk reads in code from fiscal_impact_BETA.R so that this .Rmd file can
+# display it. Please note that the sections of code shown below are demarcated using
+# their chunk names, which are marked in this style:
+# ---- chunk-name-example ----
+knitr::read_chunk("../../fiscal_impact_BETA.R")
+```
+
+Let's get nitty-gritty into the code. When the FIM runs, it starts with some messy initialization. It loads packages and defines some variables related to dates. This code should be made self-contained and put into its own script. But I (Lorae) haven't gotten to that yet.
+
+Note that this code is important and should be handled carefully. For example, variables like `last_month_year` and `month_year` are used several times in code that follows. When refactoring this section, tread lightly and test carefully.
+
+```{r section-A.1-prep-for-update, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-A.1-prep-for-update" from
+# fiscal_impact_BETA.R
+```
+
+This next section of code primarily serves to define empty folders that will be populated upon running the FIM.
+
+```{r section-A.2-create-empty-directories, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-A.2-create-empty-directories" 
+# from fiscal_impact_BETA.R
+```
+
+
+We'll probably have one sub section for each source, like:
+
 ### CBO
 stuff here. Which reports do we use? Budget? Economic? How do we input their data into the FIM?
 

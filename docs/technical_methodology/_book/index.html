@@ -23,7 +23,7 @@
 <meta name="author" content="Lorae Stojanovic" />
 
 
-<meta name="date" content="2024-06-22" />
+<meta name="date" content="2024-07-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -150,14 +150,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Welcome!</a></li>
 <li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data Sources</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="data-sources.html"><a href="data-sources.html#data-sources-1"><i class="fa fa-check"></i><b>2.1</b> Data sources</a>
+<li class="chapter" data-level="2.1" data-path="data-sources.html"><a href="data-sources.html#data-sources-1"><i class="fa fa-check"></i><b>2.1</b> Data sources</a></li>
+<li class="chapter" data-level="2.2" data-path="data-sources.html"><a href="data-sources.html#code-walk-through"><i class="fa fa-check"></i><b>2.2</b> Code walk-through</a>
 <ul>
-<li class="chapter" data-level="2.1.1" data-path="data-sources.html"><a href="data-sources.html#cbo"><i class="fa fa-check"></i><b>2.1.1</b> CBO</a></li>
-<li class="chapter" data-level="2.1.2" data-path="data-sources.html"><a href="data-sources.html#bea"><i class="fa fa-check"></i><b>2.1.2</b> BEA</a></li>
-<li class="chapter" data-level="2.1.3" data-path="data-sources.html"><a href="data-sources.html#haver"><i class="fa fa-check"></i><b>2.1.3</b> Haver</a></li>
+<li class="chapter" data-level="2.2.1" data-path="data-sources.html"><a href="data-sources.html#cbo"><i class="fa fa-check"></i><b>2.2.1</b> CBO</a></li>
+<li class="chapter" data-level="2.2.2" data-path="data-sources.html"><a href="data-sources.html#bea"><i class="fa fa-check"></i><b>2.2.2</b> BEA</a></li>
+<li class="chapter" data-level="2.2.3" data-path="data-sources.html"><a href="data-sources.html#haver"><i class="fa fa-check"></i><b>2.2.3</b> Haver</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="data-sources.html"><a href="data-sources.html#combining-wrangling"><i class="fa fa-check"></i><b>2.2</b> Combining &amp; wrangling</a></li>
-<li class="chapter" data-level="2.3" data-path="data-sources.html"><a href="data-sources.html#the-clean-data"><i class="fa fa-check"></i><b>2.3</b> The clean data</a></li>
+<li class="chapter" data-level="2.3" data-path="data-sources.html"><a href="data-sources.html#combining-wrangling"><i class="fa fa-check"></i><b>2.3</b> Combining &amp; wrangling</a></li>
+<li class="chapter" data-level="2.4" data-path="data-sources.html"><a href="data-sources.html#the-clean-data"><i class="fa fa-check"></i><b>2.4</b> The clean data</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="data-processing.html"><a href="data-processing.html"><i class="fa fa-check"></i><b>3</b> Data Processing</a>
 <ul>
@@ -194,7 +195,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="header">
 <h1 class="title">Economics Methodology</h1>
 <p class="author"><em>Lorae Stojanovic</em></p>
-<p class="date"><em>2024-06-22</em></p>
+<p class="date"><em>2024-07-15</em></p>
 </div>
 <div id="welcome" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">1</span> Welcome!<a href="index.html#welcome" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -203,8 +204,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Chapter 2 documents how the FIM is calculated.</p>
 <p>Chapter 3 documents how the UI interface is constructed.</p>
 <p>Chapter 4 describes the economic intuition for the FIM.</p>
-<div class="grViz html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-42b48f0057c53114294a" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-42b48f0057c53114294a">{"x":{"diagram":"\ndigraph flowchart {\n  node [fontname = Helvetica, shape = box]\n\n  Start [label = \"Start\"]\n  Data_Input [label = \"Data Input\"]\n  Data_Cleaning [label = \"Data Cleaning\"]\n  Analysis [label = \"Analysis\"]\n  Report_Generation [label = \"Report Generation\"]\n  End [label = \"End\"]\n\n  Start -> Data_Input\n  Data_Input -> Data_Cleaning\n  Data_Cleaning -> Analysis\n  Analysis -> Report_Generation\n  Report_Generation -> End\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0725515fd20b165a46b7" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-0725515fd20b165a46b7">{"x":{"diagram":"\ndigraph flowchart {\n  node [fontname = Helvetica, shape = box]\n\n  Start [label = \"Start\"]\n  Data_Input [label = \"Data Input\"]\n  Data_Cleaning [label = \"Data Cleaning\"]\n  Analysis [label = \"Analysis\"]\n  Report_Generation [label = \"Report Generation\"]\n  End [label = \"End\"]\n\n  Start -> Data_Input\n  Data_Input -> Data_Cleaning\n  Data_Cleaning -> Analysis\n  Analysis -> Report_Generation\n  Report_Generation -> End\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 </div>
             </section>

@@ -23,7 +23,7 @@
 <meta name="author" content="Lorae Stojanovic" />
 
 
-<meta name="date" content="2024-06-22" />
+<meta name="date" content="2024-07-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -150,14 +150,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Welcome!</a></li>
 <li class="chapter" data-level="2" data-path="data-sources.html"><a href="data-sources.html"><i class="fa fa-check"></i><b>2</b> Data Sources</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="data-sources.html"><a href="data-sources.html#data-sources-1"><i class="fa fa-check"></i><b>2.1</b> Data sources</a>
+<li class="chapter" data-level="2.1" data-path="data-sources.html"><a href="data-sources.html#data-sources-1"><i class="fa fa-check"></i><b>2.1</b> Data sources</a></li>
+<li class="chapter" data-level="2.2" data-path="data-sources.html"><a href="data-sources.html#code-walk-through"><i class="fa fa-check"></i><b>2.2</b> Code walk-through</a>
 <ul>
-<li class="chapter" data-level="2.1.1" data-path="data-sources.html"><a href="data-sources.html#cbo"><i class="fa fa-check"></i><b>2.1.1</b> CBO</a></li>
-<li class="chapter" data-level="2.1.2" data-path="data-sources.html"><a href="data-sources.html#bea"><i class="fa fa-check"></i><b>2.1.2</b> BEA</a></li>
-<li class="chapter" data-level="2.1.3" data-path="data-sources.html"><a href="data-sources.html#haver"><i class="fa fa-check"></i><b>2.1.3</b> Haver</a></li>
+<li class="chapter" data-level="2.2.1" data-path="data-sources.html"><a href="data-sources.html#cbo"><i class="fa fa-check"></i><b>2.2.1</b> CBO</a></li>
+<li class="chapter" data-level="2.2.2" data-path="data-sources.html"><a href="data-sources.html#bea"><i class="fa fa-check"></i><b>2.2.2</b> BEA</a></li>
+<li class="chapter" data-level="2.2.3" data-path="data-sources.html"><a href="data-sources.html#haver"><i class="fa fa-check"></i><b>2.2.3</b> Haver</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="data-sources.html"><a href="data-sources.html#combining-wrangling"><i class="fa fa-check"></i><b>2.2</b> Combining &amp; wrangling</a></li>
-<li class="chapter" data-level="2.3" data-path="data-sources.html"><a href="data-sources.html#the-clean-data"><i class="fa fa-check"></i><b>2.3</b> The clean data</a></li>
+<li class="chapter" data-level="2.3" data-path="data-sources.html"><a href="data-sources.html#combining-wrangling"><i class="fa fa-check"></i><b>2.3</b> Combining &amp; wrangling</a></li>
+<li class="chapter" data-level="2.4" data-path="data-sources.html"><a href="data-sources.html#the-clean-data"><i class="fa fa-check"></i><b>2.4</b> The clean data</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="data-processing.html"><a href="data-processing.html"><i class="fa fa-check"></i><b>3</b> Data Processing</a>
 <ul>
@@ -197,25 +198,78 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">2.1</span> Data sources<a href="data-sources.html#data-sources-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We will have to figure this section out. We draw from BEA, CBO, haver, etc. But we will need a flow chart of all the scripts, all the dependencies, and explain why each source is used for each item. When do we overwrite history?</p>
 <p>We’ll probably have one sub section for each source, like:</p>
-<div id="cbo" class="section level3 hasAnchor" number="2.1.1">
-<h3><span class="header-section-number">2.1.1</span> CBO<a href="data-sources.html#cbo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The FIM draws from several sources of data each time it runs. It uses the BEA’s National Accounts data, accessed through Haver, to get history. It uses our own predictions for the forecast period. And it uses CBO for past and future potential GDP and GDP predictions.</p>
+</div>
+<div id="code-walk-through" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Code walk-through<a href="data-sources.html#code-walk-through" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Let’s get nitty-gritty into the code. When the FIM runs, it starts with some messy initialization. It loads packages and defines some variables related to dates. This code should be made self-contained and put into its own script. But I (Lorae) haven’t gotten to that yet.</p>
+<p>Note that this code is important and should be handled carefully. For example, variables like <code>last_month_year</code> and <code>month_year</code> are used several times in code that follows. When refactoring this section, tread lightly and test carefully.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="data-sources.html#cb2-1" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">TZ =</span> <span class="st">&#39;UTC&#39;</span>) <span class="co"># Set the default time zone to UTC (Coordinated Universal Time)</span></span>
+<span id="cb2-2"><a href="data-sources.html#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="data-sources.html#cb2-3" tabindex="-1"></a>librarian<span class="sc">::</span><span class="fu">shelf</span>(tidyverse, tsibble, lubridate, glue, TimTeaFan<span class="sc">/</span>dplyover, zoo, TTR, fs, gt, openxlsx, </span>
+<span id="cb2-4"><a href="data-sources.html#cb2-4" tabindex="-1"></a>                 snakecase, rlang, BrookingsInstitution<span class="sc">/</span>ggbrookings) <span class="co"># Load packages</span></span>
+<span id="cb2-5"><a href="data-sources.html#cb2-5" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">load_all</span>() <span class="co"># Load all functions in package</span></span>
+<span id="cb2-6"><a href="data-sources.html#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="data-sources.html#cb2-7" tabindex="-1"></a><span class="fu">options</span>(<span class="at">digits =</span> <span class="dv">4</span>) <span class="co"># Limit number of digits</span></span>
+<span id="cb2-8"><a href="data-sources.html#cb2-8" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">20</span>)<span class="co"># Turn off scientific notation under 20 digits </span></span>
+<span id="cb2-9"><a href="data-sources.html#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="data-sources.html#cb2-10" tabindex="-1"></a><span class="co">#are we running this after a cbo baseline and pre-bea update?</span></span>
+<span id="cb2-11"><a href="data-sources.html#cb2-11" tabindex="-1"></a>post_cbo_baseline<span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb2-12"><a href="data-sources.html#cb2-12" tabindex="-1"></a><span class="co"># Set the value of &#39;month_year&#39; to the current month and year (in the format &quot;mm-yyyy&quot;)</span></span>
+<span id="cb2-13"><a href="data-sources.html#cb2-13" tabindex="-1"></a>month_year <span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">&#39;{format.Date(today() - 7, &quot;%m&quot;)}-{year(today())}&#39;</span>)</span>
+<span id="cb2-14"><a href="data-sources.html#cb2-14" tabindex="-1"></a><span class="fu">print</span>(month_year)</span>
+<span id="cb2-15"><a href="data-sources.html#cb2-15" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="data-sources.html#cb2-16" tabindex="-1"></a><span class="co"># Calculate the current date minus 7 days</span></span>
+<span id="cb2-17"><a href="data-sources.html#cb2-17" tabindex="-1"></a>current_date <span class="ot">&lt;-</span> <span class="fu">today</span>() <span class="sc">-</span> <span class="fu">dweeks</span>(<span class="dv">1</span>)</span>
+<span id="cb2-18"><a href="data-sources.html#cb2-18" tabindex="-1"></a><span class="co"># Calculate the previous month date, handling wraparound (i.e. previous</span></span>
+<span id="cb2-19"><a href="data-sources.html#cb2-19" tabindex="-1"></a><span class="co"># month to January (&quot;01&quot;) is December (&quot;12&quot;), not month &quot;0&quot;)</span></span>
+<span id="cb2-20"><a href="data-sources.html#cb2-20" tabindex="-1"></a>last_month_date <span class="ot">&lt;-</span> current_date <span class="sc">%m-%</span> <span class="fu">months</span>(<span class="dv">1</span>)</span>
+<span id="cb2-21"><a href="data-sources.html#cb2-21" tabindex="-1"></a><span class="co"># Extract and format the month as a two-digit string</span></span>
+<span id="cb2-22"><a href="data-sources.html#cb2-22" tabindex="-1"></a>last_month_2digit <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">&quot;%02d&quot;</span>, <span class="fu">month</span>(last_month_date))</span>
+<span id="cb2-23"><a href="data-sources.html#cb2-23" tabindex="-1"></a><span class="co"># Extract the year from the last_month_date</span></span>
+<span id="cb2-24"><a href="data-sources.html#cb2-24" tabindex="-1"></a>last_year <span class="ot">&lt;-</span> <span class="fu">year</span>(last_month_date)</span>
+<span id="cb2-25"><a href="data-sources.html#cb2-25" tabindex="-1"></a><span class="co"># Create last_month_year string for file naming</span></span>
+<span id="cb2-26"><a href="data-sources.html#cb2-26" tabindex="-1"></a>last_month_year <span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">&#39;{last_month_2digit}-{last_year}&#39;</span>)</span>
+<span id="cb2-27"><a href="data-sources.html#cb2-27" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="data-sources.html#cb2-28" tabindex="-1"></a><span class="fu">print</span>(last_month_year)</span></code></pre></div>
+<p>This next section of code primarily serves to define empty folders that will be populated upon running the FIM.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="data-sources.html#cb3-1" tabindex="-1"></a><span class="co">#setting our reference period to be the post-cbo files if we&#39;ve already produced fim output incorporating the cbo update</span></span>
+<span id="cb3-2"><a href="data-sources.html#cb3-2" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}-post-cbo&#39;</span>))){</span>
+<span id="cb3-3"><a href="data-sources.html#cb3-3" tabindex="-1"></a>  last_month_year<span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">&#39;{month_year}-post-cbo&#39;</span>)</span>
+<span id="cb3-4"><a href="data-sources.html#cb3-4" tabindex="-1"></a>}</span>
+<span id="cb3-5"><a href="data-sources.html#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="data-sources.html#cb3-6" tabindex="-1"></a><span class="co"># Create updatglibe folders</span></span>
+<span id="cb3-7"><a href="data-sources.html#cb3-7" tabindex="-1"></a>update_in_progress <span class="ot">&lt;-</span> <span class="cn">TRUE</span> <span class="co">#set this to false if you&#39;re not running the code for a new month</span></span>
+<span id="cb3-8"><a href="data-sources.html#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="data-sources.html#cb3-9" tabindex="-1"></a><span class="cf">if</span>(update_in_progress <span class="sc">==</span> <span class="cn">TRUE</span>){</span>
+<span id="cb3-10"><a href="data-sources.html#cb3-10" tabindex="-1"></a>  <span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}&#39;</span>)) <span class="co"># Create folder for current update in the results directory</span></span>
+<span id="cb3-11"><a href="data-sources.html#cb3-11" tabindex="-1"></a>  <span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/input_data&#39;</span>)) <span class="co"># Folder to store forecast sheet from current update</span></span>
+<span id="cb3-12"><a href="data-sources.html#cb3-12" tabindex="-1"></a>  <span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta&#39;</span>))</span>
+<span id="cb3-13"><a href="data-sources.html#cb3-13" tabindex="-1"></a>  </span>
+<span id="cb3-14"><a href="data-sources.html#cb3-14" tabindex="-1"></a>  <span class="co"># Copy the file &#39;forecast.xlsx&#39; from the &#39;data&#39; directory to the &#39;input_data&#39; directory</span></span>
+<span id="cb3-15"><a href="data-sources.html#cb3-15" tabindex="-1"></a>  <span class="co"># This is the copy we keep for the current update</span></span>
+<span id="cb3-16"><a href="data-sources.html#cb3-16" tabindex="-1"></a>  <span class="fu">file_copy</span>(<span class="at">path =</span> <span class="st">&#39;data/forecast.xlsx&#39;</span>, <span class="at">new_path =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/input_data/forecast_{month_year}.xlsx&#39;</span>), <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-17"><a href="data-sources.html#cb3-17" tabindex="-1"></a>}</span></code></pre></div>
+<p>We’ll probably have one sub section for each source, like:</p>
+<div id="cbo" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> CBO<a href="data-sources.html#cbo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>stuff here. Which reports do we use? Budget? Economic? How do we input their data into the FIM?</p>
 </div>
-<div id="bea" class="section level3 hasAnchor" number="2.1.2">
-<h3><span class="header-section-number">2.1.2</span> BEA<a href="data-sources.html#bea" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="bea" class="section level3 hasAnchor" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> BEA<a href="data-sources.html#bea" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Same questions as above</p>
 </div>
-<div id="haver" class="section level3 hasAnchor" number="2.1.3">
-<h3><span class="header-section-number">2.1.3</span> Haver<a href="data-sources.html#haver" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="haver" class="section level3 hasAnchor" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Haver<a href="data-sources.html#haver" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Discuss Haver package, etc.</p>
 </div>
 </div>
-<div id="combining-wrangling" class="section level2 hasAnchor" number="2.2">
-<h2><span class="header-section-number">2.2</span> Combining &amp; wrangling<a href="data-sources.html#combining-wrangling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="combining-wrangling" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Combining &amp; wrangling<a href="data-sources.html#combining-wrangling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>I have no idea how this is done, and we will have to refactor this section in depth.</p>
 </div>
-<div id="the-clean-data" class="section level2 hasAnchor" number="2.3">
-<h2><span class="header-section-number">2.3</span> The clean data<a href="data-sources.html#the-clean-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="the-clean-data" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> The clean data<a href="data-sources.html#the-clean-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We use the “projections” data frame (at least for now) in the remainder of the code. In its current refactored state in the fiscal_impact_BETA script, we select columns of interest from the lonnngggg “projections” data frame and use those as we calculate the FIM.</p>
 
 </div>
