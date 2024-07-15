@@ -40,6 +40,8 @@ This next section of code primarily serves to define empty folders that will be 
 
 This next section reads in raw data. I've taken pains to attempt to trace back where the inputs in this project arise. As you can see, there are two crucial .rds files saved in the FIM. I'm not exactly sure how they are overwritten, and understanding where they are replaced is a crucial part of the FIM restructuring process.
 
+After investigating, I've found that these two data files are overwritten by the Haver pull script.
+
 ```{r section-B.0-read-raw-rds-data, eval=FALSE, echo=TRUE}
 # This code block prints the chunk entitled "section-B.0-read-raw-rds-data" 
 # from fiscal_impact_BETA.R

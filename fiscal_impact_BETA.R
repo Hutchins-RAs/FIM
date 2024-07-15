@@ -77,11 +77,13 @@ file_copy(
 
 # ---- section-B.0-read-raw-rds-data ----
 
-# Load in national accounts
+# Load in national accounts. This file is rewritten each time data-raw/haver-pull.R
+# is run.
 fim::national_accounts # this is the literal df
 load("data/national_accounts.rda") # this loads in a df named national_accounts
 
-# Load in projections
+# Load in projections. This file is rewritten each time data-raw/haver-pull.R
+# is run.
 fim::projections # this is the literal df
 load("data/projections.rda") # this loads in a df named projections
 
