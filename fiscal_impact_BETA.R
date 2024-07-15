@@ -178,9 +178,6 @@ projections <- projections %>%
          dc, c, ch ,ends_with('growth'), federal_ui, state_ui, 
          unemployment_rate)
 
-## Testing section
-projections <- projections
-
 # Step 3: Combine these two data frames.
 usna1 <- coalesce_join(x = national_accounts,
                        y = projections,
@@ -276,7 +273,6 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   
   #Define FIM variables 
   mutate(
-    health_outlays = medicare + medicaid,
     federal_health_outlays = medicare + medicaid_grants,
     state_health_outlays = medicaid - medicaid_grants
   ) %>% 
@@ -315,11 +311,86 @@ cbind(projections$social_benefits,
 # This is the point where we go from generating a data frame to actually calculating the FIM
 ######################################################################################
 # The `projections` data frame, at this point, contains all of the data we need
-# in order to calculate the FIM. We're going to streamline it later: it contains
-# hundreds of columns, of which we only need a subset.
-projections
+# in order to calculate the FIM. We streamline it to remove all the unneeded columns.
+projections <- projections %>%
+  select(
+    -gdp_growth,
+    -real_gdp,
+    -real_gdp_growth,
+    -gdp_deflator,
+    -gdp_deflator_growth,
+    -real_potential_gdp,
+    -consumption,
+    -real_consumption,
+    -consumption_deflator,
+    -cpiu,
+    -unemployment_rate,
+    -purchases,
+    -real_federal_purchases,
+    -federal_purchases_deflator,
+    -state_purchases_deflator,
+    -consumption_grants_deflator,
+    -investment_grants_deflator,
+    -real_state_purchases,
+    -health_grants,
+    -medicaid_grants,
+    -gross_consumption_grants,
+    -coronavirus_relief_fund,
+    -education_stabilization_fund,
+    -provider_relief_fund,
+    -subsidies,
+    -ppp,
+    -coronavirus_food_assistance,
+    -employee_retention,
+    -paid_sick_leave,
+    -aviation,
+    -provider_relief_fund_subsidies,
+    -transit,
+    -social_benefits,
+    -medicare,
+    -medicaid,
+    -ui,
+    -ui_expansion,
+    -ui_extended_benefits,
+    -peuc,
+    -pua,
+    -puc,
+    -wages_lost_assistance,
+    -nonprofit_ppp,
+    -nonprofit_provider_relief_fund,
+    -medicare_reimbursement_increase,
+    -personal_taxes,
+    -production_taxes,
+    -payroll_taxes,
+    -non_corporate_taxes,
+    -corporate_taxes,
+    -federal_personal_taxes,
+    -federal_production_taxes,
+    -federal_payroll_taxes,
+    -state_personal_taxes,
+    -state_production_taxes,
+    -state_payroll_taxes,
+    -consumption_growth,
+    -real_consumption_growth,
+    -federal_social_benefits_growth,
+    -federal_personal_taxes_growth,
+    -federal_production_taxes_growth,
+    -federal_payroll_taxes_growth,
+    -federal_corporate_taxes_growth,
+    -medicare_growth,
+    -medicaid_growth,
+    -ui_growth,
+    -purchases_growth,
+    -real_purchases_growth,
+    -real_federal_purchases_growth,
+    -state_purchases_growth,
+    -real_state_purchases_growth,
+    -federal_social_benefits_growth,
+    -federal_purchases_growth,
+    -federal_social_benefits_gross
+    )
 
-# This script defines the 31 input variables used in the FIM.
+# This script defines the 33 input variables used in the FIM.
 source("src/define_inputs.R")
 
 # Next, we source essential functions we need to calculate the FIM in this section.

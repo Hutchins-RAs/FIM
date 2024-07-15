@@ -34,7 +34,6 @@ id <- projections$id
 recession <- projections$recession
 
 ### Main variables
-# Federal purchases contribution
 federal_purchases <- projections$federal_purchases
 consumption_grants <- projections$consumption_grants
 investment_grants <- projections$investment_grants
