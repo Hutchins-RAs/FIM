@@ -1,3 +1,10 @@
+# fiscal_impact_BETA.R
+#
+# This script runs the main FIM. It's the working replacement for fiscal_impact.R
+# that will eventually substitute for the original. It includes chunk names  that
+# are used in the technical walkthrough in docs/technical_documentation. Thus,
+# it's essential to be careful when editing chunk names to avoid causing an error
+# in docs/technical_documentation/index.Rmd
 
 # ---- section-A.1-prep-for-update ----
 
@@ -31,17 +38,23 @@ last_month_year <- glue('{last_month_2digit}-{last_year}')
 print(last_month_year)
 
 # ---- section-A.2-create-empty-directories ----
-#setting our reference period to be the post-cbo files if we've already produced fim output incorporating the cbo update
+
+#setting our reference period to be the post-cbo files if we've already produced
+# fim output incorporating the cbo update
 if(file.exists(glue('results/{month_year}-post-cbo'))){
   last_month_year<- glue('{month_year}-post-cbo')
 }
 
 # Create updatglibe folders
-update_in_progress <- TRUE #set this to false if you're not running the code for a new month
+update_in_progress <- TRUE #set this to false if you're not running the code for
+# a new month
 
 if(update_in_progress == TRUE){
-  dir_create(glue('results/{month_year}')) # Create folder for current update in the results directory
-  dir_create(glue('results/{month_year}/input_data')) # Folder to store forecast sheet from current update
+  # Create folder for current update in the results directory
+  dir_create(glue('results/{month_year}')) 
+  # Folder to store forecast sheet from current update
+  dir_create(glue('results/{month_year}/input_data')) 
+  # Beta folder for Lorae's refactored results
   dir_create(glue('results/{month_year}/beta'))
   
   # Copy the file 'forecast.xlsx' from the 'data' directory to the 'input_data' directory
