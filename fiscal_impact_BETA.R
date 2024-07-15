@@ -45,22 +45,16 @@ if(file.exists(glue('results/{month_year}-post-cbo'))){
   last_month_year<- glue('{month_year}-post-cbo')
 }
 
-# Create updatglibe folders
-update_in_progress <- TRUE #set this to false if you're not running the code for
-# a new month
-
-if(update_in_progress == TRUE){
-  # Create folder for current update in the results directory
-  dir_create(glue('results/{month_year}')) 
-  # Folder to store forecast sheet from current update
-  dir_create(glue('results/{month_year}/input_data')) 
-  # Beta folder for Lorae's refactored results
-  dir_create(glue('results/{month_year}/beta'))
+# Create folder for current update in the results directory
+dir_create(glue('results/{month_year}')) 
+# Folder to store forecast sheet from current update
+dir_create(glue('results/{month_year}/input_data')) 
+# Beta folder for Lorae's refactored results
+dir_create(glue('results/{month_year}/beta'))
   
-  # Copy the file 'forecast.xlsx' from the 'data' directory to the 'input_data' directory
-  # This is the copy we keep for the current update
-  file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
-}
+# Copy the file 'forecast.xlsx' from the 'data' directory to the 'input_data' directory
+# This is the copy we keep for the current update
+file_copy(path = 'data/forecast.xlsx', new_path = glue('results/{month_year}/input_data/forecast_{month_year}.xlsx'), overwrite = TRUE)
 
 
 # ---- chunk-label-1 ----
