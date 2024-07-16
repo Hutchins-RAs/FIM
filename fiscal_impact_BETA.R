@@ -143,16 +143,9 @@ projections <- projections %>%
          jgs = gs/gsh,
          jc = c/ch) %>%
   # Growth rates
-  # adds 32 new columns
   mutate(
     across(
       .cols = c("gdp", "gdph", "gdppothq"),
-                #, "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", 
-                # "yptmd", "yptu", "state_ui", "federal_ui", 
-                # "gdp", "gdph", "gdppothq", "gdppotq", "dc", "jgdp", "c", "ch", 
-                # "gh", "gfh", "gsh", "g", "gf", "gs",
-                # "unemployment_rate", 
-                # "jgf", "jgs", "jc"),
       # Calculate quarterly growth rate using qgr() function, equal to x/lag(x), 
       # then subtract 1.
       .fns = ~ qgr(.) - 1,
@@ -319,23 +312,6 @@ usna <- usna %>%
     -state_personal_taxes,
     -state_production_taxes,
     -state_payroll_taxes,
-    # -consumption_growth,
-    # -real_consumption_growth,
-    # -federal_social_benefits_growth,
-    # -federal_personal_taxes_growth,
-    # -federal_production_taxes_growth,
-    # -federal_payroll_taxes_growth,
-    # -federal_corporate_taxes_growth,
-    # -medicare_growth,
-    # -medicaid_growth,
-    # -ui_growth,
-    # -purchases_growth,
-    # -real_purchases_growth,
-    # -real_federal_purchases_growth,
-    # -state_purchases_growth,
-    # -real_state_purchases_growth,
-    # -federal_social_benefits_growth,
-    # -federal_purchases_growth,
     -federal_social_benefits_gross
   )
   
