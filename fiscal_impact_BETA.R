@@ -121,6 +121,40 @@ current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
 # ---- section-B.3-manipulate-projections-dataframe ----
 
 projections <- projections %>% 
+  # Let's start by renaming the 30 variables to something we can understand
+  transmute(
+    id,
+    date,
+    fy,
+    federal_social_benefits = gftfp,
+    federal_personal_taxes =  gfrpt,
+    federal_production_taxes = gfrpri,
+    federal_corporate_taxes = gfrcp,
+    federal_payroll_taxes = gfrs,
+    medicare = yptmr,
+    medicaid = yptmd,
+    ui = yptu,
+    state_ui,
+    federal_ui_timing,
+    federal_ui,
+    gdp,
+    real_gdp = gdph,
+    real_potential_gdp = gdppothq,
+    gdppotq, # idk what this one is, probably potential gdp
+    dc, # idk what this is
+    gdp_deflator = jgdp,
+    consumption = c,
+    real_consumption = ch,
+    real_purchases = gh, # should corroborate
+    real_federal_purchases = gfh,
+    real_state_purchases = gsh,
+    purchases = g, 
+    federal_purchases = gf,
+    state_purchases = gs,
+    cpiu,
+    unemployment_rate)
+
+projections <- projections %>%
   # Smooth budget series
   # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
   # health outlays, and unemployment insurance data. For each selected column, 
@@ -129,9 +163,13 @@ projections <- projections %>%
   # four observations are available (at the data series start), the mean of 
   # available observations is used instead, ensuring no initial data is left 
   # without a smoothed value.
-  mutate(across(all_of(c('gfrpt', 'gfrpri', 'gfrcp', 'gfrs', # federal taxes
-                         'yptmd', 'yptmr', # health outlays
-                         'yptu')), # unemployment insurance
+  mutate(across(all_of(c("federal_personal_taxes", 
+                         "federal_production_taxes", 
+                         "federal_corporate_taxes",
+                         "federal_payroll_taxes",
+                         "medicaid", 
+                         "medicare",
+                         "ui")),
                 ~ zoo::rollapply(.x, 
                                  width = 4, 
                                  mean, 
@@ -139,13 +177,23 @@ projections <- projections %>%
                                  min_obs = 1, 
                                  align = 'right'))) %>%
   # Implicit price deflators
-  mutate(jgf =  gf/gfh,
-         jgs = gs/gsh,
-         jc = c/ch) %>%
+  mutate(
+    # Why do we calculate these values and not get them from Haver instead?
+    federal_purchases_deflator =  federal_purchases/real_federal_purchases, 
+    state_purchases_deflator = state_purchases/real_state_purchases,
+    consumption_deflator = consumption/real_consumption
+    ) %>%
   # Growth rates
   mutate(
     across(
-      .cols = c("gdp", "gdph", "gdppothq"),
+      .cols = c(
+        "gdp", 
+        "real_gdp", 
+        "real_potential_gdp", 
+        "federal_purchases_deflator", 
+        "state_purchases_deflator", 
+        "consumption_deflator"),
+        #"jgse"),
       # Calculate quarterly growth rate using qgr() function, equal to x/lag(x), 
       # then subtract 1.
       .fns = ~ qgr(.) - 1,
@@ -165,21 +213,151 @@ projections <- projections %>%
   # c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", "yptmd", 
   # "yptu", "federal_ui_timing", "gh", "gfh", "gsh", "g", "gf", "gs", 
   # "cpiu_g", "cola_rate", "health_ui", "cpiu") (and maybe a few others)
-  select(id, date, gdp, gdph, gdppothq, gdppotq, starts_with('j'), 
-         dc, c, ch ,ends_with('growth'), federal_ui, state_ui, 
-         unemployment_rate)
+  select(
+    id, 
+    date, 
+    gdp, 
+    real_gdp, 
+    real_potential_gdp, 
+    gdppotq, # probably potential gdp
+    gdp_deflator,
+    dc, # idk what this is
+    consumption, 
+    real_consumption,
+    ends_with('growth'), # list these out
+    federal_ui, 
+    state_ui, 
+    unemployment_rate)
 
 # Step 3: Combine these two data frames.
+national_accounts <- national_accounts %>%
+  # Let's rename these 90 variables to something we can understand
+  transmute(
+    id,
+    date,
+    gdp,
+    real_gdp = gdph,
+    gdp_deflator = jgdp,
+    consumption = c,
+    real_consumption = ch,
+    consumption_deflator = jc,
+    federal_purchases_deflator = jgf,
+    state_purchases_deflator = jgs,
+    consumption_grants_deflator = jgse,
+    investment_grants_deflator = jgsi,
+    medicare = yptmr,
+    medicaid = yptmd,
+    ui = yptu,
+    social_benefits = gtfp,
+    ypog, # ????
+    personal_taxes = yptx,
+    production_taxes = ytpi,
+    corporate_taxes = yctlg,
+    purchases = g, 
+    payroll_taxes = grcsi,
+    dc, # idk what this is
+    federal_purchases = gf,
+    state_purchases = gs,
+    real_federal_purchases = gfh,
+    real_state_purchases = gsh,
+    federal_personal_taxes =  gfrpt,
+    federal_production_taxes = gfrpri,
+    federal_corporate_taxes = gfrcp,
+    federal_payroll_taxes = gfrs,
+    federal_social_benefits = gftfp,
+    gross_consumption_grants = gfeg,
+    state_personal_taxes =  gsrpt,
+    state_production_taxes = gsrpri,
+    state_corporate_taxes = gsrcp,
+    state_payroll_taxes = gsrs,
+    state_social_benefits = gstfp,
+    gset, # idk what this is
+    health_grants = gfeghhx,
+    medicaid_grants = gfeghdx,
+    investment_grants = gfeigx,
+    federal_subsidies = gfsub,
+    state_subsidies = gssub,
+    subsidies = gsub,
+    rebate_checks = gftfpe,
+    medicare_reimbursement_increase = gftfpr,
+    nonprofit_ppp = gftfpp,
+    nonprofit_provider_relief_fund = gftfpv, 
+    ppp = gfsubp, 
+    aviation = gfsubg,
+    employee_retention = gfsube,
+    transit = gfsubs,
+    coronavirus_food_assistance = gfsubf,
+    provider_relief_fund_subsidies = gfsubv,
+    paid_sick_leave = gfsubk,
+    coronavirus_relief_fund = gfegc, 
+    education_stabilization_fund = gfege,
+    provider_relief_fund = gfegv,
+    peuc = yptue, # huh?
+    pua = yptup, # ??
+    puc = yptuc, #??
+    ui_expansion = gftfpu,
+    ui_extended_benefits = yptub,
+    wages_lost_assistance = coalesce(yptol, 0), # idk what this does
+    gfctp, # idk what this is
+    gftffx, # idk what this is either
+    cpiu,
+    pcw, # idk
+    real_potential_gdp = gdppothq,
+    gdppotq, # idk what this one is, probably potential gdp
+    recession = recessq,
+    lasgova,
+    lalgova,
+    cpgs,
+    gdp_deflator_growth = jgdp_growth,
+    consumption_deflator_growth = jc_growth,
+    federal_purchases_deflator_growth = jgf_growth,
+    state_purchases_deflator_growth = jgs_growth,
+    consumption_grants_deflator_growth = jgse_growth,
+    investment_grants_deflator_growth = jgsi_growth,
+    ylwsd,
+    yop,
+    yri,
+    ypiar,
+    ycpd,
+    gfsubr,
+    gfsubd,
+    gftfbdx,
+    yptocm
+  )
+  
 usna1 <- coalesce_join(x = national_accounts,
                        y = projections,
                        by = 'date') %>%
   as_tsibble(key = id, index = date)
 
 
-#### Section B.2: to be refactored
-usna2 <- usna1 %>%
-  gdp_cbo_growth_rate()%>% #grows current data according to cbo growth rate: gdp and gdph 
-  define_variables() %>%  # Rename Haver codes for clarity
+#### Redefine GDP and real GDP values in the future using CBO growth rates
+
+# Define an index number for the current data point and end data point
+current_index <- which(usna1$date == current_quarter)
+end_index <- nrow(usna1)
+
+# Define new GDP projections by growing current GDP (seed) at CBO growth rates
+# using the cumulative_series() function
+new_gdp_projections <- cumulative_series(
+  seed = usna1$gdp[current_index],
+  growth_rates = 1 + usna1$gdp_growth[(current_index + 1):end_index]
+)
+
+# Define new real GDP projections by growing current GDP (seed) at CBO growth rates
+# using the cumulative_series() function
+new_real_gdp_projections <- cumulative_series(
+  seed = usna1$real_gdp[current_index],
+  growth_rates = 1 + usna1$real_gdp_growth[(current_index + 1):end_index]
+)
+
+# Assign new GDP and real GDP projections back to the `gdp` and `real_gdp` series
+# in the USNA dataframe
+usna2 <- usna1 
+usna2$gdp[(current_index + 1):end_index] <- new_gdp_projections
+usna2$real_gdp[(current_index + 1):end_index] <- new_real_gdp_projections
+
+usna2 <- usna2 %>%
   as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
   
   mutate_where(id == 'historical',  # Calculate GDP growth for data 
@@ -188,8 +366,17 @@ usna2 <- usna1 %>%
   #Define FIM variables 
   mutate( 
     # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
-    federal_social_benefits_gross = federal_social_benefits, # Save original value
+    federal_ui = coalesce(ui_expansion, 0) +  wages_lost_assistance,
+    state_ui = ui - federal_ui,
+    #state_ui = ui - federal_ui,
+    # replace NAs with 0 to avoid errors in later subtraction
+    ui = coalesce(ui, 0),
+    rebate_checks = coalesce(rebate_checks, 0),
+    medicare = coalesce(medicare, 0),
+    nonprofit_provider_relief_fund = coalesce(nonprofit_provider_relief_fund, 0),
     federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare - nonprofit_provider_relief_fund,
+    #federal_social_benefits = coalesce(federal_social_benefits, 0), # Replace NAs with 0
+    federal_social_benefits_gross = federal_social_benefits, # Save original value
     state_social_benefits = state_social_benefits - medicaid,
     social_benefits = federal_social_benefits + state_social_benefits,
     consumption_grants = gross_consumption_grants - medicaid_grants,
@@ -217,6 +404,8 @@ usna2 <- usna1 %>%
          
          # Aggregate taxes
          corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
+         federal_non_corporate_taxes = federal_personal_taxes + federal_production_taxes + federal_payroll_taxes,
+         state_non_corporate_taxes = state_personal_taxes + state_production_taxes + state_payroll_taxes,
          non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes) %>% 
   
   ##Set the grants deflator the same as state purchases deflator (the same is done in the forecast/deflators sheet)

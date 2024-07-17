@@ -172,7 +172,7 @@ reallocate_legislation <- function(.data){
 #' @examples
 #' seed <- 100
 #' growth_rates <- c(1.05, 1.03, -0.98, 1.04)
-#' generate_series(seed, growth_rates)
+#' cumulative_series(seed, growth_rates)
 #' TODO: add an option to append or not append seed value to beginning of result
 #' vector. Also, add data input checks.
 cumulative_series <- function(seed, growth_rates) {
@@ -180,13 +180,13 @@ cumulative_series <- function(seed, growth_rates) {
   return(result)
 }
 
-
-#' 
-#' 
-#' 
+## DEPRECATED
+#'
+#'
+#'
 #' GROW CURRENT GDP WITH CBO GROWTH RATE
 #'
-#' @param df 
+#' @param df
 #'
 #' @return
 #' @export
@@ -195,23 +195,23 @@ cumulative_series <- function(seed, growth_rates) {
 gdp_cbo_growth_rate <- function(df){
   hist_length = length(which(df$id == "historical"))+2
   df_length = length(df$id)
-  
+
   seed_gdp = df$gdp[df$date == current_quarter]
   seed_growth = df$gdp_growth[df$date == current_quarter+1]
-  
+
   df$gdp[df$date==current_quarter+1]<- seed_gdp*(1+seed_growth)
-  
+
   for (i in hist_length:df_length) {
     df$gdp[i] <- (1 + df$gdp_growth[i]) * df$gdp[i - 1]
   }
-  
-  seed_gdph = df$gdph[df$date == current_quarter]
-  seed_growth = df$gdph_growth[df$date == current_quarter+1]
-  
-  df$gdph[df$date==current_quarter+1]<- seed_gdph*(1+seed_growth)
-  
+
+  seed_real_gdp = df$real_gdp[df$date == current_quarter]
+  seed_growth = df$real_gdp_growth[df$date == current_quarter+1]
+
+  df$real_gdp[df$date==current_quarter+1]<- seed_real_gdp*(1+seed_growth)
+
   for (i in hist_length:df_length) {
-    df$gdph[i] <- (1 + df$gdph_growth[i]) * df$gdph[i - 1]
+    df$real_gdp[i] <- (1 + df$real_gdp_growth[i]) * df$real_gdp[i - 1]
   }
   usna<-df
 }
