@@ -227,7 +227,8 @@ projections <- projections %>%
     ends_with('growth'), # list these out
     federal_ui, 
     state_ui, 
-    unemployment_rate)
+    unemployment_rate
+    )
 
 # Step 3: Combine these two data frames.
 national_accounts <- national_accounts %>%
@@ -372,7 +373,6 @@ usna2 <- usna2 %>%
     # replace NAs with 0 to avoid errors in later subtraction
     ui = coalesce(ui, 0),
     rebate_checks = coalesce(rebate_checks, 0),
-    medicare = coalesce(medicare, 0),
     nonprofit_provider_relief_fund = coalesce(nonprofit_provider_relief_fund, 0),
     federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare - nonprofit_provider_relief_fund,
     #federal_social_benefits = coalesce(federal_social_benefits, 0), # Replace NAs with 0
@@ -440,7 +440,8 @@ forecast <- # Read in sheet with our forecasted values from the data folder
                names_to = 'date') %>%  #reshape the data 
   pivot_wider(names_from = 'variable',
               values_from = 'value') %>% 
-  mutate(date = yearquarter(date)) #convert date to year-quarter format 
+  mutate(date = yearquarter(date)) %>% #convert date to year-quarter format 
+  tsibble::as_tsibble(index = date)
 
 # Remove all the unneeded columns from USNA before merging
 usna <- usna %>%
@@ -508,7 +509,7 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   #filling in NA values with the corresponding value from the other data frame
   coalesce_join(usna, forecast, by = 'date') %>%  
   
-  mutate(# Coalesce NA's to 0 for all numeric values 
+  mutate( # Coalesce NA's to 0 for all numeric values 
     across(where(is.numeric),
            ~ coalesce(.x, 0))) %>%
   
