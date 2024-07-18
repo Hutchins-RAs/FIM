@@ -562,7 +562,9 @@ projections <- projections %>%
     -gfsubr,
     -gfsubd,
     -gftfbdx,
-    -yptocm
+    -yptocm,
+    -ypog,
+    -dc
   )
 ######################################################################################
 # This is the point where we go from generating a data frame to actually calculating the FIM
