@@ -126,7 +126,6 @@ projections <- projections %>%
     id,
     date,
     fy,
-    federal_social_benefits = gftfp,
     federal_personal_taxes =  gfrpt,
     federal_production_taxes = gfrpri,
     federal_corporate_taxes = gfrcp,
@@ -135,19 +134,15 @@ projections <- projections %>%
     medicaid = yptmd,
     ui = yptu,
     state_ui,
-    federal_ui_timing,
     federal_ui,
     gdp,
     real_gdp = gdph,
     real_potential_gdp = gdppothq,
-    dc, # idk what this is
     gdp_deflator = jgdp,
     consumption = c,
     real_consumption = ch,
-    real_purchases = gh, # should corroborate
     real_federal_purchases = gfh,
     real_state_purchases = gsh,
-    purchases = g, 
     federal_purchases = gf,
     state_purchases = gs,
     unemployment_rate)
@@ -209,26 +204,21 @@ projections <- projections %>%
   # in the first place.
   select(
     -fy,
-    # Why do we get rid of all of these?!?
-    -federal_social_benefits,
-    -federal_personal_taxes,
-    -federal_production_taxes,
-    -federal_corporate_taxes,
-    -federal_payroll_taxes,
-    -medicare,
-    -medicaid,
-    -ui,
-    -federal_ui_timing,
-    -dc,
-    -real_purchases,
-    -real_federal_purchases,
-    -real_state_purchases,
-    -purchases,
-    -federal_purchases,
-    -state_purchases,
-    -federal_purchases_deflator,
-    -state_purchases_deflator,
-    -consumption_deflator
+    # Why do we get rid of all of these?!? 
+    -federal_personal_taxes, # we don't need anymore, as we created the _growth var already
+    -federal_production_taxes, # we don't need anymore, as we created the _growth var already
+    -federal_corporate_taxes, # we don't need anymore, as we created the _growth var already
+    -federal_payroll_taxes, # we don't need anymore, as we created the _growth var already
+    -medicare, # we don't need anymore, as we created the _growth var already
+    -medicaid, # we don't need anymore, as we created the _growth var already
+    -ui, # we don't need anymore, as we created the _growth var already
+    -real_federal_purchases, # we don't need anymore, as we created the _deflator_growth var already
+    -real_state_purchases, # we don't need anymore, as we created the _deflator_growth var already
+    -federal_purchases, # we don't need anymore, as we created the _deflator_growth var already
+    -state_purchases, # we don't need anymore, as we created the _deflator_growth var already
+    -federal_purchases_deflator, # we don't need anymore, as we created the _deflator_growth var already
+    -state_purchases_deflator, # we don't need anymore, as we created the _deflator_growth var already
+    -consumption_deflator # we don't need anymore, as we created the _deflator_growth var already
   )
 # alternative way of selecting the same data
   # select(
@@ -270,7 +260,6 @@ national_accounts <- national_accounts %>%
     personal_taxes = yptx,
     corporate_taxes = yctlg,
     purchases = g, 
-    payroll_taxes = grcsi,
     federal_purchases = gf,
     state_purchases = gs,
     real_federal_purchases = gfh,
@@ -449,7 +438,6 @@ usna <- usna %>%
     -wages_lost_assistance,
     -nonprofit_provider_relief_fund,
     -personal_taxes,
-    -payroll_taxes,
     -non_corporate_taxes,
     -corporate_taxes,
     -federal_personal_taxes,
