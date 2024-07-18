@@ -150,7 +150,6 @@ projections <- projections %>%
     purchases = g, 
     federal_purchases = gf,
     state_purchases = gs,
-    cpiu,
     unemployment_rate)
 
 projections <- projections %>%
@@ -227,7 +226,6 @@ projections <- projections %>%
     -purchases,
     -federal_purchases,
     -state_purchases,
-    -cpiu,
     -federal_purchases_deflator,
     -state_purchases_deflator,
     -consumption_deflator
@@ -315,7 +313,6 @@ national_accounts <- national_accounts %>%
     ui_expansion = gftfpu,
     ui_extended_benefits = yptub,
     wages_lost_assistance = coalesce(yptol, 0), # idk what this does
-    cpiu,
     real_potential_gdp = gdppothq,
     recession = recessq,
     gdp_deflator_growth = jgdp_growth,
@@ -455,7 +452,6 @@ usna <- usna %>%
     -consumption,
     -real_consumption,
     -consumption_deflator,
-    -cpiu,
     -unemployment_rate,
     -purchases,
     -real_federal_purchases,
