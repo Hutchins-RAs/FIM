@@ -140,7 +140,6 @@ projections <- projections %>%
     gdp,
     real_gdp = gdph,
     real_potential_gdp = gdppothq,
-    gdppotq, # idk what this one is, probably potential gdp
     dc, # idk what this is
     gdp_deflator = jgdp,
     consumption = c,
@@ -240,7 +239,7 @@ projections <- projections %>%
   #   gdp, 
   #   real_gdp, 
   #   real_potential_gdp, 
-  #   gdppotq, # probably potential gdp
+  #   #gdppotq, # probably potential gdp. No longer exists in df
   #   gdp_deflator,
   #   consumption, 
   #   real_consumption,
@@ -270,7 +269,6 @@ national_accounts <- national_accounts %>%
     medicaid = yptmd,
     ui = yptu,
     social_benefits = gtfp,
-    ypog, # ????
     personal_taxes = yptx,
     production_taxes = ytpi,
     corporate_taxes = yctlg,
@@ -291,7 +289,6 @@ national_accounts <- national_accounts %>%
     state_corporate_taxes = gsrcp,
     state_payroll_taxes = gsrs,
     state_social_benefits = gstfp,
-    gset, # idk what this is
     health_grants = gfeghhx,
     medicaid_grants = gfeghdx,
     investment_grants = gfeigx,
@@ -318,31 +315,15 @@ national_accounts <- national_accounts %>%
     ui_expansion = gftfpu,
     ui_extended_benefits = yptub,
     wages_lost_assistance = coalesce(yptol, 0), # idk what this does
-    gfctp, # idk what this is
-    gftffx, # idk what this is either
     cpiu,
-    pcw, # idk
     real_potential_gdp = gdppothq,
-    gdppotq, # idk what this one is, probably potential gdp
     recession = recessq,
-    lasgova,
-    lalgova,
-    cpgs,
     gdp_deflator_growth = jgdp_growth,
     consumption_deflator_growth = jc_growth,
     federal_purchases_deflator_growth = jgf_growth,
     state_purchases_deflator_growth = jgs_growth,
     consumption_grants_deflator_growth = jgse_growth,
-    investment_grants_deflator_growth = jgsi_growth,
-    ylwsd,
-    yop,
-    yri,
-    ypiar,
-    ycpd,
-    gfsubr,
-    gfsubd,
-    gftfbdx,
-    yptocm
+    investment_grants_deflator_growth = jgsi_growth
   )
   
 usna1 <- coalesce_join(x = national_accounts,
@@ -563,27 +544,7 @@ projections <- projections %>%
     -medicare,  # Used in calculation but no longer needed
     -medicaid_grants,  # Used in calculation but no longer needed
     -medicaid,  # Used in calculation but no longer needed
-    -ui, # Used in calculation but no longer needed
-    #
-    # Remaining are never used?
-    -gset,
-    -gfctp,
-    -gftffx,
-    -pcw,
-    -gdppotq,
-    -lasgova,
-    -lalgova,
-    -cpgs,
-    -ylwsd,
-    -yop,
-    -yri,
-    -ypiar,
-    -ycpd,
-    -gfsubr,
-    -gfsubd,
-    -gftfbdx,
-    -yptocm,
-    -ypog
+    -ui # Used in calculation but no longer needed
   )
 ######################################################################################
 # This is the point where we go from generating a data frame to actually calculating the FIM
