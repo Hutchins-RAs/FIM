@@ -209,26 +209,46 @@ projections <- projections %>%
   # TODO: as you can see from the select function, many columns are not kept.
   # Perhaps the code can be refactored to exclude the data processing steps 
   # in the first place.
-  # These are the columns that are explicitly dropped in this step:
-  # c("fy", "gftfp", "gfrpt", "gfrpri", "gfrcp", "gfrs", "yptmr", "yptmd", 
-  # "yptu", "federal_ui_timing", "gh", "gfh", "gsh", "g", "gf", "gs", 
-  # "cpiu_g", "cola_rate", "health_ui", "cpiu") (and maybe a few others)
   select(
-    id, 
-    date, 
-    gdp, 
-    real_gdp, 
-    real_potential_gdp, 
-    gdppotq, # probably potential gdp
-    gdp_deflator,
-    dc, # idk what this is
-    consumption, 
-    real_consumption,
-    ends_with('growth'), # list these out
-    federal_ui, 
-    state_ui, 
-    unemployment_rate
-    )
+    -fy,
+    # Why do we get rid of all of these?!?
+    -federal_social_benefits,
+    -federal_personal_taxes,
+    -federal_production_taxes,
+    -federal_corporate_taxes,
+    -federal_payroll_taxes,
+    -medicare,
+    -medicaid,
+    -ui,
+    -federal_ui_timing,
+    -dc,
+    -real_purchases,
+    -real_federal_purchases,
+    -real_state_purchases,
+    -purchases,
+    -federal_purchases,
+    -state_purchases,
+    -cpiu,
+    -federal_purchases_deflator,
+    -state_purchases_deflator,
+    -consumption_deflator
+  )
+# alternative way of selecting the same data
+  # select(
+  #   id, 
+  #   date, 
+  #   gdp, 
+  #   real_gdp, 
+  #   real_potential_gdp, 
+  #   gdppotq, # probably potential gdp
+  #   gdp_deflator,
+  #   consumption, 
+  #   real_consumption,
+  #   ends_with('growth'), # list these out
+  #   federal_ui, 
+  #   state_ui, 
+  #   unemployment_rate
+  #   )
 
 # Step 3: Combine these two data frames.
 national_accounts <- national_accounts %>%
@@ -256,7 +276,6 @@ national_accounts <- national_accounts %>%
     corporate_taxes = yctlg,
     purchases = g, 
     payroll_taxes = grcsi,
-    dc, # idk what this is
     federal_purchases = gf,
     state_purchases = gs,
     real_federal_purchases = gfh,
@@ -545,6 +564,7 @@ projections <- projections %>%
     -medicaid_grants,  # Used in calculation but no longer needed
     -medicaid,  # Used in calculation but no longer needed
     -ui, # Used in calculation but no longer needed
+    #
     # Remaining are never used?
     -gset,
     -gfctp,
@@ -563,8 +583,7 @@ projections <- projections %>%
     -gfsubd,
     -gftfbdx,
     -yptocm,
-    -ypog,
-    -dc
+    -ypog
   )
 ######################################################################################
 # This is the point where we go from generating a data frame to actually calculating the FIM
