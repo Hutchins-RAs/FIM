@@ -465,7 +465,6 @@ usna <- usna %>%
     -investment_grants_deflator,
     -real_state_purchases,
     -health_grants,
-    #-medicaid_grants,
     -gross_consumption_grants,
     -coronavirus_relief_fund,
     -education_stabilization_fund,
@@ -479,9 +478,6 @@ usna <- usna %>%
     -provider_relief_fund_subsidies,
     -transit,
     -social_benefits,
-    #-medicare,
-    #-medicaid,
-    #-ui,
     -ui_expansion,
     -ui_extended_benefits,
     -peuc,
@@ -541,18 +537,36 @@ projections <- # Merge forecast w BEA + CBO on the 'date' column,
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                federal_student_loans = historical_overrides$federal_student_loans_override)
 
-######################################################################################
-# This is the point where we go from generating a data frame to actually calculating the FIM
-######################################################################################
 # The `projections` data frame, at this point, contains all of the data we need
 # in order to calculate the FIM. We streamline it to remove all the unneeded columns.
 projections <- projections %>%
   select(
-    -medicare,
-    -medicaid_grants,
-    -medicaid,
-    -ui
-    )
+    -medicare,  # Used in calculation but no longer needed
+    -medicaid_grants,  # Used in calculation but no longer needed
+    -medicaid,  # Used in calculation but no longer needed
+    -ui, # Used in calculation but no longer needed
+    # Remaining are never used?
+    -gset,
+    -gfctp,
+    -gftffx,
+    -pcw,
+    -gdppotq,
+    -lasgova,
+    -lalgova,
+    -cpgs,
+    -ylwsd,
+    -yop,
+    -yri,
+    -ypiar,
+    -ycpd,
+    -gfsubr,
+    -gfsubd,
+    -gftfbdx,
+    -yptocm
+  )
+######################################################################################
+# This is the point where we go from generating a data frame to actually calculating the FIM
+######################################################################################
 
 # This script defines the 33 input variables used in the FIM.
 source("src/define_inputs.R")
