@@ -121,18 +121,10 @@ current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
 # ---- section-B.3-manipulate-projections-dataframe ----
 
 projections <- projections %>% 
-  # Let's start by renaming the 30 variables to something we can understand
+  # Rename the variables from their Haver codes
   transmute(
     id,
     date,
-    fy,
-    federal_personal_taxes =  gfrpt,
-    federal_production_taxes = gfrpri,
-    federal_corporate_taxes = gfrcp,
-    federal_payroll_taxes = gfrs,
-    medicare = yptmr,
-    medicaid = yptmd,
-    ui = yptu,
     state_ui,
     federal_ui,
     gdp,
@@ -148,27 +140,6 @@ projections <- projections %>%
     unemployment_rate)
 
 projections <- projections %>%
-  # Smooth budget series
-  # Applies a rolling mean over a 4-quarter window to smooth federal taxes, 
-  # health outlays, and unemployment insurance data. For each selected column, 
-  # the rolling mean is calculated using the current and previous three 
-  # quarters' data, aligning the window to the current quarter. If less than 
-  # four observations are available (at the data series start), the mean of 
-  # available observations is used instead, ensuring no initial data is left 
-  # without a smoothed value.
-  mutate(across(all_of(c("federal_personal_taxes", 
-                         "federal_production_taxes", 
-                         "federal_corporate_taxes",
-                         "federal_payroll_taxes",
-                         "medicaid", 
-                         "medicare",
-                         "ui")),
-                ~ zoo::rollapply(.x, 
-                                 width = 4, 
-                                 mean, 
-                                 fill = NA,
-                                 min_obs = 1, 
-                                 align = 'right'))) %>%
   # Implicit price deflators
   mutate(
     # Why do we calculate these values and not get them from Haver instead?
@@ -203,15 +174,6 @@ projections <- projections %>%
   # Perhaps the code can be refactored to exclude the data processing steps 
   # in the first place.
   select(
-    -fy,
-    # Why do we get rid of all of these?!? 
-    -federal_personal_taxes, # we don't need anymore, as we created the _growth var already
-    -federal_production_taxes, # we don't need anymore, as we created the _growth var already
-    -federal_corporate_taxes, # we don't need anymore, as we created the _growth var already
-    -federal_payroll_taxes, # we don't need anymore, as we created the _growth var already
-    -medicare, # we don't need anymore, as we created the _growth var already
-    -medicaid, # we don't need anymore, as we created the _growth var already
-    -ui, # we don't need anymore, as we created the _growth var already
     -real_federal_purchases, # we don't need anymore, as we created the _deflator_growth var already
     -real_state_purchases, # we don't need anymore, as we created the _deflator_growth var already
     -federal_purchases, # we don't need anymore, as we created the _deflator_growth var already
@@ -327,6 +289,12 @@ usna2$gdp[(current_index + 1):end_index] <- new_gdp_projections
 usna2$real_gdp[(current_index + 1):end_index] <- new_real_gdp_projections
 
 usna2 <- usna2 %>%
+  # Delete the real_gdp_growth and gdp_growth variables, which are no longer 
+  # needed
+  select(
+    -gdp_growth,
+    -real_gdp_growth
+  ) %>%
   as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
   
   mutate_where(id == 'historical',  # Calculate GDP growth for data 
@@ -414,9 +382,7 @@ forecast <- # Read in sheet with our forecasted values from the data folder
 # Remove all the unneeded columns from USNA before merging
 usna <- usna %>%
   select(
-    -gdp_growth,
     -real_gdp, # I don't think it's needed but verify first
-    -real_gdp_growth,
     -gdp_deflator,
     -gdp_deflator_growth,
     -real_potential_gdp,
@@ -498,7 +464,9 @@ projections <- projections %>%
 # This is the point where we go from generating a data frame to actually calculating the FIM
 ######################################################################################
 
-# This script defines the 33 input variables used in the FIM.
+# This script defines the 33 input variables used in the FIM. It assumes that the 
+# projections data frame is saved in memory from the section above having already
+# been run.
 source("src/define_inputs.R")
 
 # Next, we source essential functions we need to calculate the FIM in this section.

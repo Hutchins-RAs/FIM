@@ -1,5 +1,5 @@
 # source("define_inputs.R")
-# This script defines the 31 input variables used in the FIM.
+# This script defines the 33 input variables used in the FIM.
 
 # We divide the subset of columns that we need into two categories: "accessory" 
 # and "main" variables. Both types of columns are inputs for the FIM. The "main"
