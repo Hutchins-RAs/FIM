@@ -125,19 +125,15 @@ projections <- projections %>%
   transmute(
     id,
     date,
-    state_ui,
-    federal_ui,
     gdp,
-    real_gdp = gdph,
     real_potential_gdp = gdppothq,
-    gdp_deflator = jgdp,
     consumption = c,
     real_consumption = ch,
-    real_federal_purchases = gfh,
-    real_state_purchases = gsh,
     federal_purchases = gf,
+    real_federal_purchases = gfh,
     state_purchases = gs,
-    unemployment_rate)
+    real_state_purchases = gsh
+    )
 
 projections <- projections %>%
   # Implicit price deflators
@@ -152,7 +148,6 @@ projections <- projections %>%
     across(
       .cols = c(
         "gdp", 
-        "real_gdp", 
         "real_potential_gdp", 
         "federal_purchases_deflator", 
         "state_purchases_deflator", 
@@ -180,7 +175,9 @@ projections <- projections %>%
     -state_purchases, # we don't need anymore, as we created the _deflator_growth var already
     -federal_purchases_deflator, # we don't need anymore, as we created the _deflator_growth var already
     -state_purchases_deflator, # we don't need anymore, as we created the _deflator_growth var already
-    -consumption_deflator # we don't need anymore, as we created the _deflator_growth var already
+    -consumption_deflator, # we don't need anymore, as we created the _deflator_growth var already
+    -consumption, # we don't need anymore, as we created the _deflator_growth var already
+    -real_consumption # we don't need anymore, as we created the _deflator_growth var already
   )
 
 # ---- section-B.4-initial-import-national-accounts ----
@@ -191,25 +188,12 @@ national_accounts <- national_accounts %>%
     id,
     date,
     gdp,
-    real_gdp = gdph,
-    gdp_deflator = jgdp,
-    consumption = c,
-    real_consumption = ch,
-    consumption_deflator = jc,
-    federal_purchases_deflator = jgf,
-    state_purchases_deflator = jgs,
-    consumption_grants_deflator = jgse,
-    investment_grants_deflator = jgsi,
     medicare = yptmr,
     medicaid = yptmd,
     ui = yptu,
     social_benefits = gtfp,
-    personal_taxes = yptx,
-    purchases = g, 
     federal_purchases = gf,
     state_purchases = gs,
-    real_federal_purchases = gfh,
-    real_state_purchases = gsh,
     federal_personal_taxes =  gfrpt,
     federal_production_taxes = gfrpri,
     federal_corporate_taxes = gfrcp,
@@ -221,7 +205,6 @@ national_accounts <- national_accounts %>%
     state_corporate_taxes = gsrcp,
     state_payroll_taxes = gsrs,
     state_social_benefits = gstfp,
-    health_grants = gfeghhx,
     medicaid_grants = gfeghdx,
     investment_grants = gfeigx,
     federal_subsidies = gfsub,
@@ -232,7 +215,6 @@ national_accounts <- national_accounts %>%
     wages_lost_assistance = coalesce(yptol, 0), # idk what this does
     real_potential_gdp = gdppothq,
     recession = recessq,
-    gdp_deflator_growth = jgdp_growth,
     consumption_deflator_growth = jc_growth,
     federal_purchases_deflator_growth = jgf_growth,
     state_purchases_deflator_growth = jgs_growth,
@@ -261,25 +243,15 @@ new_gdp_projections <- cumulative_series(
   growth_rates = 1 + usna1$gdp_growth[(current_index + 1):end_index]
 )
 
-# Define new real GDP projections by growing current GDP (seed) at CBO growth rates
-# using the cumulative_series() function
-new_real_gdp_projections <- cumulative_series(
-  seed = usna1$real_gdp[current_index],
-  growth_rates = 1 + usna1$real_gdp_growth[(current_index + 1):end_index]
-)
-
-# Assign new GDP and real GDP projections back to the `gdp` and `real_gdp` series
-# in the USNA dataframe
+# Assign new GDP and real GDP projections back to the `gdp` series in the USNA 
+# dataframe
 usna2 <- usna1 
 usna2$gdp[(current_index + 1):end_index] <- new_gdp_projections
-usna2$real_gdp[(current_index + 1):end_index] <- new_real_gdp_projections
 
 usna2 <- usna2 %>%
-  # Delete the real_gdp_growth and gdp_growth variables, which are no longer 
-  # needed
+  # Delete the gdp_growth variable, which is no longer needed
   select(
     -gdp_growth,
-    -real_gdp_growth
   ) %>%
   as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
   
@@ -298,8 +270,6 @@ usna3 <- usna2 %>%
     rebate_checks = coalesce(rebate_checks, 0),
     nonprofit_provider_relief_fund = coalesce(nonprofit_provider_relief_fund, 0),
     federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare - nonprofit_provider_relief_fund,
-    #federal_social_benefits = coalesce(federal_social_benefits, 0), # Replace NAs with 0
-    federal_social_benefits_gross = federal_social_benefits, # Save original value
     state_social_benefits = state_social_benefits - medicaid,
     consumption_grants = gross_consumption_grants - medicaid_grants,
   ) %>% 
@@ -348,7 +318,19 @@ usna3 <- usna2 %>%
                federal_purchases_deflator_growth =deflator_overrides$federal_purchases_deflator_growth_override,
                state_purchases_deflator_growth = deflator_overrides$state_purchases_deflator_growth_override,
                consumption_grants_deflator_growth = deflator_overrides$consumption_grants_deflator_growth_override,
-               investment_grants_deflator_growth = deflator_overrides$investment_grants_deflator_growth_override)
+               investment_grants_deflator_growth = deflator_overrides$investment_grants_deflator_growth_override
+               ) %>%
+  # delete unneeded tax vars which were already rolled into federal non corporate taxes
+  # and state non corporate taxes
+  select(
+    -federal_personal_taxes,
+    -federal_production_taxes,
+    -federal_payroll_taxes,
+    -state_personal_taxes,
+    -state_production_taxes,
+    -state_payroll_taxes
+  )
+
 
 # Redefine usna to be integrated back into the FIM
 usna <- usna3
@@ -368,34 +350,11 @@ forecast <- # Read in sheet with our forecasted values from the data folder
 # Remove all the unneeded columns from USNA before merging
 usna <- usna %>%
   select(
-    -real_gdp, # I don't think it's needed but verify first
-    -gdp_deflator,
-    -gdp_deflator_growth,
     -real_potential_gdp,
-    -consumption,
-    -real_consumption,
-    -consumption_deflator,
-    -unemployment_rate,
-    -purchases,
-    -real_federal_purchases,
-    -federal_purchases_deflator,
-    -state_purchases_deflator,
-    -consumption_grants_deflator,
-    -investment_grants_deflator,
-    -real_state_purchases,
-    -health_grants,
     -gross_consumption_grants,
     -ui_expansion,
     -wages_lost_assistance,
-    -nonprofit_provider_relief_fund,
-    -personal_taxes,
-    -federal_personal_taxes,
-    -federal_production_taxes,
-    -federal_payroll_taxes,
-    -state_personal_taxes,
-    -state_production_taxes,
-    -state_payroll_taxes,
-    -federal_social_benefits_gross
+    -nonprofit_provider_relief_fund
   )
   
 projections <- # Merge forecast w BEA + CBO on the 'date' column, 
