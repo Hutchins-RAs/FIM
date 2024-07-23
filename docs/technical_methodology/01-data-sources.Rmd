@@ -64,6 +64,31 @@ Why haven't I changed it yet? Well, it relies on the data frames we load. I have
 # from fiscal_impact_BETA.R
 ```
 
+This next section imports data from the `projections` dataframe, which - as we covered above - is saved in `data/projections.rda`. The data frame initially comes with 30 variables. In the subsequent lines of code, we only keep 15 of them. We then use the real and nominal values of federal purchases, state purchases, and consumption to produce deflators. After calculating the deflators, we calculate growth rates on those three variables as well as GDP, real GDP, and real potential GDP. We then delete the intermediate variables that are no longer needed.
+
+```{r section-B.3-initial-import-projections, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B.3-initial-import-projections" 
+# from fiscal_impact_BETA.R
+```
+
+This section imports data from the `national_accounts` dataframe, which - as we covered above - is saved in `data/national_accounts.rda`. The data frame initially comes with 90 variables. In the subsequent lines of code, we only keep 51 of them.
+
+TODO: I actually think more of the variables can be deleted later.
+
+```{r section-B.4-initial-import-national-accounts, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B.4-initial-import-national-accounts" 
+# from fiscal_impact_BETA.R
+```
+
+After importing the variables we need, we merge the projections data frame and the national_accounts data frames using the coalesce_join user defined function. With `national_accounts` assigned to the `x` argument and `projections` assigned to the `y` argument, `national_accounts` takes precedence over `projections` if there are any conflicting data entries.
+
+The resultant data frame, `usna1`, is an assortment of XXX variables.
+
+```{r section-B.5-join-national-accounts-to-projections, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B.5-join-national-accounts-to-projections" 
+# from fiscal_impact_BETA.R
+```
+
 ---- end of code walk through, for now!
 
 We'll probably have one sub section for each source, like:

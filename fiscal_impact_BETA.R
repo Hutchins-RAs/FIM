@@ -118,7 +118,7 @@ deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
 # Save current quarter for later
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) 
 
-# ---- section-B.3-manipulate-projections-dataframe ----
+# ---- section-B.3-initial-import-projections ----
 
 projections <- projections %>% 
   # Rename the variables from their Haver codes
@@ -182,24 +182,9 @@ projections <- projections %>%
     -state_purchases_deflator, # we don't need anymore, as we created the _deflator_growth var already
     -consumption_deflator # we don't need anymore, as we created the _deflator_growth var already
   )
-# alternative way of selecting the same data
-  # select(
-  #   id, 
-  #   date, 
-  #   gdp, 
-  #   real_gdp, 
-  #   real_potential_gdp, 
-  #   #gdppotq, # probably potential gdp. No longer exists in df
-  #   gdp_deflator,
-  #   consumption, 
-  #   real_consumption,
-  #   ends_with('growth'), # list these out
-  #   federal_ui, 
-  #   state_ui, 
-  #   unemployment_rate
-  #   )
 
-# Step 3: Combine these two data frames.
+# ---- section-B.4-initial-import-national-accounts ----
+
 national_accounts <- national_accounts %>%
   # Let's rename these 90 variables to something we can understand
   transmute(
@@ -220,7 +205,6 @@ national_accounts <- national_accounts %>%
     ui = yptu,
     social_benefits = gtfp,
     personal_taxes = yptx,
-    corporate_taxes = yctlg,
     purchases = g, 
     federal_purchases = gf,
     state_purchases = gs,
@@ -256,11 +240,13 @@ national_accounts <- national_accounts %>%
     investment_grants_deflator_growth = jgsi_growth
   )
   
+# ---- section-B.5-join-national-accounts-to-projections ----
 usna1 <- coalesce_join(x = national_accounts,
                        y = projections,
                        by = 'date') %>%
   as_tsibble(key = id, index = date)
 
+# ---- section-B.6-forecast-gdp-using-cbo ----
 
 #### Redefine GDP and real GDP values in the future using CBO growth rates
 
@@ -298,8 +284,9 @@ usna2 <- usna2 %>%
   as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
   
   mutate_where(id == 'historical',  # Calculate GDP growth for data 
-               real_potential_gdp_growth = q_g(real_potential_gdp)) %>% 
-  
+               real_potential_gdp_growth = q_g(real_potential_gdp))
+
+usna3 <- usna2 %>%
   #Define FIM variables 
   mutate( 
     # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
@@ -314,7 +301,6 @@ usna2 <- usna2 %>%
     #federal_social_benefits = coalesce(federal_social_benefits, 0), # Replace NAs with 0
     federal_social_benefits_gross = federal_social_benefits, # Save original value
     state_social_benefits = state_social_benefits - medicaid,
-    social_benefits = federal_social_benefits + state_social_benefits,
     consumption_grants = gross_consumption_grants - medicaid_grants,
   ) %>% 
   
@@ -322,7 +308,8 @@ usna2 <- usna2 %>%
                                      1348.1,
                                      0)) %>%
   
-  #Set rebate checks ARP to NA because we don't have a projection for them
+  #Set future periods to NA in these time series, allowing them to be overridden
+  # by subsequent merges
   mutate_where(id == 'projection',
                rebate_checks_arp = NA,
                federal_ui = NA,
@@ -339,10 +326,8 @@ usna2 <- usna2 %>%
   mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
          
          # Aggregate taxes
-         corporate_taxes = federal_corporate_taxes + state_corporate_taxes,
          federal_non_corporate_taxes = federal_personal_taxes + federal_production_taxes + federal_payroll_taxes,
-         state_non_corporate_taxes = state_personal_taxes + state_production_taxes + state_payroll_taxes,
-         non_corporate_taxes = federal_non_corporate_taxes + state_non_corporate_taxes) %>% 
+         state_non_corporate_taxes = state_personal_taxes + state_production_taxes + state_payroll_taxes) %>% 
   
   ##Set the grants deflator the same as state purchases deflator (the same is done in the forecast/deflators sheet)
   mutate_where(id == 'projection',
@@ -350,6 +335,7 @@ usna2 <- usna2 %>%
                investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
   
   #Overriding historical consumption and investment grant 
+  # I think we override this twice???
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
                consumption_grants = historical_overrides$consumption_grants_override) %>% 
   mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
@@ -365,7 +351,7 @@ usna2 <- usna2 %>%
                investment_grants_deflator_growth = deflator_overrides$investment_grants_deflator_growth_override)
 
 # Redefine usna to be integrated back into the FIM
-usna <- usna2
+usna <- usna3
 
 # Section C: Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values from the data folder
@@ -399,13 +385,10 @@ usna <- usna %>%
     -real_state_purchases,
     -health_grants,
     -gross_consumption_grants,
-    -social_benefits,
     -ui_expansion,
     -wages_lost_assistance,
     -nonprofit_provider_relief_fund,
     -personal_taxes,
-    -non_corporate_taxes,
-    -corporate_taxes,
     -federal_personal_taxes,
     -federal_production_taxes,
     -federal_payroll_taxes,

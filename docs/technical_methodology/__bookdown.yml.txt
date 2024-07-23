@@ -1,7 +1,0 @@
-book_filename: "FIM-Technical-Methodology"
-rmd_files: 
-  - index.Rmd
-  - 01-data-sources.Rmd
-  - 02-processing.Rmd
-  - 03-ui-presentation.Rmd
-  - 04-economics-methodology.Rmd

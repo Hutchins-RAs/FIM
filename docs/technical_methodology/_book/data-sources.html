@@ -23,7 +23,7 @@
 <meta name="author" content="Lorae Stojanovic" />
 
 
-<meta name="date" content="2024-07-15" />
+<meta name="date" content="2024-07-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -269,13 +269,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-19"><a href="data-sources.html#cb3-19" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
 <span id="cb3-20"><a href="data-sources.html#cb3-20" tabindex="-1"></a>  )</span></code></pre></div>
 <p>This next section reads in raw data. I’ve taken pains to attempt to trace back where the inputs in this project arise. As you can see, there are two crucial .rds files saved in the FIM. I’m not exactly sure how they are overwritten, and understanding where they are replaced is a crucial part of the FIM restructuring process.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="data-sources.html#cb4-1" tabindex="-1"></a><span class="co"># Load in national accounts</span></span>
-<span id="cb4-2"><a href="data-sources.html#cb4-2" tabindex="-1"></a>fim<span class="sc">::</span>national_accounts <span class="co"># this is the literal df</span></span>
-<span id="cb4-3"><a href="data-sources.html#cb4-3" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/national_accounts.rda&quot;</span>) <span class="co"># this loads in a df named national_accounts</span></span>
-<span id="cb4-4"><a href="data-sources.html#cb4-4" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="data-sources.html#cb4-5" tabindex="-1"></a><span class="co"># Load in projections</span></span>
-<span id="cb4-6"><a href="data-sources.html#cb4-6" tabindex="-1"></a>fim<span class="sc">::</span>projections <span class="co"># this is the literal df</span></span>
-<span id="cb4-7"><a href="data-sources.html#cb4-7" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/projections.rda&quot;</span>) <span class="co"># this loads in a df named projections</span></span></code></pre></div>
+<p>After investigating, I’ve found that these two data files are overwritten by the Haver pull script.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="data-sources.html#cb4-1" tabindex="-1"></a><span class="co"># Load in national accounts. This file is rewritten each time data-raw/haver-pull.R</span></span>
+<span id="cb4-2"><a href="data-sources.html#cb4-2" tabindex="-1"></a><span class="co"># is run.</span></span>
+<span id="cb4-3"><a href="data-sources.html#cb4-3" tabindex="-1"></a>fim<span class="sc">::</span>national_accounts <span class="co"># this is the literal df</span></span>
+<span id="cb4-4"><a href="data-sources.html#cb4-4" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/national_accounts.rda&quot;</span>) <span class="co"># this loads in a df named national_accounts</span></span>
+<span id="cb4-5"><a href="data-sources.html#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="data-sources.html#cb4-6" tabindex="-1"></a><span class="co"># Load in projections. This file is rewritten each time data-raw/haver-pull.R</span></span>
+<span id="cb4-7"><a href="data-sources.html#cb4-7" tabindex="-1"></a><span class="co"># is run.</span></span>
+<span id="cb4-8"><a href="data-sources.html#cb4-8" tabindex="-1"></a>fim<span class="sc">::</span>projections <span class="co"># this is the literal df</span></span>
+<span id="cb4-9"><a href="data-sources.html#cb4-9" tabindex="-1"></a><span class="fu">load</span>(<span class="st">&quot;data/projections.rda&quot;</span>) <span class="co"># this loads in a df named projections</span></span></code></pre></div>
 <p>This section reads in historical overrides. Historical overrides are data observations in the past that we take as given. Every time this code runs, it extracts raw historic data from Haver and attempts to use that. However, for some time series, we do not want to use what Haver gives us. Instead, we override that data. These overrides are crucial to that process.</p>
 <p>If we have to override each time, why do we even bother reading in the raw data? It’s history, right? Well, not really. The data series we use as inputs in the FIM occasionally get revised. We want that most recent revision, because it’s most accurate. However, we want to make sure that these revisions don’t overwrite our historical overrides.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="data-sources.html#cb5-1" tabindex="-1"></a><span class="co"># Read in historical overrides from data/forecast.xlsx</span></span>
@@ -306,6 +309,132 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-2"><a href="data-sources.html#cb6-2" tabindex="-1"></a><span class="co"># of the FIM, not buried down here.</span></span>
 <span id="cb6-3"><a href="data-sources.html#cb6-3" tabindex="-1"></a><span class="co"># Save current quarter for later</span></span>
 <span id="cb6-4"><a href="data-sources.html#cb6-4" tabindex="-1"></a>current_quarter <span class="ot">&lt;-</span> historical_overrides <span class="sc">%&gt;%</span> <span class="fu">slice_max</span>(date) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(date) </span></code></pre></div>
+<p>This next section imports data from the <code>projections</code> dataframe, which - as we covered above - is saved in <code>data/projections.rda</code>. The data frame initially comes with 30 variables. In the subsequent lines of code, we only keep 15 of them. We then use the real and nominal values of federal purchases, state purchases, and consumption to produce deflators. After calculating the deflators, we calculate growth rates on those three variables as well as GDP, real GDP, and real potential GDP. We then delete the intermediate variables that are no longer needed.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="data-sources.html#cb7-1" tabindex="-1"></a>projections <span class="ot">&lt;-</span> projections <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="data-sources.html#cb7-2" tabindex="-1"></a>  <span class="co"># Rename the variables from their Haver codes</span></span>
+<span id="cb7-3"><a href="data-sources.html#cb7-3" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb7-4"><a href="data-sources.html#cb7-4" tabindex="-1"></a>    id,</span>
+<span id="cb7-5"><a href="data-sources.html#cb7-5" tabindex="-1"></a>    date,</span>
+<span id="cb7-6"><a href="data-sources.html#cb7-6" tabindex="-1"></a>    state_ui,</span>
+<span id="cb7-7"><a href="data-sources.html#cb7-7" tabindex="-1"></a>    federal_ui,</span>
+<span id="cb7-8"><a href="data-sources.html#cb7-8" tabindex="-1"></a>    gdp,</span>
+<span id="cb7-9"><a href="data-sources.html#cb7-9" tabindex="-1"></a>    <span class="at">real_gdp =</span> gdph,</span>
+<span id="cb7-10"><a href="data-sources.html#cb7-10" tabindex="-1"></a>    <span class="at">real_potential_gdp =</span> gdppothq,</span>
+<span id="cb7-11"><a href="data-sources.html#cb7-11" tabindex="-1"></a>    <span class="at">gdp_deflator =</span> jgdp,</span>
+<span id="cb7-12"><a href="data-sources.html#cb7-12" tabindex="-1"></a>    <span class="at">consumption =</span> c,</span>
+<span id="cb7-13"><a href="data-sources.html#cb7-13" tabindex="-1"></a>    <span class="at">real_consumption =</span> ch,</span>
+<span id="cb7-14"><a href="data-sources.html#cb7-14" tabindex="-1"></a>    <span class="at">real_federal_purchases =</span> gfh,</span>
+<span id="cb7-15"><a href="data-sources.html#cb7-15" tabindex="-1"></a>    <span class="at">real_state_purchases =</span> gsh,</span>
+<span id="cb7-16"><a href="data-sources.html#cb7-16" tabindex="-1"></a>    <span class="at">federal_purchases =</span> gf,</span>
+<span id="cb7-17"><a href="data-sources.html#cb7-17" tabindex="-1"></a>    <span class="at">state_purchases =</span> gs,</span>
+<span id="cb7-18"><a href="data-sources.html#cb7-18" tabindex="-1"></a>    unemployment_rate)</span>
+<span id="cb7-19"><a href="data-sources.html#cb7-19" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="data-sources.html#cb7-20" tabindex="-1"></a>projections <span class="ot">&lt;-</span> projections <span class="sc">%&gt;%</span></span>
+<span id="cb7-21"><a href="data-sources.html#cb7-21" tabindex="-1"></a>  <span class="co"># Implicit price deflators</span></span>
+<span id="cb7-22"><a href="data-sources.html#cb7-22" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-23"><a href="data-sources.html#cb7-23" tabindex="-1"></a>    <span class="co"># Why do we calculate these values and not get them from Haver instead?</span></span>
+<span id="cb7-24"><a href="data-sources.html#cb7-24" tabindex="-1"></a>    <span class="at">federal_purchases_deflator =</span>  federal_purchases<span class="sc">/</span>real_federal_purchases, </span>
+<span id="cb7-25"><a href="data-sources.html#cb7-25" tabindex="-1"></a>    <span class="at">state_purchases_deflator =</span> state_purchases<span class="sc">/</span>real_state_purchases,</span>
+<span id="cb7-26"><a href="data-sources.html#cb7-26" tabindex="-1"></a>    <span class="at">consumption_deflator =</span> consumption<span class="sc">/</span>real_consumption</span>
+<span id="cb7-27"><a href="data-sources.html#cb7-27" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-28"><a href="data-sources.html#cb7-28" tabindex="-1"></a>  <span class="co"># Growth rates</span></span>
+<span id="cb7-29"><a href="data-sources.html#cb7-29" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-30"><a href="data-sources.html#cb7-30" tabindex="-1"></a>    <span class="fu">across</span>(</span>
+<span id="cb7-31"><a href="data-sources.html#cb7-31" tabindex="-1"></a>      <span class="at">.cols =</span> <span class="fu">c</span>(</span>
+<span id="cb7-32"><a href="data-sources.html#cb7-32" tabindex="-1"></a>        <span class="st">&quot;gdp&quot;</span>, </span>
+<span id="cb7-33"><a href="data-sources.html#cb7-33" tabindex="-1"></a>        <span class="st">&quot;real_gdp&quot;</span>, </span>
+<span id="cb7-34"><a href="data-sources.html#cb7-34" tabindex="-1"></a>        <span class="st">&quot;real_potential_gdp&quot;</span>, </span>
+<span id="cb7-35"><a href="data-sources.html#cb7-35" tabindex="-1"></a>        <span class="st">&quot;federal_purchases_deflator&quot;</span>, </span>
+<span id="cb7-36"><a href="data-sources.html#cb7-36" tabindex="-1"></a>        <span class="st">&quot;state_purchases_deflator&quot;</span>, </span>
+<span id="cb7-37"><a href="data-sources.html#cb7-37" tabindex="-1"></a>        <span class="st">&quot;consumption_deflator&quot;</span>),</span>
+<span id="cb7-38"><a href="data-sources.html#cb7-38" tabindex="-1"></a>        <span class="co">#&quot;jgse&quot;),</span></span>
+<span id="cb7-39"><a href="data-sources.html#cb7-39" tabindex="-1"></a>      <span class="co"># Calculate quarterly growth rate using qgr() function, equal to x/lag(x), </span></span>
+<span id="cb7-40"><a href="data-sources.html#cb7-40" tabindex="-1"></a>      <span class="co"># then subtract 1.</span></span>
+<span id="cb7-41"><a href="data-sources.html#cb7-41" tabindex="-1"></a>      <span class="at">.fns =</span> <span class="sc">~</span> <span class="fu">qgr</span>(.) <span class="sc">-</span> <span class="dv">1</span>,</span>
+<span id="cb7-42"><a href="data-sources.html#cb7-42" tabindex="-1"></a>      <span class="at">.names =</span> <span class="st">&quot;{.col}_growth&quot;</span></span>
+<span id="cb7-43"><a href="data-sources.html#cb7-43" tabindex="-1"></a>    ) </span>
+<span id="cb7-44"><a href="data-sources.html#cb7-44" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-45"><a href="data-sources.html#cb7-45" tabindex="-1"></a>  <span class="co"># Turn date into time series</span></span>
+<span id="cb7-46"><a href="data-sources.html#cb7-46" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">date =</span> tsibble<span class="sc">::</span><span class="fu">yearquarter</span>(date)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-47"><a href="data-sources.html#cb7-47" tabindex="-1"></a>  <span class="co"># reorder the id column before the date column</span></span>
+<span id="cb7-48"><a href="data-sources.html#cb7-48" tabindex="-1"></a>  <span class="fu">relocate</span>(id, <span class="at">.before =</span> date) <span class="sc">%&gt;%</span></span>
+<span id="cb7-49"><a href="data-sources.html#cb7-49" tabindex="-1"></a>  <span class="co"># convert the projections df into a tsibble data frame type</span></span>
+<span id="cb7-50"><a href="data-sources.html#cb7-50" tabindex="-1"></a>  tsibble<span class="sc">::</span><span class="fu">as_tsibble</span>(<span class="at">key =</span> id, <span class="at">index =</span> date) <span class="sc">%&gt;%</span></span>
+<span id="cb7-51"><a href="data-sources.html#cb7-51" tabindex="-1"></a>  <span class="co"># </span><span class="al">TODO</span><span class="co">: as you can see from the select function, many columns are not kept.</span></span>
+<span id="cb7-52"><a href="data-sources.html#cb7-52" tabindex="-1"></a>  <span class="co"># Perhaps the code can be refactored to exclude the data processing steps </span></span>
+<span id="cb7-53"><a href="data-sources.html#cb7-53" tabindex="-1"></a>  <span class="co"># in the first place.</span></span>
+<span id="cb7-54"><a href="data-sources.html#cb7-54" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb7-55"><a href="data-sources.html#cb7-55" tabindex="-1"></a>    <span class="sc">-</span>real_federal_purchases, <span class="co"># we don&#39;t need anymore, as we created the _deflator_growth var already</span></span>
+<span id="cb7-56"><a href="data-sources.html#cb7-56" tabindex="-1"></a>    <span class="sc">-</span>real_state_purchases, <span class="co"># we don&#39;t need anymore, as we created the _deflator_growth var already</span></span>
+<span id="cb7-57"><a href="data-sources.html#cb7-57" tabindex="-1"></a>    <span class="sc">-</span>federal_purchases, <span class="co"># we don&#39;t need anymore, as we created the _deflator_growth var already</span></span>
+<span id="cb7-58"><a href="data-sources.html#cb7-58" tabindex="-1"></a>    <span class="sc">-</span>state_purchases, <span class="co"># we don&#39;t need anymore, as we created the _deflator_growth var already</span></span>
+<span id="cb7-59"><a href="data-sources.html#cb7-59" tabindex="-1"></a>    <span class="sc">-</span>federal_purchases_deflator, <span class="co"># we don&#39;t need anymore, as we created the _deflator_growth var already</span></span>
+<span id="cb7-60"><a href="data-sources.html#cb7-60" tabindex="-1"></a>    <span class="sc">-</span>state_purchases_deflator, <span class="co"># we don&#39;t need anymore, as we created the _deflator_growth var already</span></span>
+<span id="cb7-61"><a href="data-sources.html#cb7-61" tabindex="-1"></a>    <span class="sc">-</span>consumption_deflator <span class="co"># we don&#39;t need anymore, as we created the _deflator_growth var already</span></span>
+<span id="cb7-62"><a href="data-sources.html#cb7-62" tabindex="-1"></a>  )</span></code></pre></div>
+<p>This section imports data from the <code>national_accounts</code> dataframe, which - as we covered above - is saved in <code>data/national_accounts.rda</code>. The data frame initially comes with 90 variables. In the subsequent lines of code, we only keep 51 of them.</p>
+<p>TODO: I actually think more of the variables can be deleted later.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="data-sources.html#cb8-1" tabindex="-1"></a>national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="data-sources.html#cb8-2" tabindex="-1"></a>  <span class="co"># Let&#39;s rename these 90 variables to something we can understand</span></span>
+<span id="cb8-3"><a href="data-sources.html#cb8-3" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb8-4"><a href="data-sources.html#cb8-4" tabindex="-1"></a>    id,</span>
+<span id="cb8-5"><a href="data-sources.html#cb8-5" tabindex="-1"></a>    date,</span>
+<span id="cb8-6"><a href="data-sources.html#cb8-6" tabindex="-1"></a>    gdp,</span>
+<span id="cb8-7"><a href="data-sources.html#cb8-7" tabindex="-1"></a>    <span class="at">real_gdp =</span> gdph,</span>
+<span id="cb8-8"><a href="data-sources.html#cb8-8" tabindex="-1"></a>    <span class="at">gdp_deflator =</span> jgdp,</span>
+<span id="cb8-9"><a href="data-sources.html#cb8-9" tabindex="-1"></a>    <span class="at">consumption =</span> c,</span>
+<span id="cb8-10"><a href="data-sources.html#cb8-10" tabindex="-1"></a>    <span class="at">real_consumption =</span> ch,</span>
+<span id="cb8-11"><a href="data-sources.html#cb8-11" tabindex="-1"></a>    <span class="at">consumption_deflator =</span> jc,</span>
+<span id="cb8-12"><a href="data-sources.html#cb8-12" tabindex="-1"></a>    <span class="at">federal_purchases_deflator =</span> jgf,</span>
+<span id="cb8-13"><a href="data-sources.html#cb8-13" tabindex="-1"></a>    <span class="at">state_purchases_deflator =</span> jgs,</span>
+<span id="cb8-14"><a href="data-sources.html#cb8-14" tabindex="-1"></a>    <span class="at">consumption_grants_deflator =</span> jgse,</span>
+<span id="cb8-15"><a href="data-sources.html#cb8-15" tabindex="-1"></a>    <span class="at">investment_grants_deflator =</span> jgsi,</span>
+<span id="cb8-16"><a href="data-sources.html#cb8-16" tabindex="-1"></a>    <span class="at">medicare =</span> yptmr,</span>
+<span id="cb8-17"><a href="data-sources.html#cb8-17" tabindex="-1"></a>    <span class="at">medicaid =</span> yptmd,</span>
+<span id="cb8-18"><a href="data-sources.html#cb8-18" tabindex="-1"></a>    <span class="at">ui =</span> yptu,</span>
+<span id="cb8-19"><a href="data-sources.html#cb8-19" tabindex="-1"></a>    <span class="at">social_benefits =</span> gtfp,</span>
+<span id="cb8-20"><a href="data-sources.html#cb8-20" tabindex="-1"></a>    <span class="at">personal_taxes =</span> yptx,</span>
+<span id="cb8-21"><a href="data-sources.html#cb8-21" tabindex="-1"></a>    <span class="at">corporate_taxes =</span> yctlg,</span>
+<span id="cb8-22"><a href="data-sources.html#cb8-22" tabindex="-1"></a>    <span class="at">purchases =</span> g, </span>
+<span id="cb8-23"><a href="data-sources.html#cb8-23" tabindex="-1"></a>    <span class="at">federal_purchases =</span> gf,</span>
+<span id="cb8-24"><a href="data-sources.html#cb8-24" tabindex="-1"></a>    <span class="at">state_purchases =</span> gs,</span>
+<span id="cb8-25"><a href="data-sources.html#cb8-25" tabindex="-1"></a>    <span class="at">real_federal_purchases =</span> gfh,</span>
+<span id="cb8-26"><a href="data-sources.html#cb8-26" tabindex="-1"></a>    <span class="at">real_state_purchases =</span> gsh,</span>
+<span id="cb8-27"><a href="data-sources.html#cb8-27" tabindex="-1"></a>    <span class="at">federal_personal_taxes =</span>  gfrpt,</span>
+<span id="cb8-28"><a href="data-sources.html#cb8-28" tabindex="-1"></a>    <span class="at">federal_production_taxes =</span> gfrpri,</span>
+<span id="cb8-29"><a href="data-sources.html#cb8-29" tabindex="-1"></a>    <span class="at">federal_corporate_taxes =</span> gfrcp,</span>
+<span id="cb8-30"><a href="data-sources.html#cb8-30" tabindex="-1"></a>    <span class="at">federal_payroll_taxes =</span> gfrs,</span>
+<span id="cb8-31"><a href="data-sources.html#cb8-31" tabindex="-1"></a>    <span class="at">federal_social_benefits =</span> gftfp,</span>
+<span id="cb8-32"><a href="data-sources.html#cb8-32" tabindex="-1"></a>    <span class="at">gross_consumption_grants =</span> gfeg,</span>
+<span id="cb8-33"><a href="data-sources.html#cb8-33" tabindex="-1"></a>    <span class="at">state_personal_taxes =</span>  gsrpt,</span>
+<span id="cb8-34"><a href="data-sources.html#cb8-34" tabindex="-1"></a>    <span class="at">state_production_taxes =</span> gsrpri,</span>
+<span id="cb8-35"><a href="data-sources.html#cb8-35" tabindex="-1"></a>    <span class="at">state_corporate_taxes =</span> gsrcp,</span>
+<span id="cb8-36"><a href="data-sources.html#cb8-36" tabindex="-1"></a>    <span class="at">state_payroll_taxes =</span> gsrs,</span>
+<span id="cb8-37"><a href="data-sources.html#cb8-37" tabindex="-1"></a>    <span class="at">state_social_benefits =</span> gstfp,</span>
+<span id="cb8-38"><a href="data-sources.html#cb8-38" tabindex="-1"></a>    <span class="at">health_grants =</span> gfeghhx,</span>
+<span id="cb8-39"><a href="data-sources.html#cb8-39" tabindex="-1"></a>    <span class="at">medicaid_grants =</span> gfeghdx,</span>
+<span id="cb8-40"><a href="data-sources.html#cb8-40" tabindex="-1"></a>    <span class="at">investment_grants =</span> gfeigx,</span>
+<span id="cb8-41"><a href="data-sources.html#cb8-41" tabindex="-1"></a>    <span class="at">federal_subsidies =</span> gfsub,</span>
+<span id="cb8-42"><a href="data-sources.html#cb8-42" tabindex="-1"></a>    <span class="at">state_subsidies =</span> gssub,</span>
+<span id="cb8-43"><a href="data-sources.html#cb8-43" tabindex="-1"></a>    <span class="at">rebate_checks =</span> gftfpe,</span>
+<span id="cb8-44"><a href="data-sources.html#cb8-44" tabindex="-1"></a>    <span class="at">nonprofit_provider_relief_fund =</span> gftfpv, </span>
+<span id="cb8-45"><a href="data-sources.html#cb8-45" tabindex="-1"></a>    <span class="at">ui_expansion =</span> gftfpu,</span>
+<span id="cb8-46"><a href="data-sources.html#cb8-46" tabindex="-1"></a>    <span class="at">wages_lost_assistance =</span> <span class="fu">coalesce</span>(yptol, <span class="dv">0</span>), <span class="co"># idk what this does</span></span>
+<span id="cb8-47"><a href="data-sources.html#cb8-47" tabindex="-1"></a>    <span class="at">real_potential_gdp =</span> gdppothq,</span>
+<span id="cb8-48"><a href="data-sources.html#cb8-48" tabindex="-1"></a>    <span class="at">recession =</span> recessq,</span>
+<span id="cb8-49"><a href="data-sources.html#cb8-49" tabindex="-1"></a>    <span class="at">gdp_deflator_growth =</span> jgdp_growth,</span>
+<span id="cb8-50"><a href="data-sources.html#cb8-50" tabindex="-1"></a>    <span class="at">consumption_deflator_growth =</span> jc_growth,</span>
+<span id="cb8-51"><a href="data-sources.html#cb8-51" tabindex="-1"></a>    <span class="at">federal_purchases_deflator_growth =</span> jgf_growth,</span>
+<span id="cb8-52"><a href="data-sources.html#cb8-52" tabindex="-1"></a>    <span class="at">state_purchases_deflator_growth =</span> jgs_growth,</span>
+<span id="cb8-53"><a href="data-sources.html#cb8-53" tabindex="-1"></a>    <span class="at">consumption_grants_deflator_growth =</span> jgse_growth,</span>
+<span id="cb8-54"><a href="data-sources.html#cb8-54" tabindex="-1"></a>    <span class="at">investment_grants_deflator_growth =</span> jgsi_growth</span>
+<span id="cb8-55"><a href="data-sources.html#cb8-55" tabindex="-1"></a>  )</span></code></pre></div>
+<p>After importing the variables we need, we merge the projections data frame and the national_accounts data frames using the coalesce_join user defined function. With <code>national_accounts</code> assigned to the <code>x</code> argument and <code>projections</code> assigned to the <code>y</code> argument, <code>national_accounts</code> takes precedence over <code>projections</code> if there are any conflicting data entries.</p>
+<p>The resultant data frame, <code>usna1</code>, is an assortment of XXX variables.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="data-sources.html#cb9-1" tabindex="-1"></a>usna1 <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(<span class="at">x =</span> national_accounts,</span>
+<span id="cb9-2"><a href="data-sources.html#cb9-2" tabindex="-1"></a>                       <span class="at">y =</span> projections,</span>
+<span id="cb9-3"><a href="data-sources.html#cb9-3" tabindex="-1"></a>                       <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="data-sources.html#cb9-4" tabindex="-1"></a>  <span class="fu">as_tsibble</span>(<span class="at">key =</span> id, <span class="at">index =</span> date)</span></code></pre></div>
 <p>—- end of code walk through, for now!</p>
 <p>We’ll probably have one sub section for each source, like:</p>
 <div id="cbo" class="section level3 hasAnchor" number="2.2.1">

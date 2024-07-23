@@ -20,9 +20,20 @@ library(DT)
 
 ```
 
-To serve this book, run the following code in the R console:
-```
-bookdown::render_book("index.Rmd")
+To serve this book, run the following code in the R console: (Sorry, I know the working directory stuff is trash. But there are too many extraneous Rmd files clogging the root directory, and until I delete them all, this is the best solution I have)
+```{r}
+# Save the current working directory. Must be the root folder of the project.
+old_dir <- getwd()
+
+# Change to the book directory
+setwd("docs/technical_methodology")
+
+# Render the book
+bookdown::render_book("index.Rmd", output_dir = "_book")
+
+# Revert to the original working directory
+setwd(old_dir)
+
 ```
 
 # Welcome!
