@@ -75,6 +75,55 @@ file_copy(
   overwrite = TRUE
   )
 
+# ---- section-B-test-data-import ----
+# This section is meant to import the required data series line-by-line. Eventually,
+# all data imports will be done here.
+
+## Read in data sources to be combined
+## CBO projections
+fim::projections # this is the literal df
+load("data/projections.rda") # this loads in a df named projections
+## BEA national accounts
+fim::national_accounts # this is the literal df
+load("data/national_accounts.rda") # this loads in a df named national_accounts
+## Our FIM forecasts
+forecast <- # Read in sheet with our forecasted values from the data folder
+  readxl::read_xlsx('data/forecast.xlsx',
+                    sheet = 'forecast') %>% 
+  select(-name) %>% #Remove the 'name' column from the data.
+  pivot_longer(-variable,
+               names_to = 'date') %>%  #reshape the data 
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  mutate(date = yearquarter(date)) %>% #convert date to year-quarter format 
+  tsibble::as_tsibble(index = date)
+## Placeholder NAs
+# Create a sequence of quarterly dates
+dates <- yearquarter(seq(ymd("2022-10-01"), ymd("2034-07-01"), by = "quarter"))
+# Create the data frame
+placeholder_nas <- tsibble(
+  date = dates,
+  placeholder = NA,
+  index = date
+)
+
+## Federal purchases
+x <- national_accounts %>%
+  select(date, gf) %>%
+  rename(federal_purchases = gf)
+y <- forecast %>%
+  select(date, federal_purchases)
+z <- placeholder_nas %>%
+  rename(federal_purchases = placeholder)
+# Join national accounts (past data) with our forecast
+federal_purchases_test <- coalesce_join(x, y, by = 'date')
+# Make all future unforecasted periods NAs
+federal_purchases_test <- coalesce_join(federal_purchases_test, z, by = "date")
+# Turn the NAs into zeroes
+federal_purchases_test[is.na(federal_purchases_test)] <- 0
+
+
+
 # ---- section-B.0-read-raw-rds-data ----
 
 # Load in national accounts. This file is rewritten each time data-raw/haver-pull.R
@@ -441,7 +490,7 @@ source("src/contributions.R")
 # use functions from the calculate_contributions.R script.
 # Federal purchases contribution
 federal_purchases_contribution <- contribution(
-  x = projections$federal_purchases,
+  x = federal_purchases_test$federal_purchases, # Using the new test version
   mpc_matrix = NULL,
   dg = federal_purchases_deflator_growth,
   rpgg = real_potential_gdp_growth,
