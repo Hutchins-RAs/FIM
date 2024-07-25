@@ -11,21 +11,13 @@
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
 
 # Load packages
-librarian::shelf(
-  tidyverse, 
-  tsibble, 
-  lubridate, 
-  glue, 
-  TimTeaFan/dplyover, 
-  zoo, 
-  TTR, 
-  fs, 
-  gt, 
-  openxlsx, 
-  snakecase, 
-  rlang, 
-  BrookingsInstitution/ggbrookings
-  )
+packages <- c(
+  "tidyverse", "tsibble", "lubridate", "glue", 
+  "TimTeaFan/dplyover", "zoo", "TTR", "fs", "gt", 
+  "openxlsx", "snakecase", "rlang", "BrookingsInstitution/ggbrookings"
+)
+librarian::shelf(packages)
+
 # Load all functions in package (?!?)
 devtools::load_all() 
 
@@ -79,64 +71,78 @@ file_copy(
 # This section is meant to import the required data series line-by-line. Eventually,
 # all data imports will be done here.
 
+# CBO projections
+import_projections <- function() { # to load to memory, run load("data/projections.rda")
+  x <- fim::projections 
+  return(x)
+}
+
+# BEA National Accounts
+import_national_accounts <- function() { # to load to memory, run load("data/national_accounts.rda")
+  x <- fim::national_accounts
+  return(x)
+}
+
+# Forecast spreadsheet
+import_forecast <- function() {
+  readxl::read_xlsx('data/forecast.xlsx', sheet = 'forecast') %>%
+    select(-name) %>%
+    pivot_longer(-variable, names_to = 'date') %>%
+    pivot_wider(names_from = 'variable', values_from = 'value') %>%
+    mutate(date = yearquarter(date)) %>%
+    as_tsibble(index = date)
+}
+
+# Historical overrides
+import_historical_overrides <- function() {
+  readxl::read_xlsx('data/forecast.xlsx', sheet = 'historical overrides') %>%
+    select(-name) %>%
+    pivot_longer(-variable, names_to = 'date') %>%
+    pivot_wider(names_from = 'variable', values_from = 'value') %>%
+    mutate(date = yearquarter(date))
+}
+
+## Create a data frame of appropriate length populated by NAs
+create_placeholder_nas <- function(col_name = "placeholder") {
+  dates <- yearquarter(seq(ymd("2022-10-01"), ymd("2034-07-01"), by = "quarter"))
+  tsibble(date = dates, !!sym(col_name) := NA, index = date)
+}
+
 ## Read in data sources to be combined
-## CBO projections
-fim::projections # this is the literal df
-load("data/projections.rda") # this loads in a df named projections
-## BEA national accounts
-fim::national_accounts # this is the literal df
-load("data/national_accounts.rda") # this loads in a df named national_accounts
-## Our FIM forecasts
-forecast <- # Read in sheet with our forecasted values from the data folder
-  readxl::read_xlsx('data/forecast.xlsx',
-                    sheet = 'forecast') %>% 
-  select(-name) %>% #Remove the 'name' column from the data.
-  pivot_longer(-variable,
-               names_to = 'date') %>%  #reshape the data 
-  pivot_wider(names_from = 'variable',
-              values_from = 'value') %>% 
-  mutate(date = yearquarter(date)) %>% #convert date to year-quarter format 
-  tsibble::as_tsibble(index = date)
-## Historical overrides
-historical_overrides <- readxl::read_xlsx('data/forecast.xlsx',
-                                          sheet = 'historical overrides') %>% # Read in historical_overrides
-  select(-name) %>% # Remove longer name since we don't need it
-  pivot_longer(-variable,
-               names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
-  pivot_wider(names_from = 'variable',
-              values_from = 'value') %>% 
-  mutate(date = yearquarter(date))
-## Placeholder NAs
-# Create a sequence of quarterly dates
-dates <- yearquarter(seq(ymd("2022-10-01"), ymd("2034-07-01"), by = "quarter"))
-# Create the data frame
-placeholder_nas <- tsibble(
-  date = dates,
-  placeholder = NA,
-  index = date
-)
+projections <- import_projections()
+national_accounts <- import_national_accounts()
+forecast <- import_forecast()
+historical_overrides <- import_historical_overrides()
+
 ## Current quarter
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
 
-## Federal purchases
-x <- national_accounts %>%
-  select(date, gf) %>%
-  rename(federal_purchases = gf)
-y <- forecast %>%
-  select(date, federal_purchases)
-z <- placeholder_nas %>%
-  rename(federal_purchases = placeholder)
+# Federal purchases
+create_federal_purchases_test <- function(national_accounts, forecast, placeholder_nas) {
+  # Use the BEA data
+  national_accounts %>% 
+    # Extract the `gf` column, which represents federal purchases
+    select(date, gf) %>% 
+    # Rename the column for merging
+    rename(federal_purchases = gf) %>% 
+    # Merge with our forecasts of federal purchases, with the national accounts
+    # taking precedence over the forecast in the case of any conflicting observations
+    coalesce_join(., forecast %>% select(date, federal_purchases), by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+}
 
-# Join national accounts (past data) with our forecast
-federal_purchases_test <- coalesce_join(x, y, by = 'date')
-# Make all future unforecasted periods NAs
-federal_purchases_test <- coalesce_join(federal_purchases_test, z, by = "date")
-# Turn the NAs into zeroes
-federal_purchases_test[is.na(federal_purchases_test)] <- 0
+federal_purchases_test <- create_federal_purchases_test(
+  national_accounts, 
+  forecast, 
+  create_placeholder_nas("federal_purchases")
+  )
+
 
 ## Consumption grants
-z <- placeholder_nas %>%
-  rename(consumption_grants = placeholder)
+z <- create_placeholder_nas("consumption_grants")
 
 consumption_grants_test <- national_accounts %>%
   mutate(
