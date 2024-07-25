@@ -97,6 +97,15 @@ forecast <- # Read in sheet with our forecasted values from the data folder
               values_from = 'value') %>% 
   mutate(date = yearquarter(date)) %>% #convert date to year-quarter format 
   tsibble::as_tsibble(index = date)
+## Historical overrides
+historical_overrides <- readxl::read_xlsx('data/forecast.xlsx',
+                                          sheet = 'historical overrides') %>% # Read in historical_overrides
+  select(-name) %>% # Remove longer name since we don't need it
+  pivot_longer(-variable,
+               names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
+  pivot_wider(names_from = 'variable',
+              values_from = 'value') %>% 
+  mutate(date = yearquarter(date))
 ## Placeholder NAs
 # Create a sequence of quarterly dates
 dates <- yearquarter(seq(ymd("2022-10-01"), ymd("2034-07-01"), by = "quarter"))
@@ -106,6 +115,8 @@ placeholder_nas <- tsibble(
   placeholder = NA,
   index = date
 )
+## Current quarter
+current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
 
 ## Federal purchases
 x <- national_accounts %>%
@@ -115,6 +126,7 @@ y <- forecast %>%
   select(date, federal_purchases)
 z <- placeholder_nas %>%
   rename(federal_purchases = placeholder)
+
 # Join national accounts (past data) with our forecast
 federal_purchases_test <- coalesce_join(x, y, by = 'date')
 # Make all future unforecasted periods NAs
@@ -122,6 +134,24 @@ federal_purchases_test <- coalesce_join(federal_purchases_test, z, by = "date")
 # Turn the NAs into zeroes
 federal_purchases_test[is.na(federal_purchases_test)] <- 0
 
+## Consumption grants
+z <- placeholder_nas %>%
+  rename(consumption_grants = placeholder)
+
+consumption_grants_test <- national_accounts %>%
+  mutate(
+    consumption_grants = gfeg - gfeghdx # gross_consumption_grants - medicaid_grants
+      ) %>%
+  select(date, consumption_grants) %>%
+  #Overriding historical consumption grants
+  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+               consumption_grants = historical_overrides$consumption_grants_override)
+# Add forecast to data series
+consumption_grants_test <- coalesce_join(consumption_grants_test, forecast, by = "date")
+# Make all future unforecasted periods NAs
+consumption_grants_test <- coalesce_join(consumption_grants_test, z, by = "date")
+# Turn the NAs into zeroes
+consumption_grants_test[is.na(consumption_grants_test)] <- 0
 
 
 # ---- section-B.0-read-raw-rds-data ----
@@ -498,7 +528,7 @@ federal_purchases_contribution <- contribution(
 
 # Consumption grants contribution
 consumption_grants_contribution <- contribution(
-  x = projections$consumption_grants,
+  x = consumption_grants_test$consumption_grants,
   mpc_matrix = NULL,
   dg = consumption_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
