@@ -118,15 +118,19 @@ historical_overrides <- import_historical_overrides()
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
 
 # Federal purchases
-create_federal_purchases_test <- function(national_accounts, forecast, placeholder_nas) {
+create_federal_purchases <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+    ) {
   # Use the BEA data
   national_accounts %>% 
     # Extract the `gf` column, which represents federal purchases
     select(date, gf) %>% 
     # Rename the column for merging
     rename(federal_purchases = gf) %>% 
-    # Merge with our forecasts of federal purchases, with the national accounts
-    # taking precedence over the forecast in the case of any conflicting observations
+    # Merge with our forecast, with the historic data taking precedence in the case
+    # of any conflicting observations
     coalesce_join(., forecast %>% select(date, federal_purchases), by = 'date') %>% 
     # Merge with a data frame of NAs extending to 2034 Q3
     coalesce_join(placeholder_nas, by = 'date') %>%
@@ -134,30 +138,46 @@ create_federal_purchases_test <- function(national_accounts, forecast, placehold
     mutate(across(everything(), ~ replace_na(., 0)))
 }
 
-federal_purchases_test <- create_federal_purchases_test(
+## Consumption grants
+create_consumption_grants <- function(
+    national_accounts, 
+    forecast, 
+    historical_overrides, 
+    placeholder_nas
+    ) {
+  # Use the BEA data
+  national_accounts %>% 
+    # Subtract medicaid grants (gfeghdx) from gross consumption grants (gfeg)
+    mutate(consumption_grants = gfeg - gfeghdx) %>%
+    # Keep this new consumption_grants column
+    select(date, consumption_grants) %>%
+    #Overriding historical consumption grants
+    mutate_where(
+      date >= yearquarter('2020 Q2') & date <= current_quarter,
+      consumption_grants = historical_overrides$consumption_grants_override
+      ) %>%
+    # Merge with our forecast, with the historic data taking precedence in the case
+    # of any conflicting observations
+    coalesce_join(., forecast, by = "date") %>%
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+}
+
+## Create the test data columns
+federal_purchases_test <- create_federal_purchases(
   national_accounts, 
   forecast, 
   create_placeholder_nas("federal_purchases")
   )
 
-
-## Consumption grants
-z <- create_placeholder_nas("consumption_grants")
-
-consumption_grants_test <- national_accounts %>%
-  mutate(
-    consumption_grants = gfeg - gfeghdx # gross_consumption_grants - medicaid_grants
-      ) %>%
-  select(date, consumption_grants) %>%
-  #Overriding historical consumption grants
-  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               consumption_grants = historical_overrides$consumption_grants_override)
-# Add forecast to data series
-consumption_grants_test <- coalesce_join(consumption_grants_test, forecast, by = "date")
-# Make all future unforecasted periods NAs
-consumption_grants_test <- coalesce_join(consumption_grants_test, z, by = "date")
-# Turn the NAs into zeroes
-consumption_grants_test[is.na(consumption_grants_test)] <- 0
+consumption_grants_test <- create_consumption_grants(
+  national_accounts, 
+  forecast, 
+  historic_overrides,
+  create_placeholder_nas("federal_purchases")
+)
 
 
 # ---- section-B.0-read-raw-rds-data ----
