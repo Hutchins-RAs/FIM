@@ -172,12 +172,12 @@ federal_purchases_test <- create_federal_purchases(
   create_placeholder_nas("federal_purchases")
   )
 
-consumption_grants_test <- create_consumption_grants(
-  national_accounts, 
-  forecast, 
-  historic_overrides,
-  create_placeholder_nas("federal_purchases")
-)
+# consumption_grants_test <- create_consumption_grants(
+#   national_accounts, 
+#   forecast, 
+#   historic_overrides,
+#   create_placeholder_nas("federal_purchases")
+# )
 
 
 # ---- section-B.0-read-raw-rds-data ----
@@ -554,7 +554,7 @@ federal_purchases_contribution <- contribution(
 
 # Consumption grants contribution
 consumption_grants_contribution <- contribution(
-  x = consumption_grants_test$consumption_grants,
+  x = projections$consumption_grants,
   mpc_matrix = NULL,
   dg = consumption_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
