@@ -98,6 +98,12 @@ consumption_grants_test <- create_consumption_grants(
   create_placeholder_nas()
 )
 
+investment_grants_test <- create_investment_grants(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
 # investment_grants_test <- ...
 # ... code here
 
@@ -475,7 +481,7 @@ federal_purchases_contribution <- contribution(
 
 # Consumption grants contribution
 consumption_grants_contribution <- contribution(
-  x = consumption_grants_test$data_series,
+  x = consumption_grants_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = consumption_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -483,7 +489,7 @@ consumption_grants_contribution <- contribution(
 
 # Investment grants contribution
 investment_grants_contribution <- contribution(
-  x = projections$investment_grants,
+  x = investment_grants_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = investment_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,

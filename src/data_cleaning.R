@@ -70,7 +70,6 @@ create_federal_purchases <- function(
 #' @examples
 #' # Assuming `national_accounts`, `forecast`, `historical_overrides`, and `placeholder_nas` are pre-defined tibbles:
 #' consumption_grants <- create_consumption_grants(national_accounts, forecast, historical_overrides, placeholder_nas)
-
 create_consumption_grants <- function(
     national_accounts, 
     forecast, 
@@ -108,5 +107,55 @@ create_consumption_grants <- function(
   return(result)
 }
 
-## Create investment grants
-# ... code here
+
+#' Create Investment Grants Data Series
+#'
+#' This function combines investment grants data from national accounts, forecast sources, 
+#' and historical overrides into a single data series, filling any gaps with placeholder zeroes extending to 2034 Q3.
+#'
+#' @param national_accounts A tibble containing national accounts data with a `date` column and a `gfeigx` column for investment grants.
+#' @param forecast A tibble containing forecast data with a `date` column and an `investment_grants` column.
+#' @param historical_overrides A tibble containing historical override data with a `date` column and an `investment_grants_override` column.
+#' @param placeholder_nas A tibble of appropriate length populated by NAs, extending the date range to 2034 Q3.
+#'
+#' @return A tibble containing the combined investment grants data series, with NAs and missing entries replaced by 0s.
+#' @export
+#'
+#' @examples
+#' # Assuming `national_accounts`, `forecast`, `historical_overrides`, and `placeholder_nas` are pre-defined tibbles:
+#' investment_grants <- create_investment_grants(national_accounts, forecast, historical_overrides, placeholder_nas)
+create_investment_grants <- function(
+    national_accounts, 
+    forecast, 
+    historical_overrides, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, investment_grants) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = investment_grants)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # `gf` is the Haver code for federal purchases
+    select(date, gfeigx) %>%  
+    # Rename data to generic `data_series` for easier merging
+    rename(data_series = gfeigx) %>%
+    # Override historic entries of national_accounts using historical_overrides data
+    mutate_where(
+      date >= yearquarter('2020 Q2') & date <= current_quarter,
+      data_series = historical_overrides$investment_grants_override
+    )
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
