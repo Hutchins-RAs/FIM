@@ -68,45 +68,9 @@ file_copy(
   )
 
 # ---- section-B-test-data-import ----
-# This section is meant to import the required data series line-by-line. Eventually,
-# all data imports will be done here.
-
-# CBO projections
-import_projections <- function() { # to load to memory, run load("data/projections.rda")
-  x <- fim::projections 
-  return(x)
-}
-
-# BEA National Accounts
-import_national_accounts <- function() { # to load to memory, run load("data/national_accounts.rda")
-  x <- fim::national_accounts
-  return(x)
-}
-
-# Forecast spreadsheet
-import_forecast <- function() {
-  readxl::read_xlsx('data/forecast.xlsx', sheet = 'forecast') %>%
-    select(-name) %>%
-    pivot_longer(-variable, names_to = 'date') %>%
-    pivot_wider(names_from = 'variable', values_from = 'value') %>%
-    mutate(date = yearquarter(date)) %>%
-    as_tsibble(index = date)
-}
-
-# Historical overrides
-import_historical_overrides <- function() {
-  readxl::read_xlsx('data/forecast.xlsx', sheet = 'historical overrides') %>%
-    select(-name) %>%
-    pivot_longer(-variable, names_to = 'date') %>%
-    pivot_wider(names_from = 'variable', values_from = 'value') %>%
-    mutate(date = yearquarter(date))
-}
-
-## Create a data frame of appropriate length populated by NAs
-create_placeholder_nas <- function(col_name = "placeholder") {
-  dates <- yearquarter(seq(ymd("2022-10-01"), ymd("2034-07-01"), by = "quarter"))
-  tsibble(date = dates, !!sym(col_name) := NA, index = date)
-}
+# Source the module in the src directory containing the functions which import
+# data
+source("src/data_import.R")
 
 ## Read in data sources to be combined
 projections <- import_projections()
@@ -167,6 +131,9 @@ create_consumption_grants <- function(
     mutate(across(everything(), ~ replace_na(., 0)))
 }
 
+## Create investment grants
+# ... code here
+
 ## Create the test data columns
 federal_purchases_test <- create_federal_purchases(
   national_accounts, 
@@ -181,6 +148,8 @@ consumption_grants_test <- create_consumption_grants(
   create_placeholder_nas("consumption_grants")
 )
 
+# investment_grants_test <- ...
+# ... code here
 
 # ---- section-B.0-read-raw-rds-data ----
 
