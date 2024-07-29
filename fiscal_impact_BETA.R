@@ -114,9 +114,11 @@ national_accounts <- import_national_accounts()
 forecast <- import_forecast()
 historical_overrides <- import_historical_overrides()
 
-## Current quarter
+## Calculate what the current quarter is using the date from historical overrides
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
 
+###### In this section, we combine the various data sources into input series 
+###### that are used in the FIM.
 # Federal purchases
 create_federal_purchases <- function(
     national_accounts, 
@@ -172,12 +174,12 @@ federal_purchases_test <- create_federal_purchases(
   create_placeholder_nas("federal_purchases")
   )
 
-# consumption_grants_test <- create_consumption_grants(
-#   national_accounts, 
-#   forecast, 
-#   historic_overrides,
-#   create_placeholder_nas("federal_purchases")
-# )
+consumption_grants_test <- create_consumption_grants(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas("consumption_grants")
+)
 
 
 # ---- section-B.0-read-raw-rds-data ----
@@ -554,7 +556,7 @@ federal_purchases_contribution <- contribution(
 
 # Consumption grants contribution
 consumption_grants_contribution <- contribution(
-  x = projections$consumption_grants,
+  x = consumption_grants_test$consumption_grants,
   mpc_matrix = NULL,
   dg = consumption_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
