@@ -41,7 +41,7 @@ import_historical_overrides <- function() {
 }
 
 ## Create a data frame of appropriate length populated by NAs
-create_placeholder_nas <- function(col_name = "placeholder") {
+create_placeholder_nas <- function(col_name = "data_series") {
   dates <- yearquarter(seq(ymd("2022-10-01"), ymd("2034-07-01"), by = "quarter"))
   tsibble(date = dates, !!sym(col_name) := NA, index = date)
 }

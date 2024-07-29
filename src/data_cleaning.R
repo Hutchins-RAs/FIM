@@ -16,10 +16,16 @@ create_federal_purchases <- function(
     # Extract the `gf` column, which represents federal purchases
     select(date, gf) %>% 
     # Rename the column for merging
-    rename(federal_purchases = gf) %>% 
+    rename(data_series = gf) %>% 
     # Merge with our forecast, with the historic data taking precedence in the case
     # of any conflicting observations
-    coalesce_join(., forecast %>% select(date, federal_purchases), by = 'date') %>% 
+    # TODO: This code is too confusing. Shouldn't manupulate forecast like this in the
+    # arguments. Handle it separately.
+    coalesce_join(., 
+                  forecast %>% 
+                    select(date, federal_purchases) %>% 
+                    rename(data_series = federal_purchases), 
+                  by = 'date') %>% 
     # Merge with a data frame of NAs extending to 2034 Q3
     coalesce_join(placeholder_nas, by = 'date') %>%
     # Repopulate the NAs to be 0s
@@ -36,17 +42,22 @@ create_consumption_grants <- function(
   # Use the BEA data
   national_accounts %>% 
     # Subtract medicaid grants (gfeghdx) from gross consumption grants (gfeg)
-    mutate(consumption_grants = gfeg - gfeghdx) %>%
-    # Keep this new consumption_grants column
-    select(date, consumption_grants) %>%
+    # and assign to the name "data_series"
+    mutate(data_series = gfeg - gfeghdx) %>%
+    # Keep the date and the new data_series column
+    select(date, data_series) %>%
     #Overriding historical consumption grants
     mutate_where(
       date >= yearquarter('2020 Q2') & date <= current_quarter,
-      consumption_grants = historical_overrides$consumption_grants_override
+      data_series = historical_overrides$consumption_grants_override
     ) %>%
     # Merge with our forecast, with the historic data taking precedence in the case
     # of any conflicting observations
-    coalesce_join(., forecast, by = "date") %>%
+    coalesce_join(., 
+                  forecast %>% 
+                    select(date, consumption_grants) %>% 
+                    rename(data_series = consumption_grants),
+                  by = "date") %>%
     # Merge with a data frame of NAs extending to 2034 Q3
     coalesce_join(placeholder_nas, by = 'date') %>%
     # Repopulate the NAs to be 0s

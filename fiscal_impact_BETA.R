@@ -88,14 +88,14 @@ source("src/data_cleaning.R")
 federal_purchases_test <- create_federal_purchases(
   national_accounts, 
   forecast, 
-  create_placeholder_nas("federal_purchases")
+  create_placeholder_nas()
   )
 
 consumption_grants_test <- create_consumption_grants(
   national_accounts,
   forecast,
   historical_overrides,
-  create_placeholder_nas("consumption_grants")
+  create_placeholder_nas()
 )
 
 # investment_grants_test <- ...
@@ -467,7 +467,7 @@ source("src/contributions.R")
 # use functions from the calculate_contributions.R script.
 # Federal purchases contribution
 federal_purchases_contribution <- contribution(
-  x = federal_purchases_test$federal_purchases, # Using the new test version
+  x = federal_purchases_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = federal_purchases_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -475,7 +475,7 @@ federal_purchases_contribution <- contribution(
 
 # Consumption grants contribution
 consumption_grants_contribution <- contribution(
-  x = consumption_grants_test$consumption_grants,
+  x = consumption_grants_test$data_series,
   mpc_matrix = NULL,
   dg = consumption_grants_deflator_growth,
   rpgg = real_potential_gdp_growth,
