@@ -104,6 +104,45 @@ investment_grants_test <- create_investment_grants(
   historical_overrides,
   create_placeholder_nas()
 )
+
+state_purchases_test <- create_state_purchases(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+federal_non_corporate_taxes_test <- create_federal_non_corporate_taxes(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+state_non_corporate_taxes_test <- create_state_non_corporate_taxes(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+federal_corporate_taxes_test <- create_federal_corporate_taxes(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
+
+supply_side_ira_test <- create_supply_side_ira(
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
+
+state_corporate_taxes_test <- create_state_corporate_taxes(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
+
 # investment_grants_test <- ...
 # ... code here
 
@@ -497,7 +536,7 @@ investment_grants_contribution <- contribution(
 
 # State purchases contribution
 state_purchases_contribution <- contribution(
-  x = projections$state_purchases,
+  x = state_purchases_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = state_purchases_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -505,7 +544,7 @@ state_purchases_contribution <- contribution(
 
 # Federal non corporate taxes
 federal_non_corporate_taxes_contribution <- contribution(
-  x = projections$federal_non_corporate_taxes, 
+  x = federal_non_corporate_taxes_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -513,7 +552,7 @@ federal_non_corporate_taxes_contribution <- contribution(
 
 # State non corporate taxes
 state_non_corporate_taxes_contribution <- contribution(
-  x = projections$state_non_corporate_taxes, 
+  x = state_non_corporate_taxes_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/state_non_corporate_taxes.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -525,7 +564,7 @@ state_non_corporate_taxes_contribution <- contribution(
 # later added to supply side IRA in the FIM script and redefined as 
 # "federal_corporate_taxes_contribution".
 federal_corporate_taxes_contribution <- contribution(
-  x = projections$federal_corporate_taxes, 
+  x = federal_corporate_taxes_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_corporate_taxes.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -533,7 +572,7 @@ federal_corporate_taxes_contribution <- contribution(
 
 # Supply side IRA contribution
 supply_side_ira_contribution <- contribution(
-  x = projections$supply_side_ira,
+  x = supply_side_ira_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = consumption_deflator_growth,
   rpgg = real_potential_gdp_growth,
@@ -541,7 +580,7 @@ supply_side_ira_contribution <- contribution(
 
 # State corporate taxes
 state_corporate_taxes_contribution <- contribution(
-  x = projections$state_corporate_taxes, 
+  x = state_corporate_taxes_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/state_corporate_taxes.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 

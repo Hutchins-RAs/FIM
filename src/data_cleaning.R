@@ -159,3 +159,234 @@ create_investment_grants <- function(
   
   return(result)
 }
+
+
+
+#' Create State Purchases Data Series
+#'
+#' This function combines state purchases data from national accounts and forecast sources 
+#' into a single data series, filling any gaps with placeholder zeroes extending to 2034 Q3.
+#'
+#' @param national_accounts A tibble containing national accounts data with a `date` column and a `gs` column for state purchases.
+#' @param forecast A tibble containing forecast data with a `date` column and a `state_purchases` column.
+#' @param placeholder_nas A tibble of appropriate length populated by NAs, extending the date range to 2034 Q3.
+#'
+#' @return A tibble containing the combined state purchases data series, with NAs and missing entries replaced by 0s.
+#' @export
+#'
+#' @examples
+#' # Assuming `national_accounts`, `forecast`, and `placeholder_nas` are pre-defined tibbles:
+#' state_purchases <- create_state_purchases(national_accounts, forecast, placeholder_nas)
+create_state_purchases <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, state_purchases) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = state_purchases)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # `gf` is the Haver code for federal purchases
+    select(date, gs) %>%  
+    # Rename data to generic `data_series` for easier merging
+    rename(data_series = gs)
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+
+create_federal_non_corporate_taxes <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_non_corporate_taxes) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_non_corporate_taxes)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Calculate federal non corporate taxes as a sum of 3 series
+    mutate(data_series = 
+             gfrpt + # Haver code for federal personal taxes
+             gfrpri + # Haver code for federal production taxes
+             gfrs # Haver code for federal payroll taxes
+           ) %>%
+    # Keep the date and the new data_series column
+    select(date, data_series)
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_state_non_corporate_taxes <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, state_non_corporate_taxes) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = state_non_corporate_taxes)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Calculate federal non corporate taxes as a sum of 3 series
+    mutate(data_series = 
+             gsrpt + # Haver code for state personal taxes
+             gsrpri + # Haver code for state production taxes
+             gsrs # Haver code for state payroll taxes
+    ) %>%
+    # Keep the date and the new data_series column
+    select(date, data_series)
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_federal_corporate_taxes <- function(
+    national_accounts, 
+    forecast, 
+    historical_overrides, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_corporate_taxes) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_corporate_taxes)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # `gf` is the Haver code for federal purchases
+    select(date, gfrcp) %>%  
+    # Rename data to generic `data_series` for easier merging
+    rename(data_series = gfrcp) %>%
+    # Corporate taxes come one quarter later than GDP. We overwrite JUST the current
+    # quarter using the historical overrides sheet
+    mutate_where(
+      date == current_quarter,
+      data_series = tail(historical_overrides$federal_corporate_taxes_override, n = 1)
+      )
+
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_supply_side_ira <- function(
+    forecast, 
+    historical_overrides, 
+    placeholder_nas
+) {
+  # The only input into supply_side_ira is our historical overrides and our 
+  # forecast. This data does not exist anywhere in the national accounts.
+  
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, supply_side_ira) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = supply_side_ira)
+  
+  # Select column of interest from the historical overrides
+  historical_overrides <- historical_overrides %>%
+    select(date, supply_side_ira_override) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = supply_side_ira_override)
+  
+  # Merge the historical overrides with the forecast using the commonly named 
+  # `data_series` and `date` columns. The historical overrides take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(historical_overrides, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(
+      create_placeholder_nas(start = "1970-01-01"), 
+      by = 'date'
+      ) %>%
+    # Make sure the rows are in chronological order
+    arrange(date) %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+create_state_corporate_taxes <- function(
+    national_accounts, 
+    forecast, 
+    historical_overrides, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, state_corporate_taxes) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = state_corporate_taxes)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # `gf` is the Haver code for federal purchases
+    select(date, gsrcp) %>%  
+    # Rename data to generic `data_series` for easier merging
+    rename(data_series = gsrcp) %>%
+    # Corporate taxes come one quarter later than GDP. We overwrite JUST the current
+    # quarter using the historical overrides sheet
+    mutate_where(
+      date == current_quarter,
+      data_series = tail(historical_overrides$state_corporate_taxes_override, n = 1)
+    )
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
