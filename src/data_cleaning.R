@@ -390,3 +390,209 @@ create_state_corporate_taxes <- function(
   
   return(result)
 }
+
+
+create_federal_social_benefits <- function(
+    national_accounts, 
+    forecast, 
+    historical_overrides,
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_social_benefits) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_social_benefits)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Calculate federal non corporate taxes as a sum of 3 series
+    mutate(data_series = 
+             # The coalesce function is replacing 0s for NAs before subtracting
+             coalesce(gftfp, 0) - # Haver code for federal social benefits
+             coalesce(yptu, 0) - # Haver code for ui
+             coalesce(gftfpe, 0) - # Haver code for rebate checks
+             coalesce(yptmr, 0) - # Haver code for Medicare
+             coalesce(gftfpv, 0) # Haver code for nonprofit provider relief fund
+    ) %>%
+    # Keep the date and the new data_series column
+    select(date, data_series) %>%
+    # Override historic entries of national_accounts using historical_overrides data
+    mutate_where(
+      date >= yearquarter('2020 Q2') & date <= current_quarter,
+      data_series = historical_overrides$federal_social_benefits_override
+    ) %>%
+    # Further overwrite by adding 203 to 2021 Q1
+    mutate_where(
+      date == yearquarter('2021 Q1'),
+      data_series = data_series + 203
+    )
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_state_social_benefits <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, state_social_benefits) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = state_social_benefits)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Calculate federal non corporate taxes as a sum of 3 series
+    mutate(data_series = 
+             gstfp - # Haver code for state social benefits
+             yptmd # Haver code for Medicaid
+    ) %>%
+    # Keep the date and the new data_series column
+    select(date, data_series)
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_rebate_checks <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, rebate_checks) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = rebate_checks)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # The coalesce function turns NAs into 0s and the gftfpe is the Haver code 
+    # for rebate checks
+    mutate(data_series = coalesce(gftfpe, 0)) %>%
+    # Keep the date and the new data_series column
+    select(date, data_series) %>%
+    # Note from Lorae: We split up rebate checks into rebate_checks and rebate_checks_arp,
+    # and this subtracts away some amount from a quarter where we allocated it to
+    # rebate_checks_arp. We do that so that we can apply a different MPC. But TBH this
+    # process is pretty illogical. Please don't blame me ¯\_(ツ)_/¯
+    # TODO: Stop this nonsense of hard coding values and put them in the historical_overrrides
+    # tab of the forecast spreadsheet instead
+    mutate_where(
+      date == yearquarter('2021 Q1'),
+      data_series = data_series - 1348.1
+    ) %>%
+    mutate_where(
+      date == yearquarter("2021 Q4"),
+      data_series = 0)
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_rebate_checks_arp <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, rebate_checks_arp) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = rebate_checks_arp)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Hard coding one silly value here ¯\_(ツ)_/¯
+    mutate(
+      data_series = if_else(
+        date == yearquarter("2021 Q1"),
+        1348.1, # Rebate checks arp are 1348.1 in 2021 Q1
+        0) # Otherwise they are 0
+      )  %>%
+    # Hard coding another silly value
+    mutate_where(
+      date == yearquarter("2021 Q4"),
+      data_series = 14.2
+      ) %>%
+    select(date, data_series) # Keep only the 2 columns we need
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+create_federal_ui <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_ui) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_ui)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+      mutate(
+      data_series = 
+        # The coalesce turns NAS into zeroes
+        coalesce(gftfpu, 0) + # Haver code for ui expansion
+        coalesce(yptol, 0) # Haver code for wages lost assistance
+    )  %>%
+    # Hard coding one silly value here ¯\_(ツ)_/¯
+    mutate_where(
+      date == yearquarter('2021 Q4'),
+      data_series = 11
+      ) %>%
+    select(date, data_series) # Keep only the 2 columns we need
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}

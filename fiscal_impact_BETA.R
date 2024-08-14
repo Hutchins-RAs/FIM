@@ -6,6 +6,7 @@
 # it's essential to be careful when editing chunk names to avoid causing an error
 # in docs/technical_documentation/index.Rmd
 
+# This, for example, is a chunk name:
 # ---- section-A.1-prep-for-update ----
 
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
@@ -142,6 +143,40 @@ state_corporate_taxes_test <- create_state_corporate_taxes(
   historical_overrides,
   create_placeholder_nas()
 )
+
+federal_social_benefits_test <- create_federal_social_benefits(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
+
+state_social_benefits_test <- create_state_social_benefits(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+rebate_checks_test <- create_rebate_checks(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+rebate_checks_arp_test <- create_rebate_checks_arp(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+federal_ui_test <- create_federal_ui(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+
+
 
 # investment_grants_test <- ...
 # ... code here
@@ -588,7 +623,7 @@ state_corporate_taxes_contribution <- contribution(
 
 # Federal social benefits
 federal_social_benefits_contribution <- contribution(
-  x = projections$federal_social_benefits, 
+  x = federal_social_benefits_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_social_benefits.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -596,7 +631,7 @@ federal_social_benefits_contribution <- contribution(
 
 # State social benefits
 state_social_benefits_contribution <- contribution(
-  x = projections$state_social_benefits, 
+  x = state_social_benefits_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/state_social_benefits.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -604,7 +639,7 @@ state_social_benefits_contribution <- contribution(
 
 # Rebate checks
 rebate_checks_contribution <- contribution(
-  x = projections$rebate_checks, 
+  x = rebate_checks_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/rebate_checks.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -612,7 +647,7 @@ rebate_checks_contribution <- contribution(
 
 # Rebate checks ARP
 rebate_checks_arp_contribution <- contribution(
-  x = projections$rebate_checks_arp, 
+  x = rebate_checks_arp_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/rebate_checks_arp.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -620,7 +655,7 @@ rebate_checks_arp_contribution <- contribution(
 
 # Federal UI
 federal_ui_contribution <- contribution(
-  x = projections$federal_ui, 
+  x = federal_ui_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_ui.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
