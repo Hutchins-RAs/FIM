@@ -175,7 +175,18 @@ federal_ui_test <- create_federal_ui(
   create_placeholder_nas()
 )
 
+state_ui_test <- create_state_ui(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
 
+
+federal_subsidies_test <- create_federal_subsidies(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
 
 
 # investment_grants_test <- ...
@@ -663,7 +674,7 @@ federal_ui_contribution <- contribution(
 
 # State UI
 state_ui_contribution <- contribution(
-  x = projections$state_ui, 
+  x = state_ui_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/state_ui.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -671,7 +682,7 @@ state_ui_contribution <- contribution(
 
 # Federal subsidies
 federal_subsidies_contribution <- contribution(
-  x = projections$federal_subsidies, 
+  x = federal_subsidies_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_subsidies.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 

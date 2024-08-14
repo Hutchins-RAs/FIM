@@ -596,3 +596,76 @@ create_federal_ui <- function(
   
   return(result)
 }
+
+
+
+create_state_ui <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, state_ui) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = state_ui)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    mutate(
+      data_series = 
+        # This formula calculates state ui as `ui` - `federal_ui`, where
+        # `federal_ui` = `ui_expansion + wages_lost assistance`
+        yptu - # Haver code for ui
+        # The coalesce turns NAS into zeroes
+        coalesce(gftfpu, 0) - # Haver code for ui expansion
+        coalesce(yptol, 0) # Haver code for wages lost assistance
+    )  %>%
+    # Since we set federal ui to equal 11, we're recalculating state ui in this
+    # quarter to equal ui - 11
+    mutate_where(
+      date == yearquarter('2021 Q4'),
+      data_series = yptu - 11
+    ) %>%
+    select(date, data_series) # Keep only the 2 columns we need
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_federal_subsidies <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_subsidies) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_subsidies)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    mutate(data_series = gfsub)  %>% # Haver code for federal subsidies
+    select(date, data_series) # Keep only the 2 columns we need
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
