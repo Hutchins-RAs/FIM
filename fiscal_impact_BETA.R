@@ -188,6 +188,21 @@ federal_subsidies_test <- create_federal_subsidies(
   create_placeholder_nas()
 )
 
+federal_aid_to_small_businesses_arp_test <- create_federal_aid_to_small_businesses_arp(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
+
+
+federal_other_direct_aid_arp_test <- create_federal_other_direct_aid_arp(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
+
 
 # investment_grants_test <- ...
 # ... code here
@@ -690,7 +705,7 @@ federal_subsidies_contribution <- contribution(
 
 # Federal aid to small businesses
 federal_aid_to_small_businesses_arp_contribution <- contribution(
-  x = projections$federal_aid_to_small_businesses_arp, 
+  x = federal_aid_to_small_businesses_arp_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_aid_to_small_businesses_arp.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -698,7 +713,7 @@ federal_aid_to_small_businesses_arp_contribution <- contribution(
 
 # Federal other direct aid arp
 federal_other_direct_aid_arp_contribution <- contribution(
-  x = projections$federal_other_direct_aid_arp, 
+  x = federal_other_direct_aid_arp_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_other_direct_aid_arp.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 

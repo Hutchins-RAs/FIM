@@ -669,3 +669,83 @@ create_federal_subsidies <- function(
   
   return(result)
 }
+
+
+create_federal_aid_to_small_businesses_arp <- function(
+    national_accounts, 
+    forecast, 
+    historical_overrides,
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_aid_to_small_businesses_arp) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_aid_to_small_businesses_arp)
+  
+  # We don't actually have national accounts as a data series for this tibble.
+  # So we populate it with a placeholder tibble spanning 1970 Q1 to 2034 Q3 with
+  # 0s in each entry
+  national_accounts <- 
+    create_placeholder_nas(
+      col_name = "data_series",
+      start = "1970-01-01",
+      end = "2034-07-01") %>%
+    select(date, data_series) %>% # Keep only the 2 columns we need
+  # Override historic entries of national_accounts using historical_overrides data
+  mutate_where(
+    date >= yearquarter('2020 Q2') & date <= current_quarter,
+    data_series = historical_overrides$federal_aid_to_small_businesses_arp_override
+  )
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_federal_other_direct_aid_arp <- function(
+    national_accounts, 
+    forecast, 
+    historical_overrides,
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_other_direct_aid_arp) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_other_direct_aid_arp)
+  
+  # We don't actually have national accounts as a data series for this tibble.
+  # So we populate it with a placeholder tibble spanning 1970 Q1 to 2034 Q3 with
+  # 0s in each entry
+  national_accounts <- 
+    create_placeholder_nas(
+      col_name = "data_series",
+      start = "1970-01-01",
+      end = "2034-07-01") %>%
+    select(date, data_series) %>% # Keep only the 2 columns we need
+    # Override historic entries of national_accounts using historical_overrides data
+    mutate_where(
+      date >= yearquarter('2020 Q2') & date <= current_quarter,
+      data_series = historical_overrides$federal_other_direct_aid_arp_override
+    )
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
