@@ -204,6 +204,14 @@ federal_other_direct_aid_arp_test <- create_federal_other_direct_aid_arp(
 )
 
 
+federal_other_vulnerable_arp_test <- create_federal_other_vulnerable_arp(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
+
+
 # investment_grants_test <- ...
 # ... code here
 
@@ -721,7 +729,7 @@ federal_other_direct_aid_arp_contribution <- contribution(
 
 # Federal other vulnerable arp
 federal_other_vulnerable_arp_contribution <- contribution(
-  x = projections$federal_other_vulnerable_arp, 
+  x = federal_other_vulnerable_arp_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_other_vulnerable_arp.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
