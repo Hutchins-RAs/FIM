@@ -212,6 +212,13 @@ federal_other_vulnerable_arp_test <- create_federal_other_vulnerable_arp(
 )
 
 
+federal_student_loans_test <- create_federal_student_loans(
+  national_accounts,
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
+)
+
 # investment_grants_test <- ...
 # ... code here
 
@@ -737,7 +744,7 @@ federal_other_vulnerable_arp_contribution <- contribution(
 
 # Federal student loans
 federal_student_loans_contribution <- contribution(
-  x = projections$federal_student_loans, 
+  x = federal_student_loans_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_student_loans.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
