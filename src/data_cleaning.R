@@ -830,3 +830,96 @@ create_federal_student_loans <- function(
   return(result)
 }
 
+
+create_state_subsidies <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  ## UH OH! WE ACTUALLY DO NOT HAVE STATE SUBSIDIES IN THE FORECAST SHEET.
+  ## SOMEONE NEEDS TO ADD THIS. Without a forecast for state subsidies,
+  ## we've been assuming that they are zero!
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    mutate(data_series = gssub)  %>% # Haver code for federal subsidies
+    select(date, data_series) # Keep only the 2 columns we need
+  
+  # Merge the national accounts with the a data frame of NAs extending to 2034 Q3.
+  result <- coalesce_join(national_accounts, placeholder_nas, by = 'date') %>% 
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_federal_health_outlays <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    # Our federal health outlays prediction is the sum of two other predictions
+    mutate(data_series = medicare + medicaid_grants) %>%
+    select(date, data_series)
+  
+  # Select columns of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Calculate federal health outlays as a sum of 2 series
+    mutate(
+      data_series = 
+        # The coalesce turns NAS into zeroes
+        coalesce(yptmr, 0) + # Haver code for medicare
+        coalesce(gfeghdx, 0) # Haver code for medicaid grants
+    )  %>%
+    select(date, data_series) # Keep only the 2 columns we need
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
+
+create_state_health_outlays <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    # Our state health outlays prediction is the difference of two other predictions
+    mutate(data_series = medicaid - medicaid_grants) %>%
+    select(date, data_series)
+  
+  # Select columns of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Calculate federal health outlays as a diference of 2 series
+    mutate(
+      data_series = 
+        # The coalesce turns NAS into zeroes
+        coalesce(yptmd, 0) - # Haver code for medicaid
+        coalesce(gfeghdx, 0) # Haver code for medicaid grants
+    )  %>%
+    select(date, data_series) # Keep only the 2 columns we need
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}

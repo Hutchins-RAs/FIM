@@ -219,8 +219,27 @@ federal_student_loans_test <- create_federal_student_loans(
   create_placeholder_nas()
 )
 
-# investment_grants_test <- ...
-# ... code here
+
+state_subsidies_test <- create_state_subsidies(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+
+federal_health_outlays_test <- create_federal_health_outlays(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
+
+state_health_outlays_test <- create_state_health_outlays(
+  national_accounts,
+  forecast,
+  create_placeholder_nas()
+)
+
 
 # ---- section-B.0-read-raw-rds-data ----
 
@@ -569,6 +588,7 @@ source("src/contributions.R")
 # need to be regenerated each time the code is run. Instead, in the future, we'll
 # only rebuild these matrices when MPC inputs are changed using an "observer" 
 # design pattern. This will save us a lot of computing time.
+# 
 
 ### CALCULATE THE FIM variable-by-variable ########################################
 
@@ -752,7 +772,7 @@ federal_student_loans_contribution <- contribution(
 
 # State subsidies contribution
 state_subsidies_contribution <- contribution(
-  x = projections$state_subsidies, 
+  x = state_subsidies_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/state_subsidies.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -760,7 +780,7 @@ state_subsidies_contribution <- contribution(
 
 # Federal health outlays contribution
 federal_health_outlays_contribution <- contribution(
-  x = projections$federal_health_outlays, 
+  x = federal_health_outlays_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_health_outlays.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
@@ -768,7 +788,7 @@ federal_health_outlays_contribution <- contribution(
 
 # State health outlays contribution
 state_health_outlays_contribution <- contribution(
-  x = projections$state_health_outlays, 
+  x = state_health_outlays_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/state_health_outlays.rds"), 
   rpgg = real_potential_gdp_growth, 
   dg = consumption_deflator_growth, 
