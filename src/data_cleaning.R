@@ -138,7 +138,7 @@ create_investment_grants <- function(
   
   # Select column of interest from the national accounts tibble
   national_accounts <- national_accounts %>% 
-    # `gf` is the Haver code for federal purchases
+    # `gfeigx` is the Haver code for investment grants
     select(date, gfeigx) %>%  
     # Rename data to generic `data_series` for easier merging
     rename(data_series = gfeigx) %>%
@@ -190,7 +190,7 @@ create_state_purchases <- function(
   
   # Select column of interest from the national accounts tibble
   national_accounts <- national_accounts %>% 
-    # `gf` is the Haver code for federal purchases
+    # `gf` is the Haver code for state purchases
     select(date, gs) %>%  
     # Rename data to generic `data_series` for easier merging
     rename(data_series = gs)
