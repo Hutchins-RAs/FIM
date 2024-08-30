@@ -28,6 +28,7 @@ options(scipen = 20)# Turn off scientific notation under 20 digits
 #are we running this after a cbo baseline and pre-bea update?
 post_cbo_baseline<- FALSE
 # Set the value of 'month_year' to the current month and year (in the format "mm-yyyy")
+last_month_year <- glue('{format.Date(today() %m-% months(1), "%m")}-{year(today() %m-% months(1))}')
 month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
 print(month_year)
 
@@ -964,3 +965,11 @@ rmarkdown::render('Fiscal-Impact.Rmd',
 file_copy(path = 'Fiscal-Impact.html',
           new_path = glue('results/{month_year}/beta/Fiscal-Impact-{month_year}.html'),
           overwrite = TRUE)
+
+# Get update comparison html file 
+source("scripts/index_temp.R")
+
+rmarkdown::render(input = 'update-comparison-ga.Rmd',
+                  output_file = glue('results/{month_year}/beta/update-comparison-{month_year}'),
+                  clean = TRUE)
+
