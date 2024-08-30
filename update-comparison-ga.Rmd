@@ -33,7 +33,7 @@ knitr::opts_chunk$set(
 
 ```{r}
 librarian::shelf(ggplot2, gt, readr)
-  plots <- read_rds("C:\\Users\\GNabors\\OneDrive - The Brookings Institution\\Documents\\FIM\\07-2024\\beta\\data\\plots")
+  plots <- read_rds('data/plots')
 ```
 
 # Fiscal Impact Measure

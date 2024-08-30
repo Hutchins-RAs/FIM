@@ -68,14 +68,16 @@ comparison_wide <-
   mutate(name = snakecase::to_title_case(name))
 
 openxlsx::write.xlsx(x = comparison_wide,
-                     file = glue('results\{month_year}\beta\comparison-{month_year}.xlsx'),
+                     file = glue('results/{month_year}/beta/comparison-{month_year}.xlsx'),
                      overwrite = TRUE)
 
 
 # Figures -----------------------------------------------------------------
 
+
 # Load previous months results
 previous <-
+  # 'results/{last_month_year}/fim-{last_month_year}.xlsx'
   readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
@@ -151,6 +153,37 @@ components <- c(
   "fiscal_impact_measure"
 )
 
+comparison_ga <- function(.data, variable){
+  plot <- .data %>% 
+    filter(variable == {{ variable }}) %>% 
+    ggplot(aes(x = date,  y =  value, fill = source)) +
+    #geom_col(position=position_dodge2(reverse = TRUE)) +
+    geom_col(position=position_dodge2(reverse = TRUE)) +
+    labs(title = glue::glue("{snakecase::to_title_case(variable)}"),
+         x = NULL,
+         y = NULL,
+         fill = NULL) +
+    scale_x_yearquarter(breaks = waiver(),
+                        date_breaks = '3 months',
+                        date_labels = "Q%q") +
+    facet_grid( ~ year(date),
+                space = "free_x",
+                scales = "free_x",
+                switch = "x")  +
+    theme(legend.position = 'top', 
+          plot.title = element_text(face = "bold", size = 16, 
+                                    family = "sans", 
+                                    color = "gray20"),
+          axis.text = element_text(size = 12, 
+                                   family = "sans")) +
+    guides(fill = guide_legend(reverse = TRUE)) +
+    scale_fill_manual(values = c('current'="royalblue4", 
+                                 'previous' = "darkgray"),
+                      labels = c('Current', 'Previous')) 
+}
+
+
+
 comparison_nested <-
   comparison_long %>%
   filter(variable %in% components) %>% 
@@ -158,13 +191,15 @@ comparison_nested <-
   nest() %>%
   mutate(plot = map2(.x = variable,
                      .y = data,
-                     .f = ~comparison_plot(.data = .y,
-                                           variable = .x)))
+                     .f = ~comparison_ga(.data = .y,
+                                         variable = .x)))
+
 
 
 write_rds(comparison_nested, 'data/comparison_nested')
 plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
 write_rds(plots, 'data/plots')
+
 
 # Get Table-----------------------------------------
 
