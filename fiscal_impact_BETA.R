@@ -242,6 +242,7 @@ state_health_outlays_test <- create_state_health_outlays(
 )
 
 
+
 # ---- section-B.0-read-raw-rds-data ----
 
 # Load in national accounts. This file is rewritten each time data-raw/haver-pull.R
@@ -253,6 +254,7 @@ load("data/national_accounts.rda") # this loads in a df named national_accounts
 # is run.
 fim::projections # this is the literal df
 load("data/projections.rda") # this loads in a df named projections
+
 
 # ---- section-B.1-read-overrides ----
 
@@ -284,6 +286,14 @@ deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
 # of the FIM, not buried down here.
 # Save current quarter for later
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date) 
+
+
+federal_purchases_deflator_growth_test <- create_federal_purchases_deflator_growth(
+  national_accounts,
+  projections,
+  deflator_overrides,
+  create_placeholder_nas()
+)
 
 # ---- section-B.3-initial-import-projections ----
 
@@ -611,7 +621,7 @@ source("src/contributions.R")
 federal_purchases_contribution <- contribution(
   x = federal_purchases_test$data_series, # Using the new test version
   mpc_matrix = NULL,
-  dg = federal_purchases_deflator_growth,
+  dg = federal_purchases_deflator_growth_test$data_series, # Using the new test version
   rpgg = real_potential_gdp_growth,
   gdp = gdp)
 

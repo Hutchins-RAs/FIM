@@ -6,6 +6,7 @@
 #' column and a data_series column.
 
 
+# ---- Main-variables ----
 
 #' Create Federal Purchases Data Series
 #'
@@ -923,3 +924,67 @@ create_state_health_outlays <- function(
   
   return(result)
 }
+
+
+# ---- Accessory-variables ----
+# So, while the main variables use national accounts to construct them, these
+# accessory variables use projections to construct them.
+# Explain this in the bookdown file
+
+# Deflators
+
+create_federal_purchases_deflator_growth <- function(
+    national_accounts, 
+    projections, 
+    deflator_overrides,
+    placeholder_nas
+) {
+  # Select column of interest from the projections tibble
+  projections1 <- projections %>% 
+    # Divide federal purchases "gf" by real federal purchases "gfh" and calculate
+    # the quarterly growth rate using the qgr function, equal to x/lag(x), then 
+    # subtract 1.
+    mutate(data_series = qgr((gf / gfh)) - 1) %>%
+    select(date, data_series)
+  
+  # Select columns of interest from the national accounts tibble
+  national_accounts1 <- national_accounts %>% 
+    # Haver code for federal purchases deflator is 'jgf'
+    mutate(data_series = jgf_growth) %>%
+    select(date, data_series)
+  
+  # Process the overrides data so they are ready for merging
+  deflator_overrides1 <- deflator_overrides %>%
+    filter(date > current_quarter & date <= max(date)) %>%
+    # Rename the column of interest to data_series
+    mutate(data_series = federal_purchases_deflator_growth_override) %>%
+    select(date, data_series)
+  
+  # Merge the national accounts with the projection using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts1, projections1, by = 'date') %>%
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(., placeholder_nas, by = "date") %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0))) %>%
+    # Use deflator_overrides to overwrite select existing entries
+    coalesce_join(deflator_overrides1, ., by = "date") %>%
+    # Reorder the entries chronologically
+    arrange(date)
+
+  return(result)
+}
+
+
+# consumption_grants_deflator_growth <- projections$consumption_grants_deflator_growth
+# investment_grants_deflator_growth <- projections$investment_grants_deflator_growth
+# state_purchases_deflator_growth <- projections$state_purchases_deflator_growth
+# consumption_deflator_growth <- projections$consumption_deflator_growth
+# # GDP
+# real_potential_gdp_growth <- projections$real_potential_gdp_growth
+# gdp <- projections$gdp
+# # Extras
+# date <- projections$date
+# id <- projections$id
+# recession <- projections$recession
