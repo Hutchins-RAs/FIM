@@ -295,6 +295,13 @@ federal_purchases_deflator_growth_test <- create_federal_purchases_deflator_grow
   create_placeholder_nas()
 )
 
+consumption_grants_deflator_growth_test <- create_consumption_grants_deflator_growth(
+  national_accounts,
+  projections,
+  deflator_overrides,
+  create_placeholder_nas()
+)
+
 # ---- section-B.3-initial-import-projections ----
 
 projections <- projections %>% 
@@ -629,7 +636,7 @@ federal_purchases_contribution <- contribution(
 consumption_grants_contribution <- contribution(
   x = consumption_grants_test$data_series, # Using the new test version
   mpc_matrix = NULL,
-  dg = consumption_grants_deflator_growth,
+  dg = consumption_grants_deflator_growth_test$data_series, # Using the new test version
   rpgg = real_potential_gdp_growth,
   gdp = gdp)
 
