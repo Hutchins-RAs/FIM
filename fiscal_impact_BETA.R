@@ -309,6 +309,13 @@ investment_grants_deflator_growth_test <- create_investment_grants_deflator_grow
   create_placeholder_nas()
 )
 
+state_purchases_deflator_growth_test <- create_state_purchases_deflator_growth(
+  national_accounts,
+  projections,
+  deflator_overrides,
+  create_placeholder_nas()
+)
+
 # ---- section-B.3-initial-import-projections ----
 
 projections <- projections %>% 
@@ -659,7 +666,7 @@ investment_grants_contribution <- contribution(
 state_purchases_contribution <- contribution(
   x = state_purchases_test$data_series, # Using the new test version
   mpc_matrix = NULL,
-  dg = state_purchases_deflator_growth,
+  dg = state_purchases_deflator_growth_test$data_series, # Using the new test version
   rpgg = real_potential_gdp_growth,
   gdp = gdp) 
 

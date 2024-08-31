@@ -1067,8 +1067,50 @@ create_investment_grants_deflator_growth <- function(
   return(result)
 }
 
-# investment_grants_deflator_growth <- projections$investment_grants_deflator_growth
-# state_purchases_deflator_growth <- projections$state_purchases_deflator_growth
+create_state_purchases_deflator_growth <- function(
+    national_accounts, 
+    projections, 
+    deflator_overrides,
+    placeholder_nas
+) {
+  # Select column of interest from the projections tibble
+  projections <- projections %>% 
+    # Divide state purchases "gs" by real state purchases "gsh" and calculate
+    # the quarterly growth rate using the qgr function, equal to x/lag(x), then 
+    # subtract 1.
+    mutate(data_series = qgr((gs / gsh)) - 1) %>%
+    select(date, data_series)
+  
+  # Select columns of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Haver code for state purchases deflator is 'jgs'
+    mutate(data_series = jgs_growth) %>%
+    select(date, data_series)
+  
+  # Process the overrides data so they are ready for merging
+  deflator_overrides <- deflator_overrides %>%
+    filter(date > current_quarter & date <= max(date)) %>%
+    # Rename the column of interest to data_series
+    mutate(data_series = state_purchases_deflator_growth_override) %>%
+    select(date, data_series)
+  
+  # Merge the national accounts with the projection using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, projections, by = 'date') %>%
+    # Merge with a data frame of NAs extending to 2034 Q3
+    # NOTE DON"T FORGET TO CHANGE CREATE_PLACEHOLDER_NAS back
+    coalesce_join(., create_placeholder_nas(), by = "date") %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0))) %>%
+    # Use deflator_overrides to overwrite select existing entries
+    coalesce_join(deflator_overrides, ., by = "date") %>%
+    # Reorder the entries chronologically
+    arrange(date)
+  
+  return(result)
+}
+
 # consumption_deflator_growth <- projections$consumption_deflator_growth
 # # GDP
 # real_potential_gdp_growth <- projections$real_potential_gdp_growth
