@@ -323,6 +323,12 @@ consumption_deflator_growth_test <- create_consumption_deflator_growth(
   create_placeholder_nas()
 )
 
+real_potential_gdp_growth_test <- create_real_potential_gdp_growth(
+  national_accounts,
+  projections,
+  create_placeholder_nas()
+)
+
 # ---- section-B.3-initial-import-projections ----
 
 projections <- projections %>% 
@@ -650,7 +656,7 @@ federal_purchases_contribution <- contribution(
   x = federal_purchases_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = federal_purchases_deflator_growth_test$data_series, # Using the new test version
-  rpgg = real_potential_gdp_growth,
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
 # Consumption grants contribution
@@ -658,7 +664,7 @@ consumption_grants_contribution <- contribution(
   x = consumption_grants_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = consumption_grants_deflator_growth_test$data_series, # Using the new test version
-  rpgg = real_potential_gdp_growth,
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
 # Investment grants contribution
@@ -666,7 +672,7 @@ investment_grants_contribution <- contribution(
   x = investment_grants_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = investment_grants_deflator_growth_test$data_series, # Using the new test version
-  rpgg = real_potential_gdp_growth,
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
 # State purchases contribution
@@ -674,14 +680,14 @@ state_purchases_contribution <- contribution(
   x = state_purchases_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = state_purchases_deflator_growth_test$data_series, # Using the new test version
-  rpgg = real_potential_gdp_growth,
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   gdp = gdp) 
 
 # Federal non corporate taxes
 federal_non_corporate_taxes_contribution <- contribution(
   x = federal_non_corporate_taxes_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_non_corporate_taxes.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -689,7 +695,7 @@ federal_non_corporate_taxes_contribution <- contribution(
 state_non_corporate_taxes_contribution <- contribution(
   x = state_non_corporate_taxes_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/state_non_corporate_taxes.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp) 
 
@@ -701,7 +707,7 @@ state_non_corporate_taxes_contribution <- contribution(
 federal_corporate_taxes_contribution <- contribution(
   x = federal_corporate_taxes_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_corporate_taxes.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp) 
 
@@ -710,14 +716,14 @@ supply_side_ira_contribution <- contribution(
   x = supply_side_ira_test$data_series, # Using the new test version
   mpc_matrix = NULL,
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
-  rpgg = real_potential_gdp_growth,
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   gdp = gdp) 
 
 # State corporate taxes
 state_corporate_taxes_contribution <- contribution(
   x = state_corporate_taxes_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/state_corporate_taxes.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp) 
 
@@ -725,7 +731,7 @@ state_corporate_taxes_contribution <- contribution(
 federal_social_benefits_contribution <- contribution(
   x = federal_social_benefits_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_social_benefits.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp) 
 
@@ -733,7 +739,7 @@ federal_social_benefits_contribution <- contribution(
 state_social_benefits_contribution <- contribution(
   x = state_social_benefits_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/state_social_benefits.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp) 
 
@@ -741,7 +747,7 @@ state_social_benefits_contribution <- contribution(
 rebate_checks_contribution <- contribution(
   x = rebate_checks_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/rebate_checks.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -749,7 +755,7 @@ rebate_checks_contribution <- contribution(
 rebate_checks_arp_contribution <- contribution(
   x = rebate_checks_arp_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/rebate_checks_arp.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -757,7 +763,7 @@ rebate_checks_arp_contribution <- contribution(
 federal_ui_contribution <- contribution(
   x = federal_ui_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_ui.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -765,7 +771,7 @@ federal_ui_contribution <- contribution(
 state_ui_contribution <- contribution(
   x = state_ui_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/state_ui.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -773,7 +779,7 @@ state_ui_contribution <- contribution(
 federal_subsidies_contribution <- contribution(
   x = federal_subsidies_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_subsidies.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -781,7 +787,7 @@ federal_subsidies_contribution <- contribution(
 federal_aid_to_small_businesses_arp_contribution <- contribution(
   x = federal_aid_to_small_businesses_arp_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_aid_to_small_businesses_arp.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -789,7 +795,7 @@ federal_aid_to_small_businesses_arp_contribution <- contribution(
 federal_other_direct_aid_arp_contribution <- contribution(
   x = federal_other_direct_aid_arp_test$data_series, # Using the new test version 
   mpc_matrix = readRDS("cache/mpc_matrices/federal_other_direct_aid_arp.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -797,7 +803,7 @@ federal_other_direct_aid_arp_contribution <- contribution(
 federal_other_vulnerable_arp_contribution <- contribution(
   x = federal_other_vulnerable_arp_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_other_vulnerable_arp.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -805,7 +811,7 @@ federal_other_vulnerable_arp_contribution <- contribution(
 federal_student_loans_contribution <- contribution(
   x = federal_student_loans_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_student_loans.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version 
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -813,7 +819,7 @@ federal_student_loans_contribution <- contribution(
 state_subsidies_contribution <- contribution(
   x = state_subsidies_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/state_subsidies.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -821,7 +827,7 @@ state_subsidies_contribution <- contribution(
 federal_health_outlays_contribution <- contribution(
   x = federal_health_outlays_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/federal_health_outlays.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 
@@ -829,7 +835,7 @@ federal_health_outlays_contribution <- contribution(
 state_health_outlays_contribution <- contribution(
   x = state_health_outlays_test$data_series, # Using the new test version
   mpc_matrix = readRDS("cache/mpc_matrices/state_health_outlays.rds"), 
-  rpgg = real_potential_gdp_growth, 
+  rpgg = real_potential_gdp_growth_test$data_series, # Using the new test version
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp)
 

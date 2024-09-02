@@ -1154,8 +1154,45 @@ create_consumption_deflator_growth <- function(
   
   return(result)
 }
-# consumption_deflator_growth <- projections$consumption_deflator_growth
-# # GDP
+
+
+# Deflators
+
+# This function is simple. We just take real potential GDP from projections and 
+# calculate its growth rate. We then take real potential GDP from national accounts
+# and calculate its growth rate. The two growth rates are combined into a data 
+# series with national accounts predominating over projections.
+create_real_potential_gdp_growth <- function(
+    national_accounts, 
+    projections, 
+    placeholder_nas
+) {
+  # Select column of interest from the projections tibble
+  projections1 <- projections %>% 
+    # Extract Haver code "gdppothq" (real potential GDP) 
+    mutate(data_series = q_g(gdppothq)) %>%
+    select(date, data_series)
+  
+  # Select columns of interest from the national accounts tibble
+  national_accounts1 <- national_accounts %>% 
+    # Haver code for state purchases deflator is 'jgs'
+    mutate(data_series = q_g(gdppothq)) %>%
+    select(date, data_series)
+  
+  # Merge the national accounts with the projection using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts1, projections1, by = 'date') %>%
+    # Merge with a data frame of NAs extending to 2034 Q3
+    # NOTE DON"T FORGET TO CHANGE CREATE_PLACEHOLDER_NAS back
+    coalesce_join(., placeholder_nas, by = "date") %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0))) %>%
+    # Reorder the entries chronologically
+    arrange(date)
+  
+  return(result)
+}
 # real_potential_gdp_growth <- projections$real_potential_gdp_growth
 # gdp <- projections$gdp
 # # Extras
