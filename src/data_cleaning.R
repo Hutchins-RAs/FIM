@@ -1144,7 +1144,7 @@ create_consumption_deflator_growth <- function(
   result <- coalesce_join(national_accounts, projections, by = 'date') %>%
     # Merge with a data frame of NAs extending to 2034 Q3
     # NOTE DON"T FORGET TO CHANGE CREATE_PLACEHOLDER_NAS back
-    coalesce_join(., create_placeholder_nas(), by = "date") %>%
+    coalesce_join(., placeholder_nas, by = "date") %>%
     # Repopulate the NAs to be 0s
     mutate(across(everything(), ~ replace_na(., 0))) %>%
     # Use deflator_overrides to overwrite select existing entries
