@@ -1193,7 +1193,55 @@ create_real_potential_gdp_growth <- function(
   
   return(result)
 }
-# real_potential_gdp_growth <- projections$real_potential_gdp_growth
+
+create_gdp <- function(
+  national_accounts, 
+  projections, 
+  placeholder_nas
+) {
+  # Redefine GDP and real GDP values in the future using CBO growth rates
+  # Select column of interest from the projections tibble
+  projections1 <- projections %>% 
+    mutate(gdp_growth = q_g(gdp)) %>%
+    # We only need the gdp growth rate from our projections
+    select(date, gdp_growth) %>%
+    # We need only the growth rates that represent future quarters
+    filter(date > current_quarter)
+  
+  # Select columns of interest from the national accounts tibble
+  national_accounts1 <- national_accounts %>% 
+    # Haver code for GDP is 'gdp'
+    select(date, gdp)
+  # Define an index number for the current data point and end data point
+  current_index <- which(national_accounts1$date == current_quarter)
+  seed_gdp = national_accounts1$gdp[current_index]
+  
+  # Define new GDP projections by growing current GDP (seed) at CBO growth rates
+  # using the cumulative_series() function
+  new_gdp_projections <- cumulative_series(
+    seed = seed_gdp,
+    growth_rates = 1 + projections1$gdp_growth
+  )
+  
+  # Define projections row as this adjusted forecast
+  projections2 <- projections1 %>%
+    mutate(gdp = new_gdp_projections) %>%
+    select(date, gdp)
+  
+  # Merge the national accounts with the projection using the commonly named `gdp`
+  # and `date` columns. 
+  result <- coalesce_join(national_accounts1, projections2, by = 'date') %>%
+    # Rename the gdp column to generic data_series
+    rename(data_series = gdp) %>%
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(., placeholder_nas, by = "date") %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0))) %>%
+    # Reorder the entries chronologically
+    arrange(date)
+  
+  return(result)
+}
 # gdp <- projections$gdp
 # # Extras
 # date <- projections$date
