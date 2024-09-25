@@ -138,6 +138,7 @@ supply_side_ira_test <- create_supply_side_ira(
   create_placeholder_nas()
 )
 
+
 state_corporate_taxes_test <- create_state_corporate_taxes(
   national_accounts,
   forecast,
@@ -301,6 +302,7 @@ consumption_grants_deflator_growth_test <- create_consumption_grants_deflator_gr
   deflator_overrides,
   create_placeholder_nas()
 )
+
 
 investment_grants_deflator_growth_test <- create_investment_grants_deflator_growth(
   national_accounts,
@@ -552,6 +554,7 @@ usna3 <- usna2 %>%
 # Redefine usna to be integrated back into the FIM
 usna <- usna3
 
+
 # Section C: Forecast ----------------------------------------------------------------
 forecast <- # Read in sheet with our forecasted values from the data folder
   readxl::read_xlsx('data/forecast.xlsx',
@@ -573,6 +576,8 @@ usna <- usna %>%
     -wages_lost_assistance,
     -nonprofit_provider_relief_fund
   )
+save(usna, file = 'shiny/cache/usna.rda')
+save(historical_overrides, file = 'shiny/cache/historical_overrides.rda')
   
 projections <- # Merge forecast w BEA + CBO on the 'date' column, 
   #filling in NA values with the corresponding value from the other data frame
@@ -619,6 +624,10 @@ projections <- projections %>%
     -medicaid,  # Used in calculation but no longer needed
     -ui # Used in calculation but no longer needed
   )
+
+
+
+
 ######################################################################################
 # This is the point where we go from generating a data frame to actually calculating the FIM
 ######################################################################################
@@ -867,6 +876,7 @@ state_health_outlays_contribution <- contribution(
   dg = consumption_deflator_growth_test$data_series, # Using the new test version
   gdp = gdp_test$data_series # Using the new test version
 )
+
 
 ### AGGREGATE contributions ########################################
 federal_contribution <- 
