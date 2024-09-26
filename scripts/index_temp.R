@@ -77,7 +77,6 @@ openxlsx::write.xlsx(x = comparison_wide,
 
 # Load previous months results
 previous <-
-  # 'results/{last_month_year}/fim-{last_month_year}.xlsx'
   readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
