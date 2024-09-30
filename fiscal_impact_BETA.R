@@ -1035,7 +1035,7 @@ interactive <- contributions_df %>%
   separate(date, c('year', 'quarter'))
 
 # Write interactive data frame to CSV file
-readr::write_csv(interactive,  file = glue('results/{month_year}/beta/interactive-{month_year}-beta.csv'))
+readr::write_csv(interactive,  file = glue('results/{month_year}/beta/interactive-{month_year}.csv'))
 
 # Make HTML FIM graphs for website and email. Save as FIM/Fiscal-Impact.html
 rmarkdown::render('Fiscal-Impact.Rmd',
