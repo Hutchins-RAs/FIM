@@ -29,13 +29,6 @@ server <- function(input, output) {
       tsibble::as_tsibble(index = date)
   })
   
-  # random stuff
-  type <- reactive({
-    req(forecast_user())
-    
-    print(as.character(forecast_user()$date))
-  })
-  
   # Create projections dataset 
   projections <- reactive({
     req(forecast_user())

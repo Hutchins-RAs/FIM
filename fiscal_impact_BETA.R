@@ -576,7 +576,7 @@ usna <- usna %>%
     -wages_lost_assistance,
     -nonprofit_provider_relief_fund
   )
-save(usna, file = 'shiny/cache/usna.rda')
+
 save(historical_overrides, file = 'shiny/cache/historical_overrides.rda')
   
 projections <- # Merge forecast w BEA + CBO on the 'date' column, 
@@ -626,6 +626,7 @@ projections <- projections %>%
   )
 
 
+save(usna, file = 'shiny/cache/usna.rda')
 
 
 ######################################################################################

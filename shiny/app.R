@@ -9,7 +9,7 @@ data <- readxl::read_xlsx('data_temp.xlsx')
 load('shiny/cache/usna.rda')
 load('shiny/cache/historical_overrides.rda')
 current_quarter <- yearquarter(Sys.Date()) %>% yearquarter()
-current_quarter <- current_quarter - 1 
+current_quarter <- current_quarter - 2
 source("src/contributions.R")
 
 # Define server logic 
@@ -43,13 +43,6 @@ server <- function(input, output) {
       tsibble::as_tsibble(index = date)
   })
   
-  # random stuff
-  type <- reactive({
-    req(forecast_user())
-    
-    print(as.character(forecast_user()$date))
-  })
-  
   # Create projections dataset 
   projections <- reactive({
     req(forecast_user())
@@ -63,25 +56,8 @@ server <- function(input, output) {
       mutate(
         federal_health_outlays = medicare + medicaid_grants,
         state_health_outlays = medicaid - medicaid_grants
-      ) %>%
-      
-      # Ensure 'historical_overrides' is defined
-      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
-                   federal_other_direct_aid_arp = historical_overrides$federal_other_direct_aid_arp_override,
-                   federal_other_vulnerable_arp = historical_overrides$federal_other_vulnerable_arp_override,
-                   federal_social_benefits = historical_overrides$federal_social_benefits_override,
-                   federal_aid_to_small_businesses_arp = historical_overrides$federal_aid_to_small_businesses_arp_override) %>%
-      
-      # Additional transformations
-      mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
-                   federal_corporate_taxes = tail(historical_overrides$federal_corporate_taxes_override, n = 1),
-                   state_corporate_taxes = tail(historical_overrides$state_corporate_taxes_override, n = 1)) %>%
-      
-      # More transformations
-      mutate_where(date == yearquarter("2021 Q1"), federal_social_benefits = federal_social_benefits + 203) %>%
-      mutate_where(date == yearquarter('2021 Q4'), federal_ui = 11, state_ui = ui - federal_ui) %>%
-      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, supply_side_ira = historical_overrides$supply_side_ira_override) %>%
-      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, federal_student_loans = historical_overrides$federal_student_loans_override)
+      ) 
+    
   })
   
   
@@ -613,18 +589,15 @@ ui <- fluidPage(
       # File input for uploading Excel file
       fileInput("file", label = NULL, accept = c(".xlsx")),  # Ensure .xlsx is specified
       # Set width
-      width = 2,  
-      
-      actionButton("reset_btn", "Clear")), 
+      width = 3),  
     
     # Main panel to display the plot
     mainPanel(
-      withSpinner(plotOutput("barPlot", width = 1100, height = 800), type = 6, color = "#007BFF", size = 1, color.background = "#FFFFFF"),
-      
-      tableOutput("dataTable")
+      withSpinner(plotOutput("barPlot", width = 1100, height = 800), type = 6, color = "#007BFF", size = 1, color.background = "#FFFFFF")
     )
   )
 )
 
 # Run the application
 shinyApp(ui = ui, server = server)
+
