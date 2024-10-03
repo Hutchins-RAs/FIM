@@ -6,6 +6,7 @@ library(zoo)
 
 data <- readxl::read_xlsx('data_temp.xlsx')
 load('shiny/cache/usna.rda')
+load('shiny/cache/historical_overrides.rda')
 current_quarter <- yearquarter(Sys.Date()) %>% yearquarter()
 current_quarter <- current_quarter - 2
 source("src/contributions.R")
@@ -47,40 +48,40 @@ server <- function(input, output) {
     ui_forecast <- data.frame(forecast_user())
     
     # Join the NIPAs (contained in the cache folder) with the user in
-      coalesce_join(usna, ui_forecast, by = 'date') %>%  # Ensure 'usna' is defined
+    coalesce_join(usna, ui_forecast, by = 'date') %>%  # Ensure 'usna' is defined
       mutate(across(where(is.numeric), ~ coalesce(.x, 0)))%>% # Coalesce NA's to 0 for numeric values
-    
-    # Replace missing values with 0 
-    mutate( # Coalesce NA's to 0 for all numeric values 
+      
+      # Replace missing values with 0 
+      mutate( # Coalesce NA's to 0 for all numeric values 
         across(where(is.numeric),
                ~ coalesce(.x, 0))) %>%
-        
-    #Define FIM health variables 
-        mutate(
-          federal_health_outlays = medicare + medicaid_grants,
-          state_health_outlays = medicaid - medicaid_grants
-        ) %>% 
-        
-        # apply historical_overrides for ARP 
-        mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-                     federal_other_direct_aid_arp = historical_overrides$federal_other_direct_aid_arp_override,
-                     federal_other_vulnerable_arp = historical_overrides$federal_other_vulnerable_arp_override,
-                     federal_social_benefits = historical_overrides$federal_social_benefits_override,
-                     federal_aid_to_small_businesses_arp = historical_overrides$federal_aid_to_small_businesses_arp_override) %>% 
-        mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
-                     federal_corporate_taxes = tail(historical_overrides$federal_corporate_taxes_override, n = 1),
-                     state_corporate_taxes = tail(historical_overrides$state_corporate_taxes_override, n = 1)) %>% 
-        mutate_where(date == yearquarter("2021 Q1"),
-                     federal_social_benefits = federal_social_benefits + 203) %>% 
-        mutate_where(date == yearquarter('2021 Q4'),
-                     federal_ui = 11, 
-                     state_ui = ui - federal_ui) %>%
-        #apply historical_overrides for Supply Side IRA
-        mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-                     supply_side_ira = historical_overrides$supply_side_ira_override) %>%
-        #apply historical_overrides for Federal Student Loans
-        mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-                     federal_student_loans = historical_overrides$federal_student_loans_override)
+      
+      #Define FIM health variables 
+      mutate(
+        federal_health_outlays = medicare + medicaid_grants,
+        state_health_outlays = medicaid - medicaid_grants
+      ) %>% 
+      
+      # apply historical_overrides for ARP 
+      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+                   federal_other_direct_aid_arp = historical_overrides$federal_other_direct_aid_arp_override,
+                   federal_other_vulnerable_arp = historical_overrides$federal_other_vulnerable_arp_override,
+                   federal_social_benefits = historical_overrides$federal_social_benefits_override,
+                   federal_aid_to_small_businesses_arp = historical_overrides$federal_aid_to_small_businesses_arp_override) %>% 
+      mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
+                   federal_corporate_taxes = tail(historical_overrides$federal_corporate_taxes_override, n = 1),
+                   state_corporate_taxes = tail(historical_overrides$state_corporate_taxes_override, n = 1)) %>% 
+      mutate_where(date == yearquarter("2021 Q1"),
+                   federal_social_benefits = federal_social_benefits + 203) %>% 
+      mutate_where(date == yearquarter('2021 Q4'),
+                   federal_ui = 11, 
+                   state_ui = ui - federal_ui) %>%
+      #apply historical_overrides for Supply Side IRA
+      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+                   supply_side_ira = historical_overrides$supply_side_ira_override) %>%
+      #apply historical_overrides for Federal Student Loans
+      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
+                   federal_student_loans = historical_overrides$federal_student_loans_override)
   })
   
   #####################################
@@ -616,5 +617,3 @@ ui <- fluidPage(
 
 # Run the application
 shinyApp(ui = ui, server = server)
-
-
