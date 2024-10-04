@@ -1,5 +1,9 @@
+##############
+# FIM LEVELS #
+##############
 
 # Define Start and End Quarter 
+# Set the start and end quarter below 
 start_quarter <- yearquarter("2022 Q2")
   start_position <- which(usna$date == start_quarter)
 end_quarter <- yearquarter("2022 Q3")
@@ -10,37 +14,43 @@ base_quarter <- start_quarter - 1
 #################
 # DEFINE GROWTH #
 #################
+  
+# Generate "cumprod_growth" function. This function takes a deflator data series as its input. It gets the cumulative product of (1+rpgg+dg) beginning in the start_quarter. 
 cumprod_growth <- 
     function(deflator){
       data.frame(real_potential_gdp_growth_test, deflator) %>% 
         mutate(
-          sum = ifelse(date >= start_quarter, data_series.1 + data_series, 0),
-          cumprod = ifelse(date >= start_quarter, cumprod(1 + sum) - 1, NA)
+          sum = ifelse(date >= start_quarter, data_series.1 + data_series, 0), # sum the growth rates beginning in start_quarter
+          cumprod = ifelse(date >= start_quarter, cumprod(1 + sum) - 1, NA) # get the cumulative product of the summed growth rates starting in start_quarter 
         ) 
-        # select(
-        #   cumprod 
-        # )
+         select(
+           cumprod # keep only the cumulative product 
+      )
     }
 
-# Consumption
+# Calculate the cumulative product of the growth rates for each of the deflators 
+
+# Consumption Deflator 
 cumprod_growth_consumption <- cumprod_growth(consumption_deflator_growth_test)
 
-# Federal Purchases
+# Federal Purchases Deflator 
 cumprod_growth_federal_purchases <- cumprod_growth(federal_purchases_deflator_growth_test)
 
-# Consumption Grants 
+# Consumption Grants Deflator 
 cumprod_growth_consumption_grants <- cumprod_growth(consumption_grants_deflator_growth_test)
 
-# Investment Grants 
+# Investment Grants Deflator 
 cumprod_growth_investment_grants <- cumprod_growth(investment_grants_deflator_growth_test)
 
-# State Purchases 
+# State Purchases Deflator 
 cumprod_growth_state_purchases <- cumprod_growth(state_purchases_deflator_growth_test)
   
 
 #################################
 # DEFINE CONTRIBUTION FUNCTIONS #
 #################################
+
+# This section of code generates 4 functions used to calculate the FIM contributions. 
 
 # Define Minus Neutral Function 
 minus_neutral_levels <- function(x, # the data in question
