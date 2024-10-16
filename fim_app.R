@@ -608,8 +608,7 @@ ui <- fluidPage(
     
     # Main panel with spinner and plot output
     mainPanel(
-      withSpinner(plotOutput("barPlot", width = "1100px", height = "800px"), 
-                  type = 6, color = "#007BFF", size = 1, color.background = "#FFFFFF"),
+      plotOutput("barPlot", width = "1100px", height = "800px"),
       tableOutput("dataTable")
     )
   )
