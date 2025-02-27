@@ -32,61 +32,42 @@ current_inputs <-
   select(-id, 
          -recession)
 
-# Use the nominal values and conusmption deflator to calculate the real levels 
+# Use the nominal values and consumption deflator to calculate the real levels 
 # Previous
 previous_inputs <- previous_inputs %>%
   mutate(
-    federal_ui_real = federal_ui - lag(federal_ui) * consumption_deflator_growth,
-    state_ui_real = state_ui - lag(state_ui) * consumption_deflator_growth,
-    federal_subsidies_real = federal_subsidies - lag(federal_subsidies) * consumption_deflator_growth,
-    state_subsidies_real = state_subsidies - lag(state_subsidies) * consumption_deflator_growth,
-    federal_health_outlays_real = federal_health_outlays - lag(federal_health_outlays) * consumption_deflator_growth,
-    state_health_outlays_real = state_health_outlays - lag(state_health_outlays) * consumption_deflator_growth,
-    federal_social_benefits_real = federal_social_benefits - lag(federal_social_benefits) * consumption_deflator_growth,
-    state_social_benefits_real = state_social_benefits - lag(state_social_benefits) * consumption_deflator_growth,
-    federal_corporate_taxes_real = federal_corporate_taxes - lag(federal_corporate_taxes) * consumption_deflator_growth,
-    state_corporate_taxes_real = state_corporate_taxes - lag(state_corporate_taxes) * consumption_deflator_growth,
-    federal_non_corporate_taxes_real = federal_non_corporate_taxes - lag(federal_non_corporate_taxes) * consumption_deflator_growth,
-    state_non_corporate_taxes_real = state_non_corporate_taxes - lag(state_non_corporate_taxes) * consumption_deflator_growth,
-    rebate_checks_arp_real = rebate_checks_arp - lag(rebate_checks_arp) * consumption_deflator_growth,
-    federal_other_direct_aid_arp_real = federal_other_direct_aid_arp - lag(federal_other_direct_aid_arp) * consumption_deflator_growth,
-    federal_other_vulnerable_arp_real = federal_other_vulnerable_arp - lag(federal_other_vulnerable_arp) * consumption_deflator_growth,
-    federal_aid_to_small_businesses_arp_real = federal_aid_to_small_businesses_arp - lag(federal_aid_to_small_businesses_arp) * consumption_deflator_growth,
-    federal_student_loans_real = federal_student_loans - lag(federal_student_loans) * consumption_deflator_growth,
-    supply_side_ira_real = supply_side_ira - lag(supply_side_ira) * consumption_deflator_growth,
-    rebate_checks_real = rebate_checks - lag(rebate_checks) * consumption_deflator_growth,
-    federal_purchases_real = federal_purchases - lag(federal_purchases) * consumption_deflator_growth,
-    state_purchases_real = state_purchases - lag(state_purchases) * consumption_deflator_growth,
-    consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_deflator_growth,
-    investment_grants_real = investment_grants - lag(investment_grants) * consumption_deflator_growth
+    nipa_federal_purchases_real = federal_purchases - lag(federal_purchases) * federal_purchases_deflator_growth,
+    nipa_state_purchases_real = state_purchases - lag(state_purchases) * state_purchases_deflator_growth,
+    
+    nipa_total_purchases = federal_purchases + state_purchases,
+    nipa_total_purchases_real = nipa_federal_purchases_real + nipa_state_purchases_real,
+    
+    fim_state_purchases = state_purchases + consumption_grants + investment_grants,
+    fim_state_purchases_real = fim_state_purchases - lag(fim_state_purchases) * state_purchases_deflator_growth,
+    
+    fim_federal_purchases = nipa_total_purchases - fim_state_purchases,
+    fim_federal_purchases_real = nipa_total_purchases_real - fim_state_purchases_real,
+    
+    consumption_real = consumption - lag(consumption) * consumption_deflator_growth
   )
+
 # Current 
 
 current_inputs <- current_inputs %>%
   mutate(
-    federal_ui_real = federal_ui - lag(federal_ui) * consumption_deflator_growth,
-    state_ui_real = state_ui - lag(state_ui) * consumption_deflator_growth,
-    federal_subsidies_real = federal_subsidies - lag(federal_subsidies) * consumption_deflator_growth,
-    state_subsidies_real = state_subsidies - lag(state_subsidies) * consumption_deflator_growth,
-    federal_health_outlays_real = federal_health_outlays - lag(federal_health_outlays) * consumption_deflator_growth,
-    state_health_outlays_real = state_health_outlays - lag(state_health_outlays) * consumption_deflator_growth,
-    federal_social_benefits_real = federal_social_benefits - lag(federal_social_benefits) * consumption_deflator_growth,
-    state_social_benefits_real = state_social_benefits - lag(state_social_benefits) * consumption_deflator_growth,
-    federal_corporate_taxes_real = federal_corporate_taxes - lag(federal_corporate_taxes) * consumption_deflator_growth,
-    state_corporate_taxes_real = state_corporate_taxes - lag(state_corporate_taxes) * consumption_deflator_growth,
-    federal_non_corporate_taxes_real = federal_non_corporate_taxes - lag(federal_non_corporate_taxes) * consumption_deflator_growth,
-    state_non_corporate_taxes_real = state_non_corporate_taxes - lag(state_non_corporate_taxes) * consumption_deflator_growth,
-    rebate_checks_arp_real = rebate_checks_arp - lag(rebate_checks_arp) * consumption_deflator_growth,
-    federal_other_direct_aid_arp_real = federal_other_direct_aid_arp - lag(federal_other_direct_aid_arp) * consumption_deflator_growth,
-    federal_other_vulnerable_arp_real = federal_other_vulnerable_arp - lag(federal_other_vulnerable_arp) * consumption_deflator_growth,
-    federal_aid_to_small_businesses_arp_real = federal_aid_to_small_businesses_arp - lag(federal_aid_to_small_businesses_arp) * consumption_deflator_growth,
-    federal_student_loans_real = federal_student_loans - lag(federal_student_loans) * consumption_deflator_growth,
-    supply_side_ira_real = supply_side_ira - lag(supply_side_ira) * consumption_deflator_growth,
-    rebate_checks_real = rebate_checks - lag(rebate_checks) * consumption_deflator_growth,
-    federal_purchases_real = federal_purchases - lag(federal_purchases) * consumption_deflator_growth,
-    state_purchases_real = state_purchases - lag(state_purchases) * consumption_deflator_growth,
-    consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_deflator_growth,
-    investment_grants_real = investment_grants - lag(investment_grants) * consumption_deflator_growth
+    nipa_federal_purchases_real = federal_purchases - lag(federal_purchases) * federal_purchases_deflator_growth,
+    nipa_state_purchases_real = state_purchases - lag(state_purchases) * state_purchases_deflator_growth,
+    
+    nipa_total_purchases = federal_purchases + state_purchases,
+    nipa_total_purchases_real = nipa_federal_purchases_real + nipa_state_purchases_real,
+    
+    fim_state_purchases = state_purchases + consumption_grants + investment_grants,
+    fim_state_purchases_real = fim_state_purchases - lag(fim_state_purchases) * state_purchases_deflator_growth,
+    
+    fim_federal_purchases = nipa_total_purchases - fim_state_purchases,
+    fim_federal_purchases_real = nipa_total_purchases_real - fim_state_purchases_real,
+    
+    consumption_real = consumption - lag(consumption) * consumption_deflator_growth
   )
 
 #------------------- Contributions Figures ----------------------------#
@@ -123,8 +104,8 @@ current_inputs_long <- pivot_longer(current_inputs, cols = where(is.numeric), va
 
 # Join Contributions 
 contributions_comparison <- inner_join(current_long,
-                         previous_long,
-                         by = c('date', 'name')) %>% 
+                                       previous_long,
+                                       by = c('date', 'name')) %>% 
   rename(variable = name) %>% 
   as_tsibble(index = date) 
 
@@ -145,87 +126,19 @@ comparison_long <-
 
 # Define the "components", i.e. the data we want to include in our contributions comparison plots 
 components <- c(
-  "federal_purchases_contribution",
-  "federal_purchases", 
-  "federal_purchases_real", 
-  "consumption_grants_contribution", 
-  "consumption_grants",
-  "consumption_grants_real",
-  "investment_grants_contribution",
-  "investment_grants",
-  "investment_grants_real",
-  "state_purchases_contribution", 
-  "state_purchases",
-  "state_purchases_real",
-  "federal_non_corporate_taxes_contribution",
-  "federal_non_corporate_taxes",
-  "federal_non_corporate_taxes_real",
-  "state_non_corporate_taxes_contribution", 
-  "state_non_corporate_taxes",
-  "state_non_corporate_taxes_real",
-  "federal_corporate_taxes_contribution", 
-  "federal_corporate_taxes",
-  "federal_corporate_taxes_real",
-  "supply_side_ira_contribution", 
-  "supply_side_ira",
-  "supply_side_ira_real",
-  "state_corporate_taxes_contribution", 
-  "state_corporate_taxes",
-  "state_corporate_taxes_real",
-  "federal_social_benefits_contribution", 
-  "federal_social_benefits",
-  "federal_social_benefits_real",
-  "state_social_benefits_contribution", 
-  "state_social_benefits",
-  "state_social_benefits_real",
-  "rebate_checks_contribution", 
-  "rebate_checks",
-  "rebate_checks_real",
-  "rebate_checks_arp_contribution", 
-  "rebate_checks_arp",
-  "rebate_checks_arp_real",
-  "federal_ui_contribution", 
-  "federal_ui",
-  "federal_ui_real",
-  "state_ui_contribution", 
-  "state_ui",
-  "state_ui_real",
-  "federal_subsidies_contribution",  
-  "federal_subsidies",
-  "federal_subsidies_real", 
-  "federal_aid_to_small_businesses_arp_contribution", 
-  "federal_aid_to_small_businesses_arp",
-  "federal_aid_to_small_businesses_arp_real", 
-  "federal_other_direct_aid_arp_contribution", 
-  "federal_other_direct_aid_arp",
-  "federal_other_direct_aid_arp_real", 
-  "federal_other_vulnerable_arp_contribution", 
-  "federal_other_vulnerable_arp",
-  "federal_other_vulnerable_arp_real", 
-  "federal_student_loans_contribution",
-  "federal_student_loans",
-  "federal_student_loans_real",
-  "state_subsidies_contribution", 
-  "state_subsidies",
-  "state_subsidies_real", 
-  "federal_health_outlays_contribution", 
-  "federal_health_outlays",
-  "federal_health_outlays_real", 
-  "state_health_outlays_contribution", 
-  "state_health_outlays",
-  "state_health_outlays_real", 
+  
   "federal_contribution",
-  "federal",
-  "federal_real",
-  "state_contribution", 
-  "state",
-  "state_real", 
-  "taxes_contribution", 
-  "taxes",
-  "taxes_real",
-  "transfers_contribution",
-  "transfers",
-  "transfers_real",
+  "fim_federal_purchases_real",
+  "nipa_federal_purchases_real",
+  
+  "state_contribution",
+  "fim_state_purchases_real",
+  "nipa_state_purchases_real",
+  
+  "consumption_contribution",
+  "consumption",
+  "consumption_real",
+  
   "fiscal_impact_measure"
 )
 
@@ -281,7 +194,7 @@ write_rds(plots, 'data/plots')
 
 current_summary <- 
   current %>%
-  select(date, federal_contribution, state_contribution, taxes_contribution, transfers_contribution, fiscal_impact_measure) %>% 
+  select(date, federal_contribution, state_contribution, consumption_contribution, fiscal_impact_measure) %>% 
   pivot_longer(
     values_to = 'Current',
     names_to = "name", 
@@ -290,7 +203,7 @@ current_summary <-
 
 previous_summary <-
   previous %>% 
-  select(date, federal_contribution, state_contribution, taxes_contribution, transfers_contribution, fiscal_impact_measure) %>%
+  select(date, federal_contribution, state_contribution, consumption_contribution, fiscal_impact_measure) %>% 
   pivot_longer(
     values_to = 'Previous',
     names_to = "name",
@@ -305,11 +218,10 @@ summary <- inner_join(current_summary,
     name == "state_contribution" ~ "State Purchases",
     name == "federal_contribution" ~ "Federal Purchases",
     name == "fiscal_impact_measure" ~ "Fiscal Impact Measure",
-    name == "taxes_contribution" ~ "Taxes",
-    name == "transfers_contribution" ~ "Transfers",
+    name == "consumption_contribution" ~ "Consumption",
     TRUE ~ "Other"
   )) %>%
-  mutate(name = factor(name, levels = c("Fiscal Impact Measure", "Federal Purchases", "State Purchases", "Taxes", "Transfers"))) %>%
+  mutate(name = factor(name, levels = c("Fiscal Impact Measure", "Federal Purchases", "State Purchases", "Consumption"))) %>%
   arrange(date, name)
 
 
@@ -357,11 +269,4 @@ summary_tbl <-
     cell_text(weight = "bold")
   ),
   locations = list(cells_body(rows = name == 'Fiscal Impact Measure')))
-
-
-
-
-
-
-
 
