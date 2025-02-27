@@ -71,22 +71,22 @@ scale_to_gdp_purchases <- function(x, # the data in question,
 # ===========================
 
 # ---- contribution ----
-#' Calculate FIM Contributions, with optional MPCs
+#' Calculate FIM Contributions for purchases 
 #'
 #' This function calculates the generic contribution of a time series to GDP
-#' growth. It optionally applies an MPC transformation to the input series before
-#' calculating the effect on GDP.
+#' growth. 
 contribution_purchases <- function(
-    x, 
-    rpgg, 
-    dg, 
-    gdp) {
+    x, # our data series 
+    rpgg, # real potential GDP growth
+    dg, # deflator growth
+    gdp #gdp
+    ) {
   
   # Actual Growth Minus Counterfactual Growth
   result <- minus_neutral_purchases(x = x, rpgg = rpgg, dg = dg)
   
   # Apply Scale to GDP Function
-  output <- scale_to_gdp_purchases(x = x, result =result, gdp = gdp)
+  output <- scale_to_gdp_purchases(x = x, result = result, gdp = gdp)
   return(output)
 }
 
@@ -94,31 +94,57 @@ contribution_purchases <- function(
 # Unit-Level Functions (TAXES AND TRANSFERS)
 # ===========================================
 
+# Define counterfactual Consumption
+# We subtract the actual policy impulse from consumption and replace it with our 
+# 'counterfactual' impulse - the last quarter's impulse grown at the rate of potential.
 t_counterfactual <- function(x,  # Our data series 
                              c, # Personal Consumption Expenditures
                              rpgg, # Real Potential GDP Growth (quarterly)
-                             dg # Deflator Growth (quartelry)
+                             dg # Deflator Growth (quarterly)
 ) {
   
   
-  counterfactual <- c - x + lag(x)*(1+rpgg+dg)
+  counterfactual <- as.numeric(c - x + lag(x)*(1+rpgg+dg))
   return(counterfactual)
 }
 
-minus_neutral_t <- function(x,
-                            c, 
+# Define minus neutral
+minus_neutral_t <- function(c, 
                             counterfactual
 ) {
-  result <- (c/lag(c))^4 - (counterfactual/lag(c))^4 
-  return(result)
+  minus_neutral <- (c/lag(c))^4 - (counterfactual/lag(c))^4 
+  return(minus_neutral)
 }
 
-scale_to_gdp_t <- function(x,
+# Scale results to GDP 
+scale_to_gdp_t <- function(minus_neutral,
                            gdp,
                            c
 ) {
-  output <- result*(lag(c)/lag(gdp))
-  return(output)
+  result <- 100*minus_neutral*(lag(c)/lag(gdp))
+  return(result)
 }
 
+# ===========================
+# Wrapper Function (CONSUMPTION)
+# ===========================
+
+contribution_transfers <- function(x, # our data
+                                   c, # consumption 
+                                   rpgg, # real potential GDP growth
+                                   dg, # deflator growth
+                                   gdp # gdp 
+                                   ) {
+  
+  # Define Counterfactual
+  counterfactual <- as.numeric(c - x + lag(x) * (1 + rpgg + dg))
+  
+  # Define Minus Neutral
+  minus_neutral <- (c / lag(c))^4 - (counterfactual / lag(c))^4
+  
+  # Scale to GDP
+  output <- 100 * minus_neutral * (lag(c) / lag(gdp))
+  
+  return(output)
+}
 

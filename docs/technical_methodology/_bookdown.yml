@@ -1,0 +1,7 @@
+rmd_files:
+  - index.Rmd
+  - 01-data-sources.Rmd
+  - 02-data-processing.Rmd
+  - 03-fim-calculation.Rmd
+  - 04-economics-methodology.Rmd
+delete_merged_file: true

@@ -40,6 +40,18 @@ import_historical_overrides <- function() {
     mutate(date = yearquarter(date))
 }
 
+# Deflator overrides
+import_deflator_overrides <- function() {
+  readxl::read_xlsx('data/forecast.xlsx',
+                    sheet = 'deflators_override') %>% # Read in overrides for deflators
+    select(-name) %>% # Remove longer name since we don't need it
+    pivot_longer(-variable,
+                 names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
+    pivot_wider(names_from = 'variable',
+                values_from = 'value') %>% 
+    mutate(date = yearquarter(date))
+}
+
 ## Create a data frame of appropriate length populated by NAs
 create_placeholder_nas <- function(col_name = "data_series",
                                    start = "2022-10-01",

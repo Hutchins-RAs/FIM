@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Data Sources and Data Cleaning | Economics Methodology</title>
+  <meta name="description" content="2 Data Sources and Data Cleaning | Economics Methodology" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Data Sources and Data Cleaning | Economics Methodology" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Data Sources and Data Cleaning | Economics Methodology" />
+  
+  
+  
+
+<meta name="author" content="Georgia Nabors" />
+
+
+<meta name="date" content="2025-02-26" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="economics-methodology.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Welcome!</a></li>
+<li class="chapter" data-level="2" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html"><i class="fa fa-check"></i><b>2</b> Data Sources and Data Cleaning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#data-sources"><i class="fa fa-check"></i><b>2.1</b> Data Sources</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#beas-national-accounts-data"><i class="fa fa-check"></i><b>2.1.1</b> BEA’s National Accounts Data</a></li>
+<li class="chapter" data-level="2.1.2" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#forecasts"><i class="fa fa-check"></i><b>2.1.2</b> Forecasts</a></li>
+<li class="chapter" data-level="2.1.3" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#overrides"><i class="fa fa-check"></i><b>2.1.3</b> Overrides</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#data-cleaning"><i class="fa fa-check"></i><b>2.2</b> Data Cleaning</a></li>
+<li class="chapter" data-level="2.3" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#data-imports"><i class="fa fa-check"></i><b>2.3</b> Data Imports</a></li>
+<li class="chapter" data-level="2.4" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#cleaning-our-fim-data"><i class="fa fa-check"></i><b>2.4</b> Cleaning Our FIM Data</a></li>
+<li class="chapter" data-level="2.5" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#create-accessory-variables"><i class="fa fa-check"></i><b>2.5</b> Create Accessory Variables</a></li>
+<li class="chapter" data-level="2.6" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#defining-input-data"><i class="fa fa-check"></i><b>2.6</b> Defining Input Data</a></li>
+<li class="chapter" data-level="2.7" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#defining-the-fim-functions"><i class="fa fa-check"></i><b>2.7</b> Defining the FIM Functions</a></li>
+<li class="chapter" data-level="2.8" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#applying-our-mpcs"><i class="fa fa-check"></i><b>2.8</b> Applying Our MPCs</a></li>
+<li class="chapter" data-level="2.9" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#calculating-the-fim"><i class="fa fa-check"></i><b>2.9</b> Calculating the FIM</a>
+<ul>
+<li class="chapter" data-level="2.9.1" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#purchases-fim"><i class="fa fa-check"></i><b>2.9.1</b> Purchases FIM</a></li>
+<li class="chapter" data-level="2.9.2" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#net-transfers-fim"><i class="fa fa-check"></i><b>2.9.2</b> Net Transfers FIM</a></li>
+</ul></li>
+<li class="chapter" data-level="2.10" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#outputting-results"><i class="fa fa-check"></i><b>2.10</b> Outputting Results</a>
+<ul>
+<li class="chapter" data-level="2.10.1" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#generating-web-materials"><i class="fa fa-check"></i><b>2.10.1</b> Generating Web Materials</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="economics-methodology.html"><a href="economics-methodology.html"><i class="fa fa-check"></i><b>3</b> Economics Methodology</a>
+<ul>
+<li class="chapter" data-level="3.0.1" data-path="economics-methodology.html"><a href="economics-methodology.html#marginal-propensities-to-consume"><i class="fa fa-check"></i><b>3.0.1</b> Marginal Propensities to Consume</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Economics Methodology</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="data-sources-and-data-cleaning" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Data Sources and Data Cleaning<a href="data-sources-and-data-cleaning.html#data-sources-and-data-cleaning" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="data-sources" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Data Sources<a href="data-sources-and-data-cleaning.html#data-sources" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The FIM draws from several sources of data.</p>
+<div id="beas-national-accounts-data" class="section level3 hasAnchor" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> BEA’s National Accounts Data<a href="data-sources-and-data-cleaning.html#beas-national-accounts-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To calculate the FIM in history, we use the national accounts data published by the U.S. Commerce Department’s Bureau of Economic Analysis (BEA). Louise calls this data “the NIPAs”, short for the “National Income and Product Accounts.” BEA’s economic statistics provide a comprehensive view of U.S. production, consumption, investment, exports, imports, income, and saving. We pull in the national accounts data from 1970 Q1 until the current quarter for our “historical” FIM calculation, meaning it is based on officially published past data as opposed to our projections for future spending.</p>
+<p>In January, April, July, and October, BEA releases advance estimates for GDP and its components - a new quarter of “historical” data that we need to add to the FIM. Between these quarterly releases, BEA publishes data revisions - updates to its previously published estimates that reflect more complete and accurate information about the economy. Each month, we access this data (either a new quarter or a revision) through Haver using an R script called <code>data_raw/haver-pull.R</code>. We store the raw national accounts data in <code>data_raw/national_accounts.RDS</code>.</p>
+<p>We pull some of our FIM inputs straight from Haver, but sometimes we need to construct our variables. Our federal non-corporate taxes data, for example, is the sum of three separate Haver data series- federal personal taxes, federal payroll taxes, and federal income taxes.</p>
+<p><strong>Working with Haver</strong></p>
+<p>Note: Please read the Haver section of Nasiha’s FIM Guide for instructions on how to set up Haver DLX on your computer.</p>
+<p>We run <code>haver-pull.R</code> before each FIM update to overwrite the old version of <code>data_raw/national_accounts.RDS</code> with the most recent data. As implied by the name of the script, we pull the BEA data from Haver Analytics, a paid statistical service that quickly updates and manages historical time series data- similar to FRED. Each data series is labeled with a unique Haver code. <code>gs</code>, for example, is the Haver code for nominal state purchases.</p>
+<p>More specifically, we access Haver ‘DLX’ - short for Data Link Express - the software bundle that updates and provides access to the Haver databases. We refer to ‘Haver’ and ‘DLX’ interchangeably. Extensive knowledge of the inner workings of Haver is not at all required for the FIM, but understanding the basics can be helpful.</p>
+<p>The <code>haver-pull.R</code> script relies on the Haver R package. The objects and functions in this package are designed to allow users to efficiently retrieve data from the Haver databases. The functions we use generally take as arguments specifications for databases (<code>@usna</code> and <code>@usecon</code>) and time series codes to be retrieved.</p>
+<p>Our <code>haver-pull.R</code> script begins with the following:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="data-sources-and-data-cleaning.html#cb1-1" tabindex="-1"></a><span class="fu">haver.path</span>(<span class="st">&quot;//esdata01.brookings.edu/DLX/DATA/&quot;</span>)</span></code></pre></div>
+<p>This important line of code sets the path to the Haver databases. In the past, we’ve encountered errors when BTech makes changes to how we access Haver through the research servers. If you run into insurmountable issues, I’d recommend reaching out to Valerie Wirtschafter for assistance. She worked with Manu in developing the <code>haver-pull.R</code> script.</p>
+<p>Although we’ve automated our data import process, it’s sometimes helpful or necessary to look at or manually pull a data series from Haver (to inform our forecasts, to answer a Louise query, etc.). You can use the research server or the desktop Haver app to do this. When searching Haver, you must enter a Haver code followed by the database containing that series. For example, to pull nominal federal purchases search <code>gf@usna</code>, the Haver code followed by the database tag for the national accounts. There’s a list of Haver codes and their corresponding variables in the data-raw folder.</p>
+</div>
+<div id="forecasts" class="section level3 hasAnchor" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Forecasts<a href="data-sources-and-data-cleaning.html#forecasts" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Not only do we calculate the FIM in history, but also for an 8-quarter forecast period based on our projections for taxes and spending. The second data source is our forecast sheet (<code>data/forecast.xlsx</code>), which contains these projections for each of the FIM’s primary inputs.</p>
+<div class="float">
+<img src="images/forecast_sheet.png" alt="“An image of the ‘forecast’ page of the ‘forecast.xlsx’ workbook.”" />
+<div class="figcaption">“An image of the ‘forecast’ page of the ‘forecast.xlsx’ workbook.”</div>
+</div>
+<p>We generate forecasts based on CBO economic, budget, and revenue projections, Monthly Personal Income (MPI) data from BEA, and Louise’s intuition about the future path of fiscal policy/the economy. The CBO and MPI data we use to form these forecasts is stored in the forecast sheet - inputted there manually - and is never used by this code. We access only the ‘forecast’, ‘historical_overrides’, and ‘deflator_overrides’ sheets contained within <code>data/forecast.xlsx</code>. The overrides are discussed below.</p>
+<p>Nasiha’s FIM guide contains more detailed instructions on the CBO and MPI data we use to create our forecasts.</p>
+<p>Take some time to review everything contained in the forecast sheet - there’s a ton to learn about how we form our projections, and it’s best to dive right in!</p>
+</div>
+<div id="overrides" class="section level3 hasAnchor" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> Overrides<a href="data-sources-and-data-cleaning.html#overrides" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong>Historical Overrides</strong>
+Sometimes, we make different assumptions than BEA about how/when money was spent. We use the ‘historical_overrides’ sheet mentioned above to overwrite the NIPAs with our own data <em>in history</em>. These overrides are applied during the pandemic period. BEA assumes some COVID-19 related spending occurred entirely in one quarter, while we spread the spending out over multiple quarters. Also, in some cases there simply isn’t a Haver series for the pandemic spending we want to include, so we need to ‘overwrite’ that non-existent data with our own.</p>
+<p><strong>Deflator Overrides</strong>
+We also use our own deflators in the projection period. Our CBO projections data (discussed below) includes forecasts for each of the variables that we need to calculate the federal, state, and consumption deflators in the future. Instead of taking these as given, however, we sometimes make changes to the deflators during our projection period based on what Louise knows/expects to happen. We make these edits in <code>data-raw\forecast.xlsx</code> in the ‘deflators’ sheet. The clean, final forecasts for each of our deflators is stored in the ‘deflator_overrides’ sheet within <code>forecast.xlsx</code>. ‘deflator_overrides’ is what’s actually read in during our data import process.</p>
+<p>In practice, this means that we overwrite CBO’s deflator projections for the entirety of our forecast period with whatever is in the ‘deflator_overrides’ sheet. Sometimes this happens to match CBO if we elect not to make edits.</p>
+<p><strong>CBO Projections</strong>
+Lastly, we use CBO projections for real potential GDP growth and GDP growth. Potential GDP growth is used in our FIM calculation, and GDP growth is used to generate GDP projections for our 8-quarter forecast period.</p>
+<p>CBO updates it’s Economic Projections and 10-Year Budget Projections every couple of months. We add these revised numbers to our forecast sheet so we can easily see CBO’s estimates as we are adjusting our own forecasts. We also store CBO’s projections as an R data set in <code>data_raw/projections.RDS</code>. See Nasiha’s FIM guide for instructions on how we overwrite this file when CBO publishes new projections. It’s important to follow her guidelines carefully!</p>
+<p><code>data_raw/projections.RDS</code> contains many variables, but as mentioned above, we only end up using real potential GDP and GDP growth.</p>
+
+</div>
+</div>
+<div id="data-cleaning" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Data Cleaning<a href="data-sources-and-data-cleaning.html#data-cleaning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This section provides a walk through of <code>fiscal_impact_BETA.R</code>, the script that pulls in all of our data, cleans it, and calculates the FIM.<code>fiscal_impact_BETA.R</code> also creates several output files that we need in order to review and publish our results.</p>
+<p>It first loads the packages needed to execute our analysis - <code>lubridate</code>, <code>tidyverse</code>, etc. We access the functions in these packages to wrangle our data, perform calculations, create charts, and produce clean outputs to show Louise.
+By running <code>devtools::load_all()</code>, we load all of the functions from our directory into the current R session, allowing us to access and use the functions written by Manu in the FIM package. Although the code has evolved significantly since Manu’s first rendition, we still rely on some of his original functions to clean our data and calculate the FIM.</p>
+<p>Next, we define several date objects such as <code>current_quarter</code> and <code>last-month-year</code> - these are important for both cleaning our data and properly storing our results. Note that this section is important and should be handled carefully. The objects and functions defined here are critical in other parts of this code.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="data-sources-and-data-cleaning.html#cb2-1" tabindex="-1"></a><span class="co"># This code block prints the chunk entitled &quot;section-A.1-prep-for-update&quot; from</span></span>
+<span id="cb2-2"><a href="data-sources-and-data-cleaning.html#cb2-2" tabindex="-1"></a><span class="co"># fiscal_impact_BETA.R</span></span></code></pre></div>
+<p>This next section of code defines empty folders that will store our results upon running the FIM. In a later part of this script, we export our inputs and outputs as Excel files to these directories. Here, we also create a copy of the current version of the forecast sheet and save it as <code>results/{month_year}/input_data/forecast_{month_year}.xlsx</code>. It’s important that we preserve the exact version of the forecast sheet used to generate the results given that we often make changes to <code>data/forecast.xlsx</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="data-sources-and-data-cleaning.html#cb3-1" tabindex="-1"></a><span class="co">#setting our reference period to be the post-cbo files if we&#39;ve already produced</span></span>
+<span id="cb3-2"><a href="data-sources-and-data-cleaning.html#cb3-2" tabindex="-1"></a><span class="co"># fim output incorporating the cbo update</span></span>
+<span id="cb3-3"><a href="data-sources-and-data-cleaning.html#cb3-3" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}-post-cbo&#39;</span>))){</span>
+<span id="cb3-4"><a href="data-sources-and-data-cleaning.html#cb3-4" tabindex="-1"></a>  last_month_year<span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">&#39;{month_year}-post-cbo&#39;</span>)</span>
+<span id="cb3-5"><a href="data-sources-and-data-cleaning.html#cb3-5" tabindex="-1"></a>}</span>
+<span id="cb3-6"><a href="data-sources-and-data-cleaning.html#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="data-sources-and-data-cleaning.html#cb3-7" tabindex="-1"></a><span class="co"># Create folder for current update in the results directory</span></span>
+<span id="cb3-8"><a href="data-sources-and-data-cleaning.html#cb3-8" tabindex="-1"></a><span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}&#39;</span>)) </span>
+<span id="cb3-9"><a href="data-sources-and-data-cleaning.html#cb3-9" tabindex="-1"></a><span class="co"># Folder to store forecast sheet from current update</span></span>
+<span id="cb3-10"><a href="data-sources-and-data-cleaning.html#cb3-10" tabindex="-1"></a><span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/input_data&#39;</span>)) </span>
+<span id="cb3-11"><a href="data-sources-and-data-cleaning.html#cb3-11" tabindex="-1"></a><span class="co"># Beta folder for Lorae&#39;s refactored results</span></span>
+<span id="cb3-12"><a href="data-sources-and-data-cleaning.html#cb3-12" tabindex="-1"></a><span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta&#39;</span>))</span>
+<span id="cb3-13"><a href="data-sources-and-data-cleaning.html#cb3-13" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="data-sources-and-data-cleaning.html#cb3-14" tabindex="-1"></a><span class="co"># Copy the file &#39;forecast.xlsx&#39; from the &#39;data&#39; directory to the &#39;input_data&#39; directory</span></span>
+<span id="cb3-15"><a href="data-sources-and-data-cleaning.html#cb3-15" tabindex="-1"></a><span class="co"># This is the copy we keep for the current update</span></span>
+<span id="cb3-16"><a href="data-sources-and-data-cleaning.html#cb3-16" tabindex="-1"></a><span class="fu">file_copy</span>(</span>
+<span id="cb3-17"><a href="data-sources-and-data-cleaning.html#cb3-17" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">&#39;data/forecast.xlsx&#39;</span>, </span>
+<span id="cb3-18"><a href="data-sources-and-data-cleaning.html#cb3-18" tabindex="-1"></a>  <span class="at">new_path =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/input_data/forecast_{month_year}.xlsx&#39;</span>), </span>
+<span id="cb3-19"><a href="data-sources-and-data-cleaning.html#cb3-19" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-20"><a href="data-sources-and-data-cleaning.html#cb3-20" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="data-imports" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Data Imports<a href="data-sources-and-data-cleaning.html#data-imports" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This next section of code sources a helper script called <code>src/data_import.R</code>, which defines five crucial functions: <code>import_projections()</code>, <code>import_national_accounts()</code>, <code>import_forecast()</code>, <code>import_historical_overrides()</code>, and <code>import_deflator_overrides()</code>. These functions load our data and store it in memory. For example, the helper script writes <code>import_forecast()</code> to execute the following:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="data-sources-and-data-cleaning.html#cb4-1" tabindex="-1"></a>import_forecast <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb4-2"><a href="data-sources-and-data-cleaning.html#cb4-2" tabindex="-1"></a>  readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">&#39;data/forecast.xlsx&#39;</span>, <span class="at">sheet =</span> <span class="st">&#39;forecast&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="data-sources-and-data-cleaning.html#cb4-3" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>name) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="data-sources-and-data-cleaning.html#cb4-4" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="sc">-</span>variable, <span class="at">names_to =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="data-sources-and-data-cleaning.html#cb4-5" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&#39;variable&#39;</span>, <span class="at">values_from =</span> <span class="st">&#39;value&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="data-sources-and-data-cleaning.html#cb4-6" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">yearquarter</span>(date)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-7"><a href="data-sources-and-data-cleaning.html#cb4-7" tabindex="-1"></a>    <span class="fu">as_tsibble</span>(<span class="at">index =</span> date)</span>
+<span id="cb4-8"><a href="data-sources-and-data-cleaning.html#cb4-8" tabindex="-1"></a>}</span></code></pre></div>
+<p>In the block of code above, we import our forecast sheet and perform some basic cleaning. The NIPAs, CBO projections, and historical overrides are read and processed similarly.</p>
+<p><code>src/data_import.R</code> also defines a function called <code>create_placeholder_nas()</code>, which generates an empty data frame populated by NAs that will eventually store our data. The data frame’s length is 259, enough rows to store inputs from 1970 Q1 to 2034 Q3.</p>
+<p>After sourcing the helper script, we execute the functions and load our data, creating five data frames: <code>projections</code>, <code>forecast</code>, <code>historical_overrides</code>, <code>deflator_overrides</code>, and <code>national_accounts</code>. These five data sources, discussed more extensively below, contain everything we need to calculate the FIM.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="data-sources-and-data-cleaning.html#cb5-1" tabindex="-1"></a><span class="co"># Source the module in the src directory containing the functions which import</span></span>
+<span id="cb5-2"><a href="data-sources-and-data-cleaning.html#cb5-2" tabindex="-1"></a><span class="co"># data</span></span>
+<span id="cb5-3"><a href="data-sources-and-data-cleaning.html#cb5-3" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/data_import.R&quot;</span>)</span>
+<span id="cb5-4"><a href="data-sources-and-data-cleaning.html#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="data-sources-and-data-cleaning.html#cb5-5" tabindex="-1"></a><span class="do">## Read in data sources to be combined</span></span>
+<span id="cb5-6"><a href="data-sources-and-data-cleaning.html#cb5-6" tabindex="-1"></a>projections <span class="ot">&lt;-</span> <span class="fu">import_projections</span>()</span>
+<span id="cb5-7"><a href="data-sources-and-data-cleaning.html#cb5-7" tabindex="-1"></a>national_accounts <span class="ot">&lt;-</span> <span class="fu">import_national_accounts</span>()</span>
+<span id="cb5-8"><a href="data-sources-and-data-cleaning.html#cb5-8" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> <span class="fu">import_forecast</span>()</span>
+<span id="cb5-9"><a href="data-sources-and-data-cleaning.html#cb5-9" tabindex="-1"></a>historical_overrides <span class="ot">&lt;-</span> <span class="fu">import_historical_overrides</span>()</span>
+<span id="cb5-10"><a href="data-sources-and-data-cleaning.html#cb5-10" tabindex="-1"></a>deflator_overrides <span class="ot">&lt;-</span> <span class="fu">import_deflator_overrides</span>()</span>
+<span id="cb5-11"><a href="data-sources-and-data-cleaning.html#cb5-11" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="data-sources-and-data-cleaning.html#cb5-12" tabindex="-1"></a><span class="do">## Calculate what the current quarter is using the date from historical overrides</span></span>
+<span id="cb5-13"><a href="data-sources-and-data-cleaning.html#cb5-13" tabindex="-1"></a>current_quarter <span class="ot">&lt;-</span> historical_overrides <span class="sc">%&gt;%</span> <span class="fu">slice_max</span>(date) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(date)</span></code></pre></div>
+</div>
+<div id="cleaning-our-fim-data" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Cleaning Our FIM Data<a href="data-sources-and-data-cleaning.html#cleaning-our-fim-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In this section of code, we prepare our data inputs. We create 23 data frames with two columns: (1) the date and (2) a data series for one of our FIM variables.</p>
+<p>The 23 primary FIM inputs are as follows:
+1. Federal Purchases
+2. Consumption Grants
+3. Investment Grants
+4. State Purchases
+5. Federal Non-Corporate Taxes
+6, State Non-Corporate Taxes
+7. Federal Corporate Taxes
+8. Supply Side IRA<br />
+9. State Corporate Taxes<br />
+10. Federal Social Benefits<br />
+11. State Social Benefits<br />
+12. Rebate Checks<br />
+13. Rebate Checks ARP<br />
+14. Federal UI<br />
+15. State UI<br />
+16. Federal Subsidies<br />
+17. Federal Aid to Small Businesses ARP<br />
+18. Federal Other Direct Aid ARP<br />
+19. Federal Other Vulnerable ARP<br />
+20. Federal Student Loans<br />
+21. State Subsidies
+22. Federal Health Outlays
+23. State Health Outlays</p>
+<p>We first source a helper script called <code>src/data_cleaning.R</code>, which writes the functions that create the two-column data frames mentioned above. The helper script defines a separate function for each input, calling the appropriate data from <code>national_accounts</code>, <code>forecast</code>, and our overrides data if necessary.</p>
+<p>For example, the helper script defines <code>create_federal_purchases()</code> as the following:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="data-sources-and-data-cleaning.html#cb6-1" tabindex="-1"></a>create_federal_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb6-2"><a href="data-sources-and-data-cleaning.html#cb6-2" tabindex="-1"></a>    national_accounts, </span>
+<span id="cb6-3"><a href="data-sources-and-data-cleaning.html#cb6-3" tabindex="-1"></a>    forecast, </span>
+<span id="cb6-4"><a href="data-sources-and-data-cleaning.html#cb6-4" tabindex="-1"></a>    placeholder_nas</span>
+<span id="cb6-5"><a href="data-sources-and-data-cleaning.html#cb6-5" tabindex="-1"></a>) {</span>
+<span id="cb6-6"><a href="data-sources-and-data-cleaning.html#cb6-6" tabindex="-1"></a>  <span class="co"># Select column of interest from the forecast tibble</span></span>
+<span id="cb6-7"><a href="data-sources-and-data-cleaning.html#cb6-7" tabindex="-1"></a>  forecast <span class="ot">&lt;-</span> forecast <span class="sc">%&gt;%</span> </span>
+<span id="cb6-8"><a href="data-sources-and-data-cleaning.html#cb6-8" tabindex="-1"></a>    <span class="fu">select</span>(date, federal_purchases) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-9"><a href="data-sources-and-data-cleaning.html#cb6-9" tabindex="-1"></a>    <span class="co"># Rename to generic `data_series` for easier merging</span></span>
+<span id="cb6-10"><a href="data-sources-and-data-cleaning.html#cb6-10" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> federal_purchases)</span>
+<span id="cb6-11"><a href="data-sources-and-data-cleaning.html#cb6-11" tabindex="-1"></a>  </span>
+<span id="cb6-12"><a href="data-sources-and-data-cleaning.html#cb6-12" tabindex="-1"></a>  <span class="co"># Select column of interest from the national accounts tibble</span></span>
+<span id="cb6-13"><a href="data-sources-and-data-cleaning.html#cb6-13" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb6-14"><a href="data-sources-and-data-cleaning.html#cb6-14" tabindex="-1"></a>    <span class="co"># `gf` is the Haver code for federal purchases</span></span>
+<span id="cb6-15"><a href="data-sources-and-data-cleaning.html#cb6-15" tabindex="-1"></a>    <span class="fu">select</span>(date, gf) <span class="sc">%&gt;%</span>  </span>
+<span id="cb6-16"><a href="data-sources-and-data-cleaning.html#cb6-16" tabindex="-1"></a>    <span class="co"># Rename data to generic `data_series` for easier merging</span></span>
+<span id="cb6-17"><a href="data-sources-and-data-cleaning.html#cb6-17" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> gf) </span>
+<span id="cb6-18"><a href="data-sources-and-data-cleaning.html#cb6-18" tabindex="-1"></a>  </span>
+<span id="cb6-19"><a href="data-sources-and-data-cleaning.html#cb6-19" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the forecast using the commonly named `data_series`</span></span>
+<span id="cb6-20"><a href="data-sources-and-data-cleaning.html#cb6-20" tabindex="-1"></a>  <span class="co"># and `date` columns. The historic (national accounts) data take precedence in</span></span>
+<span id="cb6-21"><a href="data-sources-and-data-cleaning.html#cb6-21" tabindex="-1"></a>  <span class="co"># the case of any conflicting observations.</span></span>
+<span id="cb6-22"><a href="data-sources-and-data-cleaning.html#cb6-22" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, forecast, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-23"><a href="data-sources-and-data-cleaning.html#cb6-23" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb6-24"><a href="data-sources-and-data-cleaning.html#cb6-24" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(placeholder_nas, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-25"><a href="data-sources-and-data-cleaning.html#cb6-25" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb6-26"><a href="data-sources-and-data-cleaning.html#cb6-26" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>)))</span>
+<span id="cb6-27"><a href="data-sources-and-data-cleaning.html#cb6-27" tabindex="-1"></a>  </span>
+<span id="cb6-28"><a href="data-sources-and-data-cleaning.html#cb6-28" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb6-29"><a href="data-sources-and-data-cleaning.html#cb6-29" tabindex="-1"></a>}</span></code></pre></div>
+<p>In the function above, we retrieve our forecast sheet data, filter to keep only our projections for federal purchases, and rename <code>federal_purchases</code> to a generic <code>data_series</code>. We then call our national accounts data and keep only the columns <code>gf</code> and <code>date</code>. <code>gf</code> is the Haver code for federal purchases. We rename <code>gf</code> to <code>data_series</code> to merge the historical BEA data with our forecasts. Using the <code>coalesce_join()</code> function, we merge these two datasets by the <code>date</code> column. When the data sources have conflicting values for the same date, the value from the national accounts data overrides the forecast. We then merge the data with our placeholder_nas object (see above for how this is created), and replace the remaining NAs with zeros. The result is a 259-row data frame with two columns: <code>date</code> and <code>data_series</code> - our data for federal purchases.</p>
+<p>Some of our FIM inputs are slightly more complicated. Federal non-corporate taxes, for example, is the sum of multiple Haver variables. In the <code>create_federal_non_corporate_taxes()</code> function, we perform calculations using three different Haver series before merging the national accounts data with our forecasts. See below:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="data-sources-and-data-cleaning.html#cb7-1" tabindex="-1"></a>create_federal_non_corporate_taxes <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb7-2"><a href="data-sources-and-data-cleaning.html#cb7-2" tabindex="-1"></a>    national_accounts, </span>
+<span id="cb7-3"><a href="data-sources-and-data-cleaning.html#cb7-3" tabindex="-1"></a>    forecast, </span>
+<span id="cb7-4"><a href="data-sources-and-data-cleaning.html#cb7-4" tabindex="-1"></a>    placeholder_nas</span>
+<span id="cb7-5"><a href="data-sources-and-data-cleaning.html#cb7-5" tabindex="-1"></a>) {</span>
+<span id="cb7-6"><a href="data-sources-and-data-cleaning.html#cb7-6" tabindex="-1"></a>  <span class="co"># Select column of interest from the forecast tibble</span></span>
+<span id="cb7-7"><a href="data-sources-and-data-cleaning.html#cb7-7" tabindex="-1"></a>  forecast <span class="ot">&lt;-</span> forecast <span class="sc">%&gt;%</span> </span>
+<span id="cb7-8"><a href="data-sources-and-data-cleaning.html#cb7-8" tabindex="-1"></a>    <span class="fu">select</span>(date, federal_non_corporate_taxes) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-9"><a href="data-sources-and-data-cleaning.html#cb7-9" tabindex="-1"></a>    <span class="co"># Rename to generic `data_series` for easier merging</span></span>
+<span id="cb7-10"><a href="data-sources-and-data-cleaning.html#cb7-10" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> federal_non_corporate_taxes)</span>
+<span id="cb7-11"><a href="data-sources-and-data-cleaning.html#cb7-11" tabindex="-1"></a>  </span>
+<span id="cb7-12"><a href="data-sources-and-data-cleaning.html#cb7-12" tabindex="-1"></a>  <span class="co"># Select column of interest from the national accounts tibble</span></span>
+<span id="cb7-13"><a href="data-sources-and-data-cleaning.html#cb7-13" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb7-14"><a href="data-sources-and-data-cleaning.html#cb7-14" tabindex="-1"></a>    <span class="co"># Calculate federal non corporate taxes as a sum of 3 series</span></span>
+<span id="cb7-15"><a href="data-sources-and-data-cleaning.html#cb7-15" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">data_series =</span> </span>
+<span id="cb7-16"><a href="data-sources-and-data-cleaning.html#cb7-16" tabindex="-1"></a>             gfrpt <span class="sc">+</span> <span class="co"># Haver code for federal personal taxes</span></span>
+<span id="cb7-17"><a href="data-sources-and-data-cleaning.html#cb7-17" tabindex="-1"></a>             gfrpri <span class="sc">+</span> <span class="co"># Haver code for federal production taxes</span></span>
+<span id="cb7-18"><a href="data-sources-and-data-cleaning.html#cb7-18" tabindex="-1"></a>             gfrs <span class="co"># Haver code for federal payroll taxes</span></span>
+<span id="cb7-19"><a href="data-sources-and-data-cleaning.html#cb7-19" tabindex="-1"></a>           ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-20"><a href="data-sources-and-data-cleaning.html#cb7-20" tabindex="-1"></a>    <span class="co"># Keep the date and the new data_series column</span></span>
+<span id="cb7-21"><a href="data-sources-and-data-cleaning.html#cb7-21" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series)</span>
+<span id="cb7-22"><a href="data-sources-and-data-cleaning.html#cb7-22" tabindex="-1"></a>  </span>
+<span id="cb7-23"><a href="data-sources-and-data-cleaning.html#cb7-23" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the forecast using the commonly named `data_series`</span></span>
+<span id="cb7-24"><a href="data-sources-and-data-cleaning.html#cb7-24" tabindex="-1"></a>  <span class="co"># and `date` columns. The historic (national accounts) data take precedence in</span></span>
+<span id="cb7-25"><a href="data-sources-and-data-cleaning.html#cb7-25" tabindex="-1"></a>  <span class="co"># the case of any conflicting observations.</span></span>
+<span id="cb7-26"><a href="data-sources-and-data-cleaning.html#cb7-26" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, forecast, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-27"><a href="data-sources-and-data-cleaning.html#cb7-27" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb7-28"><a href="data-sources-and-data-cleaning.html#cb7-28" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(placeholder_nas, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-29"><a href="data-sources-and-data-cleaning.html#cb7-29" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb7-30"><a href="data-sources-and-data-cleaning.html#cb7-30" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>)))</span>
+<span id="cb7-31"><a href="data-sources-and-data-cleaning.html#cb7-31" tabindex="-1"></a>  </span>
+<span id="cb7-32"><a href="data-sources-and-data-cleaning.html#cb7-32" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb7-33"><a href="data-sources-and-data-cleaning.html#cb7-33" tabindex="-1"></a>}</span></code></pre></div>
+<p>There are also some data series that require us to apply historical overrides- we make adjustments to the historical national accounts data to reflect our own assumptions about how/when money was spent when we disagree with BEA. Here is an example of a variable that requires us to call our historical overrides:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="data-sources-and-data-cleaning.html#cb8-1" tabindex="-1"></a>create_federal_aid_to_small_businesses_arp <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb8-2"><a href="data-sources-and-data-cleaning.html#cb8-2" tabindex="-1"></a>    national_accounts, </span>
+<span id="cb8-3"><a href="data-sources-and-data-cleaning.html#cb8-3" tabindex="-1"></a>    forecast, </span>
+<span id="cb8-4"><a href="data-sources-and-data-cleaning.html#cb8-4" tabindex="-1"></a>    historical_overrides,</span>
+<span id="cb8-5"><a href="data-sources-and-data-cleaning.html#cb8-5" tabindex="-1"></a>    placeholder_nas</span>
+<span id="cb8-6"><a href="data-sources-and-data-cleaning.html#cb8-6" tabindex="-1"></a>) {</span>
+<span id="cb8-7"><a href="data-sources-and-data-cleaning.html#cb8-7" tabindex="-1"></a>  <span class="co"># Select column of interest from the forecast tibble</span></span>
+<span id="cb8-8"><a href="data-sources-and-data-cleaning.html#cb8-8" tabindex="-1"></a>  forecast <span class="ot">&lt;-</span> forecast <span class="sc">%&gt;%</span> </span>
+<span id="cb8-9"><a href="data-sources-and-data-cleaning.html#cb8-9" tabindex="-1"></a>    <span class="fu">select</span>(date, federal_aid_to_small_businesses_arp) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-10"><a href="data-sources-and-data-cleaning.html#cb8-10" tabindex="-1"></a>    <span class="co"># Rename to generic `data_series` for easier merging</span></span>
+<span id="cb8-11"><a href="data-sources-and-data-cleaning.html#cb8-11" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> federal_aid_to_small_businesses_arp)</span>
+<span id="cb8-12"><a href="data-sources-and-data-cleaning.html#cb8-12" tabindex="-1"></a>  </span>
+<span id="cb8-13"><a href="data-sources-and-data-cleaning.html#cb8-13" tabindex="-1"></a>  <span class="co"># We don&#39;t actually have national accounts as a data series for this tibble.</span></span>
+<span id="cb8-14"><a href="data-sources-and-data-cleaning.html#cb8-14" tabindex="-1"></a>  <span class="co"># So we populate it with a placeholder tibble spanning 1970 Q1 to 2034 Q3 with</span></span>
+<span id="cb8-15"><a href="data-sources-and-data-cleaning.html#cb8-15" tabindex="-1"></a>  <span class="co"># 0s in each entry</span></span>
+<span id="cb8-16"><a href="data-sources-and-data-cleaning.html#cb8-16" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> </span>
+<span id="cb8-17"><a href="data-sources-and-data-cleaning.html#cb8-17" tabindex="-1"></a>    <span class="fu">create_placeholder_nas</span>(</span>
+<span id="cb8-18"><a href="data-sources-and-data-cleaning.html#cb8-18" tabindex="-1"></a>      <span class="at">col_name =</span> <span class="st">&quot;data_series&quot;</span>,</span>
+<span id="cb8-19"><a href="data-sources-and-data-cleaning.html#cb8-19" tabindex="-1"></a>      <span class="at">start =</span> <span class="st">&quot;1970-01-01&quot;</span>,</span>
+<span id="cb8-20"><a href="data-sources-and-data-cleaning.html#cb8-20" tabindex="-1"></a>      <span class="at">end =</span> <span class="st">&quot;2034-07-01&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-21"><a href="data-sources-and-data-cleaning.html#cb8-21" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series) <span class="sc">%&gt;%</span> <span class="co"># Keep only the 2 columns we need</span></span>
+<span id="cb8-22"><a href="data-sources-and-data-cleaning.html#cb8-22" tabindex="-1"></a>  <span class="co"># Override historic entries of national_accounts using historical_overrides data</span></span>
+<span id="cb8-23"><a href="data-sources-and-data-cleaning.html#cb8-23" tabindex="-1"></a>  <span class="fu">mutate_where</span>(</span>
+<span id="cb8-24"><a href="data-sources-and-data-cleaning.html#cb8-24" tabindex="-1"></a>    date <span class="sc">&gt;=</span> <span class="fu">yearquarter</span>(<span class="st">&#39;2020 Q2&#39;</span>) <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> current_quarter,</span>
+<span id="cb8-25"><a href="data-sources-and-data-cleaning.html#cb8-25" tabindex="-1"></a>    <span class="at">data_series =</span> historical_overrides<span class="sc">$</span>federal_aid_to_small_businesses_arp_override</span>
+<span id="cb8-26"><a href="data-sources-and-data-cleaning.html#cb8-26" tabindex="-1"></a>  )</span>
+<span id="cb8-27"><a href="data-sources-and-data-cleaning.html#cb8-27" tabindex="-1"></a>  </span>
+<span id="cb8-28"><a href="data-sources-and-data-cleaning.html#cb8-28" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the forecast using the commonly named `data_series`</span></span>
+<span id="cb8-29"><a href="data-sources-and-data-cleaning.html#cb8-29" tabindex="-1"></a>  <span class="co"># and `date` columns. The historic (national accounts) data take precedence in</span></span>
+<span id="cb8-30"><a href="data-sources-and-data-cleaning.html#cb8-30" tabindex="-1"></a>  <span class="co"># the case of any conflicting observations.</span></span>
+<span id="cb8-31"><a href="data-sources-and-data-cleaning.html#cb8-31" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, forecast, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-32"><a href="data-sources-and-data-cleaning.html#cb8-32" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb8-33"><a href="data-sources-and-data-cleaning.html#cb8-33" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(placeholder_nas, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-34"><a href="data-sources-and-data-cleaning.html#cb8-34" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb8-35"><a href="data-sources-and-data-cleaning.html#cb8-35" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>)))</span>
+<span id="cb8-36"><a href="data-sources-and-data-cleaning.html#cb8-36" tabindex="-1"></a>  </span>
+<span id="cb8-37"><a href="data-sources-and-data-cleaning.html#cb8-37" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb8-38"><a href="data-sources-and-data-cleaning.html#cb8-38" tabindex="-1"></a>}</span></code></pre></div>
+<p>After sourcing the helper script, we execute the functions to build our data inputs.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="data-sources-and-data-cleaning.html#cb9-1" tabindex="-1"></a><span class="co"># Source the module that creates the test data columns used in the FIM</span></span>
+<span id="cb9-2"><a href="data-sources-and-data-cleaning.html#cb9-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/data_cleaning.R&quot;</span>)</span>
+<span id="cb9-3"><a href="data-sources-and-data-cleaning.html#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="data-sources-and-data-cleaning.html#cb9-4" tabindex="-1"></a><span class="co"># Run the functions defined in src/data_cleaning.R to produce the FIM data columns</span></span>
+<span id="cb9-5"><a href="data-sources-and-data-cleaning.html#cb9-5" tabindex="-1"></a>federal_purchases_test <span class="ot">&lt;-</span> <span class="fu">create_federal_purchases</span>(</span>
+<span id="cb9-6"><a href="data-sources-and-data-cleaning.html#cb9-6" tabindex="-1"></a>  national_accounts, </span>
+<span id="cb9-7"><a href="data-sources-and-data-cleaning.html#cb9-7" tabindex="-1"></a>  forecast, </span>
+<span id="cb9-8"><a href="data-sources-and-data-cleaning.html#cb9-8" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-9"><a href="data-sources-and-data-cleaning.html#cb9-9" tabindex="-1"></a>)</span>
+<span id="cb9-10"><a href="data-sources-and-data-cleaning.html#cb9-10" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="data-sources-and-data-cleaning.html#cb9-11" tabindex="-1"></a>consumption_grants_test <span class="ot">&lt;-</span> <span class="fu">create_consumption_grants</span>(</span>
+<span id="cb9-12"><a href="data-sources-and-data-cleaning.html#cb9-12" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-13"><a href="data-sources-and-data-cleaning.html#cb9-13" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-14"><a href="data-sources-and-data-cleaning.html#cb9-14" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-15"><a href="data-sources-and-data-cleaning.html#cb9-15" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-16"><a href="data-sources-and-data-cleaning.html#cb9-16" tabindex="-1"></a>)</span>
+<span id="cb9-17"><a href="data-sources-and-data-cleaning.html#cb9-17" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="data-sources-and-data-cleaning.html#cb9-18" tabindex="-1"></a>investment_grants_test <span class="ot">&lt;-</span> <span class="fu">create_investment_grants</span>(</span>
+<span id="cb9-19"><a href="data-sources-and-data-cleaning.html#cb9-19" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-20"><a href="data-sources-and-data-cleaning.html#cb9-20" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-21"><a href="data-sources-and-data-cleaning.html#cb9-21" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-22"><a href="data-sources-and-data-cleaning.html#cb9-22" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-23"><a href="data-sources-and-data-cleaning.html#cb9-23" tabindex="-1"></a>)</span>
+<span id="cb9-24"><a href="data-sources-and-data-cleaning.html#cb9-24" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="data-sources-and-data-cleaning.html#cb9-25" tabindex="-1"></a>state_purchases_test <span class="ot">&lt;-</span> <span class="fu">create_state_purchases</span>(</span>
+<span id="cb9-26"><a href="data-sources-and-data-cleaning.html#cb9-26" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-27"><a href="data-sources-and-data-cleaning.html#cb9-27" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-28"><a href="data-sources-and-data-cleaning.html#cb9-28" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-29"><a href="data-sources-and-data-cleaning.html#cb9-29" tabindex="-1"></a>)</span>
+<span id="cb9-30"><a href="data-sources-and-data-cleaning.html#cb9-30" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="data-sources-and-data-cleaning.html#cb9-31" tabindex="-1"></a>federal_non_corporate_taxes_test <span class="ot">&lt;-</span> <span class="fu">create_federal_non_corporate_taxes</span>(</span>
+<span id="cb9-32"><a href="data-sources-and-data-cleaning.html#cb9-32" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-33"><a href="data-sources-and-data-cleaning.html#cb9-33" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-34"><a href="data-sources-and-data-cleaning.html#cb9-34" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-35"><a href="data-sources-and-data-cleaning.html#cb9-35" tabindex="-1"></a>)</span>
+<span id="cb9-36"><a href="data-sources-and-data-cleaning.html#cb9-36" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="data-sources-and-data-cleaning.html#cb9-37" tabindex="-1"></a>state_non_corporate_taxes_test <span class="ot">&lt;-</span> <span class="fu">create_state_non_corporate_taxes</span>(</span>
+<span id="cb9-38"><a href="data-sources-and-data-cleaning.html#cb9-38" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-39"><a href="data-sources-and-data-cleaning.html#cb9-39" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-40"><a href="data-sources-and-data-cleaning.html#cb9-40" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-41"><a href="data-sources-and-data-cleaning.html#cb9-41" tabindex="-1"></a>)</span>
+<span id="cb9-42"><a href="data-sources-and-data-cleaning.html#cb9-42" tabindex="-1"></a></span>
+<span id="cb9-43"><a href="data-sources-and-data-cleaning.html#cb9-43" tabindex="-1"></a>federal_corporate_taxes_test <span class="ot">&lt;-</span> <span class="fu">create_federal_corporate_taxes</span>(</span>
+<span id="cb9-44"><a href="data-sources-and-data-cleaning.html#cb9-44" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-45"><a href="data-sources-and-data-cleaning.html#cb9-45" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-46"><a href="data-sources-and-data-cleaning.html#cb9-46" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-47"><a href="data-sources-and-data-cleaning.html#cb9-47" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-48"><a href="data-sources-and-data-cleaning.html#cb9-48" tabindex="-1"></a>)</span>
+<span id="cb9-49"><a href="data-sources-and-data-cleaning.html#cb9-49" tabindex="-1"></a></span>
+<span id="cb9-50"><a href="data-sources-and-data-cleaning.html#cb9-50" tabindex="-1"></a>supply_side_ira_test <span class="ot">&lt;-</span> <span class="fu">create_supply_side_ira</span>(</span>
+<span id="cb9-51"><a href="data-sources-and-data-cleaning.html#cb9-51" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-52"><a href="data-sources-and-data-cleaning.html#cb9-52" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-53"><a href="data-sources-and-data-cleaning.html#cb9-53" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-54"><a href="data-sources-and-data-cleaning.html#cb9-54" tabindex="-1"></a>)</span>
+<span id="cb9-55"><a href="data-sources-and-data-cleaning.html#cb9-55" tabindex="-1"></a></span>
+<span id="cb9-56"><a href="data-sources-and-data-cleaning.html#cb9-56" tabindex="-1"></a></span>
+<span id="cb9-57"><a href="data-sources-and-data-cleaning.html#cb9-57" tabindex="-1"></a>state_corporate_taxes_test <span class="ot">&lt;-</span> <span class="fu">create_state_corporate_taxes</span>(</span>
+<span id="cb9-58"><a href="data-sources-and-data-cleaning.html#cb9-58" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-59"><a href="data-sources-and-data-cleaning.html#cb9-59" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-60"><a href="data-sources-and-data-cleaning.html#cb9-60" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-61"><a href="data-sources-and-data-cleaning.html#cb9-61" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-62"><a href="data-sources-and-data-cleaning.html#cb9-62" tabindex="-1"></a>)</span>
+<span id="cb9-63"><a href="data-sources-and-data-cleaning.html#cb9-63" tabindex="-1"></a></span>
+<span id="cb9-64"><a href="data-sources-and-data-cleaning.html#cb9-64" tabindex="-1"></a>federal_social_benefits_test <span class="ot">&lt;-</span> <span class="fu">create_federal_social_benefits</span>(</span>
+<span id="cb9-65"><a href="data-sources-and-data-cleaning.html#cb9-65" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-66"><a href="data-sources-and-data-cleaning.html#cb9-66" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-67"><a href="data-sources-and-data-cleaning.html#cb9-67" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-68"><a href="data-sources-and-data-cleaning.html#cb9-68" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-69"><a href="data-sources-and-data-cleaning.html#cb9-69" tabindex="-1"></a>)</span>
+<span id="cb9-70"><a href="data-sources-and-data-cleaning.html#cb9-70" tabindex="-1"></a></span>
+<span id="cb9-71"><a href="data-sources-and-data-cleaning.html#cb9-71" tabindex="-1"></a>state_social_benefits_test <span class="ot">&lt;-</span> <span class="fu">create_state_social_benefits</span>(</span>
+<span id="cb9-72"><a href="data-sources-and-data-cleaning.html#cb9-72" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-73"><a href="data-sources-and-data-cleaning.html#cb9-73" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-74"><a href="data-sources-and-data-cleaning.html#cb9-74" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-75"><a href="data-sources-and-data-cleaning.html#cb9-75" tabindex="-1"></a>)</span>
+<span id="cb9-76"><a href="data-sources-and-data-cleaning.html#cb9-76" tabindex="-1"></a></span>
+<span id="cb9-77"><a href="data-sources-and-data-cleaning.html#cb9-77" tabindex="-1"></a>rebate_checks_test <span class="ot">&lt;-</span> <span class="fu">create_rebate_checks</span>(</span>
+<span id="cb9-78"><a href="data-sources-and-data-cleaning.html#cb9-78" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-79"><a href="data-sources-and-data-cleaning.html#cb9-79" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-80"><a href="data-sources-and-data-cleaning.html#cb9-80" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-81"><a href="data-sources-and-data-cleaning.html#cb9-81" tabindex="-1"></a>)</span>
+<span id="cb9-82"><a href="data-sources-and-data-cleaning.html#cb9-82" tabindex="-1"></a></span>
+<span id="cb9-83"><a href="data-sources-and-data-cleaning.html#cb9-83" tabindex="-1"></a>rebate_checks_arp_test <span class="ot">&lt;-</span> <span class="fu">create_rebate_checks_arp</span>(</span>
+<span id="cb9-84"><a href="data-sources-and-data-cleaning.html#cb9-84" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-85"><a href="data-sources-and-data-cleaning.html#cb9-85" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-86"><a href="data-sources-and-data-cleaning.html#cb9-86" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-87"><a href="data-sources-and-data-cleaning.html#cb9-87" tabindex="-1"></a>)</span>
+<span id="cb9-88"><a href="data-sources-and-data-cleaning.html#cb9-88" tabindex="-1"></a></span>
+<span id="cb9-89"><a href="data-sources-and-data-cleaning.html#cb9-89" tabindex="-1"></a>federal_ui_test <span class="ot">&lt;-</span> <span class="fu">create_federal_ui</span>(</span>
+<span id="cb9-90"><a href="data-sources-and-data-cleaning.html#cb9-90" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-91"><a href="data-sources-and-data-cleaning.html#cb9-91" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-92"><a href="data-sources-and-data-cleaning.html#cb9-92" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-93"><a href="data-sources-and-data-cleaning.html#cb9-93" tabindex="-1"></a>)</span>
+<span id="cb9-94"><a href="data-sources-and-data-cleaning.html#cb9-94" tabindex="-1"></a></span>
+<span id="cb9-95"><a href="data-sources-and-data-cleaning.html#cb9-95" tabindex="-1"></a>state_ui_test <span class="ot">&lt;-</span> <span class="fu">create_state_ui</span>(</span>
+<span id="cb9-96"><a href="data-sources-and-data-cleaning.html#cb9-96" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-97"><a href="data-sources-and-data-cleaning.html#cb9-97" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-98"><a href="data-sources-and-data-cleaning.html#cb9-98" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-99"><a href="data-sources-and-data-cleaning.html#cb9-99" tabindex="-1"></a>)</span>
+<span id="cb9-100"><a href="data-sources-and-data-cleaning.html#cb9-100" tabindex="-1"></a></span>
+<span id="cb9-101"><a href="data-sources-and-data-cleaning.html#cb9-101" tabindex="-1"></a></span>
+<span id="cb9-102"><a href="data-sources-and-data-cleaning.html#cb9-102" tabindex="-1"></a>federal_subsidies_test <span class="ot">&lt;-</span> <span class="fu">create_federal_subsidies</span>(</span>
+<span id="cb9-103"><a href="data-sources-and-data-cleaning.html#cb9-103" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-104"><a href="data-sources-and-data-cleaning.html#cb9-104" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-105"><a href="data-sources-and-data-cleaning.html#cb9-105" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-106"><a href="data-sources-and-data-cleaning.html#cb9-106" tabindex="-1"></a>)</span>
+<span id="cb9-107"><a href="data-sources-and-data-cleaning.html#cb9-107" tabindex="-1"></a></span>
+<span id="cb9-108"><a href="data-sources-and-data-cleaning.html#cb9-108" tabindex="-1"></a>federal_aid_to_small_businesses_arp_test <span class="ot">&lt;-</span> <span class="fu">create_federal_aid_to_small_businesses_arp</span>(</span>
+<span id="cb9-109"><a href="data-sources-and-data-cleaning.html#cb9-109" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-110"><a href="data-sources-and-data-cleaning.html#cb9-110" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-111"><a href="data-sources-and-data-cleaning.html#cb9-111" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-112"><a href="data-sources-and-data-cleaning.html#cb9-112" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-113"><a href="data-sources-and-data-cleaning.html#cb9-113" tabindex="-1"></a>)</span>
+<span id="cb9-114"><a href="data-sources-and-data-cleaning.html#cb9-114" tabindex="-1"></a></span>
+<span id="cb9-115"><a href="data-sources-and-data-cleaning.html#cb9-115" tabindex="-1"></a></span>
+<span id="cb9-116"><a href="data-sources-and-data-cleaning.html#cb9-116" tabindex="-1"></a>federal_other_direct_aid_arp_test <span class="ot">&lt;-</span> <span class="fu">create_federal_other_direct_aid_arp</span>(</span>
+<span id="cb9-117"><a href="data-sources-and-data-cleaning.html#cb9-117" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-118"><a href="data-sources-and-data-cleaning.html#cb9-118" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-119"><a href="data-sources-and-data-cleaning.html#cb9-119" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-120"><a href="data-sources-and-data-cleaning.html#cb9-120" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-121"><a href="data-sources-and-data-cleaning.html#cb9-121" tabindex="-1"></a>)</span>
+<span id="cb9-122"><a href="data-sources-and-data-cleaning.html#cb9-122" tabindex="-1"></a></span>
+<span id="cb9-123"><a href="data-sources-and-data-cleaning.html#cb9-123" tabindex="-1"></a></span>
+<span id="cb9-124"><a href="data-sources-and-data-cleaning.html#cb9-124" tabindex="-1"></a>federal_other_vulnerable_arp_test <span class="ot">&lt;-</span> <span class="fu">create_federal_other_vulnerable_arp</span>(</span>
+<span id="cb9-125"><a href="data-sources-and-data-cleaning.html#cb9-125" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-126"><a href="data-sources-and-data-cleaning.html#cb9-126" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-127"><a href="data-sources-and-data-cleaning.html#cb9-127" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-128"><a href="data-sources-and-data-cleaning.html#cb9-128" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-129"><a href="data-sources-and-data-cleaning.html#cb9-129" tabindex="-1"></a>)</span>
+<span id="cb9-130"><a href="data-sources-and-data-cleaning.html#cb9-130" tabindex="-1"></a></span>
+<span id="cb9-131"><a href="data-sources-and-data-cleaning.html#cb9-131" tabindex="-1"></a></span>
+<span id="cb9-132"><a href="data-sources-and-data-cleaning.html#cb9-132" tabindex="-1"></a>federal_student_loans_test <span class="ot">&lt;-</span> <span class="fu">create_federal_student_loans</span>(</span>
+<span id="cb9-133"><a href="data-sources-and-data-cleaning.html#cb9-133" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-134"><a href="data-sources-and-data-cleaning.html#cb9-134" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-135"><a href="data-sources-and-data-cleaning.html#cb9-135" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-136"><a href="data-sources-and-data-cleaning.html#cb9-136" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-137"><a href="data-sources-and-data-cleaning.html#cb9-137" tabindex="-1"></a>)</span>
+<span id="cb9-138"><a href="data-sources-and-data-cleaning.html#cb9-138" tabindex="-1"></a></span>
+<span id="cb9-139"><a href="data-sources-and-data-cleaning.html#cb9-139" tabindex="-1"></a></span>
+<span id="cb9-140"><a href="data-sources-and-data-cleaning.html#cb9-140" tabindex="-1"></a>state_subsidies_test <span class="ot">&lt;-</span> <span class="fu">create_state_subsidies</span>(</span>
+<span id="cb9-141"><a href="data-sources-and-data-cleaning.html#cb9-141" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-142"><a href="data-sources-and-data-cleaning.html#cb9-142" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-143"><a href="data-sources-and-data-cleaning.html#cb9-143" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-144"><a href="data-sources-and-data-cleaning.html#cb9-144" tabindex="-1"></a>)</span>
+<span id="cb9-145"><a href="data-sources-and-data-cleaning.html#cb9-145" tabindex="-1"></a></span>
+<span id="cb9-146"><a href="data-sources-and-data-cleaning.html#cb9-146" tabindex="-1"></a></span>
+<span id="cb9-147"><a href="data-sources-and-data-cleaning.html#cb9-147" tabindex="-1"></a>federal_health_outlays_test <span class="ot">&lt;-</span> <span class="fu">create_federal_health_outlays</span>(</span>
+<span id="cb9-148"><a href="data-sources-and-data-cleaning.html#cb9-148" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-149"><a href="data-sources-and-data-cleaning.html#cb9-149" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-150"><a href="data-sources-and-data-cleaning.html#cb9-150" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-151"><a href="data-sources-and-data-cleaning.html#cb9-151" tabindex="-1"></a>)</span>
+<span id="cb9-152"><a href="data-sources-and-data-cleaning.html#cb9-152" tabindex="-1"></a></span>
+<span id="cb9-153"><a href="data-sources-and-data-cleaning.html#cb9-153" tabindex="-1"></a></span>
+<span id="cb9-154"><a href="data-sources-and-data-cleaning.html#cb9-154" tabindex="-1"></a>state_health_outlays_test <span class="ot">&lt;-</span> <span class="fu">create_state_health_outlays</span>(</span>
+<span id="cb9-155"><a href="data-sources-and-data-cleaning.html#cb9-155" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-156"><a href="data-sources-and-data-cleaning.html#cb9-156" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-157"><a href="data-sources-and-data-cleaning.html#cb9-157" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-158"><a href="data-sources-and-data-cleaning.html#cb9-158" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="create-accessory-variables" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> Create Accessory Variables<a href="data-sources-and-data-cleaning.html#create-accessory-variables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In addition to the primary inputs listed above, the FIM also relies on what we term “accessory variables” - the PCE and purchases deflators, personal consumption expenditures, GDP, and real potential GDP growth. As with the 23 policy data series, <code>src/data_cleaning.R</code> also writes functions that create these objects.</p>
+<p>For example, the helper script (<code>src/data_cleaning.R</code>), which we’ve already sourced, writes <code>create_federal_purchases_deflator_growth()</code>as the following:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="data-sources-and-data-cleaning.html#cb10-1" tabindex="-1"></a>create_federal_purchases_deflator_growth <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb10-2"><a href="data-sources-and-data-cleaning.html#cb10-2" tabindex="-1"></a>    national_accounts, </span>
+<span id="cb10-3"><a href="data-sources-and-data-cleaning.html#cb10-3" tabindex="-1"></a>    projections, </span>
+<span id="cb10-4"><a href="data-sources-and-data-cleaning.html#cb10-4" tabindex="-1"></a>    deflator_overrides,</span>
+<span id="cb10-5"><a href="data-sources-and-data-cleaning.html#cb10-5" tabindex="-1"></a>    placeholder_nas</span>
+<span id="cb10-6"><a href="data-sources-and-data-cleaning.html#cb10-6" tabindex="-1"></a>) {</span>
+<span id="cb10-7"><a href="data-sources-and-data-cleaning.html#cb10-7" tabindex="-1"></a>  <span class="co"># Select column of interest from the projections tibble</span></span>
+<span id="cb10-8"><a href="data-sources-and-data-cleaning.html#cb10-8" tabindex="-1"></a>  projections <span class="ot">&lt;-</span> projections <span class="sc">%&gt;%</span> </span>
+<span id="cb10-9"><a href="data-sources-and-data-cleaning.html#cb10-9" tabindex="-1"></a>    <span class="co"># Divide federal purchases &quot;gf&quot; by real federal purchases &quot;gfh&quot; and calculate</span></span>
+<span id="cb10-10"><a href="data-sources-and-data-cleaning.html#cb10-10" tabindex="-1"></a>    <span class="co"># the quarterly growth rate using the qgr function, equal to x/lag(x), then </span></span>
+<span id="cb10-11"><a href="data-sources-and-data-cleaning.html#cb10-11" tabindex="-1"></a>    <span class="co"># subtract 1.</span></span>
+<span id="cb10-12"><a href="data-sources-and-data-cleaning.html#cb10-12" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">data_series =</span> <span class="fu">qgr</span>((gf <span class="sc">/</span> gfh)) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-13"><a href="data-sources-and-data-cleaning.html#cb10-13" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series)</span>
+<span id="cb10-14"><a href="data-sources-and-data-cleaning.html#cb10-14" tabindex="-1"></a>  </span>
+<span id="cb10-15"><a href="data-sources-and-data-cleaning.html#cb10-15" tabindex="-1"></a>  <span class="co"># Select columns of interest from the national accounts tibble</span></span>
+<span id="cb10-16"><a href="data-sources-and-data-cleaning.html#cb10-16" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb10-17"><a href="data-sources-and-data-cleaning.html#cb10-17" tabindex="-1"></a>    <span class="co"># Haver code for federal purchases deflator is &#39;jgf&#39;</span></span>
+<span id="cb10-18"><a href="data-sources-and-data-cleaning.html#cb10-18" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">data_series =</span> jgf_growth) <span class="sc">%&gt;%</span></span>
+<span id="cb10-19"><a href="data-sources-and-data-cleaning.html#cb10-19" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series)</span>
+<span id="cb10-20"><a href="data-sources-and-data-cleaning.html#cb10-20" tabindex="-1"></a>  </span>
+<span id="cb10-21"><a href="data-sources-and-data-cleaning.html#cb10-21" tabindex="-1"></a>  <span class="co"># Process the overrides data so they are ready for merging</span></span>
+<span id="cb10-22"><a href="data-sources-and-data-cleaning.html#cb10-22" tabindex="-1"></a>  deflator_overrides <span class="ot">&lt;-</span> deflator_overrides <span class="sc">%&gt;%</span></span>
+<span id="cb10-23"><a href="data-sources-and-data-cleaning.html#cb10-23" tabindex="-1"></a>    <span class="fu">filter</span>(date <span class="sc">&gt;</span> current_quarter <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> <span class="fu">max</span>(date)) <span class="sc">%&gt;%</span></span>
+<span id="cb10-24"><a href="data-sources-and-data-cleaning.html#cb10-24" tabindex="-1"></a>    <span class="co"># Rename the column of interest to data_series</span></span>
+<span id="cb10-25"><a href="data-sources-and-data-cleaning.html#cb10-25" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">data_series =</span> federal_purchases_deflator_growth_override) <span class="sc">%&gt;%</span></span>
+<span id="cb10-26"><a href="data-sources-and-data-cleaning.html#cb10-26" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series)</span>
+<span id="cb10-27"><a href="data-sources-and-data-cleaning.html#cb10-27" tabindex="-1"></a>  </span>
+<span id="cb10-28"><a href="data-sources-and-data-cleaning.html#cb10-28" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the projection using the commonly named `data_series`</span></span>
+<span id="cb10-29"><a href="data-sources-and-data-cleaning.html#cb10-29" tabindex="-1"></a>  <span class="co"># and `date` columns. The historic (national accounts) data take precedence in</span></span>
+<span id="cb10-30"><a href="data-sources-and-data-cleaning.html#cb10-30" tabindex="-1"></a>  <span class="co"># the case of any conflicting observations.</span></span>
+<span id="cb10-31"><a href="data-sources-and-data-cleaning.html#cb10-31" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, projections, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-32"><a href="data-sources-and-data-cleaning.html#cb10-32" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb10-33"><a href="data-sources-and-data-cleaning.html#cb10-33" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(., placeholder_nas, <span class="at">by =</span> <span class="st">&quot;date&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-34"><a href="data-sources-and-data-cleaning.html#cb10-34" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb10-35"><a href="data-sources-and-data-cleaning.html#cb10-35" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb10-36"><a href="data-sources-and-data-cleaning.html#cb10-36" tabindex="-1"></a>    <span class="co"># Use deflator_overrides to overwrite select existing entries</span></span>
+<span id="cb10-37"><a href="data-sources-and-data-cleaning.html#cb10-37" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(deflator_overrides, ., <span class="at">by =</span> <span class="st">&quot;date&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-38"><a href="data-sources-and-data-cleaning.html#cb10-38" tabindex="-1"></a>    <span class="co"># Reorder the entries chronologically</span></span>
+<span id="cb10-39"><a href="data-sources-and-data-cleaning.html#cb10-39" tabindex="-1"></a>    <span class="fu">arrange</span>(date)</span>
+<span id="cb10-40"><a href="data-sources-and-data-cleaning.html#cb10-40" tabindex="-1"></a></span>
+<span id="cb10-41"><a href="data-sources-and-data-cleaning.html#cb10-41" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb10-42"><a href="data-sources-and-data-cleaning.html#cb10-42" tabindex="-1"></a>}</span></code></pre></div>
+<p>In the function above, we first retrieve our <code>projections</code> object- the data we pull from CBO. <code>projections</code> follows the same naming conventions as our national accounts data - each data series is identified with a short Haver code. We select <code>gf</code> and <code>gfh</code>, the codes for nominal federal purchases and real federal purchases, respectively. We use the <code>qgr()</code> function contained in the fim package to calculate the quarterly growth rate of the federal purchases deflator. The deflator is simply nominal purchases divided by real purchases. We next retrieve our national accounts data and similarly calculate the federal purchases deflator in history.</p>
+<p>Although <code>projections</code> includes forecasts of the federal purchases deflator until 2034 Q3, we sometimes make adjustments to these values when we disagree with CBO. We make these changes in the forecast sheet. Our edited deflators are stored in the deflator_overrides sheet, which we previously loaded. We overwrite the values from <code>projections</code> for the entire forecast period.</p>
+<p>We merge the national accounts, projections, and deflator overrides with an empty data frame and coalesce any remaining NAs to zero.</p>
+<p><em>GDP and Consumption</em>
+Some of our accessory variables are slightly more complicated. To forecast GDP and consumption, we apply CBO growth rates to historical NIPA data. See below:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="data-sources-and-data-cleaning.html#cb11-1" tabindex="-1"></a>create_gdp <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb11-2"><a href="data-sources-and-data-cleaning.html#cb11-2" tabindex="-1"></a>  national_accounts, </span>
+<span id="cb11-3"><a href="data-sources-and-data-cleaning.html#cb11-3" tabindex="-1"></a>  projections, </span>
+<span id="cb11-4"><a href="data-sources-and-data-cleaning.html#cb11-4" tabindex="-1"></a>  placeholder_nas</span>
+<span id="cb11-5"><a href="data-sources-and-data-cleaning.html#cb11-5" tabindex="-1"></a>) {</span>
+<span id="cb11-6"><a href="data-sources-and-data-cleaning.html#cb11-6" tabindex="-1"></a>  <span class="co"># Redefine GDP and real GDP values in the future using CBO growth rates</span></span>
+<span id="cb11-7"><a href="data-sources-and-data-cleaning.html#cb11-7" tabindex="-1"></a>  <span class="co"># Select column of interest from the projections tibble</span></span>
+<span id="cb11-8"><a href="data-sources-and-data-cleaning.html#cb11-8" tabindex="-1"></a>  projections1 <span class="ot">&lt;-</span> projections <span class="sc">%&gt;%</span> </span>
+<span id="cb11-9"><a href="data-sources-and-data-cleaning.html#cb11-9" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">gdp_growth =</span> <span class="fu">q_g</span>(gdp)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-10"><a href="data-sources-and-data-cleaning.html#cb11-10" tabindex="-1"></a>    <span class="co"># We only need the gdp growth rate from our projections</span></span>
+<span id="cb11-11"><a href="data-sources-and-data-cleaning.html#cb11-11" tabindex="-1"></a>    <span class="fu">select</span>(date, gdp_growth) <span class="sc">%&gt;%</span></span>
+<span id="cb11-12"><a href="data-sources-and-data-cleaning.html#cb11-12" tabindex="-1"></a>    <span class="co"># We need only the growth rates that represent future quarters</span></span>
+<span id="cb11-13"><a href="data-sources-and-data-cleaning.html#cb11-13" tabindex="-1"></a>    <span class="fu">filter</span>(date <span class="sc">&gt;</span> current_quarter)</span>
+<span id="cb11-14"><a href="data-sources-and-data-cleaning.html#cb11-14" tabindex="-1"></a>  </span>
+<span id="cb11-15"><a href="data-sources-and-data-cleaning.html#cb11-15" tabindex="-1"></a>  <span class="co"># Select columns of interest from the national accounts tibble</span></span>
+<span id="cb11-16"><a href="data-sources-and-data-cleaning.html#cb11-16" tabindex="-1"></a>  national_accounts1 <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb11-17"><a href="data-sources-and-data-cleaning.html#cb11-17" tabindex="-1"></a>    <span class="co"># Haver code for GDP is &#39;gdp&#39;</span></span>
+<span id="cb11-18"><a href="data-sources-and-data-cleaning.html#cb11-18" tabindex="-1"></a>    <span class="fu">select</span>(date, gdp)</span>
+<span id="cb11-19"><a href="data-sources-and-data-cleaning.html#cb11-19" tabindex="-1"></a>  <span class="co"># Define an index number for the current data point and end data point</span></span>
+<span id="cb11-20"><a href="data-sources-and-data-cleaning.html#cb11-20" tabindex="-1"></a>  current_index <span class="ot">&lt;-</span> <span class="fu">which</span>(national_accounts1<span class="sc">$</span>date <span class="sc">==</span> current_quarter)</span>
+<span id="cb11-21"><a href="data-sources-and-data-cleaning.html#cb11-21" tabindex="-1"></a>  seed_gdp <span class="ot">=</span> national_accounts1<span class="sc">$</span>gdp[current_index]</span>
+<span id="cb11-22"><a href="data-sources-and-data-cleaning.html#cb11-22" tabindex="-1"></a>  </span>
+<span id="cb11-23"><a href="data-sources-and-data-cleaning.html#cb11-23" tabindex="-1"></a>  <span class="co"># Define new GDP projections by growing current GDP (seed) at CBO growth rates</span></span>
+<span id="cb11-24"><a href="data-sources-and-data-cleaning.html#cb11-24" tabindex="-1"></a>  <span class="co"># using the cumulative_series() function</span></span>
+<span id="cb11-25"><a href="data-sources-and-data-cleaning.html#cb11-25" tabindex="-1"></a>  new_gdp_projections <span class="ot">&lt;-</span> <span class="fu">cumulative_series</span>(</span>
+<span id="cb11-26"><a href="data-sources-and-data-cleaning.html#cb11-26" tabindex="-1"></a>    <span class="at">seed =</span> seed_gdp,</span>
+<span id="cb11-27"><a href="data-sources-and-data-cleaning.html#cb11-27" tabindex="-1"></a>    <span class="at">growth_rates =</span> <span class="dv">1</span> <span class="sc">+</span> projections1<span class="sc">$</span>gdp_growth</span>
+<span id="cb11-28"><a href="data-sources-and-data-cleaning.html#cb11-28" tabindex="-1"></a>  )</span>
+<span id="cb11-29"><a href="data-sources-and-data-cleaning.html#cb11-29" tabindex="-1"></a>  </span>
+<span id="cb11-30"><a href="data-sources-and-data-cleaning.html#cb11-30" tabindex="-1"></a>  <span class="co"># Define projections row as this adjusted forecast</span></span>
+<span id="cb11-31"><a href="data-sources-and-data-cleaning.html#cb11-31" tabindex="-1"></a>  projections2 <span class="ot">&lt;-</span> projections1 <span class="sc">%&gt;%</span></span>
+<span id="cb11-32"><a href="data-sources-and-data-cleaning.html#cb11-32" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">gdp =</span> new_gdp_projections) <span class="sc">%&gt;%</span></span>
+<span id="cb11-33"><a href="data-sources-and-data-cleaning.html#cb11-33" tabindex="-1"></a>    <span class="fu">select</span>(date, gdp)</span>
+<span id="cb11-34"><a href="data-sources-and-data-cleaning.html#cb11-34" tabindex="-1"></a>  </span>
+<span id="cb11-35"><a href="data-sources-and-data-cleaning.html#cb11-35" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the projection using the commonly named `gdp`</span></span>
+<span id="cb11-36"><a href="data-sources-and-data-cleaning.html#cb11-36" tabindex="-1"></a>  <span class="co"># and `date` columns. </span></span>
+<span id="cb11-37"><a href="data-sources-and-data-cleaning.html#cb11-37" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts1, projections2, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-38"><a href="data-sources-and-data-cleaning.html#cb11-38" tabindex="-1"></a>    <span class="co"># Rename the gdp column to generic data_series</span></span>
+<span id="cb11-39"><a href="data-sources-and-data-cleaning.html#cb11-39" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> gdp) <span class="sc">%&gt;%</span></span>
+<span id="cb11-40"><a href="data-sources-and-data-cleaning.html#cb11-40" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb11-41"><a href="data-sources-and-data-cleaning.html#cb11-41" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(., placeholder_nas, <span class="at">by =</span> <span class="st">&quot;date&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-42"><a href="data-sources-and-data-cleaning.html#cb11-42" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb11-43"><a href="data-sources-and-data-cleaning.html#cb11-43" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb11-44"><a href="data-sources-and-data-cleaning.html#cb11-44" tabindex="-1"></a>    <span class="co"># Reorder the entries chronologically</span></span>
+<span id="cb11-45"><a href="data-sources-and-data-cleaning.html#cb11-45" tabindex="-1"></a>    <span class="fu">arrange</span>(date)</span>
+<span id="cb11-46"><a href="data-sources-and-data-cleaning.html#cb11-46" tabindex="-1"></a>  </span>
+<span id="cb11-47"><a href="data-sources-and-data-cleaning.html#cb11-47" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb11-48"><a href="data-sources-and-data-cleaning.html#cb11-48" tabindex="-1"></a>}</span></code></pre></div>
+<p>In the function above, we create our GDP data series. In history, we pull GDP straight from BEA. In the future, we construct a projection of GDP using CBO’s forecasts for future GDP growth rates.</p>
+<p>First, we retrieve our <code>projections</code> data and use the <code>gdp</code> column to calculate future GDP growth based on CBO’s GDP projections. We calculate quarterly GDP growth using the <code>qgr()</code> function contained in the fim package. We then pull our <code>national_accounts</code> data and select the GDP column to use later.</p>
+<p>Next, we define an object called <code>current_index</code> - this gets the position (or row number) in <code>national_accounts</code> where the date column matches the value stored in the <code>current_quarter</code> object. Put more simply, we get the row number of the current quarter. We also define an object called <code>seed_gdp</code>, the value of GDP at the position of <code>current_index</code> (we’re pulling the value of GDP in the current quarter, the last quarter for which we have data). This is the starting value for our projections.</p>
+<p>We define our new projections by growing the current quarter GDP (seed) using the CBO growth rates we calculated above using the <code>cumulative_series()</code> function contained in the fim package. The function takes a value <code>seed</code>, which is the initial value from which the projection starts. It also takes <code>projections1$gdp_growth</code>, a vector of growth rates. The result is a <code>new_gdp_projections</code> - a vector containing the initial GDP value times the cumulative product of the growth rates for each quarter.</p>
+<p>We merge our national accounts data with our new GDP projections to create our GDP series.</p>
+<p>We define <code>consumption</code> similarly - we take BEA’s consumption and grow it at CBO’s growth rate.</p>
+<p><em>Extras</em></p>
+<p>Lastly, we write functions that construct three “extra” variables that aren’t directly used in our analysis but are important for understanding/publishing our results. <code>create_date()</code> generates a one column data frame containing the date from 1970 Q1 to 2034 Q3. <code>create_id()</code> produces a a binary variable indicating whether the entry is a projection or historical. <code>create_recession()</code> produces an indicator for whether the quarter was a recession quarter.</p>
+<p>See below for an example:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="data-sources-and-data-cleaning.html#cb12-1" tabindex="-1"></a>create_id <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb12-2"><a href="data-sources-and-data-cleaning.html#cb12-2" tabindex="-1"></a>    national_accounts,</span>
+<span id="cb12-3"><a href="data-sources-and-data-cleaning.html#cb12-3" tabindex="-1"></a>    projections) {</span>
+<span id="cb12-4"><a href="data-sources-and-data-cleaning.html#cb12-4" tabindex="-1"></a>  </span>
+<span id="cb12-5"><a href="data-sources-and-data-cleaning.html#cb12-5" tabindex="-1"></a>  <span class="co"># Select columns of interest from the projections tibble </span></span>
+<span id="cb12-6"><a href="data-sources-and-data-cleaning.html#cb12-6" tabindex="-1"></a>  projections <span class="ot">&lt;-</span> projections <span class="sc">%&gt;%</span> </span>
+<span id="cb12-7"><a href="data-sources-and-data-cleaning.html#cb12-7" tabindex="-1"></a>    <span class="fu">select</span>(date, id)</span>
+<span id="cb12-8"><a href="data-sources-and-data-cleaning.html#cb12-8" tabindex="-1"></a>  </span>
+<span id="cb12-9"><a href="data-sources-and-data-cleaning.html#cb12-9" tabindex="-1"></a>  <span class="co"># Select columns of interest from the national_accounts tibble </span></span>
+<span id="cb12-10"><a href="data-sources-and-data-cleaning.html#cb12-10" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb12-11"><a href="data-sources-and-data-cleaning.html#cb12-11" tabindex="-1"></a>    <span class="fu">select</span>(date, id)</span>
+<span id="cb12-12"><a href="data-sources-and-data-cleaning.html#cb12-12" tabindex="-1"></a>  </span>
+<span id="cb12-13"><a href="data-sources-and-data-cleaning.html#cb12-13" tabindex="-1"></a>  <span class="co"># Merge national accounts with projections. In the case of conflicting values, </span></span>
+<span id="cb12-14"><a href="data-sources-and-data-cleaning.html#cb12-14" tabindex="-1"></a>  <span class="co"># overwrite the value from projections with the value from national accounts. </span></span>
+<span id="cb12-15"><a href="data-sources-and-data-cleaning.html#cb12-15" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, projections, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-16"><a href="data-sources-and-data-cleaning.html#cb12-16" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> id)</span>
+<span id="cb12-17"><a href="data-sources-and-data-cleaning.html#cb12-17" tabindex="-1"></a>}</span></code></pre></div>
+<p>The chunk of code below executes each of the functions discussed above to create our accessory variables.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="data-sources-and-data-cleaning.html#cb13-1" tabindex="-1"></a><span class="co"># Quarterly Federal Purchases Deflator Growth </span></span>
+<span id="cb13-2"><a href="data-sources-and-data-cleaning.html#cb13-2" tabindex="-1"></a>federal_purchases_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_federal_purchases_deflator_growth</span>(</span>
+<span id="cb13-3"><a href="data-sources-and-data-cleaning.html#cb13-3" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-4"><a href="data-sources-and-data-cleaning.html#cb13-4" tabindex="-1"></a>  projections,</span>
+<span id="cb13-5"><a href="data-sources-and-data-cleaning.html#cb13-5" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-6"><a href="data-sources-and-data-cleaning.html#cb13-6" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-7"><a href="data-sources-and-data-cleaning.html#cb13-7" tabindex="-1"></a>)</span>
+<span id="cb13-8"><a href="data-sources-and-data-cleaning.html#cb13-8" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="data-sources-and-data-cleaning.html#cb13-9" tabindex="-1"></a><span class="co"># Annualized Federal Purchases Deflator Growth </span></span>
+<span id="cb13-10"><a href="data-sources-and-data-cleaning.html#cb13-10" tabindex="-1"></a>federal_purchases_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-11"><a href="data-sources-and-data-cleaning.html#cb13-11" tabindex="-1"></a>  <span class="at">x=</span> federal_purchases_deflator_growth_test)</span>
+<span id="cb13-12"><a href="data-sources-and-data-cleaning.html#cb13-12" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="data-sources-and-data-cleaning.html#cb13-13" tabindex="-1"></a><span class="co"># Quarterly Consumption Grants Deflator Growth </span></span>
+<span id="cb13-14"><a href="data-sources-and-data-cleaning.html#cb13-14" tabindex="-1"></a>consumption_grants_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_consumption_grants_deflator_growth</span>(</span>
+<span id="cb13-15"><a href="data-sources-and-data-cleaning.html#cb13-15" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-16"><a href="data-sources-and-data-cleaning.html#cb13-16" tabindex="-1"></a>  projections,</span>
+<span id="cb13-17"><a href="data-sources-and-data-cleaning.html#cb13-17" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-18"><a href="data-sources-and-data-cleaning.html#cb13-18" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-19"><a href="data-sources-and-data-cleaning.html#cb13-19" tabindex="-1"></a>)</span>
+<span id="cb13-20"><a href="data-sources-and-data-cleaning.html#cb13-20" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="data-sources-and-data-cleaning.html#cb13-21" tabindex="-1"></a><span class="co"># Annualized Consumption Grants Deflator Growth </span></span>
+<span id="cb13-22"><a href="data-sources-and-data-cleaning.html#cb13-22" tabindex="-1"></a>consumption_grants_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-23"><a href="data-sources-and-data-cleaning.html#cb13-23" tabindex="-1"></a>  <span class="at">x=</span> consumption_grants_deflator_growth_test)</span>
+<span id="cb13-24"><a href="data-sources-and-data-cleaning.html#cb13-24" tabindex="-1"></a></span>
+<span id="cb13-25"><a href="data-sources-and-data-cleaning.html#cb13-25" tabindex="-1"></a><span class="co"># Quarterly Investment Grants Deflator Growth </span></span>
+<span id="cb13-26"><a href="data-sources-and-data-cleaning.html#cb13-26" tabindex="-1"></a>investment_grants_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_investment_grants_deflator_growth</span>(</span>
+<span id="cb13-27"><a href="data-sources-and-data-cleaning.html#cb13-27" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-28"><a href="data-sources-and-data-cleaning.html#cb13-28" tabindex="-1"></a>  projections,</span>
+<span id="cb13-29"><a href="data-sources-and-data-cleaning.html#cb13-29" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-30"><a href="data-sources-and-data-cleaning.html#cb13-30" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-31"><a href="data-sources-and-data-cleaning.html#cb13-31" tabindex="-1"></a>)</span>
+<span id="cb13-32"><a href="data-sources-and-data-cleaning.html#cb13-32" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="data-sources-and-data-cleaning.html#cb13-33" tabindex="-1"></a><span class="co"># Annualized Investment Grants Deflator Growth</span></span>
+<span id="cb13-34"><a href="data-sources-and-data-cleaning.html#cb13-34" tabindex="-1"></a>investment_grants_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-35"><a href="data-sources-and-data-cleaning.html#cb13-35" tabindex="-1"></a>  <span class="at">x=</span> investment_grants_deflator_growth_test)</span>
+<span id="cb13-36"><a href="data-sources-and-data-cleaning.html#cb13-36" tabindex="-1"></a></span>
+<span id="cb13-37"><a href="data-sources-and-data-cleaning.html#cb13-37" tabindex="-1"></a><span class="co"># Quarterly State Purchases Deflator Growth </span></span>
+<span id="cb13-38"><a href="data-sources-and-data-cleaning.html#cb13-38" tabindex="-1"></a>state_purchases_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_state_purchases_deflator_growth</span>(</span>
+<span id="cb13-39"><a href="data-sources-and-data-cleaning.html#cb13-39" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-40"><a href="data-sources-and-data-cleaning.html#cb13-40" tabindex="-1"></a>  projections,</span>
+<span id="cb13-41"><a href="data-sources-and-data-cleaning.html#cb13-41" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-42"><a href="data-sources-and-data-cleaning.html#cb13-42" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-43"><a href="data-sources-and-data-cleaning.html#cb13-43" tabindex="-1"></a>)</span>
+<span id="cb13-44"><a href="data-sources-and-data-cleaning.html#cb13-44" tabindex="-1"></a></span>
+<span id="cb13-45"><a href="data-sources-and-data-cleaning.html#cb13-45" tabindex="-1"></a><span class="co"># Annualized State Purchases Deflator Growth </span></span>
+<span id="cb13-46"><a href="data-sources-and-data-cleaning.html#cb13-46" tabindex="-1"></a>state_purchases_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-47"><a href="data-sources-and-data-cleaning.html#cb13-47" tabindex="-1"></a>  <span class="at">x=</span> state_purchases_deflator_growth_test)</span>
+<span id="cb13-48"><a href="data-sources-and-data-cleaning.html#cb13-48" tabindex="-1"></a></span>
+<span id="cb13-49"><a href="data-sources-and-data-cleaning.html#cb13-49" tabindex="-1"></a><span class="co"># Quarterly Consumption Deflator Growth</span></span>
+<span id="cb13-50"><a href="data-sources-and-data-cleaning.html#cb13-50" tabindex="-1"></a>consumption_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_consumption_deflator_growth</span>(</span>
+<span id="cb13-51"><a href="data-sources-and-data-cleaning.html#cb13-51" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-52"><a href="data-sources-and-data-cleaning.html#cb13-52" tabindex="-1"></a>  projections,</span>
+<span id="cb13-53"><a href="data-sources-and-data-cleaning.html#cb13-53" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-54"><a href="data-sources-and-data-cleaning.html#cb13-54" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-55"><a href="data-sources-and-data-cleaning.html#cb13-55" tabindex="-1"></a>)</span>
+<span id="cb13-56"><a href="data-sources-and-data-cleaning.html#cb13-56" tabindex="-1"></a></span>
+<span id="cb13-57"><a href="data-sources-and-data-cleaning.html#cb13-57" tabindex="-1"></a><span class="co"># Annualized Consumption Deflator Growth </span></span>
+<span id="cb13-58"><a href="data-sources-and-data-cleaning.html#cb13-58" tabindex="-1"></a>consumption_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-59"><a href="data-sources-and-data-cleaning.html#cb13-59" tabindex="-1"></a>  <span class="at">x=</span> consumption_deflator_growth_test)</span>
+<span id="cb13-60"><a href="data-sources-and-data-cleaning.html#cb13-60" tabindex="-1"></a></span>
+<span id="cb13-61"><a href="data-sources-and-data-cleaning.html#cb13-61" tabindex="-1"></a><span class="co"># Quarterly Real Potential GDP Growth </span></span>
+<span id="cb13-62"><a href="data-sources-and-data-cleaning.html#cb13-62" tabindex="-1"></a>real_potential_gdp_growth_test <span class="ot">&lt;-</span> <span class="fu">create_real_potential_gdp_growth</span>(</span>
+<span id="cb13-63"><a href="data-sources-and-data-cleaning.html#cb13-63" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-64"><a href="data-sources-and-data-cleaning.html#cb13-64" tabindex="-1"></a>  projections,</span>
+<span id="cb13-65"><a href="data-sources-and-data-cleaning.html#cb13-65" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-66"><a href="data-sources-and-data-cleaning.html#cb13-66" tabindex="-1"></a>)</span>
+<span id="cb13-67"><a href="data-sources-and-data-cleaning.html#cb13-67" tabindex="-1"></a></span>
+<span id="cb13-68"><a href="data-sources-and-data-cleaning.html#cb13-68" tabindex="-1"></a><span class="co"># Annualized Real Potential GDP Growth </span></span>
+<span id="cb13-69"><a href="data-sources-and-data-cleaning.html#cb13-69" tabindex="-1"></a>real_potential_gdp_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-70"><a href="data-sources-and-data-cleaning.html#cb13-70" tabindex="-1"></a>  <span class="at">x=</span> real_potential_gdp_growth_test)</span>
+<span id="cb13-71"><a href="data-sources-and-data-cleaning.html#cb13-71" tabindex="-1"></a></span>
+<span id="cb13-72"><a href="data-sources-and-data-cleaning.html#cb13-72" tabindex="-1"></a><span class="co"># GDP </span></span>
+<span id="cb13-73"><a href="data-sources-and-data-cleaning.html#cb13-73" tabindex="-1"></a>gdp_test <span class="ot">&lt;-</span> <span class="fu">create_gdp</span>(</span>
+<span id="cb13-74"><a href="data-sources-and-data-cleaning.html#cb13-74" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-75"><a href="data-sources-and-data-cleaning.html#cb13-75" tabindex="-1"></a>  projections,</span>
+<span id="cb13-76"><a href="data-sources-and-data-cleaning.html#cb13-76" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-77"><a href="data-sources-and-data-cleaning.html#cb13-77" tabindex="-1"></a>)</span>
+<span id="cb13-78"><a href="data-sources-and-data-cleaning.html#cb13-78" tabindex="-1"></a></span>
+<span id="cb13-79"><a href="data-sources-and-data-cleaning.html#cb13-79" tabindex="-1"></a><span class="co"># Consumption</span></span>
+<span id="cb13-80"><a href="data-sources-and-data-cleaning.html#cb13-80" tabindex="-1"></a>consumption_test <span class="ot">&lt;-</span> <span class="fu">create_consumption</span>(</span>
+<span id="cb13-81"><a href="data-sources-and-data-cleaning.html#cb13-81" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-82"><a href="data-sources-and-data-cleaning.html#cb13-82" tabindex="-1"></a>  projections,</span>
+<span id="cb13-83"><a href="data-sources-and-data-cleaning.html#cb13-83" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-84"><a href="data-sources-and-data-cleaning.html#cb13-84" tabindex="-1"></a>)</span>
+<span id="cb13-85"><a href="data-sources-and-data-cleaning.html#cb13-85" tabindex="-1"></a></span>
+<span id="cb13-86"><a href="data-sources-and-data-cleaning.html#cb13-86" tabindex="-1"></a><span class="co"># EXTRAS </span></span>
+<span id="cb13-87"><a href="data-sources-and-data-cleaning.html#cb13-87" tabindex="-1"></a><span class="co"># Date </span></span>
+<span id="cb13-88"><a href="data-sources-and-data-cleaning.html#cb13-88" tabindex="-1"></a>date_test <span class="ot">&lt;-</span> <span class="fu">create_date</span>(</span>
+<span id="cb13-89"><a href="data-sources-and-data-cleaning.html#cb13-89" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-90"><a href="data-sources-and-data-cleaning.html#cb13-90" tabindex="-1"></a>  projections</span>
+<span id="cb13-91"><a href="data-sources-and-data-cleaning.html#cb13-91" tabindex="-1"></a>)</span>
+<span id="cb13-92"><a href="data-sources-and-data-cleaning.html#cb13-92" tabindex="-1"></a></span>
+<span id="cb13-93"><a href="data-sources-and-data-cleaning.html#cb13-93" tabindex="-1"></a><span class="co"># ID </span></span>
+<span id="cb13-94"><a href="data-sources-and-data-cleaning.html#cb13-94" tabindex="-1"></a>id_test <span class="ot">&lt;-</span> <span class="fu">create_id</span>(</span>
+<span id="cb13-95"><a href="data-sources-and-data-cleaning.html#cb13-95" tabindex="-1"></a>  national_accounts, </span>
+<span id="cb13-96"><a href="data-sources-and-data-cleaning.html#cb13-96" tabindex="-1"></a>  projections</span>
+<span id="cb13-97"><a href="data-sources-and-data-cleaning.html#cb13-97" tabindex="-1"></a>)</span>
+<span id="cb13-98"><a href="data-sources-and-data-cleaning.html#cb13-98" tabindex="-1"></a></span>
+<span id="cb13-99"><a href="data-sources-and-data-cleaning.html#cb13-99" tabindex="-1"></a><span class="co"># Recession </span></span>
+<span id="cb13-100"><a href="data-sources-and-data-cleaning.html#cb13-100" tabindex="-1"></a>recession_test <span class="ot">&lt;-</span> <span class="fu">create_recession</span>(</span>
+<span id="cb13-101"><a href="data-sources-and-data-cleaning.html#cb13-101" tabindex="-1"></a>  national_accounts, </span>
+<span id="cb13-102"><a href="data-sources-and-data-cleaning.html#cb13-102" tabindex="-1"></a>  projections,</span>
+<span id="cb13-103"><a href="data-sources-and-data-cleaning.html#cb13-103" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-104"><a href="data-sources-and-data-cleaning.html#cb13-104" tabindex="-1"></a>)</span>
+<span id="cb13-105"><a href="data-sources-and-data-cleaning.html#cb13-105" tabindex="-1"></a></span>
+<span id="cb13-106"><a href="data-sources-and-data-cleaning.html#cb13-106" tabindex="-1"></a><span class="do">######################################################################################</span></span>
+<span id="cb13-107"><a href="data-sources-and-data-cleaning.html#cb13-107" tabindex="-1"></a><span class="co"># This is the point where we go from generating our data inputs to actually calculating the FIM</span></span>
+<span id="cb13-108"><a href="data-sources-and-data-cleaning.html#cb13-108" tabindex="-1"></a><span class="do">######################################################################################</span></span>
+<span id="cb13-109"><a href="data-sources-and-data-cleaning.html#cb13-109" tabindex="-1"></a></span>
+<span id="cb13-110"><a href="data-sources-and-data-cleaning.html#cb13-110" tabindex="-1"></a><span class="co"># This script defines the input variables used in the FIM. It assumes that the </span></span>
+<span id="cb13-111"><a href="data-sources-and-data-cleaning.html#cb13-111" tabindex="-1"></a><span class="co"># test columns are saved in memory from the section above having already</span></span>
+<span id="cb13-112"><a href="data-sources-and-data-cleaning.html#cb13-112" tabindex="-1"></a><span class="co"># been run.</span></span>
+<span id="cb13-113"><a href="data-sources-and-data-cleaning.html#cb13-113" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/define_inputs.R&quot;</span>)</span>
+<span id="cb13-114"><a href="data-sources-and-data-cleaning.html#cb13-114" tabindex="-1"></a></span>
+<span id="cb13-115"><a href="data-sources-and-data-cleaning.html#cb13-115" tabindex="-1"></a><span class="co"># Next, we source essential functions we need to calculate the FIM in this section.</span></span>
+<span id="cb13-116"><a href="data-sources-and-data-cleaning.html#cb13-116" tabindex="-1"></a><span class="co"># All of these modules contain nothing but functions. No actual code is executed</span></span>
+<span id="cb13-117"><a href="data-sources-and-data-cleaning.html#cb13-117" tabindex="-1"></a><span class="co"># when you source them. Instead, the code is executed in this script.</span></span>
+<span id="cb13-118"><a href="data-sources-and-data-cleaning.html#cb13-118" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/contributions.R&quot;</span>)</span>
+<span id="cb13-119"><a href="data-sources-and-data-cleaning.html#cb13-119" tabindex="-1"></a></span>
+<span id="cb13-120"><a href="data-sources-and-data-cleaning.html#cb13-120" tabindex="-1"></a><span class="co"># Another type of variable we need is MPC matrices. If you read the documentation</span></span>
+<span id="cb13-121"><a href="data-sources-and-data-cleaning.html#cb13-121" tabindex="-1"></a><span class="co"># in `src/mpc_lorae.R`, you&#39;ll develop a clearer understanding of how these </span></span>
+<span id="cb13-122"><a href="data-sources-and-data-cleaning.html#cb13-122" tabindex="-1"></a><span class="co"># matrices produce an MPC operation. We cache these matrices so that they do not </span></span>
+<span id="cb13-123"><a href="data-sources-and-data-cleaning.html#cb13-123" tabindex="-1"></a><span class="co"># need to be regenerated each time the code is run. Instead, in the future, we&#39;ll</span></span>
+<span id="cb13-124"><a href="data-sources-and-data-cleaning.html#cb13-124" tabindex="-1"></a><span class="co"># only rebuild these matrices when MPC inputs are changed using an &quot;observer&quot; </span></span>
+<span id="cb13-125"><a href="data-sources-and-data-cleaning.html#cb13-125" tabindex="-1"></a><span class="co"># design pattern. This will save us a lot of computing time.</span></span>
+<span id="cb13-126"><a href="data-sources-and-data-cleaning.html#cb13-126" tabindex="-1"></a><span class="co"># </span></span></code></pre></div>
+
+<p>This is where we go from wrangling our data to actually calculating the FIM.</p>
+</div>
+<div id="defining-input-data" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> Defining Input Data<a href="data-sources-and-data-cleaning.html#defining-input-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This section of the code begins with the following:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="data-sources-and-data-cleaning.html#cb14-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/define_inputs.R&quot;</span>)</span></code></pre></div>
+<p>Above, we source a helper script that selects only the <code>data_series</code> column from each of the two-column data frames that we defined previously. Later, we combine these vectors into a large data set that we export to our results folder. It’s important that we keep track of and store the version of our inputs that we used to generate the results.</p>
+<p>Here’s a section of the helper script for reference:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="data-sources-and-data-cleaning.html#cb15-1" tabindex="-1"></a>federal_purchases <span class="ot">&lt;-</span> federal_purchases_test<span class="sc">$</span>data_series</span>
+<span id="cb15-2"><a href="data-sources-and-data-cleaning.html#cb15-2" tabindex="-1"></a>consumption_grants <span class="ot">&lt;-</span> consumption_grants_test<span class="sc">$</span>data_series</span>
+<span id="cb15-3"><a href="data-sources-and-data-cleaning.html#cb15-3" tabindex="-1"></a>investment_grants <span class="ot">&lt;-</span> investment_grants_test<span class="sc">$</span>data_series</span>
+<span id="cb15-4"><a href="data-sources-and-data-cleaning.html#cb15-4" tabindex="-1"></a>state_purchases <span class="ot">&lt;-</span> state_purchases_test<span class="sc">$</span>data_series</span></code></pre></div>
+</div>
+<div id="defining-the-fim-functions" class="section level2 hasAnchor" number="2.7">
+<h2><span class="header-section-number">2.7</span> Defining the FIM Functions<a href="data-sources-and-data-cleaning.html#defining-the-fim-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Next, we source a helper script called <code>src/contributions.R</code> that defines the functions we use to calculate the FIM. They execute our “FIM math” step-by-step. There is documentation of our exact methodology in the FIM folder.</p>
+<p>In the helper script, we define several unit functions, which are the specific steps we apply to our input data to eventually produce our outputs - the contribution of each policy category to the overall FIM. We produce a contribution for federal purchases, state purchases, and consumption (taxes and transfers). The overall FIM is simply the sum of these contributions.</p>
+<p>Note that not all input data needs to go through all of the unit functions in order to produce the output. Specifically, the mpc step can be optionally skipped.</p>
+<p><strong>MPC</strong>
+The first unit function is called <code>mpc()</code>:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="data-sources-and-data-cleaning.html#cb16-1" tabindex="-1"></a>mpc <span class="ot">&lt;-</span> <span class="cf">function</span>(x, mpc_matrix) {</span>
+<span id="cb16-2"><a href="data-sources-and-data-cleaning.html#cb16-2" tabindex="-1"></a>  <span class="co"># Input check that the dimensions of the matrix equal the length of the series</span></span>
+<span id="cb16-3"><a href="data-sources-and-data-cleaning.html#cb16-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(mpc_matrix) <span class="sc">!=</span> <span class="fu">length</span>(x)) {</span>
+<span id="cb16-4"><a href="data-sources-and-data-cleaning.html#cb16-4" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;The number of rows in the mpc_matrix must equal the length of the series.&quot;</span>)</span>
+<span id="cb16-5"><a href="data-sources-and-data-cleaning.html#cb16-5" tabindex="-1"></a>  }</span>
+<span id="cb16-6"><a href="data-sources-and-data-cleaning.html#cb16-6" tabindex="-1"></a>  </span>
+<span id="cb16-7"><a href="data-sources-and-data-cleaning.html#cb16-7" tabindex="-1"></a>  <span class="co"># Formatting the data as a vertical column matrix is not strictly necessary;</span></span>
+<span id="cb16-8"><a href="data-sources-and-data-cleaning.html#cb16-8" tabindex="-1"></a>  <span class="co"># but it reinforces the point that this is matrix multiplication</span></span>
+<span id="cb16-9"><a href="data-sources-and-data-cleaning.html#cb16-9" tabindex="-1"></a>  vert_x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(x, <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb16-10"><a href="data-sources-and-data-cleaning.html#cb16-10" tabindex="-1"></a>  </span>
+<span id="cb16-11"><a href="data-sources-and-data-cleaning.html#cb16-11" tabindex="-1"></a>  <span class="co"># ensuring proper NA handling by converting to zeroes</span></span>
+<span id="cb16-12"><a href="data-sources-and-data-cleaning.html#cb16-12" tabindex="-1"></a>  <span class="co"># </span><span class="al">TODO</span><span class="co">: Make only the first value of NA equal to 0. Keep the other NAs as NA</span></span>
+<span id="cb16-13"><a href="data-sources-and-data-cleaning.html#cb16-13" tabindex="-1"></a>  vert_x[<span class="fu">is.na</span>(vert_x)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb16-14"><a href="data-sources-and-data-cleaning.html#cb16-14" tabindex="-1"></a>  </span>
+<span id="cb16-15"><a href="data-sources-and-data-cleaning.html#cb16-15" tabindex="-1"></a>  <span class="co"># Perform matrix multiplication</span></span>
+<span id="cb16-16"><a href="data-sources-and-data-cleaning.html#cb16-16" tabindex="-1"></a>  output <span class="ot">&lt;-</span> mpc_matrix <span class="sc">%*%</span> vert_x</span>
+<span id="cb16-17"><a href="data-sources-and-data-cleaning.html#cb16-17" tabindex="-1"></a>  </span>
+<span id="cb16-18"><a href="data-sources-and-data-cleaning.html#cb16-18" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb16-19"><a href="data-sources-and-data-cleaning.html#cb16-19" tabindex="-1"></a>}</span></code></pre></div>
+<p>This function takes a time series and an MPC matrix as its inputs. Our MPCs are stored in the <code>cache</code> folder. This documentation book contains a separate MPC chapter explaining in depth our MPCs and the process we use to apply them.</p>
+<p>The <code>mpc()</code> function first calls <code>x</code> (the data) and the appropriate <code>mpc_matrix</code> - an RDS file containing our MPCs. Our MPCs are cached, meaning we never overwrite or regenerate them in this code. This saves us significant processing time.</p>
+<p>Next, the function checks to ensure the dimensions of the matrix are equal to the length of the data series. Everything should be 259 entries in length (enough rows to store data from 1970 Q1 until 2034 Q3). For RAs working on the FIM in 2032, you will need to extend the MPC matrices and our data frame inputs to accommodate more quarters. Please see the MPC section for documentation on how we created these MPC matrices.</p>
+<p>We then format the data (<code>x</code>) as a vertical column matrix and coerce all NAs to zero. We define an object called output, which is the <code>mpc_matrix</code> multiplied by the vector of data. The function ultimately returns a numeric vector representing the post-MPC data.
+Again, please see the MPC section for further explanation of our MPCs.</p>
+<p>We do not apply MPCs to federal purchases, state purchases, investment grants, and consumption grants. This data already measures the direct effects of government spending on output. Our supply side IRA series (included as taxes) also does not have an MPC. “Supply side IRA” is construction spending on manufacturing facilities and equipment related to the IRA and CHIPs, which like federal and state purchases, we assume has an instantaneous effect on GDP. The implied MPC is 1 since “supply side IRA” already represents a direct estimate of how much legislation increased manufacturing output.</p>
+<p>We apply MPCs when we do believe that the effect of a cash flow on GDP is not immediate. For example, unemployment benefits might be received in quarter 1, but not spent until quarter 2. And some of the initial disbursement might be saved permanently. Thus, MPCs capture the timing effects of taxes and transfers on GDP as well as the fact that these polices may not have a 1:1 effect on output.</p>
+<p><em>So what gets an MPC?</em>
+In summary, we apply MPCs to all of our taxes and transfers policies except for supply side IRA. We do not apply MPCs to purchases or grants.</p>
+<p><strong>FIM for Purchases</strong>
+Next, the <code>contributions.R</code> helper script defines two unit functions to calculate the FIM for purchases.</p>
+<p>The first function is the following:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="data-sources-and-data-cleaning.html#cb17-1" tabindex="-1"></a>minus_neutral_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="co"># the data in question</span></span>
+<span id="cb17-2"><a href="data-sources-and-data-cleaning.html#cb17-2" tabindex="-1"></a>                          rpgg, <span class="co"># real potential gdp growth,</span></span>
+<span id="cb17-3"><a href="data-sources-and-data-cleaning.html#cb17-3" tabindex="-1"></a>                          dg <span class="co"># consumption deflator growth</span></span>
+<span id="cb17-4"><a href="data-sources-and-data-cleaning.html#cb17-4" tabindex="-1"></a>) {</span>
+<span id="cb17-5"><a href="data-sources-and-data-cleaning.html#cb17-5" tabindex="-1"></a>  output <span class="ot">&lt;-</span> (x<span class="sc">/</span><span class="fu">lag</span>(x) <span class="sc">-</span> dg)<span class="sc">^</span><span class="dv">4</span> <span class="sc">-</span> (<span class="dv">1</span><span class="sc">+</span>rpgg)</span>
+<span id="cb17-6"><a href="data-sources-and-data-cleaning.html#cb17-6" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb17-7"><a href="data-sources-and-data-cleaning.html#cb17-7" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>minus_neutral_purchases()</code> is the heart of our FIM calculation. We get the quarterly growth in purchases (minus inflation and then annualized) and subtract out the annualized growth rate of real potential GDP. In other words, we’re getting the extent to which growth in purchases was above or below growth in potential.</p>
+<p>The function has three inputs:
+<em><code>x</code>, our data
+</em><code>rpgg</code>, real potential GDP growth (we input an annualized rate)
+*<code>dg</code> deflator growth (at a quarterly rate)</p>
+<p><code>minus_neutral_purchases()</code> executes the highlighted part of the following equation (from our FIM methodology document):</p>
+<div class="float">
+<img src="images/minus_neutral_purchases.png" alt="“An image of the federal purchases FIM math”" />
+<div class="figcaption">“An image of the federal purchases FIM math”</div>
+</div>
+<p>Next, we define our <code>scale_to_gdp()</code> function:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="data-sources-and-data-cleaning.html#cb18-1" tabindex="-1"></a>scale_to_gdp_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="co"># the data in question, </span></span>
+<span id="cb18-2"><a href="data-sources-and-data-cleaning.html#cb18-2" tabindex="-1"></a>                         gdp, <span class="co"># GDP</span></span>
+<span id="cb18-3"><a href="data-sources-and-data-cleaning.html#cb18-3" tabindex="-1"></a>                         result)</span>
+<span id="cb18-4"><a href="data-sources-and-data-cleaning.html#cb18-4" tabindex="-1"></a>{</span>
+<span id="cb18-5"><a href="data-sources-and-data-cleaning.html#cb18-5" tabindex="-1"></a>  output <span class="ot">=</span> <span class="dv">100</span><span class="sc">*</span>result<span class="sc">*</span>(<span class="fu">lag</span>(x)<span class="sc">/</span><span class="fu">lag</span>(gdp))</span>
+<span id="cb18-6"><a href="data-sources-and-data-cleaning.html#cb18-6" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb18-7"><a href="data-sources-and-data-cleaning.html#cb18-7" tabindex="-1"></a>}</span></code></pre></div>
+<p>We multiply the result of our minus neutral calculation by the share of purchases in GDP in the preceding quarter. <code>scale_to_gdp_purchases()</code> executes the highlighted portion of the formula below:</p>
+<div class="float">
+<img src="images/scale_to_gdp_purchases.png" alt="“An image of the federal purchases FIM math”" />
+<div class="figcaption">“An image of the federal purchases FIM math”</div>
+</div>
+<p>Lastly, we define a wrapper function <code>contribution_purchases()</code> that bundles the two unit functions together to produce the contribution of purchases to the overall FIM. See below:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="data-sources-and-data-cleaning.html#cb19-1" tabindex="-1"></a>contribution_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb19-2"><a href="data-sources-and-data-cleaning.html#cb19-2" tabindex="-1"></a>    x, <span class="co"># our data series </span></span>
+<span id="cb19-3"><a href="data-sources-and-data-cleaning.html#cb19-3" tabindex="-1"></a>    rpgg, <span class="co"># real potential GDP growth</span></span>
+<span id="cb19-4"><a href="data-sources-and-data-cleaning.html#cb19-4" tabindex="-1"></a>    dg, <span class="co"># deflator growth</span></span>
+<span id="cb19-5"><a href="data-sources-and-data-cleaning.html#cb19-5" tabindex="-1"></a>    gdp <span class="co">#gdp</span></span>
+<span id="cb19-6"><a href="data-sources-and-data-cleaning.html#cb19-6" tabindex="-1"></a>    ) {</span>
+<span id="cb19-7"><a href="data-sources-and-data-cleaning.html#cb19-7" tabindex="-1"></a>  </span>
+<span id="cb19-8"><a href="data-sources-and-data-cleaning.html#cb19-8" tabindex="-1"></a>  <span class="co"># Actual Growth Minus Counterfactual Growth</span></span>
+<span id="cb19-9"><a href="data-sources-and-data-cleaning.html#cb19-9" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">minus_neutral_purchases</span>(<span class="at">x =</span> x, <span class="at">rpgg =</span> rpgg, <span class="at">dg =</span> dg)</span>
+<span id="cb19-10"><a href="data-sources-and-data-cleaning.html#cb19-10" tabindex="-1"></a>  </span>
+<span id="cb19-11"><a href="data-sources-and-data-cleaning.html#cb19-11" tabindex="-1"></a>  <span class="co"># Apply Scale to GDP Function</span></span>
+<span id="cb19-12"><a href="data-sources-and-data-cleaning.html#cb19-12" tabindex="-1"></a>  output <span class="ot">&lt;-</span> <span class="fu">scale_to_gdp_purchases</span>(<span class="at">x =</span> x, <span class="at">result =</span>result, <span class="at">gdp =</span> gdp)</span>
+<span id="cb19-13"><a href="data-sources-and-data-cleaning.html#cb19-13" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb19-14"><a href="data-sources-and-data-cleaning.html#cb19-14" tabindex="-1"></a>}</span></code></pre></div>
+<p>There is no MPC argument as we do not apply MPCs to purchases.</p>
+<p><strong>Taxes and Transfers</strong></p>
+<p>First, it’s important to be clear on the following: when we say “impulse from transfers and taxes”, we mean the post-MPC data - the dollars from the policy that actually turned into consumption each quarter.</p>
+<p>We calculate the FIM for net transfers a bit differently than we do for purchases. So let’s dive into our unit functions for consumption:</p>
+<p>First, we define <code>t_counterfactual()</code>, which as the name suggests, defines our counterfactual consumption - the level of consumption that would have prevailed if the impulse from taxes and transfers grew at the rate of potential GDP.</p>
+<p>Counterfactual consumption is equal to actual personal consumption expenditures less the consumption impulse from policy (the post-MPC data) plus the lagged impulse grown with real potential GDP and the PCE deflator. To simplify, we get actual consumption, subtract out the actual policy impulse, and replace it with a counterfactual policy impulse (what the policy impulse would have been if it grew at potential). The result is counterfactual consumption: what consumption would have been under this Hutchins-constructed policy impulse rather than the actual one.</p>
+<p>See below:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="data-sources-and-data-cleaning.html#cb20-1" tabindex="-1"></a>t_counterfactual <span class="ot">&lt;-</span> <span class="cf">function</span>(x,  <span class="co"># Our data series </span></span>
+<span id="cb20-2"><a href="data-sources-and-data-cleaning.html#cb20-2" tabindex="-1"></a>                             c, <span class="co"># Personal Consumption Expenditures</span></span>
+<span id="cb20-3"><a href="data-sources-and-data-cleaning.html#cb20-3" tabindex="-1"></a>                             rpgg, <span class="co"># Real Potential GDP Growth (quarterly)</span></span>
+<span id="cb20-4"><a href="data-sources-and-data-cleaning.html#cb20-4" tabindex="-1"></a>                             dg <span class="co"># Deflator Growth (quartelry)</span></span>
+<span id="cb20-5"><a href="data-sources-and-data-cleaning.html#cb20-5" tabindex="-1"></a>) {</span>
+<span id="cb20-6"><a href="data-sources-and-data-cleaning.html#cb20-6" tabindex="-1"></a>  </span>
+<span id="cb20-7"><a href="data-sources-and-data-cleaning.html#cb20-7" tabindex="-1"></a>  </span>
+<span id="cb20-8"><a href="data-sources-and-data-cleaning.html#cb20-8" tabindex="-1"></a>  counterfactual <span class="ot">&lt;-</span> c <span class="sc">-</span> x <span class="sc">+</span> <span class="fu">lag</span>(x)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">+</span>rpgg<span class="sc">+</span>dg)</span>
+<span id="cb20-9"><a href="data-sources-and-data-cleaning.html#cb20-9" tabindex="-1"></a>  <span class="fu">return</span>(counterfactual)</span>
+<span id="cb20-10"><a href="data-sources-and-data-cleaning.html#cb20-10" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>t_counterfactual()</code> has several inputs:
+* <code>x</code>, the sum of all of our post-MPC taxes and transfers series
+* <code>c</code>, personal consumption expenditures (from BEA)
+* <code>rpgg</code>, real potential GDP growth, at a quarterly rate
+* <code>dg</code>, consumption deflator growth, at a quarterly rate.</p>
+<p>The function above executes the following part of our FIM math:
+<img src="images/t_counterfactual.png" alt="“An image of the counterfactual consumption FIM math”" /></p>
+<p>Our second unit function is <code>minus_neutral_t()</code>, the heart of our FIM calculation for transfers!</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="data-sources-and-data-cleaning.html#cb21-1" tabindex="-1"></a>minus_neutral_t <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="co"># our data series</span></span>
+<span id="cb21-2"><a href="data-sources-and-data-cleaning.html#cb21-2" tabindex="-1"></a>                            c, <span class="co"># consumption</span></span>
+<span id="cb21-3"><a href="data-sources-and-data-cleaning.html#cb21-3" tabindex="-1"></a>                            counterfactual <span class="co"># counterfactual consumption</span></span>
+<span id="cb21-4"><a href="data-sources-and-data-cleaning.html#cb21-4" tabindex="-1"></a>) {</span>
+<span id="cb21-5"><a href="data-sources-and-data-cleaning.html#cb21-5" tabindex="-1"></a>  result <span class="ot">&lt;-</span> (c<span class="sc">/</span><span class="fu">lag</span>(c))<span class="sc">^</span><span class="dv">4</span> <span class="sc">-</span> (counterfactual<span class="sc">/</span><span class="fu">lag</span>(c))<span class="sc">^</span><span class="dv">4</span> </span>
+<span id="cb21-6"><a href="data-sources-and-data-cleaning.html#cb21-6" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb21-7"><a href="data-sources-and-data-cleaning.html#cb21-7" tabindex="-1"></a>}</span></code></pre></div>
+<p>Minus neutral is actual growth in consumption minus growth in counterfactual consumption (relative to last quarter’s actual consumption). Both growth rates are annualized.</p>
+<p><code>minus_neutral_t()</code> executes the highlighted portion of our net transfers FIM math:
+<img src="images/minus_neutral_t.png" alt="“An image of the counterfactual consumption FIM math”" /></p>
+<p>Next, we scale to GDP:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="data-sources-and-data-cleaning.html#cb22-1" tabindex="-1"></a>scale_to_gdp_t <span class="ot">&lt;-</span> <span class="cf">function</span>(x,</span>
+<span id="cb22-2"><a href="data-sources-and-data-cleaning.html#cb22-2" tabindex="-1"></a>                           gdp,</span>
+<span id="cb22-3"><a href="data-sources-and-data-cleaning.html#cb22-3" tabindex="-1"></a>                           c</span>
+<span id="cb22-4"><a href="data-sources-and-data-cleaning.html#cb22-4" tabindex="-1"></a>) {</span>
+<span id="cb22-5"><a href="data-sources-and-data-cleaning.html#cb22-5" tabindex="-1"></a>  output <span class="ot">&lt;-</span> result<span class="sc">*</span>(<span class="fu">lag</span>(c)<span class="sc">/</span><span class="fu">lag</span>(gdp))</span>
+<span id="cb22-6"><a href="data-sources-and-data-cleaning.html#cb22-6" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb22-7"><a href="data-sources-and-data-cleaning.html#cb22-7" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>scale_to_gdp_t()</code>executes the portion of our net transfers FIM math highlighted below:
+<img src="images/scale_to_gdp_t.png" alt="“An image of the counterfactual consumption FIM math”" /></p>
+<p>Now that we’ve defined all of our functions, we need to apply them to our data.</p>
+</div>
+<div id="applying-our-mpcs" class="section level2 hasAnchor" number="2.8">
+<h2><span class="header-section-number">2.8</span> Applying Our MPCs<a href="data-sources-and-data-cleaning.html#applying-our-mpcs" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>First, we use the <code>mpc()</code> function to apply MPCs to our taxes data. As discussed above, we take our data <code>x</code> and an MPC matrix as our inputs.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="data-sources-and-data-cleaning.html#cb23-1" tabindex="-1"></a><span class="co"># APPLY MPCS TO TAXES</span></span>
+<span id="cb23-2"><a href="data-sources-and-data-cleaning.html#cb23-2" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="data-sources-and-data-cleaning.html#cb23-3" tabindex="-1"></a><span class="co"># Federal Non-Corporate Taxes</span></span>
+<span id="cb23-4"><a href="data-sources-and-data-cleaning.html#cb23-4" tabindex="-1"></a>post_mpc_federal_non_corporate_taxes <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_non_corporate_taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb23-5"><a href="data-sources-and-data-cleaning.html#cb23-5" tabindex="-1"></a>                                            <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_non_corporate_taxes.rds&quot;</span>))</span>
+<span id="cb23-6"><a href="data-sources-and-data-cleaning.html#cb23-6" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="data-sources-and-data-cleaning.html#cb23-7" tabindex="-1"></a><span class="co"># State Non-Corporate Taxes</span></span>
+<span id="cb23-8"><a href="data-sources-and-data-cleaning.html#cb23-8" tabindex="-1"></a>post_mpc_state_non_corporate_taxes <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_non_corporate_taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb23-9"><a href="data-sources-and-data-cleaning.html#cb23-9" tabindex="-1"></a>                                          <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_non_corporate_taxes.rds&quot;</span>))</span>
+<span id="cb23-10"><a href="data-sources-and-data-cleaning.html#cb23-10" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="data-sources-and-data-cleaning.html#cb23-11" tabindex="-1"></a><span class="co"># Federal Corporate Taxes</span></span>
+<span id="cb23-12"><a href="data-sources-and-data-cleaning.html#cb23-12" tabindex="-1"></a>post_mpc_federal_corporate_taxes <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_corporate_taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb23-13"><a href="data-sources-and-data-cleaning.html#cb23-13" tabindex="-1"></a>                                        <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_corporate_taxes.rds&quot;</span>))</span>
+<span id="cb23-14"><a href="data-sources-and-data-cleaning.html#cb23-14" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="data-sources-and-data-cleaning.html#cb23-15" tabindex="-1"></a><span class="co"># State Corporate Taxes</span></span>
+<span id="cb23-16"><a href="data-sources-and-data-cleaning.html#cb23-16" tabindex="-1"></a>post_mpc_state_corporate_taxes <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_corporate_taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb23-17"><a href="data-sources-and-data-cleaning.html#cb23-17" tabindex="-1"></a>                                      <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_corporate_taxes.rds&quot;</span>))</span>
+<span id="cb23-18"><a href="data-sources-and-data-cleaning.html#cb23-18" tabindex="-1"></a></span>
+<span id="cb23-19"><a href="data-sources-and-data-cleaning.html#cb23-19" tabindex="-1"></a><span class="co"># Supply Side IRA (no MPC)</span></span>
+<span id="cb23-20"><a href="data-sources-and-data-cleaning.html#cb23-20" tabindex="-1"></a>supply_side_ira <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(supply_side_ira_test<span class="sc">$</span>data_series)</span></code></pre></div>
+<p>Next, we use the <code>mpc()</code> function to apply our MPCs to our tranfsers data:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="data-sources-and-data-cleaning.html#cb24-1" tabindex="-1"></a><span class="co"># Federal Social Benefits </span></span>
+<span id="cb24-2"><a href="data-sources-and-data-cleaning.html#cb24-2" tabindex="-1"></a>post_mpc_federal_social_benefits <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_social_benefits_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-3"><a href="data-sources-and-data-cleaning.html#cb24-3" tabindex="-1"></a>                                        <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_social_benefits.rds&quot;</span>))</span>
+<span id="cb24-4"><a href="data-sources-and-data-cleaning.html#cb24-4" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="data-sources-and-data-cleaning.html#cb24-5" tabindex="-1"></a><span class="co"># State Social Benefits</span></span>
+<span id="cb24-6"><a href="data-sources-and-data-cleaning.html#cb24-6" tabindex="-1"></a>post_mpc_state_social_benefits <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_social_benefits_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-7"><a href="data-sources-and-data-cleaning.html#cb24-7" tabindex="-1"></a>                                      <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_social_benefits.rds&quot;</span>))</span>
+<span id="cb24-8"><a href="data-sources-and-data-cleaning.html#cb24-8" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="data-sources-and-data-cleaning.html#cb24-9" tabindex="-1"></a><span class="co"># Rebate Checks </span></span>
+<span id="cb24-10"><a href="data-sources-and-data-cleaning.html#cb24-10" tabindex="-1"></a>post_mpc_rebate_checks <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> rebate_checks_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-11"><a href="data-sources-and-data-cleaning.html#cb24-11" tabindex="-1"></a>                              <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/rebate_checks.rds&quot;</span>))</span>
+<span id="cb24-12"><a href="data-sources-and-data-cleaning.html#cb24-12" tabindex="-1"></a></span>
+<span id="cb24-13"><a href="data-sources-and-data-cleaning.html#cb24-13" tabindex="-1"></a><span class="co"># Rebate Checks ARP </span></span>
+<span id="cb24-14"><a href="data-sources-and-data-cleaning.html#cb24-14" tabindex="-1"></a>post_mpc_rebate_checks_arp <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> rebate_checks_arp_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-15"><a href="data-sources-and-data-cleaning.html#cb24-15" tabindex="-1"></a>                                  <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/rebate_checks_arp.rds&quot;</span>))</span>
+<span id="cb24-16"><a href="data-sources-and-data-cleaning.html#cb24-16" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="data-sources-and-data-cleaning.html#cb24-17" tabindex="-1"></a><span class="co"># Federal UI </span></span>
+<span id="cb24-18"><a href="data-sources-and-data-cleaning.html#cb24-18" tabindex="-1"></a>post_mpc_federal_ui <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_ui_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-19"><a href="data-sources-and-data-cleaning.html#cb24-19" tabindex="-1"></a>                           <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_ui.rds&quot;</span>))</span>
+<span id="cb24-20"><a href="data-sources-and-data-cleaning.html#cb24-20" tabindex="-1"></a></span>
+<span id="cb24-21"><a href="data-sources-and-data-cleaning.html#cb24-21" tabindex="-1"></a><span class="co"># State UI </span></span>
+<span id="cb24-22"><a href="data-sources-and-data-cleaning.html#cb24-22" tabindex="-1"></a>post_mpc_state_ui <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_ui_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-23"><a href="data-sources-and-data-cleaning.html#cb24-23" tabindex="-1"></a>                         <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_ui.rds&quot;</span>))</span>
+<span id="cb24-24"><a href="data-sources-and-data-cleaning.html#cb24-24" tabindex="-1"></a></span>
+<span id="cb24-25"><a href="data-sources-and-data-cleaning.html#cb24-25" tabindex="-1"></a><span class="co"># Federal Subsidies</span></span>
+<span id="cb24-26"><a href="data-sources-and-data-cleaning.html#cb24-26" tabindex="-1"></a>post_mpc_federal_subsidies <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_subsidies_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-27"><a href="data-sources-and-data-cleaning.html#cb24-27" tabindex="-1"></a>                                  <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_subsidies.rds&quot;</span>))</span>
+<span id="cb24-28"><a href="data-sources-and-data-cleaning.html#cb24-28" tabindex="-1"></a></span>
+<span id="cb24-29"><a href="data-sources-and-data-cleaning.html#cb24-29" tabindex="-1"></a><span class="co"># Federal Aid to Small Businesses ARP </span></span>
+<span id="cb24-30"><a href="data-sources-and-data-cleaning.html#cb24-30" tabindex="-1"></a>post_mpc_federal_aid_to_small_businesses_arp <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_aid_to_small_businesses_arp_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-31"><a href="data-sources-and-data-cleaning.html#cb24-31" tabindex="-1"></a>                                                    <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_aid_to_small_businesses_arp.rds&quot;</span>))</span>
+<span id="cb24-32"><a href="data-sources-and-data-cleaning.html#cb24-32" tabindex="-1"></a></span>
+<span id="cb24-33"><a href="data-sources-and-data-cleaning.html#cb24-33" tabindex="-1"></a><span class="co"># Federal Other Direct Aid ARP </span></span>
+<span id="cb24-34"><a href="data-sources-and-data-cleaning.html#cb24-34" tabindex="-1"></a>post_mpc_federal_other_direct_aid_arp <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_other_direct_aid_arp_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-35"><a href="data-sources-and-data-cleaning.html#cb24-35" tabindex="-1"></a>                                             <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_other_direct_aid_arp.rds&quot;</span>))</span>
+<span id="cb24-36"><a href="data-sources-and-data-cleaning.html#cb24-36" tabindex="-1"></a></span>
+<span id="cb24-37"><a href="data-sources-and-data-cleaning.html#cb24-37" tabindex="-1"></a><span class="co"># Federal Other Vulnerable ARP </span></span>
+<span id="cb24-38"><a href="data-sources-and-data-cleaning.html#cb24-38" tabindex="-1"></a>post_mpc_federal_other_vulnerable_arp <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_other_vulnerable_arp_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-39"><a href="data-sources-and-data-cleaning.html#cb24-39" tabindex="-1"></a>                                             <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_other_vulnerable_arp.rds&quot;</span>))</span>
+<span id="cb24-40"><a href="data-sources-and-data-cleaning.html#cb24-40" tabindex="-1"></a></span>
+<span id="cb24-41"><a href="data-sources-and-data-cleaning.html#cb24-41" tabindex="-1"></a><span class="co"># Federal Student Loans </span></span>
+<span id="cb24-42"><a href="data-sources-and-data-cleaning.html#cb24-42" tabindex="-1"></a>post_mpc_federal_student_loans <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_student_loans_test<span class="sc">$</span>data_series,</span>
+<span id="cb24-43"><a href="data-sources-and-data-cleaning.html#cb24-43" tabindex="-1"></a>                                      <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_student_loans.rds&quot;</span>))</span>
+<span id="cb24-44"><a href="data-sources-and-data-cleaning.html#cb24-44" tabindex="-1"></a></span>
+<span id="cb24-45"><a href="data-sources-and-data-cleaning.html#cb24-45" tabindex="-1"></a><span class="co"># State Subsidies </span></span>
+<span id="cb24-46"><a href="data-sources-and-data-cleaning.html#cb24-46" tabindex="-1"></a>post_mpc_state_subsidies <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_subsidies_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-47"><a href="data-sources-and-data-cleaning.html#cb24-47" tabindex="-1"></a>                                <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_subsidies.rds&quot;</span>))</span>
+<span id="cb24-48"><a href="data-sources-and-data-cleaning.html#cb24-48" tabindex="-1"></a></span>
+<span id="cb24-49"><a href="data-sources-and-data-cleaning.html#cb24-49" tabindex="-1"></a><span class="co"># Federal Health Outlays </span></span>
+<span id="cb24-50"><a href="data-sources-and-data-cleaning.html#cb24-50" tabindex="-1"></a>post_mpc_federal_health_outlays <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_health_outlays_test<span class="sc">$</span>data_series,</span>
+<span id="cb24-51"><a href="data-sources-and-data-cleaning.html#cb24-51" tabindex="-1"></a>                                       <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_health_outlays.rds&quot;</span>))</span>
+<span id="cb24-52"><a href="data-sources-and-data-cleaning.html#cb24-52" tabindex="-1"></a></span>
+<span id="cb24-53"><a href="data-sources-and-data-cleaning.html#cb24-53" tabindex="-1"></a><span class="co"># State Health Outlays </span></span>
+<span id="cb24-54"><a href="data-sources-and-data-cleaning.html#cb24-54" tabindex="-1"></a>post_mpc_state_health_outlays <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_health_outlays_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-55"><a href="data-sources-and-data-cleaning.html#cb24-55" tabindex="-1"></a>                                     <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_health_outlays.rds&quot;</span>))</span></code></pre></div>
+<p>Now, we create net transfers by summing the post-MPC data. We also create “FIM state purchases.” See the section below for an explanation of what this is.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="data-sources-and-data-cleaning.html#cb25-1" tabindex="-1"></a><span class="do">#### CREATE TAXES #####</span></span>
+<span id="cb25-2"><a href="data-sources-and-data-cleaning.html#cb25-2" tabindex="-1"></a>taxes_test <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">date =</span> date, <span class="at">data_series =</span> post_mpc_federal_non_corporate_taxes <span class="sc">+</span> </span>
+<span id="cb25-3"><a href="data-sources-and-data-cleaning.html#cb25-3" tabindex="-1"></a>                           post_mpc_state_non_corporate_taxes <span class="sc">+</span> post_mpc_federal_corporate_taxes <span class="sc">+</span> </span>
+<span id="cb25-4"><a href="data-sources-and-data-cleaning.html#cb25-4" tabindex="-1"></a>                           post_mpc_state_corporate_taxes <span class="sc">+</span> supply_side_ira) </span>
+<span id="cb25-5"><a href="data-sources-and-data-cleaning.html#cb25-5" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="data-sources-and-data-cleaning.html#cb25-6" tabindex="-1"></a><span class="do">#### CREATE TRANSFERS #####</span></span>
+<span id="cb25-7"><a href="data-sources-and-data-cleaning.html#cb25-7" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="data-sources-and-data-cleaning.html#cb25-8" tabindex="-1"></a>transfers_test <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">date =</span> date_test<span class="sc">$</span>date, <span class="at">data_series =</span> post_mpc_federal_social_benefits <span class="sc">+</span> post_mpc_state_social_benefits <span class="sc">+</span></span>
+<span id="cb25-9"><a href="data-sources-and-data-cleaning.html#cb25-9" tabindex="-1"></a>                               post_mpc_rebate_checks <span class="sc">+</span> post_mpc_rebate_checks_arp <span class="sc">+</span> </span>
+<span id="cb25-10"><a href="data-sources-and-data-cleaning.html#cb25-10" tabindex="-1"></a>                               post_mpc_federal_ui <span class="sc">+</span> post_mpc_state_ui <span class="sc">+</span> </span>
+<span id="cb25-11"><a href="data-sources-and-data-cleaning.html#cb25-11" tabindex="-1"></a>                               post_mpc_federal_subsidies <span class="sc">+</span> post_mpc_federal_aid_to_small_businesses_arp <span class="sc">+</span> </span>
+<span id="cb25-12"><a href="data-sources-and-data-cleaning.html#cb25-12" tabindex="-1"></a>                               post_mpc_federal_other_direct_aid_arp <span class="sc">+</span> post_mpc_federal_other_vulnerable_arp  <span class="sc">+</span> </span>
+<span id="cb25-13"><a href="data-sources-and-data-cleaning.html#cb25-13" tabindex="-1"></a>                               post_mpc_federal_student_loans <span class="sc">+</span> post_mpc_state_subsidies <span class="sc">+</span></span>
+<span id="cb25-14"><a href="data-sources-and-data-cleaning.html#cb25-14" tabindex="-1"></a>                               post_mpc_federal_health_outlays <span class="sc">+</span> post_mpc_state_health_outlays)</span>
+<span id="cb25-15"><a href="data-sources-and-data-cleaning.html#cb25-15" tabindex="-1"></a></span>
+<span id="cb25-16"><a href="data-sources-and-data-cleaning.html#cb25-16" tabindex="-1"></a><span class="do">#### SUM TAXES AND TRANSFERS ####</span></span>
+<span id="cb25-17"><a href="data-sources-and-data-cleaning.html#cb25-17" tabindex="-1"></a></span>
+<span id="cb25-18"><a href="data-sources-and-data-cleaning.html#cb25-18" tabindex="-1"></a>taxes_transfers_test <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">date =</span> date, </span>
+<span id="cb25-19"><a href="data-sources-and-data-cleaning.html#cb25-19" tabindex="-1"></a>                                   <span class="at">data_series =</span> taxes_test<span class="sc">$</span>data_series <span class="sc">+</span> transfers_test<span class="sc">$</span>data_series)</span>
+<span id="cb25-20"><a href="data-sources-and-data-cleaning.html#cb25-20" tabindex="-1"></a></span>
+<span id="cb25-21"><a href="data-sources-and-data-cleaning.html#cb25-21" tabindex="-1"></a><span class="do">### CREATE FIM STATE PURCHASES </span></span>
+<span id="cb25-22"><a href="data-sources-and-data-cleaning.html#cb25-22" tabindex="-1"></a>fim_state_purchases_test <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">date =</span> date, </span>
+<span id="cb25-23"><a href="data-sources-and-data-cleaning.html#cb25-23" tabindex="-1"></a>                                      <span class="at">data_series =</span> state_purchases_test<span class="sc">$</span>data_series <span class="sc">-</span></span>
+<span id="cb25-24"><a href="data-sources-and-data-cleaning.html#cb25-24" tabindex="-1"></a>                                        consumption_grants_test<span class="sc">$</span>data_series <span class="sc">-</span></span>
+<span id="cb25-25"><a href="data-sources-and-data-cleaning.html#cb25-25" tabindex="-1"></a>                                        investment_grants_test<span class="sc">$</span>data_series)</span>
+<span id="cb25-26"><a href="data-sources-and-data-cleaning.html#cb25-26" tabindex="-1"></a></span>
+<span id="cb25-27"><a href="data-sources-and-data-cleaning.html#cb25-27" tabindex="-1"></a></span>
+<span id="cb25-28"><a href="data-sources-and-data-cleaning.html#cb25-28" tabindex="-1"></a></span>
+<span id="cb25-29"><a href="data-sources-and-data-cleaning.html#cb25-29" tabindex="-1"></a><span class="do">#######################################################</span></span>
+<span id="cb25-30"><a href="data-sources-and-data-cleaning.html#cb25-30" tabindex="-1"></a><span class="co">#               CALCULATE THE FIM                     #</span></span>
+<span id="cb25-31"><a href="data-sources-and-data-cleaning.html#cb25-31" tabindex="-1"></a><span class="do">#######################################################</span></span></code></pre></div>
+</div>
+<div id="calculating-the-fim" class="section level2 hasAnchor" number="2.9">
+<h2><span class="header-section-number">2.9</span> Calculating the FIM<a href="data-sources-and-data-cleaning.html#calculating-the-fim" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="purchases-fim" class="section level3 hasAnchor" number="2.9.1">
+<h3><span class="header-section-number">2.9.1</span> Purchases FIM<a href="data-sources-and-data-cleaning.html#purchases-fim" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In the national accounts data, the BEA allocates federal grants to state and local governments to the “state purchases” data series. We want to more accurately allocate this spending to the level of government that actually financed the purchases. Therefore, when we calculate the FIM for purchases, we need to reassign some spending by state and local governments to its actual source - the federal government.</p>
+<p>A common distinction in the FIM lexicon is “NIPA consistent purchases” and “FIM consistent purchases.” “NIPA purchases” describes purchases as they are allocated by BEA. FIM purchases reflect our version of purchases, with consumption and investment grants to states reassigned to the federal government.</p>
+<p>Above, we calculated our data for FIM state purchases - NIPA state purchases minus consumption and investment grants. We calculate the FIM for “FIM consistent state purchases” in the section below. <code>fim_state_purchases_test()</code> is our data input, reflecting state purchases without the purchases funded by the federal government.</p>
+<p>To get the FIM for “FIM consistent federal purchases” we first calculate the FIM for total NIPA purchases. Then we subtract out the FIM for “FIM consistent state purchases.” The result is the FIM for “FIM consistent federal purchases.”</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="data-sources-and-data-cleaning.html#cb26-1" tabindex="-1"></a><span class="co"># Federal Purchases Contribution (NIPA Consistent)</span></span>
+<span id="cb26-2"><a href="data-sources-and-data-cleaning.html#cb26-2" tabindex="-1"></a>nipa_federal_purchases_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_purchases</span>(</span>
+<span id="cb26-3"><a href="data-sources-and-data-cleaning.html#cb26-3" tabindex="-1"></a>  <span class="at">x =</span> federal_purchases_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-4"><a href="data-sources-and-data-cleaning.html#cb26-4" tabindex="-1"></a>  <span class="at">dg =</span> federal_purchases_deflator_growth_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-5"><a href="data-sources-and-data-cleaning.html#cb26-5" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_annualized_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-6"><a href="data-sources-and-data-cleaning.html#cb26-6" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series <span class="co"># Using the new test version</span></span>
+<span id="cb26-7"><a href="data-sources-and-data-cleaning.html#cb26-7" tabindex="-1"></a>)</span>
+<span id="cb26-8"><a href="data-sources-and-data-cleaning.html#cb26-8" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="data-sources-and-data-cleaning.html#cb26-9" tabindex="-1"></a><span class="co"># State Purchases Contribution (NIPA Consistent)</span></span>
+<span id="cb26-10"><a href="data-sources-and-data-cleaning.html#cb26-10" tabindex="-1"></a>nipa_state_purchases_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_purchases</span>(</span>
+<span id="cb26-11"><a href="data-sources-and-data-cleaning.html#cb26-11" tabindex="-1"></a>  <span class="at">x =</span> state_purchases_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-12"><a href="data-sources-and-data-cleaning.html#cb26-12" tabindex="-1"></a>  <span class="at">dg =</span> state_purchases_deflator_growth_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-13"><a href="data-sources-and-data-cleaning.html#cb26-13" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_annualized_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-14"><a href="data-sources-and-data-cleaning.html#cb26-14" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series <span class="co"># Using the new test version</span></span>
+<span id="cb26-15"><a href="data-sources-and-data-cleaning.html#cb26-15" tabindex="-1"></a>) </span>
+<span id="cb26-16"><a href="data-sources-and-data-cleaning.html#cb26-16" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="data-sources-and-data-cleaning.html#cb26-17" tabindex="-1"></a><span class="co"># Total NIPA Purchases Contribution (NIPA Consistent)</span></span>
+<span id="cb26-18"><a href="data-sources-and-data-cleaning.html#cb26-18" tabindex="-1"></a>nipa_total_purchases_contribution <span class="ot">&lt;-</span> nipa_state_purchases_contribution <span class="sc">+</span> </span>
+<span id="cb26-19"><a href="data-sources-and-data-cleaning.html#cb26-19" tabindex="-1"></a>  nipa_federal_purchases_contribution</span>
+<span id="cb26-20"><a href="data-sources-and-data-cleaning.html#cb26-20" tabindex="-1"></a></span>
+<span id="cb26-21"><a href="data-sources-and-data-cleaning.html#cb26-21" tabindex="-1"></a><span class="co"># State Purchases Contribution (FIM Consistent)</span></span>
+<span id="cb26-22"><a href="data-sources-and-data-cleaning.html#cb26-22" tabindex="-1"></a>fim_state_purchases_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_purchases</span>(</span>
+<span id="cb26-23"><a href="data-sources-and-data-cleaning.html#cb26-23" tabindex="-1"></a>  <span class="at">x =</span> fim_state_purchases_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-24"><a href="data-sources-and-data-cleaning.html#cb26-24" tabindex="-1"></a>  <span class="at">dg =</span> state_purchases_deflator_growth_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-25"><a href="data-sources-and-data-cleaning.html#cb26-25" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_annualized_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb26-26"><a href="data-sources-and-data-cleaning.html#cb26-26" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series <span class="co"># Using the new test version</span></span>
+<span id="cb26-27"><a href="data-sources-and-data-cleaning.html#cb26-27" tabindex="-1"></a>) </span>
+<span id="cb26-28"><a href="data-sources-and-data-cleaning.html#cb26-28" tabindex="-1"></a></span>
+<span id="cb26-29"><a href="data-sources-and-data-cleaning.html#cb26-29" tabindex="-1"></a><span class="co"># Federal Purchases Contribution (FIM Consistent)</span></span>
+<span id="cb26-30"><a href="data-sources-and-data-cleaning.html#cb26-30" tabindex="-1"></a>fim_federal_purchases_contribution <span class="ot">&lt;-</span> nipa_total_purchases_contribution <span class="sc">-</span> </span>
+<span id="cb26-31"><a href="data-sources-and-data-cleaning.html#cb26-31" tabindex="-1"></a>  fim_state_purchases_contribution </span></code></pre></div>
+<p>We use the <code>contribution_purchases()</code> wrapper function to execute all of our steps at once. It’s important to keep track of which growth rates are annualized and which are not. I’d recommend reviewing our FIM math document as well as the <code>contributions.R</code> helper script if you are confused by any parts of the FIM calculation.</p>
+</div>
+<div id="net-transfers-fim" class="section level3 hasAnchor" number="2.9.2">
+<h3><span class="header-section-number">2.9.2</span> Net Transfers FIM<a href="data-sources-and-data-cleaning.html#net-transfers-fim" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Next, we calculate the FIM for net transfers by simply applying each of our consumption functions:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="data-sources-and-data-cleaning.html#cb27-1" tabindex="-1"></a><span class="co"># Generate Counterfactual Taxes and Transfers</span></span>
+<span id="cb27-2"><a href="data-sources-and-data-cleaning.html#cb27-2" tabindex="-1"></a>counterfactual_consumption <span class="ot">&lt;-</span> <span class="fu">t_counterfactual</span>(</span>
+<span id="cb27-3"><a href="data-sources-and-data-cleaning.html#cb27-3" tabindex="-1"></a>  <span class="at">x =</span> taxes_transfers_test<span class="sc">$</span>data_series, </span>
+<span id="cb27-4"><a href="data-sources-and-data-cleaning.html#cb27-4" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb27-5"><a href="data-sources-and-data-cleaning.html#cb27-5" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb27-6"><a href="data-sources-and-data-cleaning.html#cb27-6" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series</span>
+<span id="cb27-7"><a href="data-sources-and-data-cleaning.html#cb27-7" tabindex="-1"></a>)</span>
+<span id="cb27-8"><a href="data-sources-and-data-cleaning.html#cb27-8" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="data-sources-and-data-cleaning.html#cb27-9" tabindex="-1"></a><span class="co"># Perform minus neutral calculation, growth in </span></span>
+<span id="cb27-10"><a href="data-sources-and-data-cleaning.html#cb27-10" tabindex="-1"></a><span class="co"># actual purchases minus growth in counterfactual purchases </span></span>
+<span id="cb27-11"><a href="data-sources-and-data-cleaning.html#cb27-11" tabindex="-1"></a><span class="co"># (both annualized)</span></span>
+<span id="cb27-12"><a href="data-sources-and-data-cleaning.html#cb27-12" tabindex="-1"></a>minus_neutral <span class="ot">&lt;-</span> (consumption_test<span class="sc">$</span>data_series<span class="sc">/</span><span class="fu">lag</span>(consumption_test<span class="sc">$</span>data_series))<span class="sc">^</span><span class="dv">4</span> <span class="sc">-</span> </span>
+<span id="cb27-13"><a href="data-sources-and-data-cleaning.html#cb27-13" tabindex="-1"></a>  (counterfactual_consumption<span class="sc">/</span><span class="fu">lag</span>(consumption_test<span class="sc">$</span>data_series))<span class="sc">^</span><span class="dv">4</span></span>
+<span id="cb27-14"><a href="data-sources-and-data-cleaning.html#cb27-14" tabindex="-1"></a></span>
+<span id="cb27-15"><a href="data-sources-and-data-cleaning.html#cb27-15" tabindex="-1"></a><span class="co"># Scale to GDP</span></span>
+<span id="cb27-16"><a href="data-sources-and-data-cleaning.html#cb27-16" tabindex="-1"></a>scaled_to_gdp_transfers <span class="ot">&lt;-</span> minus_neutral<span class="sc">*</span>(<span class="fu">lag</span>(consumption_test<span class="sc">$</span>data_series)<span class="sc">/</span><span class="fu">lag</span>(gdp_test<span class="sc">$</span>data_series))</span>
+<span id="cb27-17"><a href="data-sources-and-data-cleaning.html#cb27-17" tabindex="-1"></a></span>
+<span id="cb27-18"><a href="data-sources-and-data-cleaning.html#cb27-18" tabindex="-1"></a><span class="co"># Percent Form </span></span>
+<span id="cb27-19"><a href="data-sources-and-data-cleaning.html#cb27-19" tabindex="-1"></a>consumption_contribution <span class="ot">&lt;-</span> scaled_to_gdp_transfers<span class="sc">*</span><span class="dv">100</span></span></code></pre></div>
+<p>Note: I’m now realizing we just apply the transformations directly in this script rather than using the functions we defined in the helper script. We should fix that but I’m too lazy rn.</p>
+<p>In this next chunk of code, we calculate the overall FIM, which is the sum of our contributions. We also calculate the four-quarter moving average.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="data-sources-and-data-cleaning.html#cb28-1" tabindex="-1"></a>federal_contribution <span class="ot">&lt;-</span> fim_federal_purchases_contribution</span>
+<span id="cb28-2"><a href="data-sources-and-data-cleaning.html#cb28-2" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="data-sources-and-data-cleaning.html#cb28-3" tabindex="-1"></a>state_contribution <span class="ot">&lt;-</span> fim_state_purchases_contribution</span>
+<span id="cb28-4"><a href="data-sources-and-data-cleaning.html#cb28-4" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="data-sources-and-data-cleaning.html#cb28-5" tabindex="-1"></a>fiscal_impact_measure <span class="ot">&lt;-</span></span>
+<span id="cb28-6"><a href="data-sources-and-data-cleaning.html#cb28-6" tabindex="-1"></a>  (federal_contribution <span class="sc">+</span></span>
+<span id="cb28-7"><a href="data-sources-and-data-cleaning.html#cb28-7" tabindex="-1"></a>     state_contribution <span class="sc">+</span></span>
+<span id="cb28-8"><a href="data-sources-and-data-cleaning.html#cb28-8" tabindex="-1"></a>     consumption_contribution) </span>
+<span id="cb28-9"><a href="data-sources-and-data-cleaning.html#cb28-9" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="data-sources-and-data-cleaning.html#cb28-10" tabindex="-1"></a><span class="co"># Replace NAs with Zeros</span></span>
+<span id="cb28-11"><a href="data-sources-and-data-cleaning.html#cb28-11" tabindex="-1"></a>fiscal_impact_measure <span class="ot">&lt;-</span> <span class="fu">replace</span>(fiscal_impact_measure, </span>
+<span id="cb28-12"><a href="data-sources-and-data-cleaning.html#cb28-12" tabindex="-1"></a>                                 <span class="fu">is.na</span>(fiscal_impact_measure), <span class="dv">0</span>)</span>
+<span id="cb28-13"><a href="data-sources-and-data-cleaning.html#cb28-13" tabindex="-1"></a></span>
+<span id="cb28-14"><a href="data-sources-and-data-cleaning.html#cb28-14" tabindex="-1"></a><span class="co"># Calculate Four Quarter Moving Average</span></span>
+<span id="cb28-15"><a href="data-sources-and-data-cleaning.html#cb28-15" tabindex="-1"></a>fiscal_impact_4q_ma <span class="ot">&lt;-</span> fiscal_impact_measure <span class="sc">%&gt;%</span></span>
+<span id="cb28-16"><a href="data-sources-and-data-cleaning.html#cb28-16" tabindex="-1"></a>  <span class="fu">SMA</span>(zoo<span class="sc">::</span><span class="fu">na.locf</span>(., <span class="at">na.rm =</span> F), <span class="at">n=</span><span class="dv">4</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="outputting-results" class="section level2 hasAnchor" number="2.10">
+<h2><span class="header-section-number">2.10</span> Outputting Results<a href="data-sources-and-data-cleaning.html#outputting-results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>If you recall, in some of the first lines of this script, we defined a bunch of empty folders that will store our FIM results. Now it’s time to export our results to those directories.</p>
+<p>There are three main objectives we accomplish in this section:
+1. We store our inputs and outputs as Excel sheets. We often review this data with Louise. We also sometimes need this data in later months when we want to compare our results with a prior publication. 2. We generate the materials that are needed to publish the FIM on the Brookings website. This includes a .csv file that populates the interactive graph on the FIM webpage and the pdf document displaying a static image of the FIM that is also available on the website.
+3. We create the so-called “Manu file”, an R markdown file with nicely formatted graphs and tables. This is the main document that we show Louise when we’re reviewing our results. The “Manu file” uses the previously mentioned Excel sheets to retrieve our results data.</p>
+<p>In the chunk of code below, we create two data frames (inputs and outputs) and then store them in the results folder.</p>
+<p>NOTE: Currently, we store everything in a “beta” version of our results (i.e. <code>results//{month_year}/beta/</code>). This is a hold over from Lorae’s work refactoring Manu’s original FIM code. This should eventually be corrected.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="data-sources-and-data-cleaning.html#cb29-1" tabindex="-1"></a><span class="co"># This code block prints the chunk entitled &quot;section-C.4-calculate-purchases-fim&quot; </span></span>
+<span id="cb29-2"><a href="data-sources-and-data-cleaning.html#cb29-2" tabindex="-1"></a><span class="co"># from fiscal_impact_BETA.R</span></span></code></pre></div>
+<div id="generating-web-materials" class="section level3 hasAnchor" number="2.10.1">
+<h3><span class="header-section-number">2.10.1</span> Generating Web Materials<a href="data-sources-and-data-cleaning.html#generating-web-materials" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In this final section, we generate the materials needed to publish our results on the Brookings website. Nasiha’s FIM guide contains detailed instructions on how to update the FIM page.</p>
+<p>First, we generate our ‘interactive’ data frame - the data we use to make the interactive graph on the webpage. WordPress has custom HTML text that is prepared to handle a very specific data set, so it is critical that you DO NOT CHANGE this section.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="data-sources-and-data-cleaning.html#cb30-1" tabindex="-1"></a><span class="co"># Generate interactive data frame from contributions</span></span>
+<span id="cb30-2"><a href="data-sources-and-data-cleaning.html#cb30-2" tabindex="-1"></a>interactive <span class="ot">&lt;-</span> contributions_df <span class="sc">%&gt;%</span> </span>
+<span id="cb30-3"><a href="data-sources-and-data-cleaning.html#cb30-3" tabindex="-1"></a>  <span class="co"># Filter rows of contributions by date, keeping only those between 1999 Q4 and</span></span>
+<span id="cb30-4"><a href="data-sources-and-data-cleaning.html#cb30-4" tabindex="-1"></a>  <span class="co"># current quarter + 8</span></span>
+<span id="cb30-5"><a href="data-sources-and-data-cleaning.html#cb30-5" tabindex="-1"></a>  <span class="fu">filter_index</span>(<span class="st">&#39;1999 Q4&#39;</span> <span class="sc">~</span> <span class="fu">as.character</span>(current_quarter <span class="sc">+</span> <span class="dv">8</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-6"><a href="data-sources-and-data-cleaning.html#cb30-6" tabindex="-1"></a>  <span class="co"># Select only specific columns</span></span>
+<span id="cb30-7"><a href="data-sources-and-data-cleaning.html#cb30-7" tabindex="-1"></a>  <span class="fu">select</span>(date, </span>
+<span id="cb30-8"><a href="data-sources-and-data-cleaning.html#cb30-8" tabindex="-1"></a>         <span class="at">impact =</span> fiscal_impact_4q_ma,</span>
+<span id="cb30-9"><a href="data-sources-and-data-cleaning.html#cb30-9" tabindex="-1"></a>         recession,</span>
+<span id="cb30-10"><a href="data-sources-and-data-cleaning.html#cb30-10" tabindex="-1"></a>         <span class="at">total =</span> fiscal_impact_measure,</span>
+<span id="cb30-11"><a href="data-sources-and-data-cleaning.html#cb30-11" tabindex="-1"></a>         <span class="at">federal =</span> federal_contribution,</span>
+<span id="cb30-12"><a href="data-sources-and-data-cleaning.html#cb30-12" tabindex="-1"></a>         <span class="at">state_local =</span> state_contribution,</span>
+<span id="cb30-13"><a href="data-sources-and-data-cleaning.html#cb30-13" tabindex="-1"></a>         <span class="at">consumption =</span> consumption_contribution,</span>
+<span id="cb30-14"><a href="data-sources-and-data-cleaning.html#cb30-14" tabindex="-1"></a>         <span class="at">projection =</span> id</span>
+<span id="cb30-15"><a href="data-sources-and-data-cleaning.html#cb30-15" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-16"><a href="data-sources-and-data-cleaning.html#cb30-16" tabindex="-1"></a>  <span class="co"># Recode `recession` and `projection` variables to 0 and 1 binaries</span></span>
+<span id="cb30-17"><a href="data-sources-and-data-cleaning.html#cb30-17" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">recession =</span> <span class="fu">recode</span>(recession, <span class="st">`</span><span class="at">-1</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">0</span>),</span>
+<span id="cb30-18"><a href="data-sources-and-data-cleaning.html#cb30-18" tabindex="-1"></a>         <span class="at">recession =</span> <span class="fu">replace_na</span>(recession, <span class="dv">0</span>),</span>
+<span id="cb30-19"><a href="data-sources-and-data-cleaning.html#cb30-19" tabindex="-1"></a>         <span class="at">projection =</span> <span class="fu">recode</span>(projection, <span class="at">historical =</span> <span class="dv">0</span>, <span class="at">projection =</span> <span class="dv">1</span>)</span>
+<span id="cb30-20"><a href="data-sources-and-data-cleaning.html#cb30-20" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb30-21"><a href="data-sources-and-data-cleaning.html#cb30-21" tabindex="-1"></a>  <span class="co"># Split date column into year and quarter columns</span></span>
+<span id="cb30-22"><a href="data-sources-and-data-cleaning.html#cb30-22" tabindex="-1"></a>  <span class="fu">separate</span>(date, <span class="fu">c</span>(<span class="st">&#39;year&#39;</span>, <span class="st">&#39;quarter&#39;</span>))</span>
+<span id="cb30-23"><a href="data-sources-and-data-cleaning.html#cb30-23" tabindex="-1"></a></span>
+<span id="cb30-24"><a href="data-sources-and-data-cleaning.html#cb30-24" tabindex="-1"></a><span class="co"># Write interactive data frame to CSV file</span></span>
+<span id="cb30-25"><a href="data-sources-and-data-cleaning.html#cb30-25" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(interactive,  <span class="at">file =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/interactive-{month_year}.csv&#39;</span>))</span></code></pre></div>
+<p>Next, we create the static image of the FIM that we upload as a pdf to the website. Note that this section of the code generates an html file. We open this file and save it as a pdf manually.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="data-sources-and-data-cleaning.html#cb31-1" tabindex="-1"></a>rmarkdown<span class="sc">::</span><span class="fu">render</span>(<span class="st">&#39;Fiscal-Impact.Rmd&#39;</span>,</span>
+<span id="cb31-2"><a href="data-sources-and-data-cleaning.html#cb31-2" tabindex="-1"></a>                  <span class="co"># Render R Markdown document to PDF file</span></span>
+<span id="cb31-3"><a href="data-sources-and-data-cleaning.html#cb31-3" tabindex="-1"></a>                  <span class="at">output_file =</span> <span class="st">&#39;Fiscal-Impact.html&#39;</span>,</span>
+<span id="cb31-4"><a href="data-sources-and-data-cleaning.html#cb31-4" tabindex="-1"></a>                  <span class="at">clean =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb31-5"><a href="data-sources-and-data-cleaning.html#cb31-5" tabindex="-1"></a>                  <span class="at">params =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fu">yearquarter</span>(<span class="st">&#39;1999 Q4&#39;</span>), <span class="at">end =</span> current_quarter <span class="sc">+</span> <span class="dv">8</span>))</span>
+<span id="cb31-6"><a href="data-sources-and-data-cleaning.html#cb31-6" tabindex="-1"></a></span>
+<span id="cb31-7"><a href="data-sources-and-data-cleaning.html#cb31-7" tabindex="-1"></a><span class="co"># Copy FIM/Fiscal-Impact.html graphs to the results/month-year/beta folder</span></span>
+<span id="cb31-8"><a href="data-sources-and-data-cleaning.html#cb31-8" tabindex="-1"></a><span class="fu">file_copy</span>(<span class="at">path =</span> <span class="st">&#39;Fiscal-Impact.html&#39;</span>,</span>
+<span id="cb31-9"><a href="data-sources-and-data-cleaning.html#cb31-9" tabindex="-1"></a>          <span class="at">new_path =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/Fiscal-Impact-{month_year}.html&#39;</span>),</span>
+<span id="cb31-10"><a href="data-sources-and-data-cleaning.html#cb31-10" tabindex="-1"></a>          <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Lastly, we create the previously mentioned “Manu file”.
+TO DO: add documentation on the Manu file once it’s done.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="data-sources-and-data-cleaning.html#cb32-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;scripts/index_temp.R&quot;</span>)</span>
+<span id="cb32-2"><a href="data-sources-and-data-cleaning.html#cb32-2" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="data-sources-and-data-cleaning.html#cb32-3" tabindex="-1"></a>rmarkdown<span class="sc">::</span><span class="fu">render</span>(<span class="at">input =</span> <span class="st">&#39;update-comparison-markdown.Rmd&#39;</span>,</span>
+<span id="cb32-4"><a href="data-sources-and-data-cleaning.html#cb32-4" tabindex="-1"></a>                  <span class="at">output_file =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/update-comparison-{month_year}&#39;</span>),</span>
+<span id="cb32-5"><a href="data-sources-and-data-cleaning.html#cb32-5" tabindex="-1"></a>                  <span class="at">clean =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="economics-methodology.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

@@ -3,7 +3,7 @@
 Sys.setenv(TZ = 'UTC')
 librarian::shelf(Haver, dplyr, tidyr, readxl, writexl, tsibble, purrr, openxlsx)
 
-haver.path("//ESDATA01/DLX/DATA/")
+haver.path("//esdata01.brookings.edu/DLX/DATA/")
 devtools::load_all()
 
 # 0.1 Pull Raw Data---------------------------------------------------------------

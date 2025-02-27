@@ -206,8 +206,7 @@ create_state_purchases <- function(
   return(result)
 }
 
-
-
+# Create Federal Non-Corporate Taxes Data Series
 create_federal_non_corporate_taxes <- function(
     national_accounts, 
     forecast, 
@@ -277,7 +276,7 @@ create_state_non_corporate_taxes <- function(
   return(result)
 }
 
-
+# Federal Corporate Taxes 
 create_federal_corporate_taxes <- function(
     national_accounts, 
     forecast, 
@@ -292,7 +291,7 @@ create_federal_corporate_taxes <- function(
   
   # Select column of interest from the national accounts tibble
   national_accounts <- national_accounts %>% 
-    # `gf` is the Haver code for federal purchases
+    # `gfrcp` is the Haver code for federal corporate taxes
     select(date, gfrcp) %>%  
     # Rename data to generic `data_series` for easier merging
     rename(data_series = gfrcp) %>%
@@ -315,7 +314,7 @@ create_federal_corporate_taxes <- function(
   return(result)
 }
 
-
+# Create Supply Side IRA Data Series
 create_supply_side_ira <- function(
     forecast, 
     historical_overrides, 
@@ -353,6 +352,7 @@ create_supply_side_ira <- function(
   return(result)
 }
 
+# Create State Corporate Taxes Data Series
 create_state_corporate_taxes <- function(
     national_accounts, 
     forecast, 
@@ -367,7 +367,7 @@ create_state_corporate_taxes <- function(
   
   # Select column of interest from the national accounts tibble
   national_accounts <- national_accounts %>% 
-    # `gf` is the Haver code for federal purchases
+    # `gsrcp` is the Haver code for state corporate taxes
     select(date, gsrcp) %>%  
     # Rename data to generic `data_series` for easier merging
     rename(data_series = gsrcp) %>%
@@ -390,7 +390,7 @@ create_state_corporate_taxes <- function(
   return(result)
 }
 
-
+# Create Federal Social Benefits
 create_federal_social_benefits <- function(
     national_accounts, 
     forecast, 
@@ -405,7 +405,8 @@ create_federal_social_benefits <- function(
   
   # Select column of interest from the national accounts tibble
   national_accounts <- national_accounts %>% 
-    # Calculate federal non corporate taxes as a sum of 3 series
+    # Calculate federal social benefits from 5 Haver data series. We subtract UI, 
+    # rebate checks, Medicare, and the Non-Profit Provider Relief Fund from NIPA federal social benefits. 
     mutate(data_series = 
              # The coalesce function is replacing 0s for NAs before subtracting
              coalesce(gftfp, 0) - # Haver code for federal social benefits
@@ -439,7 +440,7 @@ create_federal_social_benefits <- function(
   return(result)
 }
 
-
+# Create State Social Benefits
 create_state_social_benefits <- function(
     national_accounts, 
     forecast, 
@@ -453,7 +454,7 @@ create_state_social_benefits <- function(
   
   # Select column of interest from the national accounts tibble
   national_accounts <- national_accounts %>% 
-    # Calculate federal non corporate taxes as a sum of 3 series
+    # Calculate state social benefits as NIPA state social benefits less Medicaid
     mutate(data_series = 
              gstfp - # Haver code for state social benefits
              yptmd # Haver code for Medicaid
@@ -473,7 +474,7 @@ create_state_social_benefits <- function(
   return(result)
 }
 
-
+# Create Rebate Checks
 create_rebate_checks <- function(
     national_accounts, 
     forecast, 
@@ -518,7 +519,7 @@ create_rebate_checks <- function(
   return(result)
 }
 
-
+# Create Rebate Checks ARP
 create_rebate_checks_arp <- function(
     national_accounts, 
     forecast, 
@@ -558,6 +559,7 @@ create_rebate_checks_arp <- function(
   return(result)
 }
 
+# Create Federal UI 
 create_federal_ui <- function(
     national_accounts, 
     forecast, 
@@ -597,7 +599,7 @@ create_federal_ui <- function(
 }
 
 
-
+# Create State UI
 create_state_ui <- function(
     national_accounts, 
     forecast, 
@@ -929,28 +931,6 @@ create_state_health_outlays <- function(
 # accessory variables use projections to construct them.
 # Explain this in the bookdown file
 
-# Date
-create_date <- function(
-    national_accounts, 
-    forecast, 
-    placeholder_nas
-) {
-  # Select column of interest from the forecast tibble
-  projections <- projections %>% 
-    select(date) %>% 
-    filter(date > current_quarter)
-  
-  # Select column of interest from the national accounts tibble
-  national_accounts <- national_accounts %>% 
-    select(date) 
-  
-  # Merge the national accounts with the forecast using the commonly named `data_series`
-  # and `date` columns. The historic (national accounts) data take precedence in
-  # the case of any conflicting observations.
-  result <- bind_rows(national_accounts, projections)
-  
-  return(result)
-}
 
 # Deflators
 
@@ -1177,7 +1157,7 @@ create_consumption_deflator_growth <- function(
 }
 
 
-# Deflators
+# Real Potential GDP 
 
 # This function is simple. We just take real potential GDP from projections and 
 # calculate its growth rate. We then take real potential GDP from national accounts
@@ -1214,6 +1194,8 @@ create_real_potential_gdp_growth <- function(
   
   return(result)
 }
+
+# GDP 
 
 create_gdp <- function(
   national_accounts, 
@@ -1318,9 +1300,79 @@ create_consumption <- function(
 }
 
 
+# Extras 
+# Date
+create_date <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  projections <- projections %>% 
+    select(date) %>% 
+    filter(date > current_quarter)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    select(date) 
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- bind_rows(national_accounts, projections)
+  
+  return(result)
+}
 
+# Projection ID  
+create_id <- function(
+    national_accounts,
+    projections) {
+  
+  # Select columns of interest from the projections tibble 
+  projections <- projections %>% 
+    select(date, id)
+  
+  # Select columns of interest from the national_accounts tibble 
+  national_accounts <- national_accounts %>% 
+    select(date, id)
+  
+  # Merge national accounts with projections. In the case of conflicting values, 
+  # overwrite the value from projections with the value from national accounts. 
+  result <- coalesce_join(national_accounts, projections, by = 'date') %>%
+    rename(data_series = id)
+}
+
+# Recession 
+create_recession <- function(
+    national_accounts, 
+    projections,
+    placeholder_nas) {
+  
+  # Selection columns of interest from national accounts tibble 
+  national_accounts <- national_accounts %>% 
+    select(date, recessq) # recessq is the Haver code for the recession indicator variable 
+  
+  projections <- projections %>% 
+    mutate(recessq = 0) %>%
+    select(date, recessq)
+  
+  result <- coalesce_join(national_accounts, projections, by = 'date') %>%
+    # Rename the gdp column to generic data_series
+    rename(data_series = recessq) %>%
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(., placeholder_nas, by = "date") %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0))) %>%
+    # Reorder the entries chronologically
+    arrange(date)
+  
+  return(result) 
+}
 
 # Create Annualized Growth 
+# In this section, we define a function for annualized growth, which we apply to 
+# our quarterly deflator growth rates. 
 create_annualized_growth <- function(x) {
   x %>%
     mutate(data_series = (1 + data_series)^4 - 1)

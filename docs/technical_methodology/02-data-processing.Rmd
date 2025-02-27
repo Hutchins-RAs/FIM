@@ -1,0 +1,374 @@
+---
+title: "Data Processing"
+---
+
+## Data Cleaning 
+
+```{r setup-01, include=FALSE}
+# This chunk reads in code from fiscal_impact_BETA.R so that this .Rmd file can
+# display it. Please note that the sections of code shown below are demarcated using
+# their chunk names, which are marked in this style:
+# ---- chunk-name-example ----
+knitr::read_chunk("../../fiscal_impact_BETA.R")
+```
+
+This section provides a walk through of `fiscal_impact_BETA.R`, the script that pulls in all of our data, cleans it, and calculates the FIM.`fiscal_impact_BETA.R` also creates several output files that we need in order to review and publish our results. 
+
+It first loads the packages needed to execute our analysis - `lubridate`, `tidyverse`, etc. We access the functions in these packages to wrangle our data, perform calculations, create charts, and produce clean outputs to show Louise. 
+By running `devtools::load_all()`, we load all of the functions from our directory into the current R session, allowing us to access and use the functions written by Manu in the FIM package. Although the code has evolved significantly since Manu's first rendition, we still rely on some of his original functions to clean our data and calculate the FIM. 
+
+Next, we define several date objects such as `current_quarter` and `last-month-year` - these are important for both cleaning our data and properly storing our results. Note that this section is important and should be handled carefully. The objects and functions defined here are critical in other parts of this code. 
+
+```{r section-A.1-prep-for-update-G, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-A.1-prep-for-update" from
+# fiscal_impact_BETA.R
+```
+
+This next section of code defines empty folders that will store our results upon running the FIM. In a later part of this script, we export our inputs and outputs as Excel files to these directories. Here, we also create a copy of the current version of the forecast sheet and save it as `results/{month_year}/input_data/forecast_{month_year}.xlsx`. It's important that we preserve the exact version of the forecast sheet used to generate the results given that we often make changes to `data/forecast.xlsx`. 
+
+```{r section-A.2-create-empty-directories, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-A.2-create-empty-directories" 
+# from fiscal_impact_BETA.R
+```
+
+## Data Imports 
+
+This next section of code sources a helper script called `src/data_import.R`, which defines five crucial functions: `import_projections()`, `import_national_accounts()`, `import_forecast()`, `import_historical_overrides()`, and `import_deflator_overrides()`. These functions load our data and store it in memory. For example, the helper script writes `import_forecast()` to execute the following: 
+
+```{r r-chunk-2, eval=FALSE, echo=TRUE}
+import_forecast <- function() {
+  readxl::read_xlsx('data/forecast.xlsx', sheet = 'forecast') %>%
+    select(-name) %>%
+    pivot_longer(-variable, names_to = 'date') %>%
+    pivot_wider(names_from = 'variable', values_from = 'value') %>%
+    mutate(date = yearquarter(date)) %>%
+    as_tsibble(index = date)
+}
+
+```
+
+In the block of code above, we import our forecast sheet and perform some basic cleaning. The NIPAs, CBO projections, and historical overrides are read and processed similarly. 
+
+`src/data_import.R` also defines a function called `create_placeholder_nas()`, which generates an empty data frame populated by NAs that will eventually store our data. The data frame's length is 259, enough rows to store inputs from 1970 Q1 to 2034 Q3. 
+
+After sourcing the helper script, we execute the functions and load our data, creating five data frames: `projections`, `forecast`, `historical_overrides`, `deflator_overrides`, and `national_accounts`. These five data sources, discussed more extensively below, contain everything we need to calculate the FIM. 
+
+```{r section-B-data-import, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B-data-import" 
+# from fiscal_impact_BETA.R
+```
+
+## Cleaning Our FIM Data 
+
+In this section of code, we prepare our data inputs. We create 23 data frames with two columns: (1) the date and (2) a data series for one of our FIM variables.
+
+The 23 primary FIM inputs are as follows: 
+  1. Federal Purchases
+  2. Consumption Grants
+  3. Investment Grants
+  4. State Purchases
+  5. Federal Non-Corporate Taxes
+  6, State Non-Corporate Taxes 
+  7. Federal Corporate Taxes 
+  8. Supply Side IRA  
+  9. State Corporate Taxes  
+  10. Federal Social Benefits  
+  11. State Social Benefits  
+  12. Rebate Checks  
+  13. Rebate Checks ARP  
+  14. Federal UI  
+  15. State UI  
+  16. Federal Subsidies  
+  17. Federal Aid to Small Businesses ARP  
+  18. Federal Other Direct Aid ARP  
+  19. Federal Other Vulnerable ARP  
+  20. Federal Student Loans  
+  21. State Subsidies 
+  22. Federal Health Outlays 
+  23. State Health Outlays 
+  
+
+We first source a helper script called `src/data_cleaning.R`, which writes the functions that create the two-column data frames mentioned above. The helper script defines a separate function for each input, calling the appropriate data from `national_accounts`, `forecast`, and our overrides data if necessary. 
+
+For example, the helper script defines `create_federal_purchases()` as the following: 
+
+```{r r-chunk-3, eval=FALSE, echo=TRUE}
+create_federal_purchases <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_purchases) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_purchases)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # `gf` is the Haver code for federal purchases
+    select(date, gf) %>%  
+    # Rename data to generic `data_series` for easier merging
+    rename(data_series = gf) 
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+```
+
+In the function above, we retrieve our forecast sheet data, filter to keep only our projections for federal purchases, and rename `federal_purchases` to a generic `data_series`. We then call our national accounts data and keep only the columns `gf` and `date`. `gf` is the Haver code for federal purchases. We rename `gf` to `data_series` to merge the historical BEA data with our forecasts. Using the `coalesce_join()` function, we merge these two datasets by the `date` column. When the data sources have conflicting values for the same date, the value from the national accounts data overrides the forecast. We then merge the data with our placeholder_nas object (see above for how this is created), and replace the remaining NAs with zeros. The result is a 259-row data frame with two columns: `date` and `data_series` - our data for federal purchases. 
+
+Some of our FIM inputs are slightly more complicated. Federal non-corporate taxes, for example, is the sum of multiple Haver variables. In the `create_federal_non_corporate_taxes()` function, we perform calculations using three different Haver series before merging the national accounts data with our forecasts. See below: 
+
+```{r r-chunk-4, eval=FALSE, echo=TRUE}
+create_federal_non_corporate_taxes <- function(
+    national_accounts, 
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_non_corporate_taxes) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_non_corporate_taxes)
+  
+  # Select column of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Calculate federal non corporate taxes as a sum of 3 series
+    mutate(data_series = 
+             gfrpt + # Haver code for federal personal taxes
+             gfrpri + # Haver code for federal production taxes
+             gfrs # Haver code for federal payroll taxes
+           ) %>%
+    # Keep the date and the new data_series column
+    select(date, data_series)
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+``` 
+
+There are also some data series that require us to apply historical overrides- we make adjustments to the historical national accounts data to reflect our own assumptions about how/when money was spent when we disagree with BEA. Here is an example of a variable that requires us to call our historical overrides: 
+
+```{r r-chunk-5, eval=FALSE, echo=TRUE}
+create_federal_aid_to_small_businesses_arp <- function(
+    national_accounts, 
+    forecast, 
+    historical_overrides,
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, federal_aid_to_small_businesses_arp) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = federal_aid_to_small_businesses_arp)
+  
+  # We don't actually have national accounts as a data series for this tibble.
+  # So we populate it with a placeholder tibble spanning 1970 Q1 to 2034 Q3 with
+  # 0s in each entry
+  national_accounts <- 
+    create_placeholder_nas(
+      col_name = "data_series",
+      start = "1970-01-01",
+      end = "2034-07-01") %>%
+    select(date, data_series) %>% # Keep only the 2 columns we need
+  # Override historic entries of national_accounts using historical_overrides data
+  mutate_where(
+    date >= yearquarter('2020 Q2') & date <= current_quarter,
+    data_series = historical_overrides$federal_aid_to_small_businesses_arp_override
+  )
+  
+  # Merge the national accounts with the forecast using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(placeholder_nas, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+```
+
+After sourcing the helper script, we execute the functions to build our data inputs.
+
+```{r section-B-1-test-data-import, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B-1-test-data-import" 
+# from fiscal_impact_BETA.R
+```
+
+
+## Create Accessory Variables 
+
+In addition to the primary inputs listed above, the FIM also relies on what we term "accessory variables" - the PCE and purchases deflators, personal consumption expenditures, GDP, and real potential GDP growth. As with the 23 policy data series, `src/data_cleaning.R` also writes functions that create these objects. 
+
+For example, the helper script (`src/data_cleaning.R`), which we've already sourced, writes `create_federal_purchases_deflator_growth()`as the following: 
+
+```{r r-chunk-6, eval=FALSE, echo=TRUE}
+create_federal_purchases_deflator_growth <- function(
+    national_accounts, 
+    projections, 
+    deflator_overrides,
+    placeholder_nas
+) {
+  # Select column of interest from the projections tibble
+  projections <- projections %>% 
+    # Divide federal purchases "gf" by real federal purchases "gfh" and calculate
+    # the quarterly growth rate using the qgr function, equal to x/lag(x), then 
+    # subtract 1.
+    mutate(data_series = qgr((gf / gfh)) - 1) %>%
+    select(date, data_series)
+  
+  # Select columns of interest from the national accounts tibble
+  national_accounts <- national_accounts %>% 
+    # Haver code for federal purchases deflator is 'jgf'
+    mutate(data_series = jgf_growth) %>%
+    select(date, data_series)
+  
+  # Process the overrides data so they are ready for merging
+  deflator_overrides <- deflator_overrides %>%
+    filter(date > current_quarter & date <= max(date)) %>%
+    # Rename the column of interest to data_series
+    mutate(data_series = federal_purchases_deflator_growth_override) %>%
+    select(date, data_series)
+  
+  # Merge the national accounts with the projection using the commonly named `data_series`
+  # and `date` columns. The historic (national accounts) data take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(national_accounts, projections, by = 'date') %>%
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(., placeholder_nas, by = "date") %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0))) %>%
+    # Use deflator_overrides to overwrite select existing entries
+    coalesce_join(deflator_overrides, ., by = "date") %>%
+    # Reorder the entries chronologically
+    arrange(date)
+
+  return(result)
+}
+
+```
+
+In the function above, we first retrieve our `projections` object- the data we pull from CBO. `projections` follows the same naming conventions as our national accounts data - each data series is identified with a short Haver code. We select `gf` and `gfh`, the codes for nominal federal purchases and real federal purchases, respectively. We use the `qgr()` function contained in the fim package to calculate the quarterly growth rate of the federal purchases deflator. The deflator is simply nominal purchases divided by real purchases. We next retrieve our national accounts data and similarly calculate the federal purchases deflator in history. 
+
+Although `projections` includes forecasts of the federal purchases deflator until 2034 Q3, we sometimes make adjustments to these values when we disagree with CBO. We make these changes in the forecast sheet. Our edited deflators are stored in the deflator_overrides sheet, which we previously loaded. We overwrite the values from `projections` for the entire forecast period. 
+
+We merge the national accounts, projections, and deflator overrides with an empty data frame and coalesce any remaining NAs to zero. 
+
+*GDP and Consumption*
+Some of our accessory variables are slightly more complicated. To forecast GDP and consumption, we apply CBO growth rates to historical NIPA data. See below: 
+
+```{r r-chunk-7, eval=FALSE, echo=TRUE}
+create_gdp <- function(
+  national_accounts, 
+  projections, 
+  placeholder_nas
+) {
+  # Redefine GDP and real GDP values in the future using CBO growth rates
+  # Select column of interest from the projections tibble
+  projections1 <- projections %>% 
+    mutate(gdp_growth = q_g(gdp)) %>%
+    # We only need the gdp growth rate from our projections
+    select(date, gdp_growth) %>%
+    # We need only the growth rates that represent future quarters
+    filter(date > current_quarter)
+  
+  # Select columns of interest from the national accounts tibble
+  national_accounts1 <- national_accounts %>% 
+    # Haver code for GDP is 'gdp'
+    select(date, gdp)
+  # Define an index number for the current data point and end data point
+  current_index <- which(national_accounts1$date == current_quarter)
+  seed_gdp = national_accounts1$gdp[current_index]
+  
+  # Define new GDP projections by growing current GDP (seed) at CBO growth rates
+  # using the cumulative_series() function
+  new_gdp_projections <- cumulative_series(
+    seed = seed_gdp,
+    growth_rates = 1 + projections1$gdp_growth
+  )
+  
+  # Define projections row as this adjusted forecast
+  projections2 <- projections1 %>%
+    mutate(gdp = new_gdp_projections) %>%
+    select(date, gdp)
+  
+  # Merge the national accounts with the projection using the commonly named `gdp`
+  # and `date` columns. 
+  result <- coalesce_join(national_accounts1, projections2, by = 'date') %>%
+    # Rename the gdp column to generic data_series
+    rename(data_series = gdp) %>%
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(., placeholder_nas, by = "date") %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0))) %>%
+    # Reorder the entries chronologically
+    arrange(date)
+  
+  return(result)
+}
+
+```
+
+In the function above, we create our GDP data series. In history, we pull GDP straight from BEA. In the future, we construct a projection of GDP using CBO's forecasts for future GDP growth rates. 
+
+First, we retrieve our `projections` data and use the `gdp` column to calculate future GDP growth based on CBO's GDP projections. We calculate quarterly GDP growth using the `qgr()` function contained in the fim package. We then pull our `national_accounts` data and select the GDP column to use later. 
+
+Next, we define an object called `current_index` - this gets the position (or row number) in `national_accounts` where the date column matches the value stored in the `current_quarter` object. Put more simply, we get the row number of the current quarter. We also define an object called `seed_gdp`, the value of GDP at the position of `current_index` (we're pulling the value of GDP in the current quarter, the last quarter for which we have data). This is the starting value for our projections.
+
+We define our new projections by growing the current quarter GDP (seed) using the CBO growth rates we calculated above using the `cumulative_series()` function contained in the fim package. The function takes a value `seed`, which is the initial value from which the projection starts. It also takes `projections1$gdp_growth`, a vector of growth rates. The result is a `new_gdp_projections` - a vector containing the initial GDP value times the cumulative product of the growth rates for each quarter. 
+
+We merge our national accounts data with our new GDP projections to create our GDP series. 
+
+We define `consumption` similarly - we take BEA's consumption and grow it at CBO's growth rate. 
+
+*Extras* 
+
+Lastly, we write functions that construct three "extra" variables that aren't directly used in our analysis but are important for understanding/publishing our results. `create_date()` generates a one column data frame containing the date from 1970 Q1 to 2034 Q3. `create_id()` produces a a binary variable indicating whether the entry is a projection or historical. `create_recession()` produces an indicator for whether the quarter was a recession quarter. 
+
+See below for an example: 
+
+```{r r-chunk-8, eval=FALSE, echo=TRUE}
+create_id <- function(
+    national_accounts,
+    projections) {
+  
+  # Select columns of interest from the projections tibble 
+  projections <- projections %>% 
+    select(date, id)
+  
+  # Select columns of interest from the national_accounts tibble 
+  national_accounts <- national_accounts %>% 
+    select(date, id)
+  
+  # Merge national accounts with projections. In the case of conflicting values, 
+  # overwrite the value from projections with the value from national accounts. 
+  result <- coalesce_join(national_accounts, projections, by = 'date') %>%
+    rename(data_series = id)
+}
+```
+
+The chunk of code below executes each of the functions discussed above to create our accessory variables. 
+
+```{r section-B.3-accessory-variables, eval=FALSE, echo=TRUE}
+# This code block prints the chunk entitled "section-B.3-accessory-variables" 
+# from fiscal_impact_BETA.R
+```

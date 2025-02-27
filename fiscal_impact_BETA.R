@@ -3,6 +3,9 @@
 # This script runs the main FIM. It's the working replacement for fiscal_impact.R
 # that will eventually substitute for the original. 
 
+#----- setup-01 ---
+# Empty section - don't delete for bookdown purposes 
+
 # ---- section-A.1-prep-for-update ----
 Sys.setenv(TZ = 'UTC') # Set the default time zone to UTC (Coordinated Universal Time)
 
@@ -62,7 +65,7 @@ file_copy(
   overwrite = TRUE
 )
 
-# ---- section-B-test-data-import ----
+# ---- section-B-data-import ----
 # Source the module in the src directory containing the functions which import
 # data
 source("src/data_import.R")
@@ -72,9 +75,12 @@ projections <- import_projections()
 national_accounts <- import_national_accounts()
 forecast <- import_forecast()
 historical_overrides <- import_historical_overrides()
+deflator_overrides <- import_deflator_overrides()
 
 ## Calculate what the current quarter is using the date from historical overrides
 current_quarter <- historical_overrides %>% slice_max(date) %>% pull(date)
+
+# ---- section-B-1-test-data-import ----
 
 # Source the module that creates the test data columns used in the FIM
 source("src/data_cleaning.R")
@@ -235,49 +241,7 @@ state_health_outlays_test <- create_state_health_outlays(
   create_placeholder_nas()
 )
 
-
-# ---- section-B.0-read-raw-rds-data ----
-
-# Load in national accounts. This file is rewritten each time data-raw/haver-pull.R
-# is run.
-#fim::national_accounts # this is the literal df
-load("data/national_accounts.rda") # this loads in a df named national_accounts
-
-# Load in projections. This file is rewritten each time data-raw/haver-pull.R
-# is run.
-#fim::projections # this is the literal df
-#load("data/projections.rda") # this loads in a df named projections
-
-
-# ---- section-B.1-read-overrides ----
-
-# Read in historical overrides from data/forecast.xlsx
-# Since BEA put all CARES act grants to S&L in Q2 2020 we need to
-# override the historical data and spread it out based on our best guess
-# for when the money was spent.
-#historical_overrides <- readxl::read_xlsx('data/forecast.xlsx',
-                                          #sheet = 'historical overrides') %>% # Read in historical_overrides
-  #select(-name) %>% # Remove longer name since we don't need it
-  #pivot_longer(-variable,
-               #names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
-  #pivot_wider(names_from = 'variable',
-              #values_from = 'value') %>% 
-  #mutate(date = yearquarter(date))
-
-# Read in deflator overrides from data/forecast.xlsx
-deflator_overrides <- readxl::read_xlsx('data/forecast.xlsx',
-                                        sheet = 'deflators_override') %>% # Read in overrides for deflators
-  select(-name) %>% # Remove longer name since we don't need it
-  pivot_longer(-variable,
-               names_to = 'date') %>% # Reshape so that variables are columns and dates are rows
-  pivot_wider(names_from = 'variable',
-              values_from = 'value') %>% 
-  mutate(date = yearquarter(date))
-
-# ---- section-B.2-set-current-quarter ----
-# TODO: This current quarter should be calculated at the top, for the entirety
-# of the FIM, not buried down here.
-# Save current quarter for later
+# ---- section-B.3-accessory-variables ----
 
 # Quarterly Federal Purchases Deflator Growth 
 federal_purchases_deflator_growth_test <- create_federal_purchases_deflator_growth(
@@ -364,314 +328,32 @@ consumption_test <- create_consumption(
   create_placeholder_nas()
 )
 
+# EXTRAS 
 # Date 
 date_test <- create_date(
   national_accounts,
   projections
 )
 
-
-# ---- section-B.3-initial-import-projections ----
-
-projections <- projections %>% 
-  # Rename the variables from their Haver codes
-  transmute(
-    id,
-    date,
-    gdp,
-    real_potential_gdp = gdppothq,
-    consumption = c,
-    real_consumption = ch,
-    federal_purchases = gf,
-    real_federal_purchases = gfh,
-    state_purchases = gs,
-    real_state_purchases = gsh
-  )
-
-projections <- projections %>%
-  # Implicit price deflators
-  mutate(
-    # Why do we calculate these values and not get them from Haver instead?
-    federal_purchases_deflator =  federal_purchases/real_federal_purchases, 
-    state_purchases_deflator = state_purchases/real_state_purchases,
-    consumption_deflator = consumption/real_consumption
-  ) %>%
-  # Growth rates
-  mutate(
-    across(
-      .cols = c(
-        "gdp", 
-        "real_potential_gdp", 
-        "federal_purchases_deflator", 
-        "state_purchases_deflator", 
-        "consumption_deflator"),
-      #"jgse"),
-      # Calculate quarterly growth rate using qgr() function, equal to x/lag(x), 
-      # then subtract 1.
-      .fns = ~ qgr(.) - 1,
-      .names = "{.col}_growth"
-    ) 
-  ) %>%
-  # Turn date into time series
-  mutate(date = tsibble::yearquarter(date)) %>%
-  # reorder the id column before the date column
-  relocate(id, .before = date) %>%
-  # convert the projections df into a tsibble data frame type
-  tsibble::as_tsibble(key = id, index = date) %>%
-  # TODO: as you can see from the select function, many columns are not kept.
-  # Perhaps the code can be refactored to exclude the data processing steps 
-  # in the first place.
-  select(
-    -real_federal_purchases, # we don't need anymore, as we created the _deflator_growth var already
-    -real_state_purchases, # we don't need anymore, as we created the _deflator_growth var already
-    -federal_purchases, # we don't need anymore, as we created the _deflator_growth var already
-    -state_purchases, # we don't need anymore, as we created the _deflator_growth var already
-    -federal_purchases_deflator, # we don't need anymore, as we created the _deflator_growth var already
-    -state_purchases_deflator, # we don't need anymore, as we created the _deflator_growth var already
-    -consumption_deflator, # we don't need anymore, as we created the _deflator_growth var already
-    -consumption, # we don't need anymore, as we created the _deflator_growth var already
-    -real_consumption # we don't need anymore, as we created the _deflator_growth var already
-  )
-
-# ---- section-B.4-initial-import-national-accounts ----
-
-national_accounts <- national_accounts %>%
-  # Let's rename these 90 variables to something we can understand
-  transmute(
-    id,
-    date,
-    gdp,
-    medicare = yptmr,
-    medicaid = yptmd,
-    ui = yptu,
-    social_benefits = gtfp,
-    federal_purchases = gf,
-    state_purchases = gs,
-    federal_personal_taxes =  gfrpt,
-    federal_production_taxes = gfrpri,
-    federal_corporate_taxes = gfrcp,
-    federal_payroll_taxes = gfrs,
-    federal_social_benefits = gftfp,
-    gross_consumption_grants = gfeg,
-    state_personal_taxes =  gsrpt,
-    state_production_taxes = gsrpri,
-    state_corporate_taxes = gsrcp,
-    state_payroll_taxes = gsrs,
-    state_social_benefits = gstfp,
-    medicaid_grants = gfeghdx,
-    investment_grants = gfeigx,
-    federal_subsidies = gfsub,
-    state_subsidies = gssub,
-    rebate_checks = gftfpe,
-    nonprofit_provider_relief_fund = gftfpv, 
-    ui_expansion = gftfpu,
-    wages_lost_assistance = coalesce(yptol, 0), # idk what this does
-    real_potential_gdp = gdppothq,
-    recession = recessq,
-    consumption_deflator_growth = jc_growth,
-    federal_purchases_deflator_growth = jgf_growth,
-    state_purchases_deflator_growth = jgs_growth,
-    consumption_grants_deflator_growth = jgse_growth,
-    investment_grants_deflator_growth = jgsi_growth
-  )
-
-# ---- section-B.5-join-national-accounts-to-projections ----
-usna1 <- coalesce_join(x = national_accounts,
-                       y = projections,
-                       by = 'date') %>%
-  as_tsibble(key = id, index = date)
-
-# ---- section-B.6-forecast-gdp-using-cbo ----
-
-#### Redefine GDP and real GDP values in the future using CBO growth rates
-
-# Define an index number for the current data point and end data point
-current_index <- which(usna1$date == current_quarter)
-end_index <- nrow(usna1)
-
-# Define new GDP projections by growing current GDP (seed) at CBO growth rates
-# using the cumulative_series() function
-new_gdp_projections <- cumulative_series(
-  seed = usna1$gdp[current_index],
-  growth_rates = 1 + usna1$gdp_growth[(current_index + 1):end_index]
+# ID 
+id_test <- create_id(
+  national_accounts, 
+  projections
 )
 
-# Assign new GDP and real GDP projections back to the `gdp` series in the USNA 
-# dataframe
-usna2 <- usna1 
-usna2$gdp[(current_index + 1):end_index] <- new_gdp_projections
-
-usna2 <- usna2 %>%
-  # Delete the gdp_growth variable, which is no longer needed
-  select(
-    -gdp_growth,
-  ) %>%
-  as_tsibble(key = id, index = date) %>% # Specifies the time series structure of the data, with the id column as the key and the date column as the index.
-  
-  mutate_where(id == 'historical',  # Calculate GDP growth for data 
-               real_potential_gdp_growth = q_g(real_potential_gdp))
-
-usna3 <- usna2 %>%
-  #Define FIM variables 
-  mutate( 
-    # Net out unemployment insurance, rebate checks, and Medicare to apply different MPC's
-    federal_ui = coalesce(ui_expansion, 0) +  wages_lost_assistance,
-    state_ui = ui - federal_ui,
-    #state_ui = ui - federal_ui,
-    # replace NAs with 0 to avoid errors in later subtraction
-    ui = coalesce(ui, 0),
-    rebate_checks = coalesce(rebate_checks, 0),
-    nonprofit_provider_relief_fund = coalesce(nonprofit_provider_relief_fund, 0),
-    federal_social_benefits = federal_social_benefits - ui - rebate_checks - medicare - nonprofit_provider_relief_fund,
-    state_social_benefits = state_social_benefits - medicaid,
-    consumption_grants = gross_consumption_grants - medicaid_grants,
-  ) %>% 
-  
-  mutate(rebate_checks_arp = if_else(date == yearquarter("2021 Q1"), #hardcoding arp rebate checks for one period
-                                     1348.1,
-                                     0)) %>%
-  
-  #Set future periods to NA in these time series, allowing them to be overridden
-  # by subsequent merges
-  mutate_where(id == 'projection',
-               rebate_checks_arp = NA,
-               federal_ui = NA,
-               state_ui = NA) %>%
-  
-  ##Adjusting data in 2021 because of arp(?)
-  mutate_where(date == yearquarter('2021 Q1'),
-               rebate_checks = rebate_checks - rebate_checks_arp,
-               federal_social_benefits = federal_social_benefits + 203
-  ) %>% 
-  mutate_where(date == yearquarter("2021 Q4"),
-               rebate_checks_arp = 14.2,
-               rebate_checks = 0) %>% 
-  mutate(consumption_grants = gross_consumption_grants - medicaid_grants,
-         
-         # Aggregate taxes
-         federal_non_corporate_taxes = federal_personal_taxes + federal_production_taxes + federal_payroll_taxes,
-         state_non_corporate_taxes = state_personal_taxes + state_production_taxes + state_payroll_taxes) %>% 
-  
-  ##Set the grants deflator the same as state purchases deflator (the same is done in the forecast/deflators sheet)
-  mutate_where(id == 'projection',
-               consumption_grants_deflator_growth = state_purchases_deflator_growth,
-               investment_grants_deflator_growth = state_purchases_deflator_growth) %>% 
-  
-  #Overriding historical consumption and investment grant 
-  # I think we override this twice???
-  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               consumption_grants = historical_overrides$consumption_grants_override) %>% 
-  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter, 
-               investment_grants = historical_overrides$investment_grants_override) %>%
-  
-  #For the full period of the forecast (8 quarters out), replace CBO deflators with the ones from
-  #the deflator overrides sheet
-  mutate_where(date>current_quarter & date<=max(deflator_overrides$date), 
-               consumption_deflator_growth = deflator_overrides$consumption_deflator_growth_override,
-               federal_purchases_deflator_growth =deflator_overrides$federal_purchases_deflator_growth_override,
-               state_purchases_deflator_growth = deflator_overrides$state_purchases_deflator_growth_override,
-               consumption_grants_deflator_growth = deflator_overrides$consumption_grants_deflator_growth_override,
-               investment_grants_deflator_growth = deflator_overrides$investment_grants_deflator_growth_override
-  ) %>%
-  # delete unneeded tax vars which were already rolled into federal non corporate taxes
-  # and state non corporate taxes
-  select(
-    -federal_personal_taxes,
-    -federal_production_taxes,
-    -federal_payroll_taxes,
-    -state_personal_taxes,
-    -state_production_taxes,
-    -state_payroll_taxes
-  )
-
-
-# Redefine usna to be integrated back into the FIM
-usna <- usna3
-
-
-# Section C: Forecast ----------------------------------------------------------------
-forecast <- # Read in sheet with our forecasted values from the data folder
-  readxl::read_xlsx('data/forecast.xlsx',
-                    sheet = 'forecast') %>% 
-  select(-name) %>% #Remove the 'name' column from the data.
-  pivot_longer(-variable,
-               names_to = 'date') %>%  #reshape the data 
-  pivot_wider(names_from = 'variable',
-              values_from = 'value') %>% 
-  mutate(date = yearquarter(date)) %>% #convert date to year-quarter format 
-  tsibble::as_tsibble(index = date)
-
-# Store forecast sheet for Shiny App 
-forecast_shiny <- 
-  readxl::read_xlsx('data/forecast.xlsx', 
-                    sheet = 'forecast')
-openxlsx::write.xlsx(forecast_shiny, file = glue('shiny/cache/forecast.xlsx'), overwrite = TRUE)
-rm(forecast_shiny)
-
-# Remove all the unneeded columns from USNA before merging
-usna <- usna %>%
-  select(
-    -real_potential_gdp,
-    -gross_consumption_grants,
-    -ui_expansion,
-    -wages_lost_assistance,
-    -nonprofit_provider_relief_fund
-  )
-
-save(usna, file = 'shiny/cache/usna.rda')
-
-projections <- # Merge forecast w BEA + CBO on the 'date' column, 
-  #filling in NA values with the corresponding value from the other data frame
-  coalesce_join(usna, forecast, by = 'date') %>%  
-  
-  mutate( # Coalesce NA's to 0 for all numeric values 
-    across(where(is.numeric),
-           ~ coalesce(.x, 0))) %>%
-  
-  #Define FIM variables 
-  mutate(
-    federal_health_outlays = medicare + medicaid_grants,
-    state_health_outlays = medicaid - medicaid_grants
-  ) %>% 
-  
-  #apply historical_overrides for ARP 
-  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               federal_other_direct_aid_arp = historical_overrides$federal_other_direct_aid_arp_override,
-               federal_other_vulnerable_arp = historical_overrides$federal_other_vulnerable_arp_override,
-               federal_social_benefits = historical_overrides$federal_social_benefits_override,
-               federal_aid_to_small_businesses_arp = historical_overrides$federal_aid_to_small_businesses_arp_override) %>% 
-  mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
-               federal_corporate_taxes = tail(historical_overrides$federal_corporate_taxes_override, n = 1),
-               state_corporate_taxes = tail(historical_overrides$state_corporate_taxes_override, n = 1)) %>% 
-  mutate_where(date == yearquarter("2021 Q1"),
-               federal_social_benefits = federal_social_benefits + 203) %>% 
-  # FIXME: Figure out why wrong number was pulled from Haver (like 400)
-  mutate_where(date == yearquarter('2021 Q4'),
-               federal_ui = 11, 
-               state_ui = ui - federal_ui) %>%
-  #apply historical_overrides for Supply Side IRA
-  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               supply_side_ira = historical_overrides$supply_side_ira_override) %>%
-  #apply historical_overrides for Federal Student Loans
-  mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-               federal_student_loans = historical_overrides$federal_student_loans_override)
-
-# The `projections` data frame, at this point, contains all of the data we need
-# in order to calculate the FIM. We streamline it to remove all the unneeded columns.
-projections <- projections %>%
-  select(
-    -medicare,  # Used in calculation but no longer needed
-    -medicaid_grants,  # Used in calculation but no longer needed
-    -medicaid,  # Used in calculation but no longer needed
-    -ui # Used in calculation but no longer needed
-  )
+# Recession 
+recession_test <- create_recession(
+  national_accounts, 
+  projections,
+  create_placeholder_nas()
+)
 
 ######################################################################################
 # This is the point where we go from generating our data inputs to actually calculating the FIM
 ######################################################################################
 
-# This script defines the 33 input variables used in the FIM. It assumes that the 
-# projections data frame is saved in memory from the section above having already
+# This script defines the input variables used in the FIM. It assumes that the 
+# test columns are saved in memory from the section above having already
 # been run.
 source("src/define_inputs.R")
 
@@ -688,7 +370,7 @@ source("src/contributions.R")
 # design pattern. This will save us a lot of computing time.
 # 
 
-### APPLY MPCS FOR TAXES AND TRANSFERS ########################################
+# ---- section-C.1-apply-taxes-mpcs ----
 
 # APPLY MPCS TO TAXES
 
@@ -712,7 +394,9 @@ post_mpc_state_corporate_taxes <- mpc(x = state_corporate_taxes_test$data_series
 supply_side_ira <- as.matrix(supply_side_ira_test$data_series)
 
 
-# APPLY MPCS TO TRANSFERS #
+
+# ---- section-C.2-apply-transfers-mpcs ----
+
 # Federal Social Benefits 
 post_mpc_federal_social_benefits <- mpc(x = federal_social_benefits_test$data_series, 
                                         mpc = readRDS("cache/mpc_matrices/federal_social_benefits.rds"))
@@ -769,19 +453,7 @@ post_mpc_federal_health_outlays <- mpc(x = federal_health_outlays_test$data_seri
 post_mpc_state_health_outlays <- mpc(x = state_health_outlays_test$data_series, 
                                      mpc = readRDS("cache/mpc_matrices/state_health_outlays.rds"))
 
-### CREATE FEDERAL PURCHASES #####
-federal_test <- data.frame(date = gdp_test$date, 
-                           data_series = federal_purchases_test$data_series + 
-                             consumption_grants_test$data_series + 
-                             investment_grants_test$data_series)
-
-### CREATE STATE PURCHASES #####
-state_test <- data.frame(date = gdp_test$date, 
-                         data_series = state_purchases_test$data_series -
-                           consumption_grants_test$data_series -
-                           investment_grants_test$data_series
-)
-
+# ---- section-C.3-create-net-transfers ----
 
 #### CREATE TAXES #####
 taxes_test <- data.frame(date = date, data_series = post_mpc_federal_non_corporate_taxes + 
@@ -790,7 +462,7 @@ taxes_test <- data.frame(date = date, data_series = post_mpc_federal_non_corpora
 
 #### CREATE TRANSFERS #####
 
-transfers_test <- data.frame(date = date, data_series = post_mpc_federal_social_benefits + post_mpc_state_social_benefits +
+transfers_test <- data.frame(date = date_test$date, data_series = post_mpc_federal_social_benefits + post_mpc_state_social_benefits +
                                post_mpc_rebate_checks + post_mpc_rebate_checks_arp + 
                                post_mpc_federal_ui + post_mpc_state_ui + 
                                post_mpc_federal_subsidies + post_mpc_federal_aid_to_small_businesses_arp + 
@@ -815,6 +487,7 @@ fim_state_purchases_test = data.frame(date = date,
 #               CALCULATE THE FIM                     #
 #######################################################
 
+# ---- section-C.4-calculate-purchases-fim ----
 # Federal Purchases Contribution (NIPA Consistent)
 nipa_federal_purchases_contribution <- contribution_purchases(
   x = federal_purchases_test$data_series, # Using the new test version
@@ -847,27 +520,215 @@ fim_state_purchases_contribution <- contribution_purchases(
 fim_federal_purchases_contribution <- nipa_total_purchases_contribution - 
   fim_state_purchases_contribution 
 
-#### FIM FOR TAXES AND TRANSFERS #####
-# Generate Counterfactual Taxes and Transfers
-counterfactual_consumption <- t_counterfactual(
+# ---- section-C.5-calculate-net-transfers-FIM ----
+
+# Net Transfers
+consumption_contribution <- contribution_transfers(
   x = taxes_transfers_test$data_series, 
   dg = consumption_deflator_growth_test$data_series, 
   rpgg = real_potential_gdp_growth_test$data_series, 
-  c = consumption_test$data_series
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
 )
 
-minus_neutral <- (consumption_test$data_series/lag(consumption_test$data_series))^4 - 
-  (counterfactual_consumption/lag(consumption_test$data_series))^4
+# Taxes Contribution 
+taxes_contribution <- contribution_transfers(
+  x = taxes_test$data_series, 
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
 
-scale_to_gdp <- minus_neutral*(lag(consumption_test$data_series)/lag(gdp_test$data_series))
+# Transfers Contribution 
+transfers_contribution <- contribution_transfers(
+  x = transfers_test$data_series, 
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
 
-consumption_contribution <- scale_to_gdp*100
+# Federal Non-Corporate Taxes 
+federal_non_corporate_taxes_contribution <- contribution_transfers(
+  x = post_mpc_federal_non_corporate_taxes,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
 
-### AGGREGATE contributions ########################################
+# State Non-Corporate Taxes
+state_non_corporate_taxes_contribution <- contribution_transfers(
+  x = post_mpc_state_non_corporate_taxes,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal Corporate Taxes
+federal_corporate_taxes_contribution <- contribution_transfers(
+  x = post_mpc_federal_corporate_taxes,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Supply Side IRA 
+supply_side_ira_contribution <- contribution_transfers(
+  x = supply_side_ira_test$data_series,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# State Corporate Taxes
+state_corporate_taxes_contribution <- contribution_transfers(
+  x = post_mpc_state_corporate_taxes,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal Social Benefits Contribution 
+federal_social_benefits_contribution <- contribution_transfers(
+  x = post_mpc_federal_social_benefits,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# State Social Benefits 
+state_social_benefits_contribution <- contribution_transfers(
+  x = post_mpc_state_social_benefits,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Rebate Checks
+rebate_checks_contribution <- contribution_transfers(
+  x = post_mpc_rebate_checks,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Rebate Checks ARP 
+rebate_checks_arp_contribution <- contribution_transfers(
+  x = post_mpc_rebate_checks_arp,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal UI 
+federal_ui_contribution <- contribution_transfers(
+  x = post_mpc_federal_ui,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# State UI
+state_ui_contribution <- contribution_transfers(
+  x = post_mpc_state_ui,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal Subsidies Contribution 
+federal_subsidies_contribution <- contribution_transfers(
+  x = post_mpc_federal_subsidies,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal Aid to Small Businesses ARP 
+federal_aid_to_small_businesses_arp_contribution <- contribution_transfers(
+  x = post_mpc_federal_aid_to_small_businesses_arp,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal Other Direct Aid ARP 
+federal_other_direct_aid_arp_contribution <- contribution_transfers(
+  x = post_mpc_federal_other_direct_aid_arp,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal Other Vulnerable ARP
+federal_other_vulnerable_arp_contribution <- contribution_transfers(
+  x = post_mpc_federal_other_vulnerable_arp,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal Student Loans 
+federal_student_loans_contribution <- contribution_transfers(
+  x = post_mpc_federal_student_loans,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# State Subsidies Contribution 
+state_subsidies_contribution <- contribution_transfers(
+  x = post_mpc_state_subsidies,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# Federal Health Outlays 
+federal_health_outlays_contribution <- contribution_transfers(
+  x = post_mpc_federal_health_outlays,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# State Health Outlays 
+state_health_outlays_contribution <- contribution_transfers(
+  x = post_mpc_state_health_outlays,
+  dg = consumption_deflator_growth_test$data_series, 
+  rpgg = real_potential_gdp_growth_test$data_series, 
+  c = consumption_test$data_series,
+  gdp = gdp_test$data_series
+)
+
+# ---- section-C.6-aggregate-FIM-contributions ----
+
+# Rename Purchases to fit our results naming convention 
 federal_contribution <- fim_federal_purchases_contribution
-
 state_contribution <- fim_state_purchases_contribution
+federal_purchases_contribution <- nipa_federal_purchases_contribution
+state_purchases_contribution <- nipa_state_purchases_contribution 
 
+# Sum the Components to create the total FIM 
 fiscal_impact_measure <-
   (federal_contribution +
      state_contribution +
@@ -881,6 +742,8 @@ fiscal_impact_measure <- replace(fiscal_impact_measure,
 fiscal_impact_4q_ma <- fiscal_impact_measure %>%
   SMA(zoo::na.locf(., na.rm = F), n=4)
 
+
+# ---- section-C.6-output-results ----
 # Combine all the inputs into a data frame
 inputs_df <- data.frame(
   date,
@@ -942,18 +805,36 @@ contributions_df <- data.frame(
   date,
   id,
   recession,
-  nipa_federal_purchases_contribution,
-  nipa_state_purchases_contribution, 
-  fim_federal_purchases_contribution, 
-  fim_state_purchases_contribution, 
+  federal_purchases_contribution,
+  state_purchases_contribution, 
+  federal_non_corporate_taxes_contribution, 
+  state_non_corporate_taxes_contribution, 
+  federal_corporate_taxes_contribution, 
+  supply_side_ira_contribution, 
+  state_corporate_taxes_contribution, 
+  federal_social_benefits_contribution, 
+  state_social_benefits_contribution, 
+  rebate_checks_contribution,
+  rebate_checks_arp_contribution, 
+  federal_ui_contribution, 
+  state_ui_contribution, 
+  federal_subsidies_contribution,
+  federal_aid_to_small_businesses_arp_contribution, 
+  federal_other_direct_aid_arp_contribution, 
+  federal_other_vulnerable_arp_contribution,
+  federal_student_loans_contribution, 
+  state_subsidies_contribution,
+  federal_health_outlays_contribution,
+  state_health_outlays_contribution,
   federal_contribution,
   state_contribution,
-  consumption_contribution,
+  taxes_contribution, 
+  transfers_contribution, 
+  consumption_contribution, 
   fiscal_impact_measure,
   fiscal_impact_4q_ma
 ) %>%
   as_tsibble(index = date)
-
 
 # Write the contributions and inputs to an Excel file in results/{month_year}/beta
 # TODO: This code only works if the beta/ directory already exists. 

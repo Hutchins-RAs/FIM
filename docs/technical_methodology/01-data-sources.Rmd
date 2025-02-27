@@ -2,109 +2,69 @@
 title: "Data Sources"
 ---
 
-# Data Sources
+# Data Sources and Data Cleaning 
 
-## Data sources
+## Data Sources 
 
-We will have to figure this section out. We draw from BEA, CBO, haver, etc. But we will need a flow chart of all the scripts, all the dependencies, and explain why each source is used for each item. When do we overwrite history?
+The FIM draws from several sources of data. 
 
-We'll probably have one sub section for each source, like:
+### BEA's National Accounts Data 
 
-The FIM draws from several sources of data each time it runs. It uses the BEA's National Accounts data, accessed through Haver, to get history. It uses our own predictions for the forecast period. And it uses CBO for past and future potential GDP and GDP predictions.
+To calculate the FIM in history, we use the national accounts data published by the U.S. Commerce Department's Bureau of Economic Analysis (BEA). Louise calls this data "the NIPAs", short for the "National Income and Product Accounts." BEA's economic statistics provide a comprehensive view of U.S. production, consumption, investment, exports, imports, income, and saving. We pull in the national accounts data from 1970 Q1 until the current quarter for our "historical" FIM calculation, meaning it is based on officially published past data as opposed to our projections for future spending. 
 
-## Code walk-through
+In January, April, July, and October, BEA releases advance estimates for GDP and its components - a new quarter of "historical" data that we need to add to the FIM. Between these quarterly releases, BEA publishes data revisions - updates to its previously published estimates that reflect more complete and accurate information about the economy. Each month, we access this data (either a new quarter or a revision) through Haver using an R script called `data_raw/haver-pull.R`. We store the raw national accounts data in `data_raw/national_accounts.RDS`. 
 
-```{r setup-01, include=FALSE}
-# This chunk reads in code from fiscal_impact_BETA.R so that this .Rmd file can
-# display it. Please note that the sections of code shown below are demarcated using
-# their chunk names, which are marked in this style:
-# ---- chunk-name-example ----
-knitr::read_chunk("../../fiscal_impact_BETA.R")
+We pull some of our FIM inputs straight from Haver, but sometimes we need to construct our variables. Our federal non-corporate taxes data, for example, is the sum of three separate Haver data series- federal personal taxes, federal payroll taxes, and federal income taxes. 
+
+**Working with Haver**
+
+Note: Please read the Haver section of Nasiha's FIM Guide for instructions on how to set up Haver DLX on your computer. 
+
+We run `haver-pull.R` before each FIM update to overwrite the old version of `data_raw/national_accounts.RDS` with the most recent data. As implied by the name of the script, we pull the BEA data from Haver Analytics, a paid statistical service that quickly updates and manages historical time series data- similar to FRED. Each data series is labeled with a unique Haver code. `gs`, for example, is the Haver code for nominal state purchases. 
+
+More specifically, we access Haver 'DLX' - short for Data Link Express - the software bundle that updates and provides access to the Haver databases. We refer to 'Haver' and 'DLX' interchangeably. Extensive knowledge of the inner workings of Haver is not at all required for the FIM, but understanding the basics can be helpful.
+
+The `haver-pull.R` script relies on the Haver R package. The objects and functions in this package are designed to allow users to efficiently retrieve data from the Haver databases. The functions we use generally take as arguments specifications for databases (`@usna` and `@usecon`) and time series codes to be retrieved. 
+
+Our `haver-pull.R` script begins with the following:
+
+```{r r-chunk-1, echo=TRUE, eval=FALSE}
+haver.path("//esdata01.brookings.edu/DLX/DATA/")
 ```
 
-Let's get nitty-gritty into the code. When the FIM runs, it starts with some messy initialization. It loads packages and defines some variables related to dates. This code should be made self-contained and put into its own script. But I (Lorae) haven't gotten to that yet.
+This important line of code sets the path to the Haver databases. In the past, we've encountered errors when BTech makes changes to how we access Haver through the research servers. If you run into insurmountable issues, I'd recommend reaching out to Valerie Wirtschafter for assistance. She worked with Manu in developing the `haver-pull.R` script. 
 
-Note that this code is important and should be handled carefully. For example, variables like `last_month_year` and `month_year` are used several times in code that follows. When refactoring this section, tread lightly and test carefully.
+Although we've automated our data import process, it's sometimes helpful or necessary to look at or manually pull a data series from Haver (to inform our forecasts, to answer a Louise query, etc.). You can use the research server or the desktop Haver app to do this. When searching Haver, you must enter a Haver code followed by the database containing that series. For example, to pull nominal federal purchases search `gf@usna`, the Haver code followed by the database tag for the national accounts. There's a list of Haver codes and their corresponding variables in the data-raw folder. 
 
-```{r section-A.1-prep-for-update, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-A.1-prep-for-update" from
-# fiscal_impact_BETA.R
-```
+### Forecasts
+Not only do we calculate the FIM in history, but also for an 8-quarter forecast period based on our projections for taxes and spending. The second data source is our forecast sheet (`data/forecast.xlsx`), which contains these projections for each of the FIM's primary inputs.
 
-This next section of code primarily serves to define empty folders that will be populated upon running the FIM. This section could also use a clean-up, but it relies on some variables produced in the previous code chunk. Perhaps the two sections should be bundled together upon refactoring.
+!["An image of the 'forecast' page of the 'forecast.xlsx' workbook."](images/forecast_sheet.png)
 
-```{r section-A.2-create-empty-directories, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-A.2-create-empty-directories" 
-# from fiscal_impact_BETA.R
-```
+We generate forecasts based on CBO economic, budget, and revenue projections, Monthly Personal Income (MPI) data from BEA, and Louise's intuition about the future path of fiscal policy/the economy. The CBO and MPI data we use to form these forecasts is stored in the forecast sheet - inputted there manually - and is never used by this code. We access only the 'forecast', 'historical_overrides', and 'deflator_overrides' sheets contained within `data/forecast.xlsx`. The overrides are discussed below. 
 
-This next section reads in raw data. I've taken pains to attempt to trace back where the inputs in this project arise. As you can see, there are two crucial .rds files saved in the FIM. I'm not exactly sure how they are overwritten, and understanding where they are replaced is a crucial part of the FIM restructuring process.
+Nasiha's FIM guide contains more detailed instructions on the CBO and MPI data we use to create our forecasts. 
 
-After investigating, I've found that these two data files are overwritten by the Haver pull script.
+Take some time to review everything contained in the forecast sheet - there's a ton to learn about how we form our projections, and it's best to dive right in! 
 
-```{r section-B.0-read-raw-rds-data, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-B.0-read-raw-rds-data" 
-# from fiscal_impact_BETA.R
-```
+### Overrides 
 
-This section reads in historical overrides. Historical overrides are data observations in the past that we take as given. Every time this code runs, it extracts raw historic data from Haver and attempts to use that. However, for some time series, we do not want to use what Haver gives us. Instead, we override that data. These overrides are crucial to that process.
+**Historical Overrides**
+Sometimes, we make different assumptions than BEA about how/when money was spent. We use the 'historical_overrides' sheet mentioned above to overwrite the NIPAs with our own data *in history*. These overrides are applied during the pandemic period. BEA assumes some COVID-19 related spending occurred entirely in one quarter, while we spread the spending out over multiple quarters. Also, in some cases there simply isn't a Haver series for the pandemic spending we want to include, so we need to 'overwrite' that non-existent data with our own. 
 
-If we have to override each time, why do we even bother reading in the raw data? It's history, right? Well, not really. The data series we use as inputs in the FIM occasionally get revised. We want that most recent revision, because it's most accurate. However, we want to make sure that these revisions don't overwrite our historical overrides.
 
-```{r section-B.1-read-overrides, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-B.1-read-overrides" 
-# from fiscal_impact_BETA.R
-```
+**Deflator Overrides**
+We also use our own deflators in the projection period. Our CBO projections data (discussed below) includes forecasts for each of the variables that we need to calculate the federal, state, and consumption deflators in the future. Instead of taking these as given, however, we sometimes make changes to the deflators during our projection period based on what Louise knows/expects to happen. We make these edits in `data-raw\forecast.xlsx` in the 'deflators' sheet. The clean, final forecasts for each of our deflators is stored in the 'deflator_overrides' sheet within `forecast.xlsx`. 'deflator_overrides' is what's actually read in during our data import process. 
 
-This next code chunk seriously needs attention. We certainly should not be setting the current quarter this far down in the code and intermingling it with our data pipeline. It should be somewhere in the top of the code.
+In practice, this means that we overwrite CBO's deflator projections for the entirety of our forecast period with whatever is in the 'deflator_overrides' sheet. Sometimes this happens to match CBO if we elect not to make edits. 
 
-Why haven't I changed it yet? Well, it relies on the data frames we load. I haven't had time to come up with a better way of doing it. But this one line of code needs serious attention.
-```{r section-B.2-set-current-quarter, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-B.2-set-current-quarter" 
-# from fiscal_impact_BETA.R
-```
+**CBO Projections** 
+Lastly, we use CBO projections for real potential GDP growth and GDP growth. Potential GDP growth is used in our FIM calculation, and GDP growth is used to generate GDP projections for our 8-quarter forecast period. 
 
-This next section imports data from the `projections` dataframe, which - as we covered above - is saved in `data/projections.rda`. The data frame initially comes with 30 variables. In the subsequent lines of code, we only keep 15 of them. We then use the real and nominal values of federal purchases, state purchases, and consumption to produce deflators. After calculating the deflators, we calculate growth rates on those three variables as well as GDP, real GDP, and real potential GDP. We then delete the intermediate variables that are no longer needed.
+CBO updates it's Economic Projections and 10-Year Budget Projections every couple of months. We add these revised numbers to our forecast sheet so we can easily see CBO's estimates as we are adjusting our own forecasts. We also store CBO's projections as an R data set in `data_raw/projections.RDS`. See Nasiha's FIM guide for instructions on how we overwrite this file when CBO publishes new projections. It's important to follow her guidelines carefully! 
 
-```{r section-B.3-initial-import-projections, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-B.3-initial-import-projections" 
-# from fiscal_impact_BETA.R
-```
+`data_raw/projections.RDS` contains many variables, but as mentioned above, we only end up using real potential GDP and GDP growth. 
 
-This section imports data from the `national_accounts` dataframe, which - as we covered above - is saved in `data/national_accounts.rda`. The data frame initially comes with 90 variables. In the subsequent lines of code, we only keep 51 of them.
 
-TODO: I actually think more of the variables can be deleted later.
 
-```{r section-B.4-initial-import-national-accounts, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-B.4-initial-import-national-accounts" 
-# from fiscal_impact_BETA.R
-```
 
-After importing the variables we need, we merge the projections data frame and the national_accounts data frames using the coalesce_join user defined function. With `national_accounts` assigned to the `x` argument and `projections` assigned to the `y` argument, `national_accounts` takes precedence over `projections` if there are any conflicting data entries.
-
-The resultant data frame, `usna1`, is an assortment of XXX variables.
-
-```{r section-B.5-join-national-accounts-to-projections, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-B.5-join-national-accounts-to-projections" 
-# from fiscal_impact_BETA.R
-```
-
----- end of code walk through, for now!
-
-We'll probably have one sub section for each source, like:
-
-### CBO
-stuff here. Which reports do we use? Budget? Economic? How do we input their data into the FIM?
-
-### BEA
-Same questions as above
-
-### Haver
-Discuss Haver package, etc.
-
-## Combining & wrangling
-
-I have no idea how this is done, and we will have to refactor this section in depth. 
-
-## The clean data
-We use the "projections" data frame (at least for now) in the remainder of the code. In its current refactored state in the fiscal_impact_BETA script, we select columns of interest from the lonnngggg "projections" data frame and use those as we calculate the FIM.

@@ -20,40 +20,42 @@
 
 ### Accessory variables
 # Deflators
-federal_purchases_deflator_growth <- projections$federal_purchases_deflator_growth
-consumption_grants_deflator_growth <- projections$consumption_grants_deflator_growth
-investment_grants_deflator_growth <- projections$investment_grants_deflator_growth
-state_purchases_deflator_growth <- projections$state_purchases_deflator_growth
-consumption_deflator_growth <- projections$consumption_deflator_growth
+federal_purchases_deflator_growth <- federal_purchases_deflator_growth_test$data_series
+consumption_grants_deflator_growth <- consumption_grants_deflator_growth_test$data_series
+investment_grants_deflator_growth <- investment_grants_deflator_growth_test$data_series
+state_purchases_deflator_growth <- state_purchases_deflator_growth_test$data_series
+consumption_deflator_growth <- consumption_deflator_growth_test$data_series
 # GDP
-real_potential_gdp_growth <- projections$real_potential_gdp_growth
-gdp <- projections$gdp
+real_potential_gdp_growth <- real_potential_gdp_growth_test$data_series
+gdp <- gdp_test$data_series
+# Consumption 
+consumption <- consumption_test$data_series 
 # Extras
-date <- projections$date
-id <- projections$id
-recession <- projections$recession
+date <- date_test$date
+id <- id_test$data_series
+recession <- recession_test$data_series
 
 ### Main variables
-federal_purchases <- projections$federal_purchases
-consumption_grants <- projections$consumption_grants
-investment_grants <- projections$investment_grants
-state_purchases <- projections$state_purchases
-federal_non_corporate_taxes <- projections$federal_non_corporate_taxes
-state_non_corporate_taxes <- projections$state_non_corporate_taxes
-federal_corporate_taxes <- projections$federal_corporate_taxes
-supply_side_ira <- projections$supply_side_ira
-state_corporate_taxes <- projections$state_corporate_taxes
-federal_social_benefits <- projections$federal_social_benefits
-state_social_benefits <- projections$state_social_benefits
-rebate_checks <- projections$rebate_checks
-rebate_checks_arp <- projections$rebate_checks_arp
-federal_ui <- projections$federal_ui
-state_ui <- projections$state_ui
-federal_subsidies <- projections$federal_subsidies
-federal_aid_to_small_businesses_arp <- projections$federal_aid_to_small_businesses_arp
-federal_other_direct_aid_arp <- projections$federal_other_direct_aid_arp
-federal_other_vulnerable_arp <- projections$federal_other_vulnerable_arp
-federal_student_loans <- projections$federal_student_loans
-state_subsidies <- projections$state_subsidies
-federal_health_outlays <- projections$federal_health_outlays
-state_health_outlays <- projections$state_health_outlays
+federal_purchases <- federal_purchases_test$data_series
+consumption_grants <- consumption_grants_test$data_series
+investment_grants <- investment_grants_test$data_series
+state_purchases <- state_purchases_test$data_series
+federal_non_corporate_taxes <- federal_non_corporate_taxes_test$data_series
+state_non_corporate_taxes <- state_non_corporate_taxes_test$data_series
+federal_corporate_taxes <- federal_corporate_taxes_test$data_series
+supply_side_ira <- supply_side_ira_test$data_series
+state_corporate_taxes <- state_corporate_taxes_test$data_series
+federal_social_benefits <- federal_social_benefits_test$data_series
+state_social_benefits <- state_social_benefits_test$data_series
+rebate_checks <- rebate_checks_test$data_series
+rebate_checks_arp <- rebate_checks_arp_test$data_series
+federal_ui <- federal_ui_test$data_series
+state_ui <- state_ui_test$data_series
+federal_subsidies <- federal_subsidies_test$data_series
+federal_aid_to_small_businesses_arp <- federal_aid_to_small_businesses_arp_test$data_series
+federal_other_direct_aid_arp <- federal_other_direct_aid_arp_test$data_series
+federal_other_vulnerable_arp <- federal_other_vulnerable_arp_test$data_series
+federal_student_loans <- federal_student_loans_test$data_series
+state_subsidies <- state_subsidies_test$data_series
+federal_health_outlays <- federal_health_outlays_test$data_series
+state_health_outlays <- state_health_outlays_test$data_series
