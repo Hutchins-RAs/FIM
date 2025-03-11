@@ -4,10 +4,12 @@ data-sources
 beas-national-accounts-data
 forecasts
 overrides
+cbo-projections
 data-cleaning
 data-imports
 cleaning-our-fim-data
-create-accessory-variables
+cleaning-accessory-data
+fim-calculation
 defining-input-data
 defining-the-fim-functions
 applying-our-mpcs
@@ -17,5 +19,11 @@ net-transfers-fim
 outputting-results
 generating-web-materials
 economics-methodology
+our-fim-math
+fim-for-purchases
+fim-for-transfers
 marginal-propensities-to-consume
-calculation
+why-do-we-apply-mpcs
+how-do-we-apply-mpcs
+our-mpcs
+creatingediting-an-mpc-matrix

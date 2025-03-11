@@ -348,6 +348,8 @@ recession_test <- create_recession(
   create_placeholder_nas()
 )
 
+# ---fim-calculation----
+
 ######################################################################################
 # This is the point where we go from generating our data inputs to actually calculating the FIM
 ######################################################################################
@@ -481,7 +483,7 @@ fim_state_purchases_test = data.frame(date = date,
                                         consumption_grants_test$data_series -
                                         investment_grants_test$data_series)
 
-
+# ---- section-fim-calculation ----
 
 #######################################################
 #               CALCULATE THE FIM                     #
@@ -743,7 +745,7 @@ fiscal_impact_4q_ma <- fiscal_impact_measure %>%
   SMA(zoo::na.locf(., na.rm = F), n=4)
 
 
-# ---- section-C.6-output-results ----
+# ---- section-C.7-output-results ----
 # Combine all the inputs into a data frame
 inputs_df <- data.frame(
   date,
@@ -844,7 +846,7 @@ openxlsx::write.xlsx(inputs_df, file = glue('results/{month_year}/beta/inputs-{m
 write_rds(contributions_df, file = 'data/contributions.rds')
 usethis::use_data(contributions_df, overwrite = TRUE)
 
-# Section F: Web materials  -------------------------------------------------------------
+# ---- section-C.7-generate-web-materials ----
 
 # Generate interactive data frame from contributions
 interactive <- contributions_df %>% 

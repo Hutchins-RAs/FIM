@@ -2,7 +2,7 @@
 title: "Data Processing"
 ---
 
-## Data Cleaning 
+# Data Cleaning 
 
 ```{r setup-01, include=FALSE}
 # This chunk reads in code from fiscal_impact_BETA.R so that this .Rmd file can
@@ -19,9 +19,8 @@ By running `devtools::load_all()`, we load all of the functions from our directo
 
 Next, we define several date objects such as `current_quarter` and `last-month-year` - these are important for both cleaning our data and properly storing our results. Note that this section is important and should be handled carefully. The objects and functions defined here are critical in other parts of this code. 
 
-```{r section-A.1-prep-for-update-G, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-A.1-prep-for-update" from
-# fiscal_impact_BETA.R
+```{r section-A.1-prep-for-update, eval=FALSE, echo=TRUE}
+
 ```
 
 This next section of code defines empty folders that will store our results upon running the FIM. In a later part of this script, we export our inputs and outputs as Excel files to these directories. Here, we also create a copy of the current version of the forecast sheet and save it as `results/{month_year}/input_data/forecast_{month_year}.xlsx`. It's important that we preserve the exact version of the forecast sheet used to generate the results given that we often make changes to `data/forecast.xlsx`. 
@@ -62,30 +61,31 @@ After sourcing the helper script, we execute the functions and load our data, cr
 
 In this section of code, we prepare our data inputs. We create 23 data frames with two columns: (1) the date and (2) a data series for one of our FIM variables.
 
-The 23 primary FIM inputs are as follows: 
-  1. Federal Purchases
-  2. Consumption Grants
-  3. Investment Grants
-  4. State Purchases
-  5. Federal Non-Corporate Taxes
-  6, State Non-Corporate Taxes 
-  7. Federal Corporate Taxes 
-  8. Supply Side IRA  
-  9. State Corporate Taxes  
-  10. Federal Social Benefits  
-  11. State Social Benefits  
-  12. Rebate Checks  
-  13. Rebate Checks ARP  
-  14. Federal UI  
-  15. State UI  
-  16. Federal Subsidies  
-  17. Federal Aid to Small Businesses ARP  
-  18. Federal Other Direct Aid ARP  
-  19. Federal Other Vulnerable ARP  
-  20. Federal Student Loans  
-  21. State Subsidies 
-  22. Federal Health Outlays 
-  23. State Health Outlays 
+The 23 primary FIM inputs are as follows:
+
+  - Federal Purchases
+  - Consumption Grants
+  - Investment Grants
+  - State Purchases
+  - Federal Non-Corporate Taxes
+  - State Non-Corporate Taxes 
+  - Federal Corporate Taxes 
+  - Supply Side IRA  
+  - State Corporate Taxes  
+  - Federal Social Benefits  
+  - State Social Benefits  
+  - Rebate Checks  
+  - Rebate Checks ARP  
+  - Federal UI  
+  - State UI  
+  - Federal Subsidies  
+  - Federal Aid to Small Businesses ARP  
+  - Federal Other Direct Aid ARP  
+  - Federal Other Vulnerable ARP  
+  - Federal Student Loans  
+  - State Subsidies 
+  - Federal Health Outlays 
+  - State Health Outlays 
   
 
 We first source a helper script called `src/data_cleaning.R`, which writes the functions that create the two-column data frames mentioned above. The helper script defines a separate function for each input, calling the appropriate data from `national_accounts`, `forecast`, and our overrides data if necessary. 
@@ -124,7 +124,7 @@ create_federal_purchases <- function(
 }
 ```
 
-In the function above, we retrieve our forecast sheet data, filter to keep only our projections for federal purchases, and rename `federal_purchases` to a generic `data_series`. We then call our national accounts data and keep only the columns `gf` and `date`. `gf` is the Haver code for federal purchases. We rename `gf` to `data_series` to merge the historical BEA data with our forecasts. Using the `coalesce_join()` function, we merge these two datasets by the `date` column. When the data sources have conflicting values for the same date, the value from the national accounts data overrides the forecast. We then merge the data with our placeholder_nas object (see above for how this is created), and replace the remaining NAs with zeros. The result is a 259-row data frame with two columns: `date` and `data_series` - our data for federal purchases. 
+In the function above, we retrieve our forecast sheet data, filter to keep only our projections for federal purchases, and rename `federal_purchases` to a generic `data_series`. We then call our national accounts data and keep only the columns `gf` and `date`. `gf` is the Haver code for federal purchases. We rename `gf` to `data_series` to merge the historical BEA data with our forecasts. Using the `coalesce_join()` function, we merge these two datasets by the `date` column. When the data sources have conflicting values for the same date, the value from the national accounts data overrides the forecast. We then merge the data with our `placeholder_nas` object (see above for how this is created), and replace the remaining NAs with zeros. The result is a 259-row data frame with two columns: `date` and `data_series` -- our data for federal purchases. 
 
 Some of our FIM inputs are slightly more complicated. Federal non-corporate taxes, for example, is the sum of multiple Haver variables. In the `create_federal_non_corporate_taxes()` function, we perform calculations using three different Haver series before merging the national accounts data with our forecasts. See below: 
 
@@ -164,7 +164,7 @@ create_federal_non_corporate_taxes <- function(
 }
 ``` 
 
-There are also some data series that require us to apply historical overrides- we make adjustments to the historical national accounts data to reflect our own assumptions about how/when money was spent when we disagree with BEA. Here is an example of a variable that requires us to call our historical overrides: 
+There are also some data series that require us to apply historical overrides-- we make adjustments to the historical national accounts data to reflect our own assumptions about how/when money was spent when we disagree with BEA. Here is an example of a variable that requires us to call our historical overrides: 
 
 ```{r r-chunk-5, eval=FALSE, echo=TRUE}
 create_federal_aid_to_small_businesses_arp <- function(
@@ -215,9 +215,9 @@ After sourcing the helper script, we execute the functions to build our data inp
 ```
 
 
-## Create Accessory Variables 
+## Cleaning Accessory Data
 
-In addition to the primary inputs listed above, the FIM also relies on what we term "accessory variables" - the PCE and purchases deflators, personal consumption expenditures, GDP, and real potential GDP growth. As with the 23 policy data series, `src/data_cleaning.R` also writes functions that create these objects. 
+In addition to the primary inputs listed above, the FIM also relies on what we term "accessory variables" - the PCE and purchases deflators, personal consumption expenditures, GDP, and real potential GDP growth. As with the 23 policy data series, `src/data_cleaning.R` also writes the functions that create these objects. 
 
 For example, the helper script (`src/data_cleaning.R`), which we've already sourced, writes `create_federal_purchases_deflator_growth()`as the following: 
 
@@ -267,7 +267,7 @@ create_federal_purchases_deflator_growth <- function(
 
 ```
 
-In the function above, we first retrieve our `projections` object- the data we pull from CBO. `projections` follows the same naming conventions as our national accounts data - each data series is identified with a short Haver code. We select `gf` and `gfh`, the codes for nominal federal purchases and real federal purchases, respectively. We use the `qgr()` function contained in the fim package to calculate the quarterly growth rate of the federal purchases deflator. The deflator is simply nominal purchases divided by real purchases. We next retrieve our national accounts data and similarly calculate the federal purchases deflator in history. 
+In the function above, we first retrieve our `projections` object-- the data we pull from CBO. `projections` follows the same naming conventions as our national accounts data-- each data series is identified with a short Haver code. We select `gf` and `gfh`, the codes for nominal federal purchases and real federal purchases, respectively. We use the `qgr()` function contained in the fim package to calculate the quarterly growth rate of the federal purchases deflator. The deflator is simply nominal purchases divided by real purchases. We next retrieve our national accounts data and similarly calculate the federal purchases deflator in history. 
 
 Although `projections` includes forecasts of the federal purchases deflator until 2034 Q3, we sometimes make adjustments to these values when we disagree with CBO. We make these changes in the forecast sheet. Our edited deflators are stored in the deflator_overrides sheet, which we previously loaded. We overwrite the values from `projections` for the entire forecast period. 
 
@@ -332,7 +332,7 @@ In the function above, we create our GDP data series. In history, we pull GDP st
 
 First, we retrieve our `projections` data and use the `gdp` column to calculate future GDP growth based on CBO's GDP projections. We calculate quarterly GDP growth using the `qgr()` function contained in the fim package. We then pull our `national_accounts` data and select the GDP column to use later. 
 
-Next, we define an object called `current_index` - this gets the position (or row number) in `national_accounts` where the date column matches the value stored in the `current_quarter` object. Put more simply, we get the row number of the current quarter. We also define an object called `seed_gdp`, the value of GDP at the position of `current_index` (we're pulling the value of GDP in the current quarter, the last quarter for which we have data). This is the starting value for our projections.
+Next, we define an object called `current_index` -- this gets the position (or row number) in `national_accounts` where the date column matches the value stored in the `current_quarter` object. Put more simply, we get the row number of the current quarter. We also define an object called `seed_gdp`, the value of GDP at the position of `current_index` (we're pulling the value of GDP in the current quarter, the last quarter for which we have data). This is the starting value for our projections.
 
 We define our new projections by growing the current quarter GDP (seed) using the CBO growth rates we calculated above using the `cumulative_series()` function contained in the fim package. The function takes a value `seed`, which is the initial value from which the projection starts. It also takes `projections1$gdp_growth`, a vector of growth rates. The result is a `new_gdp_projections` - a vector containing the initial GDP value times the cumulative product of the growth rates for each quarter. 
 
@@ -340,7 +340,7 @@ We merge our national accounts data with our new GDP projections to create our G
 
 We define `consumption` similarly - we take BEA's consumption and grow it at CBO's growth rate. 
 
-*Extras* 
+**Extras**
 
 Lastly, we write functions that construct three "extra" variables that aren't directly used in our analysis but are important for understanding/publishing our results. `create_date()` generates a one column data frame containing the date from 1970 Q1 to 2034 Q3. `create_id()` produces a a binary variable indicating whether the entry is a projection or historical. `create_recession()` produces an indicator for whether the quarter was a recession quarter. 
 

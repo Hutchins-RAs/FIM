@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4 FIM Calculation | Economics Methodology</title>
+  <meta name="description" content="4 FIM Calculation | Economics Methodology" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4 FIM Calculation | Economics Methodology" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4 FIM Calculation | Economics Methodology" />
+  
+  
+  
+
+<meta name="author" content="Georgia Nabors" />
+
+
+<meta name="date" content="2025-03-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="data-cleaning.html"/>
+<link rel="next" href="economics-methodology.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Welcome!</a></li>
+<li class="chapter" data-level="2" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html"><i class="fa fa-check"></i><b>2</b> Data Sources and Data Cleaning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#data-sources"><i class="fa fa-check"></i><b>2.1</b> Data Sources</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#beas-national-accounts-data"><i class="fa fa-check"></i><b>2.1.1</b> BEA’s National Accounts Data</a></li>
+<li class="chapter" data-level="2.1.2" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#forecasts"><i class="fa fa-check"></i><b>2.1.2</b> Forecasts</a></li>
+<li class="chapter" data-level="2.1.3" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#overrides"><i class="fa fa-check"></i><b>2.1.3</b> Overrides</a></li>
+<li class="chapter" data-level="2.1.4" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#cbo-projections"><i class="fa fa-check"></i><b>2.1.4</b> CBO Projections</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="data-cleaning.html"><a href="data-cleaning.html"><i class="fa fa-check"></i><b>3</b> Data Cleaning</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="data-cleaning.html"><a href="data-cleaning.html#data-imports"><i class="fa fa-check"></i><b>3.1</b> Data Imports</a></li>
+<li class="chapter" data-level="3.2" data-path="data-cleaning.html"><a href="data-cleaning.html#cleaning-our-fim-data"><i class="fa fa-check"></i><b>3.2</b> Cleaning Our FIM Data</a></li>
+<li class="chapter" data-level="3.3" data-path="data-cleaning.html"><a href="data-cleaning.html#cleaning-accessory-data"><i class="fa fa-check"></i><b>3.3</b> Cleaning Accessory Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="fim-calculation.html"><a href="fim-calculation.html"><i class="fa fa-check"></i><b>4</b> FIM Calculation</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-input-data"><i class="fa fa-check"></i><b>4.1</b> Defining Input Data</a></li>
+<li class="chapter" data-level="4.2" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-the-fim-functions"><i class="fa fa-check"></i><b>4.2</b> Defining the FIM Functions</a></li>
+<li class="chapter" data-level="4.3" data-path="fim-calculation.html"><a href="fim-calculation.html#applying-our-mpcs"><i class="fa fa-check"></i><b>4.3</b> Applying Our MPCs</a></li>
+<li class="chapter" data-level="4.4" data-path="fim-calculation.html"><a href="fim-calculation.html#calculating-the-fim"><i class="fa fa-check"></i><b>4.4</b> Calculating the FIM</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="fim-calculation.html"><a href="fim-calculation.html#purchases-fim"><i class="fa fa-check"></i><b>4.4.1</b> Purchases FIM</a></li>
+<li class="chapter" data-level="4.4.2" data-path="fim-calculation.html"><a href="fim-calculation.html#net-transfers-fim"><i class="fa fa-check"></i><b>4.4.2</b> Net Transfers FIM</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="fim-calculation.html"><a href="fim-calculation.html#outputting-results"><i class="fa fa-check"></i><b>4.5</b> Outputting Results</a>
+<ul>
+<li class="chapter" data-level="4.5.1" data-path="fim-calculation.html"><a href="fim-calculation.html#generating-web-materials"><i class="fa fa-check"></i><b>4.5.1</b> Generating Web Materials</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="economics-methodology.html"><a href="economics-methodology.html"><i class="fa fa-check"></i><b>5</b> Economics Methodology</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="economics-methodology.html"><a href="economics-methodology.html#our-fim-math"><i class="fa fa-check"></i><b>5.1</b> Our FIM Math</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="economics-methodology.html"><a href="economics-methodology.html#fim-for-purchases"><i class="fa fa-check"></i><b>5.1.1</b> FIM for Purchases</a></li>
+<li class="chapter" data-level="5.1.2" data-path="economics-methodology.html"><a href="economics-methodology.html#fim-for-transfers"><i class="fa fa-check"></i><b>5.1.2</b> FIM for Transfers</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="economics-methodology.html"><a href="economics-methodology.html#marginal-propensities-to-consume"><i class="fa fa-check"></i><b>5.2</b> Marginal Propensities to Consume</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="economics-methodology.html"><a href="economics-methodology.html#why-do-we-apply-mpcs"><i class="fa fa-check"></i><b>5.2.1</b> Why do we apply MPCs?</a></li>
+<li class="chapter" data-level="5.2.2" data-path="economics-methodology.html"><a href="economics-methodology.html#how-do-we-apply-mpcs"><i class="fa fa-check"></i><b>5.2.2</b> How do we apply MPCs?</a></li>
+<li class="chapter" data-level="5.2.3" data-path="economics-methodology.html"><a href="economics-methodology.html#our-mpcs"><i class="fa fa-check"></i><b>5.2.3</b> Our MPCS</a></li>
+<li class="chapter" data-level="5.2.4" data-path="economics-methodology.html"><a href="economics-methodology.html#creatingediting-an-mpc-matrix"><i class="fa fa-check"></i><b>5.2.4</b> Creating/Editing an MPC Matrix</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Economics Methodology</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="fim-calculation" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">4</span> FIM Calculation<a href="fim-calculation.html#fim-calculation" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="defining-input-data" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Defining Input Data<a href="fim-calculation.html#defining-input-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This is where we go from wrangling our data to actually calculating the FIM.</p>
+<p>This section of the code begins with the following:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="fim-calculation.html#cb14-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/define_inputs.R&quot;</span>)</span></code></pre></div>
+<p>Above, we source a helper script that selects only the <code>data_series</code> column from each of the two-column data frames that we defined previously. Later, we combine these vectors into a large data set that we export to our results folder. It’s important that we keep track of and store the version of our inputs that we used to generate the results.</p>
+<p>Here’s a section of the helper script for reference:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="fim-calculation.html#cb15-1" tabindex="-1"></a>federal_purchases <span class="ot">&lt;-</span> federal_purchases_test<span class="sc">$</span>data_series</span>
+<span id="cb15-2"><a href="fim-calculation.html#cb15-2" tabindex="-1"></a>consumption_grants <span class="ot">&lt;-</span> consumption_grants_test<span class="sc">$</span>data_series</span>
+<span id="cb15-3"><a href="fim-calculation.html#cb15-3" tabindex="-1"></a>investment_grants <span class="ot">&lt;-</span> investment_grants_test<span class="sc">$</span>data_series</span>
+<span id="cb15-4"><a href="fim-calculation.html#cb15-4" tabindex="-1"></a>state_purchases <span class="ot">&lt;-</span> state_purchases_test<span class="sc">$</span>data_series</span></code></pre></div>
+</div>
+<div id="defining-the-fim-functions" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Defining the FIM Functions<a href="fim-calculation.html#defining-the-fim-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Next, we source a helper script called <code>src/contributions.R</code> that defines the functions we use to calculate the FIM. They execute our “FIM math” step-by-step. There is documentation of our exact methodology in the FIM folder.</p>
+<p>In the helper script, we define several unit functions, which are the specific steps we apply to our input data to eventually produce our outputs - the contribution of each policy category to the overall FIM. We produce a contribution for federal purchases, state purchases, and consumption (taxes and transfers). The overall FIM is simply the sum of these contributions.</p>
+<p>Note that not all input data needs to go through all of the unit functions in order to produce the output. Specifically, the mpc step can be optionally skipped.</p>
+<p><strong>MPC Function</strong></p>
+<p>The first unit function is called <code>mpc()</code>:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="fim-calculation.html#cb16-1" tabindex="-1"></a>mpc <span class="ot">&lt;-</span> <span class="cf">function</span>(x, mpc_matrix) {</span>
+<span id="cb16-2"><a href="fim-calculation.html#cb16-2" tabindex="-1"></a>  <span class="co"># Input check that the dimensions of the matrix equal the length of the series</span></span>
+<span id="cb16-3"><a href="fim-calculation.html#cb16-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(mpc_matrix) <span class="sc">!=</span> <span class="fu">length</span>(x)) {</span>
+<span id="cb16-4"><a href="fim-calculation.html#cb16-4" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;The number of rows in the mpc_matrix must equal the length of the series.&quot;</span>)</span>
+<span id="cb16-5"><a href="fim-calculation.html#cb16-5" tabindex="-1"></a>  }</span>
+<span id="cb16-6"><a href="fim-calculation.html#cb16-6" tabindex="-1"></a>  </span>
+<span id="cb16-7"><a href="fim-calculation.html#cb16-7" tabindex="-1"></a>  <span class="co"># Formatting the data as a vertical column matrix is not strictly necessary;</span></span>
+<span id="cb16-8"><a href="fim-calculation.html#cb16-8" tabindex="-1"></a>  <span class="co"># but it reinforces the point that this is matrix multiplication</span></span>
+<span id="cb16-9"><a href="fim-calculation.html#cb16-9" tabindex="-1"></a>  vert_x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(x, <span class="at">ncol =</span> <span class="dv">1</span>)</span>
+<span id="cb16-10"><a href="fim-calculation.html#cb16-10" tabindex="-1"></a>  </span>
+<span id="cb16-11"><a href="fim-calculation.html#cb16-11" tabindex="-1"></a>  <span class="co"># ensuring proper NA handling by converting to zeroes</span></span>
+<span id="cb16-12"><a href="fim-calculation.html#cb16-12" tabindex="-1"></a>  <span class="co"># </span><span class="al">TODO</span><span class="co">: Make only the first value of NA equal to 0. Keep the other NAs as NA</span></span>
+<span id="cb16-13"><a href="fim-calculation.html#cb16-13" tabindex="-1"></a>  vert_x[<span class="fu">is.na</span>(vert_x)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb16-14"><a href="fim-calculation.html#cb16-14" tabindex="-1"></a>  </span>
+<span id="cb16-15"><a href="fim-calculation.html#cb16-15" tabindex="-1"></a>  <span class="co"># Perform matrix multiplication</span></span>
+<span id="cb16-16"><a href="fim-calculation.html#cb16-16" tabindex="-1"></a>  output <span class="ot">&lt;-</span> mpc_matrix <span class="sc">%*%</span> vert_x</span>
+<span id="cb16-17"><a href="fim-calculation.html#cb16-17" tabindex="-1"></a>  </span>
+<span id="cb16-18"><a href="fim-calculation.html#cb16-18" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb16-19"><a href="fim-calculation.html#cb16-19" tabindex="-1"></a>}</span></code></pre></div>
+<p>This function takes a time series and an MPC matrix as its inputs. Our MPCs are stored in the <code>cache</code> folder. This documentation book contains a separate MPC chapter explaining in depth our MPCs and the process we use to apply them.</p>
+<p>The <code>mpc()</code> function first calls <code>x</code> (the data) and the appropriate <code>mpc_matrix</code> - an RDS file containing our MPCs. Our MPCs are cached, meaning we never overwrite or regenerate them in this code. This saves us significant processing time.</p>
+<p>Next, the function checks to ensure the dimensions of the matrix are equal to the length of the data series. Everything should be 259 entries in length (enough rows to store data from 1970 Q1 until 2034 Q3). For RAs working on the FIM in 2032, you will need to extend the MPC matrices and our data frame inputs to accommodate more quarters. Please see the MPC section for documentation on how we created these MPC matrices.</p>
+<p>We then format the data (<code>x</code>) as a vertical column matrix and coerce all NAs to zero. We define an object called output, which is the <code>mpc_matrix</code> multiplied by the vector of data. The function ultimately returns a numeric vector representing the post-MPC data.
+Again, please see the MPC section for further explanation of our MPCs.</p>
+<p>We do not apply MPCs to federal purchases, state purchases, investment grants, and consumption grants. This data already measures the direct effects of government spending on output. Our supply side IRA series (included as taxes) also does not have an MPC. “Supply side IRA” is construction spending on manufacturing facilities and equipment related to the IRA and CHIPs, which like federal and state purchases, we assume has an instantaneous effect on GDP. The implied MPC is 1 since “supply side IRA” already represents a direct estimate of how much legislation increased manufacturing output.</p>
+<p>We apply MPCs when we do believe that the effect of a cash flow on GDP is not immediate. For example, unemployment benefits might be received in quarter 1, but not spent until quarter 2. And some of the initial disbursement might be saved permanently. Thus, MPCs capture the timing effects of taxes and transfers on GDP as well as the fact that these polices may not have a 1:1 effect on output.</p>
+<p><em>So what gets an MPC?</em></p>
+<p>In summary, we apply MPCs to all of our taxe and transferpolicies except for supply side IRA. We do not apply MPCs to purchases or grants.</p>
+<p><strong>Purchases FIM Function</strong></p>
+<p>Next, the <code>contributions.R</code> helper script defines two unit functions to calculate the FIM for purchases.</p>
+<p>The first function is the following:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="fim-calculation.html#cb17-1" tabindex="-1"></a>minus_neutral_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="co"># the data in question</span></span>
+<span id="cb17-2"><a href="fim-calculation.html#cb17-2" tabindex="-1"></a>                          rpgg, <span class="co"># real potential gdp growth,</span></span>
+<span id="cb17-3"><a href="fim-calculation.html#cb17-3" tabindex="-1"></a>                          dg <span class="co"># consumption deflator growth</span></span>
+<span id="cb17-4"><a href="fim-calculation.html#cb17-4" tabindex="-1"></a>) {</span>
+<span id="cb17-5"><a href="fim-calculation.html#cb17-5" tabindex="-1"></a>  output <span class="ot">&lt;-</span> (x<span class="sc">/</span><span class="fu">lag</span>(x) <span class="sc">-</span> dg)<span class="sc">^</span><span class="dv">4</span> <span class="sc">-</span> (<span class="dv">1</span><span class="sc">+</span>rpgg)</span>
+<span id="cb17-6"><a href="fim-calculation.html#cb17-6" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb17-7"><a href="fim-calculation.html#cb17-7" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>minus_neutral_purchases()</code> is the heart of our FIM calculation. We get the quarterly growth in purchases (minus inflation and then annualized) and subtract out the annualized growth rate of real potential GDP. In other words, we’re getting the extent to which growth in purchases was above or below growth in potential.</p>
+<p>The function has three inputs:
+<em><code>x</code>, our data
+</em><code>rpgg</code>, real potential GDP growth (we input an annualized rate)
+*<code>dg</code> deflator growth (at a quarterly rate)</p>
+<p><code>minus_neutral_purchases()</code> executes the highlighted part of the following equation (from our FIM methodology document):</p>
+<div class="float">
+<img src="images/minus_neutral_purchases.png" alt="“An image of the federal purchases FIM math”" />
+<div class="figcaption">“An image of the federal purchases FIM math”</div>
+</div>
+<p>Next, we define our <code>scale_to_gdp()</code> function:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="fim-calculation.html#cb18-1" tabindex="-1"></a>scale_to_gdp_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="co"># the data in question, </span></span>
+<span id="cb18-2"><a href="fim-calculation.html#cb18-2" tabindex="-1"></a>                         gdp, <span class="co"># GDP</span></span>
+<span id="cb18-3"><a href="fim-calculation.html#cb18-3" tabindex="-1"></a>                         result)</span>
+<span id="cb18-4"><a href="fim-calculation.html#cb18-4" tabindex="-1"></a>{</span>
+<span id="cb18-5"><a href="fim-calculation.html#cb18-5" tabindex="-1"></a>  output <span class="ot">=</span> <span class="dv">100</span><span class="sc">*</span>result<span class="sc">*</span>(<span class="fu">lag</span>(x)<span class="sc">/</span><span class="fu">lag</span>(gdp))</span>
+<span id="cb18-6"><a href="fim-calculation.html#cb18-6" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb18-7"><a href="fim-calculation.html#cb18-7" tabindex="-1"></a>}</span></code></pre></div>
+<p>We multiply the result of our minus neutral calculation by the share of purchases in GDP in the preceding quarter. <code>scale_to_gdp_purchases()</code> executes the highlighted portion of the formula below:</p>
+<div class="float">
+<img src="images/scale_to_gdp_purchases.png" alt="“An image of the federal purchases FIM math”" />
+<div class="figcaption">“An image of the federal purchases FIM math”</div>
+</div>
+<p>Lastly, we define a wrapper function <code>contribution_purchases()</code> that bundles the two unit functions together to produce the contribution of purchases to the overall FIM. See below:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="fim-calculation.html#cb19-1" tabindex="-1"></a>contribution_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb19-2"><a href="fim-calculation.html#cb19-2" tabindex="-1"></a>    x, <span class="co"># our data series </span></span>
+<span id="cb19-3"><a href="fim-calculation.html#cb19-3" tabindex="-1"></a>    rpgg, <span class="co"># real potential GDP growth</span></span>
+<span id="cb19-4"><a href="fim-calculation.html#cb19-4" tabindex="-1"></a>    dg, <span class="co"># deflator growth</span></span>
+<span id="cb19-5"><a href="fim-calculation.html#cb19-5" tabindex="-1"></a>    gdp <span class="co">#gdp</span></span>
+<span id="cb19-6"><a href="fim-calculation.html#cb19-6" tabindex="-1"></a>    ) {</span>
+<span id="cb19-7"><a href="fim-calculation.html#cb19-7" tabindex="-1"></a>  </span>
+<span id="cb19-8"><a href="fim-calculation.html#cb19-8" tabindex="-1"></a>  <span class="co"># Actual Growth Minus Counterfactual Growth</span></span>
+<span id="cb19-9"><a href="fim-calculation.html#cb19-9" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">minus_neutral_purchases</span>(<span class="at">x =</span> x, <span class="at">rpgg =</span> rpgg, <span class="at">dg =</span> dg)</span>
+<span id="cb19-10"><a href="fim-calculation.html#cb19-10" tabindex="-1"></a>  </span>
+<span id="cb19-11"><a href="fim-calculation.html#cb19-11" tabindex="-1"></a>  <span class="co"># Apply Scale to GDP Function</span></span>
+<span id="cb19-12"><a href="fim-calculation.html#cb19-12" tabindex="-1"></a>  output <span class="ot">&lt;-</span> <span class="fu">scale_to_gdp_purchases</span>(<span class="at">x =</span> x, <span class="at">result =</span>result, <span class="at">gdp =</span> gdp)</span>
+<span id="cb19-13"><a href="fim-calculation.html#cb19-13" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb19-14"><a href="fim-calculation.html#cb19-14" tabindex="-1"></a>}</span></code></pre></div>
+<p>There is no MPC argument as we do not apply MPCs to purchases.</p>
+<p><strong>Taxes and Transfers</strong></p>
+<p>First, it’s important to be clear on the following: when we say “impulse from transfers and taxes”, we mean the post-MPC data - the dollars from the policy that actually turned into consumption each quarter.</p>
+<p>We calculate the FIM for net transfers a bit differently than we do for purchases. So let’s dive into our unit functions for consumption:</p>
+<p>First, we define <code>t_counterfactual()</code>, which as the name suggests, defines our counterfactual consumption - the level of consumption that would have prevailed if the impulse from taxes and transfers grew at the rate of potential GDP.</p>
+<p>Counterfactual consumption is equal to actual personal consumption expenditures less the consumption impulse from policy (the post-MPC data) plus the lagged impulse grown with real potential GDP and the PCE deflator. To simplify, we get actual consumption, subtract out the actual policy impulse, and replace it with a counterfactual policy impulse (what the policy impulse would have been if it grew at potential). The result is counterfactual consumption: what consumption would have been under this Hutchins-constructed policy impulse rather than the actual one.</p>
+<p>See below:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="fim-calculation.html#cb20-1" tabindex="-1"></a>t_counterfactual <span class="ot">&lt;-</span> <span class="cf">function</span>(x,  <span class="co"># Our data series </span></span>
+<span id="cb20-2"><a href="fim-calculation.html#cb20-2" tabindex="-1"></a>                             c, <span class="co"># Personal Consumption Expenditures</span></span>
+<span id="cb20-3"><a href="fim-calculation.html#cb20-3" tabindex="-1"></a>                             rpgg, <span class="co"># Real Potential GDP Growth (quarterly)</span></span>
+<span id="cb20-4"><a href="fim-calculation.html#cb20-4" tabindex="-1"></a>                             dg <span class="co"># Deflator Growth (quarterly)</span></span>
+<span id="cb20-5"><a href="fim-calculation.html#cb20-5" tabindex="-1"></a>) {</span>
+<span id="cb20-6"><a href="fim-calculation.html#cb20-6" tabindex="-1"></a>  </span>
+<span id="cb20-7"><a href="fim-calculation.html#cb20-7" tabindex="-1"></a>  </span>
+<span id="cb20-8"><a href="fim-calculation.html#cb20-8" tabindex="-1"></a>  counterfactual <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(c <span class="sc">-</span> x <span class="sc">+</span> <span class="fu">lag</span>(x)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">+</span>rpgg<span class="sc">+</span>dg))</span>
+<span id="cb20-9"><a href="fim-calculation.html#cb20-9" tabindex="-1"></a>  <span class="fu">return</span>(counterfactual)</span>
+<span id="cb20-10"><a href="fim-calculation.html#cb20-10" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>t_counterfactual()</code> has several inputs:</p>
+<ul>
+<li><code>x</code>, the sum of all of our post-MPC taxes and transfers series</li>
+<li><code>c</code>, personal consumption expenditures (from BEA)</li>
+<li><code>rpgg</code>, real potential GDP growth, at a quarterly rate</li>
+<li><code>dg</code>, consumption deflator growth, at a quarterly rate.</li>
+</ul>
+<p>Note: We need to convert our results to a numeric object. Sometimes, instead of using the sum of all of our post-MPC taxes and transfers, we input an individual post-MPC policy data series as <code>x</code> (<code>post-mpc-federal-subsidies</code>, for example). This is explained the ‘Net Transfers FIM Calculation’ section. These post-MPC objects are matrices, so we need to convert the result to numeric so it can be further processed by the functions below.</p>
+<p>The function above executes the following part of our FIM math:
+<img src="images/t_counterfactual.png" alt="“An image of the counterfactual consumption FIM math”" /></p>
+<p>Our second unit function is <code>minus_neutral_t()</code>, the heart of our FIM calculation for transfers!</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="fim-calculation.html#cb21-1" tabindex="-1"></a>minus_neutral_t <span class="ot">&lt;-</span> <span class="cf">function</span>(c, <span class="co"># BEA Consumption</span></span>
+<span id="cb21-2"><a href="fim-calculation.html#cb21-2" tabindex="-1"></a>                            counterfactual <span class="co"># The counterfactual we defined above</span></span>
+<span id="cb21-3"><a href="fim-calculation.html#cb21-3" tabindex="-1"></a>) {</span>
+<span id="cb21-4"><a href="fim-calculation.html#cb21-4" tabindex="-1"></a>  minus_neutral <span class="ot">&lt;-</span> (c<span class="sc">/</span><span class="fu">lag</span>(c))<span class="sc">^</span><span class="dv">4</span> <span class="sc">-</span> (counterfactual<span class="sc">/</span><span class="fu">lag</span>(c))<span class="sc">^</span><span class="dv">4</span> </span>
+<span id="cb21-5"><a href="fim-calculation.html#cb21-5" tabindex="-1"></a>  <span class="fu">return</span>(minus_neutral)</span>
+<span id="cb21-6"><a href="fim-calculation.html#cb21-6" tabindex="-1"></a>}</span></code></pre></div>
+<p>Minus neutral is actual growth in consumption minus growth in counterfactual consumption (relative to last quarter’s actual consumption). Both growth rates are annualized.</p>
+<p><code>minus_neutral_t()</code> executes the highlighted portion of our net transfers FIM math:
+<img src="images/minus_neutral_t.png" alt="“An image of the counterfactual consumption FIM math”" /></p>
+<p>Next, we scale to GDP:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="fim-calculation.html#cb22-1" tabindex="-1"></a>scale_to_gdp_t <span class="ot">&lt;-</span> <span class="cf">function</span>(minus_neutral, <span class="co"># minus_neural, which we defined above</span></span>
+<span id="cb22-2"><a href="fim-calculation.html#cb22-2" tabindex="-1"></a>                           gdp, <span class="co"># GDP</span></span>
+<span id="cb22-3"><a href="fim-calculation.html#cb22-3" tabindex="-1"></a>                           c <span class="co"># Consumption</span></span>
+<span id="cb22-4"><a href="fim-calculation.html#cb22-4" tabindex="-1"></a>) {</span>
+<span id="cb22-5"><a href="fim-calculation.html#cb22-5" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="dv">100</span><span class="sc">*</span>minus_neutral<span class="sc">*</span>(<span class="fu">lag</span>(c)<span class="sc">/</span><span class="fu">lag</span>(gdp))</span>
+<span id="cb22-6"><a href="fim-calculation.html#cb22-6" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb22-7"><a href="fim-calculation.html#cb22-7" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>scale_to_gdp_t()</code>executes the portion of our net transfers FIM math highlighted below:
+<img src="images/scale_to_gdp_t.png" alt="“An image of the counterfactual consumption FIM math”" /></p>
+<p>Lastly, we define a wrapper function called <code>contribution_transfers()</code> that bundles the three functions above:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="fim-calculation.html#cb23-1" tabindex="-1"></a>contribution_transfers <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="co"># our data</span></span>
+<span id="cb23-2"><a href="fim-calculation.html#cb23-2" tabindex="-1"></a>                                   c, <span class="co"># consumption </span></span>
+<span id="cb23-3"><a href="fim-calculation.html#cb23-3" tabindex="-1"></a>                                   rpgg, <span class="co"># real potential GDP growth</span></span>
+<span id="cb23-4"><a href="fim-calculation.html#cb23-4" tabindex="-1"></a>                                   dg, <span class="co"># deflator growth</span></span>
+<span id="cb23-5"><a href="fim-calculation.html#cb23-5" tabindex="-1"></a>                                   gdp <span class="co"># gdp </span></span>
+<span id="cb23-6"><a href="fim-calculation.html#cb23-6" tabindex="-1"></a>                                   ) {</span>
+<span id="cb23-7"><a href="fim-calculation.html#cb23-7" tabindex="-1"></a>  </span>
+<span id="cb23-8"><a href="fim-calculation.html#cb23-8" tabindex="-1"></a>  <span class="co"># Define Counterfactual</span></span>
+<span id="cb23-9"><a href="fim-calculation.html#cb23-9" tabindex="-1"></a>  counterfactual <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(c <span class="sc">-</span> x <span class="sc">+</span> <span class="fu">lag</span>(x) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">+</span> rpgg <span class="sc">+</span> dg))</span>
+<span id="cb23-10"><a href="fim-calculation.html#cb23-10" tabindex="-1"></a>  </span>
+<span id="cb23-11"><a href="fim-calculation.html#cb23-11" tabindex="-1"></a>  <span class="co"># Define Minus Neutral</span></span>
+<span id="cb23-12"><a href="fim-calculation.html#cb23-12" tabindex="-1"></a>  minus_neutral <span class="ot">&lt;-</span> (c <span class="sc">/</span> <span class="fu">lag</span>(c))<span class="sc">^</span><span class="dv">4</span> <span class="sc">-</span> (counterfactual <span class="sc">/</span> <span class="fu">lag</span>(c))<span class="sc">^</span><span class="dv">4</span></span>
+<span id="cb23-13"><a href="fim-calculation.html#cb23-13" tabindex="-1"></a>  </span>
+<span id="cb23-14"><a href="fim-calculation.html#cb23-14" tabindex="-1"></a>  <span class="co"># Scale to GDP</span></span>
+<span id="cb23-15"><a href="fim-calculation.html#cb23-15" tabindex="-1"></a>  output <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="sc">*</span> minus_neutral <span class="sc">*</span> (<span class="fu">lag</span>(c) <span class="sc">/</span> <span class="fu">lag</span>(gdp))</span>
+<span id="cb23-16"><a href="fim-calculation.html#cb23-16" tabindex="-1"></a>  </span>
+<span id="cb23-17"><a href="fim-calculation.html#cb23-17" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
+<span id="cb23-18"><a href="fim-calculation.html#cb23-18" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="applying-our-mpcs" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Applying Our MPCs<a href="fim-calculation.html#applying-our-mpcs" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>First, we use the <code>mpc()</code> function to apply MPCs to our taxes data. As discussed above, we take our data <code>x</code> and an MPC matrix as our inputs.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="fim-calculation.html#cb24-1" tabindex="-1"></a><span class="co"># APPLY MPCS TO TAXES</span></span>
+<span id="cb24-2"><a href="fim-calculation.html#cb24-2" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="fim-calculation.html#cb24-3" tabindex="-1"></a><span class="co"># Federal Non-Corporate Taxes</span></span>
+<span id="cb24-4"><a href="fim-calculation.html#cb24-4" tabindex="-1"></a>post_mpc_federal_non_corporate_taxes <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_non_corporate_taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-5"><a href="fim-calculation.html#cb24-5" tabindex="-1"></a>                                            <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_non_corporate_taxes.rds&quot;</span>))</span>
+<span id="cb24-6"><a href="fim-calculation.html#cb24-6" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="fim-calculation.html#cb24-7" tabindex="-1"></a><span class="co"># State Non-Corporate Taxes</span></span>
+<span id="cb24-8"><a href="fim-calculation.html#cb24-8" tabindex="-1"></a>post_mpc_state_non_corporate_taxes <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_non_corporate_taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-9"><a href="fim-calculation.html#cb24-9" tabindex="-1"></a>                                          <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_non_corporate_taxes.rds&quot;</span>))</span>
+<span id="cb24-10"><a href="fim-calculation.html#cb24-10" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="fim-calculation.html#cb24-11" tabindex="-1"></a><span class="co"># Federal Corporate Taxes</span></span>
+<span id="cb24-12"><a href="fim-calculation.html#cb24-12" tabindex="-1"></a>post_mpc_federal_corporate_taxes <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_corporate_taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-13"><a href="fim-calculation.html#cb24-13" tabindex="-1"></a>                                        <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_corporate_taxes.rds&quot;</span>))</span>
+<span id="cb24-14"><a href="fim-calculation.html#cb24-14" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="fim-calculation.html#cb24-15" tabindex="-1"></a><span class="co"># State Corporate Taxes</span></span>
+<span id="cb24-16"><a href="fim-calculation.html#cb24-16" tabindex="-1"></a>post_mpc_state_corporate_taxes <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_corporate_taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb24-17"><a href="fim-calculation.html#cb24-17" tabindex="-1"></a>                                      <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_corporate_taxes.rds&quot;</span>))</span>
+<span id="cb24-18"><a href="fim-calculation.html#cb24-18" tabindex="-1"></a></span>
+<span id="cb24-19"><a href="fim-calculation.html#cb24-19" tabindex="-1"></a><span class="co"># Supply Side IRA (no MPC)</span></span>
+<span id="cb24-20"><a href="fim-calculation.html#cb24-20" tabindex="-1"></a>supply_side_ira <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(supply_side_ira_test<span class="sc">$</span>data_series)</span></code></pre></div>
+<p>Next, we use the <code>mpc()</code> function to apply our MPCs to our tranfsers data:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="fim-calculation.html#cb25-1" tabindex="-1"></a><span class="co"># Federal Social Benefits </span></span>
+<span id="cb25-2"><a href="fim-calculation.html#cb25-2" tabindex="-1"></a>post_mpc_federal_social_benefits <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_social_benefits_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-3"><a href="fim-calculation.html#cb25-3" tabindex="-1"></a>                                        <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_social_benefits.rds&quot;</span>))</span>
+<span id="cb25-4"><a href="fim-calculation.html#cb25-4" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="fim-calculation.html#cb25-5" tabindex="-1"></a><span class="co"># State Social Benefits</span></span>
+<span id="cb25-6"><a href="fim-calculation.html#cb25-6" tabindex="-1"></a>post_mpc_state_social_benefits <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_social_benefits_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-7"><a href="fim-calculation.html#cb25-7" tabindex="-1"></a>                                      <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_social_benefits.rds&quot;</span>))</span>
+<span id="cb25-8"><a href="fim-calculation.html#cb25-8" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="fim-calculation.html#cb25-9" tabindex="-1"></a><span class="co"># Rebate Checks </span></span>
+<span id="cb25-10"><a href="fim-calculation.html#cb25-10" tabindex="-1"></a>post_mpc_rebate_checks <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> rebate_checks_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-11"><a href="fim-calculation.html#cb25-11" tabindex="-1"></a>                              <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/rebate_checks.rds&quot;</span>))</span>
+<span id="cb25-12"><a href="fim-calculation.html#cb25-12" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="fim-calculation.html#cb25-13" tabindex="-1"></a><span class="co"># Rebate Checks ARP </span></span>
+<span id="cb25-14"><a href="fim-calculation.html#cb25-14" tabindex="-1"></a>post_mpc_rebate_checks_arp <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> rebate_checks_arp_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-15"><a href="fim-calculation.html#cb25-15" tabindex="-1"></a>                                  <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/rebate_checks_arp.rds&quot;</span>))</span>
+<span id="cb25-16"><a href="fim-calculation.html#cb25-16" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="fim-calculation.html#cb25-17" tabindex="-1"></a><span class="co"># Federal UI </span></span>
+<span id="cb25-18"><a href="fim-calculation.html#cb25-18" tabindex="-1"></a>post_mpc_federal_ui <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_ui_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-19"><a href="fim-calculation.html#cb25-19" tabindex="-1"></a>                           <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_ui.rds&quot;</span>))</span>
+<span id="cb25-20"><a href="fim-calculation.html#cb25-20" tabindex="-1"></a></span>
+<span id="cb25-21"><a href="fim-calculation.html#cb25-21" tabindex="-1"></a><span class="co"># State UI </span></span>
+<span id="cb25-22"><a href="fim-calculation.html#cb25-22" tabindex="-1"></a>post_mpc_state_ui <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_ui_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-23"><a href="fim-calculation.html#cb25-23" tabindex="-1"></a>                         <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_ui.rds&quot;</span>))</span>
+<span id="cb25-24"><a href="fim-calculation.html#cb25-24" tabindex="-1"></a></span>
+<span id="cb25-25"><a href="fim-calculation.html#cb25-25" tabindex="-1"></a><span class="co"># Federal Subsidies</span></span>
+<span id="cb25-26"><a href="fim-calculation.html#cb25-26" tabindex="-1"></a>post_mpc_federal_subsidies <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_subsidies_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-27"><a href="fim-calculation.html#cb25-27" tabindex="-1"></a>                                  <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_subsidies.rds&quot;</span>))</span>
+<span id="cb25-28"><a href="fim-calculation.html#cb25-28" tabindex="-1"></a></span>
+<span id="cb25-29"><a href="fim-calculation.html#cb25-29" tabindex="-1"></a><span class="co"># Federal Aid to Small Businesses ARP </span></span>
+<span id="cb25-30"><a href="fim-calculation.html#cb25-30" tabindex="-1"></a>post_mpc_federal_aid_to_small_businesses_arp <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_aid_to_small_businesses_arp_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-31"><a href="fim-calculation.html#cb25-31" tabindex="-1"></a>                                                    <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_aid_to_small_businesses_arp.rds&quot;</span>))</span>
+<span id="cb25-32"><a href="fim-calculation.html#cb25-32" tabindex="-1"></a></span>
+<span id="cb25-33"><a href="fim-calculation.html#cb25-33" tabindex="-1"></a><span class="co"># Federal Other Direct Aid ARP </span></span>
+<span id="cb25-34"><a href="fim-calculation.html#cb25-34" tabindex="-1"></a>post_mpc_federal_other_direct_aid_arp <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_other_direct_aid_arp_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-35"><a href="fim-calculation.html#cb25-35" tabindex="-1"></a>                                             <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_other_direct_aid_arp.rds&quot;</span>))</span>
+<span id="cb25-36"><a href="fim-calculation.html#cb25-36" tabindex="-1"></a></span>
+<span id="cb25-37"><a href="fim-calculation.html#cb25-37" tabindex="-1"></a><span class="co"># Federal Other Vulnerable ARP </span></span>
+<span id="cb25-38"><a href="fim-calculation.html#cb25-38" tabindex="-1"></a>post_mpc_federal_other_vulnerable_arp <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_other_vulnerable_arp_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-39"><a href="fim-calculation.html#cb25-39" tabindex="-1"></a>                                             <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_other_vulnerable_arp.rds&quot;</span>))</span>
+<span id="cb25-40"><a href="fim-calculation.html#cb25-40" tabindex="-1"></a></span>
+<span id="cb25-41"><a href="fim-calculation.html#cb25-41" tabindex="-1"></a><span class="co"># Federal Student Loans </span></span>
+<span id="cb25-42"><a href="fim-calculation.html#cb25-42" tabindex="-1"></a>post_mpc_federal_student_loans <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_student_loans_test<span class="sc">$</span>data_series,</span>
+<span id="cb25-43"><a href="fim-calculation.html#cb25-43" tabindex="-1"></a>                                      <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_student_loans.rds&quot;</span>))</span>
+<span id="cb25-44"><a href="fim-calculation.html#cb25-44" tabindex="-1"></a></span>
+<span id="cb25-45"><a href="fim-calculation.html#cb25-45" tabindex="-1"></a><span class="co"># State Subsidies </span></span>
+<span id="cb25-46"><a href="fim-calculation.html#cb25-46" tabindex="-1"></a>post_mpc_state_subsidies <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_subsidies_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-47"><a href="fim-calculation.html#cb25-47" tabindex="-1"></a>                                <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_subsidies.rds&quot;</span>))</span>
+<span id="cb25-48"><a href="fim-calculation.html#cb25-48" tabindex="-1"></a></span>
+<span id="cb25-49"><a href="fim-calculation.html#cb25-49" tabindex="-1"></a><span class="co"># Federal Health Outlays </span></span>
+<span id="cb25-50"><a href="fim-calculation.html#cb25-50" tabindex="-1"></a>post_mpc_federal_health_outlays <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> federal_health_outlays_test<span class="sc">$</span>data_series,</span>
+<span id="cb25-51"><a href="fim-calculation.html#cb25-51" tabindex="-1"></a>                                       <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/federal_health_outlays.rds&quot;</span>))</span>
+<span id="cb25-52"><a href="fim-calculation.html#cb25-52" tabindex="-1"></a></span>
+<span id="cb25-53"><a href="fim-calculation.html#cb25-53" tabindex="-1"></a><span class="co"># State Health Outlays </span></span>
+<span id="cb25-54"><a href="fim-calculation.html#cb25-54" tabindex="-1"></a>post_mpc_state_health_outlays <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_health_outlays_test<span class="sc">$</span>data_series, </span>
+<span id="cb25-55"><a href="fim-calculation.html#cb25-55" tabindex="-1"></a>                                     <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_health_outlays.rds&quot;</span>))</span></code></pre></div>
+<p>Now, we create net transfers by summing the post-MPC data. We also create “FIM state purchases.” See the section below for an explanation of what this is.</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="fim-calculation.html#cb26-1" tabindex="-1"></a><span class="do">#### CREATE TAXES #####</span></span>
+<span id="cb26-2"><a href="fim-calculation.html#cb26-2" tabindex="-1"></a>taxes_test <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">date =</span> date, <span class="at">data_series =</span> post_mpc_federal_non_corporate_taxes <span class="sc">+</span> </span>
+<span id="cb26-3"><a href="fim-calculation.html#cb26-3" tabindex="-1"></a>                           post_mpc_state_non_corporate_taxes <span class="sc">+</span> post_mpc_federal_corporate_taxes <span class="sc">+</span> </span>
+<span id="cb26-4"><a href="fim-calculation.html#cb26-4" tabindex="-1"></a>                           post_mpc_state_corporate_taxes <span class="sc">+</span> supply_side_ira) </span>
+<span id="cb26-5"><a href="fim-calculation.html#cb26-5" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="fim-calculation.html#cb26-6" tabindex="-1"></a><span class="do">#### CREATE TRANSFERS #####</span></span>
+<span id="cb26-7"><a href="fim-calculation.html#cb26-7" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="fim-calculation.html#cb26-8" tabindex="-1"></a>transfers_test <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">date =</span> date_test<span class="sc">$</span>date, <span class="at">data_series =</span> post_mpc_federal_social_benefits <span class="sc">+</span> post_mpc_state_social_benefits <span class="sc">+</span></span>
+<span id="cb26-9"><a href="fim-calculation.html#cb26-9" tabindex="-1"></a>                               post_mpc_rebate_checks <span class="sc">+</span> post_mpc_rebate_checks_arp <span class="sc">+</span> </span>
+<span id="cb26-10"><a href="fim-calculation.html#cb26-10" tabindex="-1"></a>                               post_mpc_federal_ui <span class="sc">+</span> post_mpc_state_ui <span class="sc">+</span> </span>
+<span id="cb26-11"><a href="fim-calculation.html#cb26-11" tabindex="-1"></a>                               post_mpc_federal_subsidies <span class="sc">+</span> post_mpc_federal_aid_to_small_businesses_arp <span class="sc">+</span> </span>
+<span id="cb26-12"><a href="fim-calculation.html#cb26-12" tabindex="-1"></a>                               post_mpc_federal_other_direct_aid_arp <span class="sc">+</span> post_mpc_federal_other_vulnerable_arp  <span class="sc">+</span> </span>
+<span id="cb26-13"><a href="fim-calculation.html#cb26-13" tabindex="-1"></a>                               post_mpc_federal_student_loans <span class="sc">+</span> post_mpc_state_subsidies <span class="sc">+</span></span>
+<span id="cb26-14"><a href="fim-calculation.html#cb26-14" tabindex="-1"></a>                               post_mpc_federal_health_outlays <span class="sc">+</span> post_mpc_state_health_outlays)</span>
+<span id="cb26-15"><a href="fim-calculation.html#cb26-15" tabindex="-1"></a></span>
+<span id="cb26-16"><a href="fim-calculation.html#cb26-16" tabindex="-1"></a><span class="do">#### SUM TAXES AND TRANSFERS ####</span></span>
+<span id="cb26-17"><a href="fim-calculation.html#cb26-17" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="fim-calculation.html#cb26-18" tabindex="-1"></a>taxes_transfers_test <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">date =</span> date, </span>
+<span id="cb26-19"><a href="fim-calculation.html#cb26-19" tabindex="-1"></a>                                   <span class="at">data_series =</span> taxes_test<span class="sc">$</span>data_series <span class="sc">+</span> transfers_test<span class="sc">$</span>data_series)</span>
+<span id="cb26-20"><a href="fim-calculation.html#cb26-20" tabindex="-1"></a></span>
+<span id="cb26-21"><a href="fim-calculation.html#cb26-21" tabindex="-1"></a><span class="do">### CREATE FIM STATE PURCHASES </span></span>
+<span id="cb26-22"><a href="fim-calculation.html#cb26-22" tabindex="-1"></a>fim_state_purchases_test <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">date =</span> date, </span>
+<span id="cb26-23"><a href="fim-calculation.html#cb26-23" tabindex="-1"></a>                                      <span class="at">data_series =</span> state_purchases_test<span class="sc">$</span>data_series <span class="sc">-</span></span>
+<span id="cb26-24"><a href="fim-calculation.html#cb26-24" tabindex="-1"></a>                                        consumption_grants_test<span class="sc">$</span>data_series <span class="sc">-</span></span>
+<span id="cb26-25"><a href="fim-calculation.html#cb26-25" tabindex="-1"></a>                                        investment_grants_test<span class="sc">$</span>data_series)</span></code></pre></div>
+</div>
+<div id="calculating-the-fim" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Calculating the FIM<a href="fim-calculation.html#calculating-the-fim" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="purchases-fim" class="section level3 hasAnchor" number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Purchases FIM<a href="fim-calculation.html#purchases-fim" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In the national accounts data, the BEA allocates federal grants to state and local governments to the “state purchases” data series. We want to more accurately allocate this spending to the level of government that actually financed the purchases. Therefore, when we calculate the FIM for purchases, we need to reassign some spending by state and local governments to its actual source - the federal government.</p>
+<p>A common distinction in the FIM lexicon is “NIPA consistent purchases” and “FIM consistent purchases.” “NIPA purchases” describes purchases as they are allocated by BEA. FIM purchases reflect our version of purchases, with consumption and investment grants to states reassigned to the federal government.</p>
+<p>Above, we calculated our data for FIM state purchases - NIPA state purchases minus consumption and investment grants. We calculate the FIM for “FIM consistent state purchases” in the section below. <code>fim_state_purchases_test()</code> is our data input, reflecting state purchases without the purchases funded by the federal government.</p>
+<p>To get the FIM for “FIM consistent federal purchases” we first calculate the FIM for total NIPA purchases. Then we subtract out the FIM for “FIM consistent state purchases.” The result is the FIM for “FIM consistent federal purchases.”</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="fim-calculation.html#cb27-1" tabindex="-1"></a><span class="co"># Federal Purchases Contribution (NIPA Consistent)</span></span>
+<span id="cb27-2"><a href="fim-calculation.html#cb27-2" tabindex="-1"></a>nipa_federal_purchases_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_purchases</span>(</span>
+<span id="cb27-3"><a href="fim-calculation.html#cb27-3" tabindex="-1"></a>  <span class="at">x =</span> federal_purchases_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-4"><a href="fim-calculation.html#cb27-4" tabindex="-1"></a>  <span class="at">dg =</span> federal_purchases_deflator_growth_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-5"><a href="fim-calculation.html#cb27-5" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_annualized_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-6"><a href="fim-calculation.html#cb27-6" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series <span class="co"># Using the new test version</span></span>
+<span id="cb27-7"><a href="fim-calculation.html#cb27-7" tabindex="-1"></a>)</span>
+<span id="cb27-8"><a href="fim-calculation.html#cb27-8" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="fim-calculation.html#cb27-9" tabindex="-1"></a><span class="co"># State Purchases Contribution (NIPA Consistent)</span></span>
+<span id="cb27-10"><a href="fim-calculation.html#cb27-10" tabindex="-1"></a>nipa_state_purchases_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_purchases</span>(</span>
+<span id="cb27-11"><a href="fim-calculation.html#cb27-11" tabindex="-1"></a>  <span class="at">x =</span> state_purchases_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-12"><a href="fim-calculation.html#cb27-12" tabindex="-1"></a>  <span class="at">dg =</span> state_purchases_deflator_growth_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-13"><a href="fim-calculation.html#cb27-13" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_annualized_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-14"><a href="fim-calculation.html#cb27-14" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series <span class="co"># Using the new test version</span></span>
+<span id="cb27-15"><a href="fim-calculation.html#cb27-15" tabindex="-1"></a>) </span>
+<span id="cb27-16"><a href="fim-calculation.html#cb27-16" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="fim-calculation.html#cb27-17" tabindex="-1"></a><span class="co"># Total NIPA Purchases Contribution (NIPA Consistent)</span></span>
+<span id="cb27-18"><a href="fim-calculation.html#cb27-18" tabindex="-1"></a>nipa_total_purchases_contribution <span class="ot">&lt;-</span> nipa_state_purchases_contribution <span class="sc">+</span> </span>
+<span id="cb27-19"><a href="fim-calculation.html#cb27-19" tabindex="-1"></a>  nipa_federal_purchases_contribution</span>
+<span id="cb27-20"><a href="fim-calculation.html#cb27-20" tabindex="-1"></a></span>
+<span id="cb27-21"><a href="fim-calculation.html#cb27-21" tabindex="-1"></a><span class="co"># State Purchases Contribution (FIM Consistent)</span></span>
+<span id="cb27-22"><a href="fim-calculation.html#cb27-22" tabindex="-1"></a>fim_state_purchases_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_purchases</span>(</span>
+<span id="cb27-23"><a href="fim-calculation.html#cb27-23" tabindex="-1"></a>  <span class="at">x =</span> fim_state_purchases_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-24"><a href="fim-calculation.html#cb27-24" tabindex="-1"></a>  <span class="at">dg =</span> state_purchases_deflator_growth_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-25"><a href="fim-calculation.html#cb27-25" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_annualized_test<span class="sc">$</span>data_series, <span class="co"># Using the new test version</span></span>
+<span id="cb27-26"><a href="fim-calculation.html#cb27-26" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series <span class="co"># Using the new test version</span></span>
+<span id="cb27-27"><a href="fim-calculation.html#cb27-27" tabindex="-1"></a>) </span>
+<span id="cb27-28"><a href="fim-calculation.html#cb27-28" tabindex="-1"></a></span>
+<span id="cb27-29"><a href="fim-calculation.html#cb27-29" tabindex="-1"></a><span class="co"># Federal Purchases Contribution (FIM Consistent)</span></span>
+<span id="cb27-30"><a href="fim-calculation.html#cb27-30" tabindex="-1"></a>fim_federal_purchases_contribution <span class="ot">&lt;-</span> nipa_total_purchases_contribution <span class="sc">-</span> </span>
+<span id="cb27-31"><a href="fim-calculation.html#cb27-31" tabindex="-1"></a>  fim_state_purchases_contribution </span></code></pre></div>
+<p>We use the <code>contribution_purchases()</code> wrapper function to execute all of our steps at once. It’s important to keep track of which growth rates are annualized and which are not. I’d recommend reviewing our FIM math document as well as the <code>contributions.R</code> helper script if you are confused by any parts of the FIM calculation.</p>
+</div>
+<div id="net-transfers-fim" class="section level3 hasAnchor" number="4.4.2">
+<h3><span class="header-section-number">4.4.2</span> Net Transfers FIM<a href="fim-calculation.html#net-transfers-fim" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Next, we calculate the FIM for net transfers by simply applying our <code>contribution_transfers()</code> wrapper function. Our data input is <code>taxes_transfers_test$data_series</code>, the sum of our post-MPC taxes and transfers.</p>
+<p>We also estimate the FIM for each specific tax or transfer program. Instead of plugging in the sum of our post-mpc taxes and transfers, we plug in the post-mpc data for an individual policy - <code>post_mpc_federal_subsidies</code>, for example. By doing this, we’re looking at the difference between the actual growth in consumption (which includes the actual impulse from that specific policy) and counterfactual consumption (which instead includes our constructed policy impulse - last quarter grown at potential). The result is an estimation of the contribution of that specific policy to the overall FIM. This is exactly the same math as what we apply to the net transfers sum. If we add each of these contributions, we will get close to our result using <code>taxes_transfers_test$data_series</code> as an input. Small differences arise because in <em>version 1</em>, we sum the net transfers data, calculate the FIM, and then annualize, whereas in version 2, we calculate the FIM, annualize, and then sum the components.</p>
+<p>Below, we calculate the contribution for the net transfers sum as well as the individual components.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="fim-calculation.html#cb28-1" tabindex="-1"></a><span class="co"># Net Transfers</span></span>
+<span id="cb28-2"><a href="fim-calculation.html#cb28-2" tabindex="-1"></a>consumption_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-3"><a href="fim-calculation.html#cb28-3" tabindex="-1"></a>  <span class="at">x =</span> taxes_transfers_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-4"><a href="fim-calculation.html#cb28-4" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-5"><a href="fim-calculation.html#cb28-5" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-6"><a href="fim-calculation.html#cb28-6" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-7"><a href="fim-calculation.html#cb28-7" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-8"><a href="fim-calculation.html#cb28-8" tabindex="-1"></a>)</span>
+<span id="cb28-9"><a href="fim-calculation.html#cb28-9" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="fim-calculation.html#cb28-10" tabindex="-1"></a><span class="co"># Taxes Contribution </span></span>
+<span id="cb28-11"><a href="fim-calculation.html#cb28-11" tabindex="-1"></a>taxes_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-12"><a href="fim-calculation.html#cb28-12" tabindex="-1"></a>  <span class="at">x =</span> taxes_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-13"><a href="fim-calculation.html#cb28-13" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-14"><a href="fim-calculation.html#cb28-14" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-15"><a href="fim-calculation.html#cb28-15" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-16"><a href="fim-calculation.html#cb28-16" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-17"><a href="fim-calculation.html#cb28-17" tabindex="-1"></a>)</span>
+<span id="cb28-18"><a href="fim-calculation.html#cb28-18" tabindex="-1"></a></span>
+<span id="cb28-19"><a href="fim-calculation.html#cb28-19" tabindex="-1"></a><span class="co"># Transfers Contribution </span></span>
+<span id="cb28-20"><a href="fim-calculation.html#cb28-20" tabindex="-1"></a>transfers_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-21"><a href="fim-calculation.html#cb28-21" tabindex="-1"></a>  <span class="at">x =</span> transfers_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-22"><a href="fim-calculation.html#cb28-22" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-23"><a href="fim-calculation.html#cb28-23" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-24"><a href="fim-calculation.html#cb28-24" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-25"><a href="fim-calculation.html#cb28-25" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-26"><a href="fim-calculation.html#cb28-26" tabindex="-1"></a>)</span>
+<span id="cb28-27"><a href="fim-calculation.html#cb28-27" tabindex="-1"></a></span>
+<span id="cb28-28"><a href="fim-calculation.html#cb28-28" tabindex="-1"></a><span class="co"># Federal Non-Corporate Taxes </span></span>
+<span id="cb28-29"><a href="fim-calculation.html#cb28-29" tabindex="-1"></a>federal_non_corporate_taxes_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-30"><a href="fim-calculation.html#cb28-30" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_non_corporate_taxes,</span>
+<span id="cb28-31"><a href="fim-calculation.html#cb28-31" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-32"><a href="fim-calculation.html#cb28-32" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-33"><a href="fim-calculation.html#cb28-33" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-34"><a href="fim-calculation.html#cb28-34" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-35"><a href="fim-calculation.html#cb28-35" tabindex="-1"></a>)</span>
+<span id="cb28-36"><a href="fim-calculation.html#cb28-36" tabindex="-1"></a></span>
+<span id="cb28-37"><a href="fim-calculation.html#cb28-37" tabindex="-1"></a><span class="co"># State Non-Corporate Taxes</span></span>
+<span id="cb28-38"><a href="fim-calculation.html#cb28-38" tabindex="-1"></a>state_non_corporate_taxes_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-39"><a href="fim-calculation.html#cb28-39" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_state_non_corporate_taxes,</span>
+<span id="cb28-40"><a href="fim-calculation.html#cb28-40" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-41"><a href="fim-calculation.html#cb28-41" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-42"><a href="fim-calculation.html#cb28-42" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-43"><a href="fim-calculation.html#cb28-43" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-44"><a href="fim-calculation.html#cb28-44" tabindex="-1"></a>)</span>
+<span id="cb28-45"><a href="fim-calculation.html#cb28-45" tabindex="-1"></a></span>
+<span id="cb28-46"><a href="fim-calculation.html#cb28-46" tabindex="-1"></a><span class="co"># Federal Corporate Taxes</span></span>
+<span id="cb28-47"><a href="fim-calculation.html#cb28-47" tabindex="-1"></a>federal_corporate_taxes_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-48"><a href="fim-calculation.html#cb28-48" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_corporate_taxes,</span>
+<span id="cb28-49"><a href="fim-calculation.html#cb28-49" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-50"><a href="fim-calculation.html#cb28-50" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-51"><a href="fim-calculation.html#cb28-51" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-52"><a href="fim-calculation.html#cb28-52" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-53"><a href="fim-calculation.html#cb28-53" tabindex="-1"></a>)</span>
+<span id="cb28-54"><a href="fim-calculation.html#cb28-54" tabindex="-1"></a></span>
+<span id="cb28-55"><a href="fim-calculation.html#cb28-55" tabindex="-1"></a><span class="co"># Supply Side IRA </span></span>
+<span id="cb28-56"><a href="fim-calculation.html#cb28-56" tabindex="-1"></a>supply_side_ira_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-57"><a href="fim-calculation.html#cb28-57" tabindex="-1"></a>  <span class="at">x =</span> supply_side_ira_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-58"><a href="fim-calculation.html#cb28-58" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-59"><a href="fim-calculation.html#cb28-59" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-60"><a href="fim-calculation.html#cb28-60" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-61"><a href="fim-calculation.html#cb28-61" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-62"><a href="fim-calculation.html#cb28-62" tabindex="-1"></a>)</span>
+<span id="cb28-63"><a href="fim-calculation.html#cb28-63" tabindex="-1"></a></span>
+<span id="cb28-64"><a href="fim-calculation.html#cb28-64" tabindex="-1"></a><span class="co"># State Corporate Taxes</span></span>
+<span id="cb28-65"><a href="fim-calculation.html#cb28-65" tabindex="-1"></a>state_corporate_taxes_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-66"><a href="fim-calculation.html#cb28-66" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_state_corporate_taxes,</span>
+<span id="cb28-67"><a href="fim-calculation.html#cb28-67" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-68"><a href="fim-calculation.html#cb28-68" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-69"><a href="fim-calculation.html#cb28-69" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-70"><a href="fim-calculation.html#cb28-70" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-71"><a href="fim-calculation.html#cb28-71" tabindex="-1"></a>)</span>
+<span id="cb28-72"><a href="fim-calculation.html#cb28-72" tabindex="-1"></a></span>
+<span id="cb28-73"><a href="fim-calculation.html#cb28-73" tabindex="-1"></a><span class="co"># Federal Social Benefits Contribution </span></span>
+<span id="cb28-74"><a href="fim-calculation.html#cb28-74" tabindex="-1"></a>federal_social_benefits_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-75"><a href="fim-calculation.html#cb28-75" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_social_benefits,</span>
+<span id="cb28-76"><a href="fim-calculation.html#cb28-76" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-77"><a href="fim-calculation.html#cb28-77" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-78"><a href="fim-calculation.html#cb28-78" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-79"><a href="fim-calculation.html#cb28-79" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-80"><a href="fim-calculation.html#cb28-80" tabindex="-1"></a>)</span>
+<span id="cb28-81"><a href="fim-calculation.html#cb28-81" tabindex="-1"></a></span>
+<span id="cb28-82"><a href="fim-calculation.html#cb28-82" tabindex="-1"></a><span class="co"># State Social Benefits </span></span>
+<span id="cb28-83"><a href="fim-calculation.html#cb28-83" tabindex="-1"></a>state_social_benefits_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-84"><a href="fim-calculation.html#cb28-84" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_state_social_benefits,</span>
+<span id="cb28-85"><a href="fim-calculation.html#cb28-85" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-86"><a href="fim-calculation.html#cb28-86" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-87"><a href="fim-calculation.html#cb28-87" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-88"><a href="fim-calculation.html#cb28-88" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-89"><a href="fim-calculation.html#cb28-89" tabindex="-1"></a>)</span>
+<span id="cb28-90"><a href="fim-calculation.html#cb28-90" tabindex="-1"></a></span>
+<span id="cb28-91"><a href="fim-calculation.html#cb28-91" tabindex="-1"></a><span class="co"># Rebate Checks</span></span>
+<span id="cb28-92"><a href="fim-calculation.html#cb28-92" tabindex="-1"></a>rebate_checks_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-93"><a href="fim-calculation.html#cb28-93" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_rebate_checks,</span>
+<span id="cb28-94"><a href="fim-calculation.html#cb28-94" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-95"><a href="fim-calculation.html#cb28-95" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-96"><a href="fim-calculation.html#cb28-96" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-97"><a href="fim-calculation.html#cb28-97" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-98"><a href="fim-calculation.html#cb28-98" tabindex="-1"></a>)</span>
+<span id="cb28-99"><a href="fim-calculation.html#cb28-99" tabindex="-1"></a></span>
+<span id="cb28-100"><a href="fim-calculation.html#cb28-100" tabindex="-1"></a><span class="co"># Rebate Checks ARP </span></span>
+<span id="cb28-101"><a href="fim-calculation.html#cb28-101" tabindex="-1"></a>rebate_checks_arp_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-102"><a href="fim-calculation.html#cb28-102" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_rebate_checks_arp,</span>
+<span id="cb28-103"><a href="fim-calculation.html#cb28-103" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-104"><a href="fim-calculation.html#cb28-104" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-105"><a href="fim-calculation.html#cb28-105" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-106"><a href="fim-calculation.html#cb28-106" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-107"><a href="fim-calculation.html#cb28-107" tabindex="-1"></a>)</span>
+<span id="cb28-108"><a href="fim-calculation.html#cb28-108" tabindex="-1"></a></span>
+<span id="cb28-109"><a href="fim-calculation.html#cb28-109" tabindex="-1"></a><span class="co"># Federal UI </span></span>
+<span id="cb28-110"><a href="fim-calculation.html#cb28-110" tabindex="-1"></a>federal_ui_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-111"><a href="fim-calculation.html#cb28-111" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_ui,</span>
+<span id="cb28-112"><a href="fim-calculation.html#cb28-112" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-113"><a href="fim-calculation.html#cb28-113" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-114"><a href="fim-calculation.html#cb28-114" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-115"><a href="fim-calculation.html#cb28-115" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-116"><a href="fim-calculation.html#cb28-116" tabindex="-1"></a>)</span>
+<span id="cb28-117"><a href="fim-calculation.html#cb28-117" tabindex="-1"></a></span>
+<span id="cb28-118"><a href="fim-calculation.html#cb28-118" tabindex="-1"></a><span class="co"># State UI</span></span>
+<span id="cb28-119"><a href="fim-calculation.html#cb28-119" tabindex="-1"></a>state_ui_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-120"><a href="fim-calculation.html#cb28-120" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_state_ui,</span>
+<span id="cb28-121"><a href="fim-calculation.html#cb28-121" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-122"><a href="fim-calculation.html#cb28-122" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-123"><a href="fim-calculation.html#cb28-123" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-124"><a href="fim-calculation.html#cb28-124" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-125"><a href="fim-calculation.html#cb28-125" tabindex="-1"></a>)</span>
+<span id="cb28-126"><a href="fim-calculation.html#cb28-126" tabindex="-1"></a></span>
+<span id="cb28-127"><a href="fim-calculation.html#cb28-127" tabindex="-1"></a><span class="co"># Federal Subsidies Contribution </span></span>
+<span id="cb28-128"><a href="fim-calculation.html#cb28-128" tabindex="-1"></a>federal_subsidies_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-129"><a href="fim-calculation.html#cb28-129" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_subsidies,</span>
+<span id="cb28-130"><a href="fim-calculation.html#cb28-130" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-131"><a href="fim-calculation.html#cb28-131" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-132"><a href="fim-calculation.html#cb28-132" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-133"><a href="fim-calculation.html#cb28-133" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-134"><a href="fim-calculation.html#cb28-134" tabindex="-1"></a>)</span>
+<span id="cb28-135"><a href="fim-calculation.html#cb28-135" tabindex="-1"></a></span>
+<span id="cb28-136"><a href="fim-calculation.html#cb28-136" tabindex="-1"></a><span class="co"># Federal Aid to Small Businesses ARP </span></span>
+<span id="cb28-137"><a href="fim-calculation.html#cb28-137" tabindex="-1"></a>federal_aid_to_small_businesses_arp_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-138"><a href="fim-calculation.html#cb28-138" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_aid_to_small_businesses_arp,</span>
+<span id="cb28-139"><a href="fim-calculation.html#cb28-139" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-140"><a href="fim-calculation.html#cb28-140" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-141"><a href="fim-calculation.html#cb28-141" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-142"><a href="fim-calculation.html#cb28-142" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-143"><a href="fim-calculation.html#cb28-143" tabindex="-1"></a>)</span>
+<span id="cb28-144"><a href="fim-calculation.html#cb28-144" tabindex="-1"></a></span>
+<span id="cb28-145"><a href="fim-calculation.html#cb28-145" tabindex="-1"></a><span class="co"># Federal Other Direct Aid ARP </span></span>
+<span id="cb28-146"><a href="fim-calculation.html#cb28-146" tabindex="-1"></a>federal_other_direct_aid_arp_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-147"><a href="fim-calculation.html#cb28-147" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_other_direct_aid_arp,</span>
+<span id="cb28-148"><a href="fim-calculation.html#cb28-148" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-149"><a href="fim-calculation.html#cb28-149" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-150"><a href="fim-calculation.html#cb28-150" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-151"><a href="fim-calculation.html#cb28-151" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-152"><a href="fim-calculation.html#cb28-152" tabindex="-1"></a>)</span>
+<span id="cb28-153"><a href="fim-calculation.html#cb28-153" tabindex="-1"></a></span>
+<span id="cb28-154"><a href="fim-calculation.html#cb28-154" tabindex="-1"></a><span class="co"># Federal Other Vulnerable ARP</span></span>
+<span id="cb28-155"><a href="fim-calculation.html#cb28-155" tabindex="-1"></a>federal_other_vulnerable_arp_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-156"><a href="fim-calculation.html#cb28-156" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_other_vulnerable_arp,</span>
+<span id="cb28-157"><a href="fim-calculation.html#cb28-157" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-158"><a href="fim-calculation.html#cb28-158" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-159"><a href="fim-calculation.html#cb28-159" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-160"><a href="fim-calculation.html#cb28-160" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-161"><a href="fim-calculation.html#cb28-161" tabindex="-1"></a>)</span>
+<span id="cb28-162"><a href="fim-calculation.html#cb28-162" tabindex="-1"></a></span>
+<span id="cb28-163"><a href="fim-calculation.html#cb28-163" tabindex="-1"></a><span class="co"># Federal Student Loans </span></span>
+<span id="cb28-164"><a href="fim-calculation.html#cb28-164" tabindex="-1"></a>federal_student_loans_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-165"><a href="fim-calculation.html#cb28-165" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_student_loans,</span>
+<span id="cb28-166"><a href="fim-calculation.html#cb28-166" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-167"><a href="fim-calculation.html#cb28-167" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-168"><a href="fim-calculation.html#cb28-168" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-169"><a href="fim-calculation.html#cb28-169" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-170"><a href="fim-calculation.html#cb28-170" tabindex="-1"></a>)</span>
+<span id="cb28-171"><a href="fim-calculation.html#cb28-171" tabindex="-1"></a></span>
+<span id="cb28-172"><a href="fim-calculation.html#cb28-172" tabindex="-1"></a><span class="co"># State Subsidies Contribution </span></span>
+<span id="cb28-173"><a href="fim-calculation.html#cb28-173" tabindex="-1"></a>state_subsidies_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-174"><a href="fim-calculation.html#cb28-174" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_state_subsidies,</span>
+<span id="cb28-175"><a href="fim-calculation.html#cb28-175" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-176"><a href="fim-calculation.html#cb28-176" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-177"><a href="fim-calculation.html#cb28-177" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-178"><a href="fim-calculation.html#cb28-178" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-179"><a href="fim-calculation.html#cb28-179" tabindex="-1"></a>)</span>
+<span id="cb28-180"><a href="fim-calculation.html#cb28-180" tabindex="-1"></a></span>
+<span id="cb28-181"><a href="fim-calculation.html#cb28-181" tabindex="-1"></a><span class="co"># Federal Health Outlays </span></span>
+<span id="cb28-182"><a href="fim-calculation.html#cb28-182" tabindex="-1"></a>federal_health_outlays_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-183"><a href="fim-calculation.html#cb28-183" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_federal_health_outlays,</span>
+<span id="cb28-184"><a href="fim-calculation.html#cb28-184" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-185"><a href="fim-calculation.html#cb28-185" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-186"><a href="fim-calculation.html#cb28-186" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-187"><a href="fim-calculation.html#cb28-187" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-188"><a href="fim-calculation.html#cb28-188" tabindex="-1"></a>)</span>
+<span id="cb28-189"><a href="fim-calculation.html#cb28-189" tabindex="-1"></a></span>
+<span id="cb28-190"><a href="fim-calculation.html#cb28-190" tabindex="-1"></a><span class="co"># State Health Outlays </span></span>
+<span id="cb28-191"><a href="fim-calculation.html#cb28-191" tabindex="-1"></a>state_health_outlays_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
+<span id="cb28-192"><a href="fim-calculation.html#cb28-192" tabindex="-1"></a>  <span class="at">x =</span> post_mpc_state_health_outlays,</span>
+<span id="cb28-193"><a href="fim-calculation.html#cb28-193" tabindex="-1"></a>  <span class="at">dg =</span> consumption_deflator_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-194"><a href="fim-calculation.html#cb28-194" tabindex="-1"></a>  <span class="at">rpgg =</span> real_potential_gdp_growth_test<span class="sc">$</span>data_series, </span>
+<span id="cb28-195"><a href="fim-calculation.html#cb28-195" tabindex="-1"></a>  <span class="at">c =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb28-196"><a href="fim-calculation.html#cb28-196" tabindex="-1"></a>  <span class="at">gdp =</span> gdp_test<span class="sc">$</span>data_series</span>
+<span id="cb28-197"><a href="fim-calculation.html#cb28-197" tabindex="-1"></a>)</span></code></pre></div>
+<p>In this next chunk of code, we calculate the overall FIM, which is the sum of our contributions. We also calculate the four-quarter moving average.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="fim-calculation.html#cb29-1" tabindex="-1"></a><span class="co"># Rename Purchases to fit our results naming convention </span></span>
+<span id="cb29-2"><a href="fim-calculation.html#cb29-2" tabindex="-1"></a>federal_contribution <span class="ot">&lt;-</span> fim_federal_purchases_contribution</span>
+<span id="cb29-3"><a href="fim-calculation.html#cb29-3" tabindex="-1"></a>state_contribution <span class="ot">&lt;-</span> fim_state_purchases_contribution</span>
+<span id="cb29-4"><a href="fim-calculation.html#cb29-4" tabindex="-1"></a>federal_purchases_contribution <span class="ot">&lt;-</span> nipa_federal_purchases_contribution</span>
+<span id="cb29-5"><a href="fim-calculation.html#cb29-5" tabindex="-1"></a>state_purchases_contribution <span class="ot">&lt;-</span> nipa_state_purchases_contribution </span>
+<span id="cb29-6"><a href="fim-calculation.html#cb29-6" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="fim-calculation.html#cb29-7" tabindex="-1"></a><span class="co"># Sum the Components to create the total FIM </span></span>
+<span id="cb29-8"><a href="fim-calculation.html#cb29-8" tabindex="-1"></a>fiscal_impact_measure <span class="ot">&lt;-</span></span>
+<span id="cb29-9"><a href="fim-calculation.html#cb29-9" tabindex="-1"></a>  (federal_contribution <span class="sc">+</span></span>
+<span id="cb29-10"><a href="fim-calculation.html#cb29-10" tabindex="-1"></a>     state_contribution <span class="sc">+</span></span>
+<span id="cb29-11"><a href="fim-calculation.html#cb29-11" tabindex="-1"></a>     consumption_contribution) </span>
+<span id="cb29-12"><a href="fim-calculation.html#cb29-12" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="fim-calculation.html#cb29-13" tabindex="-1"></a><span class="co"># Replace NAs with Zeros</span></span>
+<span id="cb29-14"><a href="fim-calculation.html#cb29-14" tabindex="-1"></a>fiscal_impact_measure <span class="ot">&lt;-</span> <span class="fu">replace</span>(fiscal_impact_measure, </span>
+<span id="cb29-15"><a href="fim-calculation.html#cb29-15" tabindex="-1"></a>                                 <span class="fu">is.na</span>(fiscal_impact_measure), <span class="dv">0</span>)</span>
+<span id="cb29-16"><a href="fim-calculation.html#cb29-16" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="fim-calculation.html#cb29-17" tabindex="-1"></a><span class="co"># Calculate Four Quarter Moving Average</span></span>
+<span id="cb29-18"><a href="fim-calculation.html#cb29-18" tabindex="-1"></a>fiscal_impact_4q_ma <span class="ot">&lt;-</span> fiscal_impact_measure <span class="sc">%&gt;%</span></span>
+<span id="cb29-19"><a href="fim-calculation.html#cb29-19" tabindex="-1"></a>  <span class="fu">SMA</span>(zoo<span class="sc">::</span><span class="fu">na.locf</span>(., <span class="at">na.rm =</span> F), <span class="at">n=</span><span class="dv">4</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="outputting-results" class="section level2 hasAnchor" number="4.5">
+<h2><span class="header-section-number">4.5</span> Outputting Results<a href="fim-calculation.html#outputting-results" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>If you recall, in some of the first lines of this script, we defined a bunch of empty folders that will store our FIM results. Now it’s time to export our results to those directories.</p>
+<p>There are three main objectives we accomplish in this section:</p>
+<ol style="list-style-type: decimal">
+<li>We store our inputs and outputs as Excel sheets. We often review this data with Louise. We also sometimes need this data in later months when we want to compare our results with a prior publication.</li>
+<li>We generate the materials that are needed to publish the FIM on the Brookings website. This includes a .csv file that populates the interactive graph on the FIM webpage and the pdf document displaying a static image of the FIM that is also available on the website.</li>
+<li>We create the so-called “Manu file”, an R markdown file with nicely formatted graphs and tables. This is the main document that we show Louise when we’re reviewing our results. The “Manu file” uses the previously mentioned Excel sheets to retrieve our results data.</li>
+</ol>
+<p>In the chunk of code below, we create two data frames (inputs and outputs) and then store them in the results folder.</p>
+<p>NOTE: Currently, we store everything in a “beta” version of our results (i.e. <code>results//{month_year}/beta/</code>). This is a hold over from Lorae’s work refactoring Manu’s original FIM code. This should eventually be corrected.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="fim-calculation.html#cb30-1" tabindex="-1"></a><span class="co"># Combine all the inputs into a data frame</span></span>
+<span id="cb30-2"><a href="fim-calculation.html#cb30-2" tabindex="-1"></a>inputs_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb30-3"><a href="fim-calculation.html#cb30-3" tabindex="-1"></a>  date,</span>
+<span id="cb30-4"><a href="fim-calculation.html#cb30-4" tabindex="-1"></a>  id,</span>
+<span id="cb30-5"><a href="fim-calculation.html#cb30-5" tabindex="-1"></a>  recession,</span>
+<span id="cb30-6"><a href="fim-calculation.html#cb30-6" tabindex="-1"></a>  federal_purchases_deflator_growth,</span>
+<span id="cb30-7"><a href="fim-calculation.html#cb30-7" tabindex="-1"></a>  consumption_grants_deflator_growth,</span>
+<span id="cb30-8"><a href="fim-calculation.html#cb30-8" tabindex="-1"></a>  investment_grants_deflator_growth,</span>
+<span id="cb30-9"><a href="fim-calculation.html#cb30-9" tabindex="-1"></a>  state_purchases_deflator_growth,</span>
+<span id="cb30-10"><a href="fim-calculation.html#cb30-10" tabindex="-1"></a>  consumption_deflator_growth,</span>
+<span id="cb30-11"><a href="fim-calculation.html#cb30-11" tabindex="-1"></a>  real_potential_gdp_growth,</span>
+<span id="cb30-12"><a href="fim-calculation.html#cb30-12" tabindex="-1"></a>  gdp,</span>
+<span id="cb30-13"><a href="fim-calculation.html#cb30-13" tabindex="-1"></a>  <span class="at">consumption =</span> consumption_test<span class="sc">$</span>data_series,</span>
+<span id="cb30-14"><a href="fim-calculation.html#cb30-14" tabindex="-1"></a>  federal_purchases,</span>
+<span id="cb30-15"><a href="fim-calculation.html#cb30-15" tabindex="-1"></a>  consumption_grants,</span>
+<span id="cb30-16"><a href="fim-calculation.html#cb30-16" tabindex="-1"></a>  investment_grants,</span>
+<span id="cb30-17"><a href="fim-calculation.html#cb30-17" tabindex="-1"></a>  state_purchases,</span>
+<span id="cb30-18"><a href="fim-calculation.html#cb30-18" tabindex="-1"></a>  federal_non_corporate_taxes,</span>
+<span id="cb30-19"><a href="fim-calculation.html#cb30-19" tabindex="-1"></a>  state_non_corporate_taxes,</span>
+<span id="cb30-20"><a href="fim-calculation.html#cb30-20" tabindex="-1"></a>  federal_corporate_taxes,</span>
+<span id="cb30-21"><a href="fim-calculation.html#cb30-21" tabindex="-1"></a>  supply_side_ira,</span>
+<span id="cb30-22"><a href="fim-calculation.html#cb30-22" tabindex="-1"></a>  state_corporate_taxes,</span>
+<span id="cb30-23"><a href="fim-calculation.html#cb30-23" tabindex="-1"></a>  federal_social_benefits,</span>
+<span id="cb30-24"><a href="fim-calculation.html#cb30-24" tabindex="-1"></a>  state_social_benefits,</span>
+<span id="cb30-25"><a href="fim-calculation.html#cb30-25" tabindex="-1"></a>  rebate_checks,</span>
+<span id="cb30-26"><a href="fim-calculation.html#cb30-26" tabindex="-1"></a>  rebate_checks_arp,</span>
+<span id="cb30-27"><a href="fim-calculation.html#cb30-27" tabindex="-1"></a>  federal_ui,</span>
+<span id="cb30-28"><a href="fim-calculation.html#cb30-28" tabindex="-1"></a>  state_ui,</span>
+<span id="cb30-29"><a href="fim-calculation.html#cb30-29" tabindex="-1"></a>  federal_subsidies,</span>
+<span id="cb30-30"><a href="fim-calculation.html#cb30-30" tabindex="-1"></a>  federal_aid_to_small_businesses_arp,</span>
+<span id="cb30-31"><a href="fim-calculation.html#cb30-31" tabindex="-1"></a>  federal_other_direct_aid_arp,</span>
+<span id="cb30-32"><a href="fim-calculation.html#cb30-32" tabindex="-1"></a>  federal_other_vulnerable_arp,</span>
+<span id="cb30-33"><a href="fim-calculation.html#cb30-33" tabindex="-1"></a>  federal_student_loans,</span>
+<span id="cb30-34"><a href="fim-calculation.html#cb30-34" tabindex="-1"></a>  state_subsidies,</span>
+<span id="cb30-35"><a href="fim-calculation.html#cb30-35" tabindex="-1"></a>  federal_health_outlays,</span>
+<span id="cb30-36"><a href="fim-calculation.html#cb30-36" tabindex="-1"></a>  state_health_outlays,</span>
+<span id="cb30-37"><a href="fim-calculation.html#cb30-37" tabindex="-1"></a>  post_mpc_federal_non_corporate_taxes,</span>
+<span id="cb30-38"><a href="fim-calculation.html#cb30-38" tabindex="-1"></a>  post_mpc_state_non_corporate_taxes,</span>
+<span id="cb30-39"><a href="fim-calculation.html#cb30-39" tabindex="-1"></a>  post_mpc_federal_corporate_taxes,</span>
+<span id="cb30-40"><a href="fim-calculation.html#cb30-40" tabindex="-1"></a>  post_mpc_state_corporate_taxes,</span>
+<span id="cb30-41"><a href="fim-calculation.html#cb30-41" tabindex="-1"></a>  post_mpc_federal_social_benefits,</span>
+<span id="cb30-42"><a href="fim-calculation.html#cb30-42" tabindex="-1"></a>  post_mpc_state_social_benefits, </span>
+<span id="cb30-43"><a href="fim-calculation.html#cb30-43" tabindex="-1"></a>  post_mpc_rebate_checks,</span>
+<span id="cb30-44"><a href="fim-calculation.html#cb30-44" tabindex="-1"></a>  post_mpc_rebate_checks_arp, </span>
+<span id="cb30-45"><a href="fim-calculation.html#cb30-45" tabindex="-1"></a>  post_mpc_federal_ui,</span>
+<span id="cb30-46"><a href="fim-calculation.html#cb30-46" tabindex="-1"></a>  post_mpc_state_ui,</span>
+<span id="cb30-47"><a href="fim-calculation.html#cb30-47" tabindex="-1"></a>  post_mpc_federal_subsidies,</span>
+<span id="cb30-48"><a href="fim-calculation.html#cb30-48" tabindex="-1"></a>  post_mpc_federal_aid_to_small_businesses_arp,</span>
+<span id="cb30-49"><a href="fim-calculation.html#cb30-49" tabindex="-1"></a>  post_mpc_federal_other_vulnerable_arp,</span>
+<span id="cb30-50"><a href="fim-calculation.html#cb30-50" tabindex="-1"></a>  post_mpc_federal_student_loans, </span>
+<span id="cb30-51"><a href="fim-calculation.html#cb30-51" tabindex="-1"></a>  post_mpc_state_subsidies, </span>
+<span id="cb30-52"><a href="fim-calculation.html#cb30-52" tabindex="-1"></a>  post_mpc_federal_health_outlays, </span>
+<span id="cb30-53"><a href="fim-calculation.html#cb30-53" tabindex="-1"></a>  post_mpc_state_health_outlays</span>
+<span id="cb30-54"><a href="fim-calculation.html#cb30-54" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb30-55"><a href="fim-calculation.html#cb30-55" tabindex="-1"></a>  <span class="fu">as_tsibble</span>(<span class="at">index =</span> date)</span>
+<span id="cb30-56"><a href="fim-calculation.html#cb30-56" tabindex="-1"></a></span>
+<span id="cb30-57"><a href="fim-calculation.html#cb30-57" tabindex="-1"></a><span class="co"># Combine all the contributions into a data frame</span></span>
+<span id="cb30-58"><a href="fim-calculation.html#cb30-58" tabindex="-1"></a>contributions_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb30-59"><a href="fim-calculation.html#cb30-59" tabindex="-1"></a>  date,</span>
+<span id="cb30-60"><a href="fim-calculation.html#cb30-60" tabindex="-1"></a>  id,</span>
+<span id="cb30-61"><a href="fim-calculation.html#cb30-61" tabindex="-1"></a>  recession,</span>
+<span id="cb30-62"><a href="fim-calculation.html#cb30-62" tabindex="-1"></a>  federal_purchases_contribution,</span>
+<span id="cb30-63"><a href="fim-calculation.html#cb30-63" tabindex="-1"></a>  state_purchases_contribution, </span>
+<span id="cb30-64"><a href="fim-calculation.html#cb30-64" tabindex="-1"></a>  federal_non_corporate_taxes_contribution, </span>
+<span id="cb30-65"><a href="fim-calculation.html#cb30-65" tabindex="-1"></a>  state_non_corporate_taxes_contribution, </span>
+<span id="cb30-66"><a href="fim-calculation.html#cb30-66" tabindex="-1"></a>  federal_corporate_taxes_contribution, </span>
+<span id="cb30-67"><a href="fim-calculation.html#cb30-67" tabindex="-1"></a>  supply_side_ira_contribution, </span>
+<span id="cb30-68"><a href="fim-calculation.html#cb30-68" tabindex="-1"></a>  state_corporate_taxes_contribution, </span>
+<span id="cb30-69"><a href="fim-calculation.html#cb30-69" tabindex="-1"></a>  federal_social_benefits_contribution, </span>
+<span id="cb30-70"><a href="fim-calculation.html#cb30-70" tabindex="-1"></a>  state_social_benefits_contribution, </span>
+<span id="cb30-71"><a href="fim-calculation.html#cb30-71" tabindex="-1"></a>  rebate_checks_contribution,</span>
+<span id="cb30-72"><a href="fim-calculation.html#cb30-72" tabindex="-1"></a>  rebate_checks_arp_contribution, </span>
+<span id="cb30-73"><a href="fim-calculation.html#cb30-73" tabindex="-1"></a>  federal_ui_contribution, </span>
+<span id="cb30-74"><a href="fim-calculation.html#cb30-74" tabindex="-1"></a>  state_ui_contribution, </span>
+<span id="cb30-75"><a href="fim-calculation.html#cb30-75" tabindex="-1"></a>  federal_subsidies_contribution,</span>
+<span id="cb30-76"><a href="fim-calculation.html#cb30-76" tabindex="-1"></a>  federal_aid_to_small_businesses_arp_contribution, </span>
+<span id="cb30-77"><a href="fim-calculation.html#cb30-77" tabindex="-1"></a>  federal_other_direct_aid_arp_contribution, </span>
+<span id="cb30-78"><a href="fim-calculation.html#cb30-78" tabindex="-1"></a>  federal_other_vulnerable_arp_contribution,</span>
+<span id="cb30-79"><a href="fim-calculation.html#cb30-79" tabindex="-1"></a>  federal_student_loans_contribution, </span>
+<span id="cb30-80"><a href="fim-calculation.html#cb30-80" tabindex="-1"></a>  state_subsidies_contribution,</span>
+<span id="cb30-81"><a href="fim-calculation.html#cb30-81" tabindex="-1"></a>  federal_health_outlays_contribution,</span>
+<span id="cb30-82"><a href="fim-calculation.html#cb30-82" tabindex="-1"></a>  state_health_outlays_contribution,</span>
+<span id="cb30-83"><a href="fim-calculation.html#cb30-83" tabindex="-1"></a>  federal_contribution,</span>
+<span id="cb30-84"><a href="fim-calculation.html#cb30-84" tabindex="-1"></a>  state_contribution,</span>
+<span id="cb30-85"><a href="fim-calculation.html#cb30-85" tabindex="-1"></a>  taxes_contribution, </span>
+<span id="cb30-86"><a href="fim-calculation.html#cb30-86" tabindex="-1"></a>  transfers_contribution, </span>
+<span id="cb30-87"><a href="fim-calculation.html#cb30-87" tabindex="-1"></a>  consumption_contribution, </span>
+<span id="cb30-88"><a href="fim-calculation.html#cb30-88" tabindex="-1"></a>  fiscal_impact_measure,</span>
+<span id="cb30-89"><a href="fim-calculation.html#cb30-89" tabindex="-1"></a>  fiscal_impact_4q_ma</span>
+<span id="cb30-90"><a href="fim-calculation.html#cb30-90" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb30-91"><a href="fim-calculation.html#cb30-91" tabindex="-1"></a>  <span class="fu">as_tsibble</span>(<span class="at">index =</span> date)</span>
+<span id="cb30-92"><a href="fim-calculation.html#cb30-92" tabindex="-1"></a></span>
+<span id="cb30-93"><a href="fim-calculation.html#cb30-93" tabindex="-1"></a><span class="co"># Write the contributions and inputs to an Excel file in results/{month_year}/beta</span></span>
+<span id="cb30-94"><a href="fim-calculation.html#cb30-94" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: This code only works if the beta/ directory already exists. </span></span>
+<span id="cb30-95"><a href="fim-calculation.html#cb30-95" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(contributions_df, <span class="at">file =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/contributions-{month_year}.xlsx&#39;</span>), <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-96"><a href="fim-calculation.html#cb30-96" tabindex="-1"></a>openxlsx<span class="sc">::</span><span class="fu">write.xlsx</span>(inputs_df, <span class="at">file =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/inputs-{month_year}.xlsx&#39;</span>), <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb30-97"><a href="fim-calculation.html#cb30-97" tabindex="-1"></a></span>
+<span id="cb30-98"><a href="fim-calculation.html#cb30-98" tabindex="-1"></a><span class="fu">write_rds</span>(contributions_df, <span class="at">file =</span> <span class="st">&#39;data/contributions.rds&#39;</span>)</span>
+<span id="cb30-99"><a href="fim-calculation.html#cb30-99" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">use_data</span>(contributions_df, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div id="generating-web-materials" class="section level3 hasAnchor" number="4.5.1">
+<h3><span class="header-section-number">4.5.1</span> Generating Web Materials<a href="fim-calculation.html#generating-web-materials" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In this final section, we generate the materials needed to publish our results on the Brookings website. Nasiha’s FIM guide contains detailed instructions on how to update the FIM page.</p>
+<p>First, we generate our ‘interactive’ data frame - the data we use to make the interactive graph on the webpage. WordPress has custom HTML text that is prepared to handle a very specific data set, so it is critical that you DO NOT CHANGE this section.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="fim-calculation.html#cb31-1" tabindex="-1"></a><span class="co"># Generate interactive data frame from contributions</span></span>
+<span id="cb31-2"><a href="fim-calculation.html#cb31-2" tabindex="-1"></a>interactive <span class="ot">&lt;-</span> contributions_df <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a href="fim-calculation.html#cb31-3" tabindex="-1"></a>  <span class="co"># Filter rows of contributions by date, keeping only those between 1999 Q4 and</span></span>
+<span id="cb31-4"><a href="fim-calculation.html#cb31-4" tabindex="-1"></a>  <span class="co"># current quarter + 8</span></span>
+<span id="cb31-5"><a href="fim-calculation.html#cb31-5" tabindex="-1"></a>  <span class="fu">filter_index</span>(<span class="st">&#39;1999 Q4&#39;</span> <span class="sc">~</span> <span class="fu">as.character</span>(current_quarter <span class="sc">+</span> <span class="dv">8</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-6"><a href="fim-calculation.html#cb31-6" tabindex="-1"></a>  <span class="co"># Select only specific columns</span></span>
+<span id="cb31-7"><a href="fim-calculation.html#cb31-7" tabindex="-1"></a>  <span class="fu">select</span>(date, </span>
+<span id="cb31-8"><a href="fim-calculation.html#cb31-8" tabindex="-1"></a>         <span class="at">impact =</span> fiscal_impact_4q_ma,</span>
+<span id="cb31-9"><a href="fim-calculation.html#cb31-9" tabindex="-1"></a>         recession,</span>
+<span id="cb31-10"><a href="fim-calculation.html#cb31-10" tabindex="-1"></a>         <span class="at">total =</span> fiscal_impact_measure,</span>
+<span id="cb31-11"><a href="fim-calculation.html#cb31-11" tabindex="-1"></a>         <span class="at">federal =</span> federal_contribution,</span>
+<span id="cb31-12"><a href="fim-calculation.html#cb31-12" tabindex="-1"></a>         <span class="at">state_local =</span> state_contribution,</span>
+<span id="cb31-13"><a href="fim-calculation.html#cb31-13" tabindex="-1"></a>         <span class="at">consumption =</span> consumption_contribution,</span>
+<span id="cb31-14"><a href="fim-calculation.html#cb31-14" tabindex="-1"></a>         <span class="at">projection =</span> id</span>
+<span id="cb31-15"><a href="fim-calculation.html#cb31-15" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-16"><a href="fim-calculation.html#cb31-16" tabindex="-1"></a>  <span class="co"># Recode `recession` and `projection` variables to 0 and 1 binaries</span></span>
+<span id="cb31-17"><a href="fim-calculation.html#cb31-17" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">recession =</span> <span class="fu">recode</span>(recession, <span class="st">`</span><span class="at">-1</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">0</span>),</span>
+<span id="cb31-18"><a href="fim-calculation.html#cb31-18" tabindex="-1"></a>         <span class="at">recession =</span> <span class="fu">replace_na</span>(recession, <span class="dv">0</span>),</span>
+<span id="cb31-19"><a href="fim-calculation.html#cb31-19" tabindex="-1"></a>         <span class="at">projection =</span> <span class="fu">recode</span>(projection, <span class="at">historical =</span> <span class="dv">0</span>, <span class="at">projection =</span> <span class="dv">1</span>)</span>
+<span id="cb31-20"><a href="fim-calculation.html#cb31-20" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb31-21"><a href="fim-calculation.html#cb31-21" tabindex="-1"></a>  <span class="co"># Split date column into year and quarter columns</span></span>
+<span id="cb31-22"><a href="fim-calculation.html#cb31-22" tabindex="-1"></a>  <span class="fu">separate</span>(date, <span class="fu">c</span>(<span class="st">&#39;year&#39;</span>, <span class="st">&#39;quarter&#39;</span>))</span>
+<span id="cb31-23"><a href="fim-calculation.html#cb31-23" tabindex="-1"></a></span>
+<span id="cb31-24"><a href="fim-calculation.html#cb31-24" tabindex="-1"></a><span class="co"># Write interactive data frame to CSV file</span></span>
+<span id="cb31-25"><a href="fim-calculation.html#cb31-25" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">write_csv</span>(interactive,  <span class="at">file =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/interactive-{month_year}.csv&#39;</span>))</span></code></pre></div>
+<p>Next, we create the static image of the FIM that we upload as a pdf to the website. Note that this section of the code generates an html file. We open this file and save it as a pdf manually.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="fim-calculation.html#cb32-1" tabindex="-1"></a>rmarkdown<span class="sc">::</span><span class="fu">render</span>(<span class="st">&#39;Fiscal-Impact.Rmd&#39;</span>,</span>
+<span id="cb32-2"><a href="fim-calculation.html#cb32-2" tabindex="-1"></a>                  <span class="co"># Render R Markdown document to PDF file</span></span>
+<span id="cb32-3"><a href="fim-calculation.html#cb32-3" tabindex="-1"></a>                  <span class="at">output_file =</span> <span class="st">&#39;Fiscal-Impact.html&#39;</span>,</span>
+<span id="cb32-4"><a href="fim-calculation.html#cb32-4" tabindex="-1"></a>                  <span class="at">clean =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb32-5"><a href="fim-calculation.html#cb32-5" tabindex="-1"></a>                  <span class="at">params =</span> <span class="fu">list</span>(<span class="at">start =</span> <span class="fu">yearquarter</span>(<span class="st">&#39;1999 Q4&#39;</span>), <span class="at">end =</span> current_quarter <span class="sc">+</span> <span class="dv">8</span>))</span>
+<span id="cb32-6"><a href="fim-calculation.html#cb32-6" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="fim-calculation.html#cb32-7" tabindex="-1"></a><span class="co"># Copy FIM/Fiscal-Impact.html graphs to the results/month-year/beta folder</span></span>
+<span id="cb32-8"><a href="fim-calculation.html#cb32-8" tabindex="-1"></a><span class="fu">file_copy</span>(<span class="at">path =</span> <span class="st">&#39;Fiscal-Impact.html&#39;</span>,</span>
+<span id="cb32-9"><a href="fim-calculation.html#cb32-9" tabindex="-1"></a>          <span class="at">new_path =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/Fiscal-Impact-{month_year}.html&#39;</span>),</span>
+<span id="cb32-10"><a href="fim-calculation.html#cb32-10" tabindex="-1"></a>          <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Lastly, we create the previously mentioned “Manu file”.
+TO DO: add documentation on the Manu file once it’s done.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="fim-calculation.html#cb33-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;scripts/index_temp.R&quot;</span>)</span>
+<span id="cb33-2"><a href="fim-calculation.html#cb33-2" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="fim-calculation.html#cb33-3" tabindex="-1"></a>rmarkdown<span class="sc">::</span><span class="fu">render</span>(<span class="at">input =</span> <span class="st">&#39;update-comparison-markdown.Rmd&#39;</span>,</span>
+<span id="cb33-4"><a href="fim-calculation.html#cb33-4" tabindex="-1"></a>                  <span class="at">output_file =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/update-comparison-{month_year}&#39;</span>),</span>
+<span id="cb33-5"><a href="fim-calculation.html#cb33-5" tabindex="-1"></a>                  <span class="at">clean =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="data-cleaning.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="economics-methodology.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

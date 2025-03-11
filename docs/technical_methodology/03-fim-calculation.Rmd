@@ -1,10 +1,10 @@
 ---
 title: "FIM Calculation"
 ---
-
-This is where we go from wrangling our data to actually calculating the FIM. 
+# FIM Calculation 
 
 ## Defining Input Data 
+This is where we go from wrangling our data to actually calculating the FIM. 
 
 This section of the code begins with the following: 
 
@@ -31,7 +31,8 @@ In the helper script, we define several unit functions, which are the specific s
 
 Note that not all input data needs to go through all of the unit functions in order to produce the output. Specifically, the mpc step can be optionally skipped.
 
-**MPC** 
+**MPC Function** 
+
 The first unit function is called `mpc()`: 
 
 ```{r r-chunk-11, eval=FALSE, echo=TRUE}
@@ -70,9 +71,11 @@ We do not apply MPCs to federal purchases, state purchases, investment grants, a
 We apply MPCs when we do believe that the effect of a cash flow on GDP is not immediate. For example, unemployment benefits might be received in quarter 1, but not spent until quarter 2. And some of the initial disbursement might be saved permanently. Thus, MPCs capture the timing effects of taxes and transfers on GDP as well as the fact that these polices may not have a 1:1 effect on output. 
 
 *So what gets an MPC?* 
-In summary, we apply MPCs to all of our taxes and transfers policies except for supply side IRA. We do not apply MPCs to purchases or grants.
 
-**FIM for Purchases**
+In summary, we apply MPCs to all of our taxe and transferpolicies except for supply side IRA. We do not apply MPCs to purchases or grants.
+
+**Purchases FIM Function**
+
 Next, the `contributions.R` helper script defines two unit functions to calculate the FIM for purchases. 
 
 The first function is the following: 
@@ -97,6 +100,7 @@ The function has three inputs:
 `minus_neutral_purchases()` executes the highlighted part of the following equation (from our FIM methodology document):
 
 !["An image of the federal purchases FIM math"](images/minus_neutral_purchases.png)
+
 
 Next, we define our `scale_to_gdp()` function: 
 
@@ -150,20 +154,23 @@ See below:
 t_counterfactual <- function(x,  # Our data series 
                              c, # Personal Consumption Expenditures
                              rpgg, # Real Potential GDP Growth (quarterly)
-                             dg # Deflator Growth (quartelry)
+                             dg # Deflator Growth (quarterly)
 ) {
   
   
-  counterfactual <- c - x + lag(x)*(1+rpgg+dg)
+  counterfactual <- as.numeric(c - x + lag(x)*(1+rpgg+dg))
   return(counterfactual)
 }
 ```
 
 `t_counterfactual()` has several inputs: 
-* `x`, the sum of all of our post-MPC taxes and transfers series 
-* `c`, personal consumption expenditures (from BEA)
-* `rpgg`, real potential GDP growth, at a quarterly rate
-* `dg`, consumption deflator growth, at a quarterly rate. 
+
+- `x`, the sum of all of our post-MPC taxes and transfers series 
+- `c`, personal consumption expenditures (from BEA)
+- `rpgg`, real potential GDP growth, at a quarterly rate
+- `dg`, consumption deflator growth, at a quarterly rate. 
+
+Note: We need to convert our results to a numeric object. Sometimes, instead of using the sum of all of our post-MPC taxes and transfers, we input an individual post-MPC policy data series as `x` (`post-mpc-federal-subsidies`, for example). This is explained the 'Net Transfers FIM Calculation' section. These post-MPC objects are matrices, so we need to convert the result to numeric so it can be further processed by the functions below. 
 
 The function above executes the following part of our FIM math: 
 !["An image of the counterfactual consumption FIM math"](images/t_counterfactual.png)
@@ -171,12 +178,11 @@ The function above executes the following part of our FIM math:
 Our second unit function is `minus_neutral_t()`, the heart of our FIM calculation for transfers!
 
 ```{r r-chunk-16, eval=FALSE, echo=TRUE}
-minus_neutral_t <- function(x, # our data series
-                            c, # consumption
-                            counterfactual # counterfactual consumption
+minus_neutral_t <- function(c, # BEA Consumption
+                            counterfactual # The counterfactual we defined above
 ) {
-  result <- (c/lag(c))^4 - (counterfactual/lag(c))^4 
-  return(result)
+  minus_neutral <- (c/lag(c))^4 - (counterfactual/lag(c))^4 
+  return(minus_neutral)
 }
 ```
 
@@ -188,19 +194,41 @@ Minus neutral is actual growth in consumption minus growth in counterfactual con
 Next, we scale to GDP: 
 
 ```{r r-chunk-17, eval=FALSE, echo=TRUE}
-scale_to_gdp_t <- function(x,
-                           gdp,
-                           c
+scale_to_gdp_t <- function(minus_neutral, # minus_neural, which we defined above
+                           gdp, # GDP
+                           c # Consumption
 ) {
-  output <- result*(lag(c)/lag(gdp))
-  return(output)
+  result <- 100*minus_neutral*(lag(c)/lag(gdp))
+  return(result)
 }
 ```
 
 `scale_to_gdp_t()`executes the portion of our net transfers FIM math highlighted below: 
 !["An image of the counterfactual consumption FIM math"](images/scale_to_gdp_t.png)
 
-Now that we've defined all of our functions, we need to apply them to our data. 
+Lastly, we define a wrapper function called `contribution_transfers()` that bundles the three functions above: 
+```{r r-chunk-18, eval=FALSE, echo=TRUE}
+contribution_transfers <- function(x, # our data
+                                   c, # consumption 
+                                   rpgg, # real potential GDP growth
+                                   dg, # deflator growth
+                                   gdp # gdp 
+                                   ) {
+  
+  # Define Counterfactual
+  counterfactual <- as.numeric(c - x + lag(x) * (1 + rpgg + dg))
+  
+  # Define Minus Neutral
+  minus_neutral <- (c / lag(c))^4 - (counterfactual / lag(c))^4
+  
+  # Scale to GDP
+  output <- 100 * minus_neutral * (lag(c) / lag(gdp))
+  
+  return(output)
+}
+
+```
+
 
 ## Applying Our MPCs
 First, we use the `mpc()` function to apply MPCs to our taxes data. As discussed above, we take our data `x` and an MPC matrix as our inputs.  
@@ -244,14 +272,17 @@ We use the `contribution_purchases()` wrapper function to execute all of our ste
 
 ### Net Transfers FIM 
  
-Next, we calculate the FIM for net transfers by simply applying each of our consumption functions: 
+Next, we calculate the FIM for net transfers by simply applying our `contribution_transfers()` wrapper function. Our data input is `taxes_transfers_test$data_series`, the sum of our post-MPC taxes and transfers. 
+
+We also estimate the FIM for each specific tax or transfer program. Instead of plugging in the sum of our post-mpc taxes and transfers, we plug in the post-mpc data for an individual policy - `post_mpc_federal_subsidies`, for example. By doing this, we're looking at the difference between the actual growth in consumption (which includes the actual impulse from that specific policy) and counterfactual consumption (which instead includes our constructed policy impulse - last quarter grown at potential). The result is an estimation of the contribution of that specific policy to the overall FIM. This is exactly the same math as what we apply to the net transfers sum. If we add each of these contributions, we will get close to our result using `taxes_transfers_test$data_series` as an input. Small differences arise because in *version 1*, we sum the net transfers data, calculate the FIM, and then annualize, whereas in version 2, we calculate the FIM, annualize, and then sum the components.
+
+Below, we calculate the contribution for the net transfers sum as well as the individual components. 
 
 ```{r section-C.5-calculate-net-transfers-FIM, eval=FALSE, echo=TRUE}
 # This code block prints the chunk entitled "section-C.4-calculate-purchases-fim" 
 # from fiscal_impact_BETA.R
 ```
 
-Note: I'm now realizing we just apply the transformations directly in this script rather than using the functions we defined in the helper script. We should fix that but I'm too lazy rn. 
 
 In this next chunk of code, we calculate the overall FIM, which is the sum of our contributions. We also calculate the four-quarter moving average. 
 
@@ -264,16 +295,19 @@ In this next chunk of code, we calculate the overall FIM, which is the sum of ou
 If you recall, in some of the first lines of this script, we defined a bunch of empty folders that will store our FIM results. Now it's time to export our results to those directories. 
 
 There are three main objectives we accomplish in this section: 
-1. We store our inputs and outputs as Excel sheets. We often review this data with Louise. We also sometimes need this data in later months when we want to compare our results with a prior publication. 2. We generate the materials that are needed to publish the FIM on the Brookings website. This includes a .csv file that populates the interactive graph on the FIM webpage and the pdf document displaying a static image of the FIM that is also available on the website. 
+
+1. We store our inputs and outputs as Excel sheets. We often review this data with Louise. We also sometimes need this data in later months when we want to compare our results with a prior publication. 
+2. We generate the materials that are needed to publish the FIM on the Brookings website. This includes a .csv file that populates the interactive graph on the FIM webpage and the pdf document displaying a static image of the FIM that is also available on the website. 
 3. We create the so-called "Manu file", an R markdown file with nicely formatted graphs and tables. This is the main document that we show Louise when we're reviewing our results. The "Manu file" uses the previously mentioned Excel sheets to retrieve our results data.  
 
 In the chunk of code below, we create two data frames (inputs and outputs) and then store them in the results folder. 
 
 NOTE: Currently, we store everything in a "beta" version of our results (i.e. `results//{month_year}/beta/`). This is a hold over from Lorae's work refactoring Manu's original FIM code. This should eventually be corrected.  
 
-```{r section-section-C.6-output-results, eval=FALSE, echo=TRUE}
-# This code block prints the chunk entitled "section-C.4-calculate-purchases-fim" 
-# from fiscal_impact_BETA.R
+```{r section-C.7-output-results, eval=FALSE, echo=TRUE}
+
+# Displays code from C.7 
+
 ```
 
 ### Generating Web Materials 
@@ -282,7 +316,7 @@ In this final section, we generate the materials needed to publish our results o
 
 First, we generate our 'interactive' data frame - the data we use to make the interactive graph on the webpage. WordPress has custom HTML text that is prepared to handle a very specific data set, so it is critical that you DO NOT CHANGE this section.
 
-```{r r-chunk-18, eval=FALSE, echo=TRUE}
+```{r r-chunk-19, eval=FALSE, echo=TRUE}
 # Generate interactive data frame from contributions
 interactive <- contributions_df %>% 
   # Filter rows of contributions by date, keeping only those between 1999 Q4 and
@@ -312,7 +346,7 @@ readr::write_csv(interactive,  file = glue('results/{month_year}/beta/interactiv
 ```
 
 Next, we create the static image of the FIM that we upload as a pdf to the website. Note that this section of the code generates an html file. We open this file and save it as a pdf manually. 
-```{r r-chunk-19, eval=FALSE, echo=TRUE}
+```{r r-chunk-20, eval=FALSE, echo=TRUE}
 rmarkdown::render('Fiscal-Impact.Rmd',
                   # Render R Markdown document to PDF file
                   output_file = 'Fiscal-Impact.html',
@@ -329,7 +363,7 @@ file_copy(path = 'Fiscal-Impact.html',
 Lastly, we create the previously mentioned "Manu file". 
 TO DO: add documentation on the Manu file once it's done. 
 
-```{r r-chunk-20, eval=FALSE, echo=TRUE}
+```{r r-chunk-21, eval=FALSE, echo=TRUE}
 source("scripts/index_temp.R")
 
 rmarkdown::render(input = 'update-comparison-markdown.Rmd',

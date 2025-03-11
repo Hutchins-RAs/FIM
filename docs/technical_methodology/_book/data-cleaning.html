@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 Data Cleaning | Economics Methodology</title>
+  <meta name="description" content="3 Data Cleaning | Economics Methodology" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 Data Cleaning | Economics Methodology" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 Data Cleaning | Economics Methodology" />
+  
+  
+  
+
+<meta name="author" content="Georgia Nabors" />
+
+
+<meta name="date" content="2025-03-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="data-sources-and-data-cleaning.html"/>
+<link rel="next" href="fim-calculation.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Welcome!</a></li>
+<li class="chapter" data-level="2" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html"><i class="fa fa-check"></i><b>2</b> Data Sources and Data Cleaning</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#data-sources"><i class="fa fa-check"></i><b>2.1</b> Data Sources</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#beas-national-accounts-data"><i class="fa fa-check"></i><b>2.1.1</b> BEA’s National Accounts Data</a></li>
+<li class="chapter" data-level="2.1.2" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#forecasts"><i class="fa fa-check"></i><b>2.1.2</b> Forecasts</a></li>
+<li class="chapter" data-level="2.1.3" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#overrides"><i class="fa fa-check"></i><b>2.1.3</b> Overrides</a></li>
+<li class="chapter" data-level="2.1.4" data-path="data-sources-and-data-cleaning.html"><a href="data-sources-and-data-cleaning.html#cbo-projections"><i class="fa fa-check"></i><b>2.1.4</b> CBO Projections</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="data-cleaning.html"><a href="data-cleaning.html"><i class="fa fa-check"></i><b>3</b> Data Cleaning</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="data-cleaning.html"><a href="data-cleaning.html#data-imports"><i class="fa fa-check"></i><b>3.1</b> Data Imports</a></li>
+<li class="chapter" data-level="3.2" data-path="data-cleaning.html"><a href="data-cleaning.html#cleaning-our-fim-data"><i class="fa fa-check"></i><b>3.2</b> Cleaning Our FIM Data</a></li>
+<li class="chapter" data-level="3.3" data-path="data-cleaning.html"><a href="data-cleaning.html#cleaning-accessory-data"><i class="fa fa-check"></i><b>3.3</b> Cleaning Accessory Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="fim-calculation.html"><a href="fim-calculation.html"><i class="fa fa-check"></i><b>4</b> FIM Calculation</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-input-data"><i class="fa fa-check"></i><b>4.1</b> Defining Input Data</a></li>
+<li class="chapter" data-level="4.2" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-the-fim-functions"><i class="fa fa-check"></i><b>4.2</b> Defining the FIM Functions</a></li>
+<li class="chapter" data-level="4.3" data-path="fim-calculation.html"><a href="fim-calculation.html#applying-our-mpcs"><i class="fa fa-check"></i><b>4.3</b> Applying Our MPCs</a></li>
+<li class="chapter" data-level="4.4" data-path="fim-calculation.html"><a href="fim-calculation.html#calculating-the-fim"><i class="fa fa-check"></i><b>4.4</b> Calculating the FIM</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="fim-calculation.html"><a href="fim-calculation.html#purchases-fim"><i class="fa fa-check"></i><b>4.4.1</b> Purchases FIM</a></li>
+<li class="chapter" data-level="4.4.2" data-path="fim-calculation.html"><a href="fim-calculation.html#net-transfers-fim"><i class="fa fa-check"></i><b>4.4.2</b> Net Transfers FIM</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="fim-calculation.html"><a href="fim-calculation.html#outputting-results"><i class="fa fa-check"></i><b>4.5</b> Outputting Results</a>
+<ul>
+<li class="chapter" data-level="4.5.1" data-path="fim-calculation.html"><a href="fim-calculation.html#generating-web-materials"><i class="fa fa-check"></i><b>4.5.1</b> Generating Web Materials</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="economics-methodology.html"><a href="economics-methodology.html"><i class="fa fa-check"></i><b>5</b> Economics Methodology</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="economics-methodology.html"><a href="economics-methodology.html#our-fim-math"><i class="fa fa-check"></i><b>5.1</b> Our FIM Math</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="economics-methodology.html"><a href="economics-methodology.html#fim-for-purchases"><i class="fa fa-check"></i><b>5.1.1</b> FIM for Purchases</a></li>
+<li class="chapter" data-level="5.1.2" data-path="economics-methodology.html"><a href="economics-methodology.html#fim-for-transfers"><i class="fa fa-check"></i><b>5.1.2</b> FIM for Transfers</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="economics-methodology.html"><a href="economics-methodology.html#marginal-propensities-to-consume"><i class="fa fa-check"></i><b>5.2</b> Marginal Propensities to Consume</a>
+<ul>
+<li class="chapter" data-level="5.2.1" data-path="economics-methodology.html"><a href="economics-methodology.html#why-do-we-apply-mpcs"><i class="fa fa-check"></i><b>5.2.1</b> Why do we apply MPCs?</a></li>
+<li class="chapter" data-level="5.2.2" data-path="economics-methodology.html"><a href="economics-methodology.html#how-do-we-apply-mpcs"><i class="fa fa-check"></i><b>5.2.2</b> How do we apply MPCs?</a></li>
+<li class="chapter" data-level="5.2.3" data-path="economics-methodology.html"><a href="economics-methodology.html#our-mpcs"><i class="fa fa-check"></i><b>5.2.3</b> Our MPCS</a></li>
+<li class="chapter" data-level="5.2.4" data-path="economics-methodology.html"><a href="economics-methodology.html#creatingediting-an-mpc-matrix"><i class="fa fa-check"></i><b>5.2.4</b> Creating/Editing an MPC Matrix</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Economics Methodology</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="data-cleaning" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">3</span> Data Cleaning<a href="data-cleaning.html#data-cleaning" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>This section provides a walk through of <code>fiscal_impact_BETA.R</code>, the script that pulls in all of our data, cleans it, and calculates the FIM.<code>fiscal_impact_BETA.R</code> also creates several output files that we need in order to review and publish our results.</p>
+<p>It first loads the packages needed to execute our analysis - <code>lubridate</code>, <code>tidyverse</code>, etc. We access the functions in these packages to wrangle our data, perform calculations, create charts, and produce clean outputs to show Louise.
+By running <code>devtools::load_all()</code>, we load all of the functions from our directory into the current R session, allowing us to access and use the functions written by Manu in the FIM package. Although the code has evolved significantly since Manu’s first rendition, we still rely on some of his original functions to clean our data and calculate the FIM.</p>
+<p>Next, we define several date objects such as <code>current_quarter</code> and <code>last-month-year</code> - these are important for both cleaning our data and properly storing our results. Note that this section is important and should be handled carefully. The objects and functions defined here are critical in other parts of this code.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="data-cleaning.html#cb2-1" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">TZ =</span> <span class="st">&#39;UTC&#39;</span>) <span class="co"># Set the default time zone to UTC (Coordinated Universal Time)</span></span>
+<span id="cb2-2"><a href="data-cleaning.html#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="data-cleaning.html#cb2-3" tabindex="-1"></a><span class="co"># Load packages</span></span>
+<span id="cb2-4"><a href="data-cleaning.html#cb2-4" tabindex="-1"></a>packages <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb2-5"><a href="data-cleaning.html#cb2-5" tabindex="-1"></a>  <span class="st">&quot;tidyverse&quot;</span>, <span class="st">&quot;tsibble&quot;</span>, <span class="st">&quot;lubridate&quot;</span>, <span class="st">&quot;glue&quot;</span>, </span>
+<span id="cb2-6"><a href="data-cleaning.html#cb2-6" tabindex="-1"></a>  <span class="st">&quot;TimTeaFan/dplyover&quot;</span>, <span class="st">&quot;zoo&quot;</span>, <span class="st">&quot;TTR&quot;</span>, <span class="st">&quot;fs&quot;</span>, <span class="st">&quot;gt&quot;</span>, </span>
+<span id="cb2-7"><a href="data-cleaning.html#cb2-7" tabindex="-1"></a>  <span class="st">&quot;openxlsx&quot;</span>, <span class="st">&quot;snakecase&quot;</span>, <span class="st">&quot;rlang&quot;</span>, <span class="st">&quot;BrookingsInstitution/ggbrookings&quot;</span></span>
+<span id="cb2-8"><a href="data-cleaning.html#cb2-8" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="data-cleaning.html#cb2-9" tabindex="-1"></a>librarian<span class="sc">::</span><span class="fu">shelf</span>(packages)</span>
+<span id="cb2-10"><a href="data-cleaning.html#cb2-10" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="data-cleaning.html#cb2-11" tabindex="-1"></a><span class="co"># Load all functions in package</span></span>
+<span id="cb2-12"><a href="data-cleaning.html#cb2-12" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">load_all</span>() </span>
+<span id="cb2-13"><a href="data-cleaning.html#cb2-13" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="data-cleaning.html#cb2-14" tabindex="-1"></a><span class="fu">options</span>(<span class="at">digits =</span> <span class="dv">4</span>) <span class="co"># Limit number of digits</span></span>
+<span id="cb2-15"><a href="data-cleaning.html#cb2-15" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">20</span>)<span class="co"># Turn off scientific notation under 20 digits </span></span>
+<span id="cb2-16"><a href="data-cleaning.html#cb2-16" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="data-cleaning.html#cb2-17" tabindex="-1"></a><span class="co">#are we running this after a cbo baseline and pre-bea update?</span></span>
+<span id="cb2-18"><a href="data-cleaning.html#cb2-18" tabindex="-1"></a>post_cbo_baseline<span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb2-19"><a href="data-cleaning.html#cb2-19" tabindex="-1"></a><span class="co"># Set the value of &#39;month_year&#39; to the current month and year (in the format &quot;mm-yyyy&quot;)</span></span>
+<span id="cb2-20"><a href="data-cleaning.html#cb2-20" tabindex="-1"></a>last_month_year <span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">&#39;{format.Date(today() %m-% months(1), &quot;%m&quot;)}-{year(today() %m-% months(1))}&#39;</span>)</span>
+<span id="cb2-21"><a href="data-cleaning.html#cb2-21" tabindex="-1"></a>month_year <span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">&#39;{format.Date(today() - 7, &quot;%m&quot;)}-{year(today())}&#39;</span>)</span>
+<span id="cb2-22"><a href="data-cleaning.html#cb2-22" tabindex="-1"></a><span class="fu">print</span>(month_year)</span>
+<span id="cb2-23"><a href="data-cleaning.html#cb2-23" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="data-cleaning.html#cb2-24" tabindex="-1"></a><span class="co"># Calculate the current date minus 7 days</span></span>
+<span id="cb2-25"><a href="data-cleaning.html#cb2-25" tabindex="-1"></a>current_date <span class="ot">&lt;-</span> <span class="fu">today</span>() <span class="sc">-</span> <span class="fu">dweeks</span>(<span class="dv">1</span>)</span>
+<span id="cb2-26"><a href="data-cleaning.html#cb2-26" tabindex="-1"></a><span class="co"># Calculate the previous month date, handling wraparound (i.e. previous</span></span>
+<span id="cb2-27"><a href="data-cleaning.html#cb2-27" tabindex="-1"></a><span class="co"># month to January (&quot;01&quot;) is December (&quot;12&quot;), not month &quot;0&quot;)</span></span>
+<span id="cb2-28"><a href="data-cleaning.html#cb2-28" tabindex="-1"></a>last_month_date <span class="ot">&lt;-</span> current_date <span class="sc">%m-%</span> <span class="fu">months</span>(<span class="dv">1</span>)</span>
+<span id="cb2-29"><a href="data-cleaning.html#cb2-29" tabindex="-1"></a><span class="co"># Extract and format the month as a two-digit string</span></span>
+<span id="cb2-30"><a href="data-cleaning.html#cb2-30" tabindex="-1"></a>last_month_2digit <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">&quot;%02d&quot;</span>, <span class="fu">month</span>(last_month_date))</span>
+<span id="cb2-31"><a href="data-cleaning.html#cb2-31" tabindex="-1"></a><span class="co"># Extract the year from the last_month_date</span></span>
+<span id="cb2-32"><a href="data-cleaning.html#cb2-32" tabindex="-1"></a>last_year <span class="ot">&lt;-</span> <span class="fu">year</span>(last_month_date)</span>
+<span id="cb2-33"><a href="data-cleaning.html#cb2-33" tabindex="-1"></a><span class="co"># Create last_month_year string for file naming</span></span>
+<span id="cb2-34"><a href="data-cleaning.html#cb2-34" tabindex="-1"></a>last_month_year <span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">&#39;{last_month_2digit}-{last_year}&#39;</span>)</span></code></pre></div>
+<p>This next section of code defines empty folders that will store our results upon running the FIM. In a later part of this script, we export our inputs and outputs as Excel files to these directories. Here, we also create a copy of the current version of the forecast sheet and save it as <code>results/{month_year}/input_data/forecast_{month_year}.xlsx</code>. It’s important that we preserve the exact version of the forecast sheet used to generate the results given that we often make changes to <code>data/forecast.xlsx</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="data-cleaning.html#cb3-1" tabindex="-1"></a><span class="co">#setting our reference period to be the post-cbo files if we&#39;ve already produced</span></span>
+<span id="cb3-2"><a href="data-cleaning.html#cb3-2" tabindex="-1"></a><span class="co"># fim output incorporating the cbo update</span></span>
+<span id="cb3-3"><a href="data-cleaning.html#cb3-3" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">file.exists</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}-post-cbo&#39;</span>))){</span>
+<span id="cb3-4"><a href="data-cleaning.html#cb3-4" tabindex="-1"></a>  last_month_year<span class="ot">&lt;-</span> <span class="fu">glue</span>(<span class="st">&#39;{month_year}-post-cbo&#39;</span>)</span>
+<span id="cb3-5"><a href="data-cleaning.html#cb3-5" tabindex="-1"></a>}</span>
+<span id="cb3-6"><a href="data-cleaning.html#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="data-cleaning.html#cb3-7" tabindex="-1"></a><span class="co"># Create folder for current update in the results directory</span></span>
+<span id="cb3-8"><a href="data-cleaning.html#cb3-8" tabindex="-1"></a><span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}&#39;</span>)) </span>
+<span id="cb3-9"><a href="data-cleaning.html#cb3-9" tabindex="-1"></a><span class="co"># Folder to store forecast sheet from current update</span></span>
+<span id="cb3-10"><a href="data-cleaning.html#cb3-10" tabindex="-1"></a><span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/input_data&#39;</span>)) </span>
+<span id="cb3-11"><a href="data-cleaning.html#cb3-11" tabindex="-1"></a><span class="co"># Beta folder for Lorae&#39;s refactored results</span></span>
+<span id="cb3-12"><a href="data-cleaning.html#cb3-12" tabindex="-1"></a><span class="fu">dir_create</span>(<span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta&#39;</span>))</span>
+<span id="cb3-13"><a href="data-cleaning.html#cb3-13" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="data-cleaning.html#cb3-14" tabindex="-1"></a><span class="co"># Copy the file &#39;forecast.xlsx&#39; from the &#39;data&#39; directory to the &#39;input_data&#39; directory</span></span>
+<span id="cb3-15"><a href="data-cleaning.html#cb3-15" tabindex="-1"></a><span class="co"># This is the copy we keep for the current update</span></span>
+<span id="cb3-16"><a href="data-cleaning.html#cb3-16" tabindex="-1"></a><span class="fu">file_copy</span>(</span>
+<span id="cb3-17"><a href="data-cleaning.html#cb3-17" tabindex="-1"></a>  <span class="at">path =</span> <span class="st">&#39;data/forecast.xlsx&#39;</span>, </span>
+<span id="cb3-18"><a href="data-cleaning.html#cb3-18" tabindex="-1"></a>  <span class="at">new_path =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/input_data/forecast_{month_year}.xlsx&#39;</span>), </span>
+<span id="cb3-19"><a href="data-cleaning.html#cb3-19" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb3-20"><a href="data-cleaning.html#cb3-20" tabindex="-1"></a>)</span></code></pre></div>
+<div id="data-imports" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Data Imports<a href="data-cleaning.html#data-imports" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This next section of code sources a helper script called <code>src/data_import.R</code>, which defines five crucial functions: <code>import_projections()</code>, <code>import_national_accounts()</code>, <code>import_forecast()</code>, <code>import_historical_overrides()</code>, and <code>import_deflator_overrides()</code>. These functions load our data and store it in memory. For example, the helper script writes <code>import_forecast()</code> to execute the following:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="data-cleaning.html#cb4-1" tabindex="-1"></a>import_forecast <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb4-2"><a href="data-cleaning.html#cb4-2" tabindex="-1"></a>  readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(<span class="st">&#39;data/forecast.xlsx&#39;</span>, <span class="at">sheet =</span> <span class="st">&#39;forecast&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="data-cleaning.html#cb4-3" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>name) <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="data-cleaning.html#cb4-4" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="sc">-</span>variable, <span class="at">names_to =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="data-cleaning.html#cb4-5" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&#39;variable&#39;</span>, <span class="at">values_from =</span> <span class="st">&#39;value&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="data-cleaning.html#cb4-6" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">date =</span> <span class="fu">yearquarter</span>(date)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-7"><a href="data-cleaning.html#cb4-7" tabindex="-1"></a>    <span class="fu">as_tsibble</span>(<span class="at">index =</span> date)</span>
+<span id="cb4-8"><a href="data-cleaning.html#cb4-8" tabindex="-1"></a>}</span></code></pre></div>
+<p>In the block of code above, we import our forecast sheet and perform some basic cleaning. The NIPAs, CBO projections, and historical overrides are read and processed similarly.</p>
+<p><code>src/data_import.R</code> also defines a function called <code>create_placeholder_nas()</code>, which generates an empty data frame populated by NAs that will eventually store our data. The data frame’s length is 259, enough rows to store inputs from 1970 Q1 to 2034 Q3.</p>
+<p>After sourcing the helper script, we execute the functions and load our data, creating five data frames: <code>projections</code>, <code>forecast</code>, <code>historical_overrides</code>, <code>deflator_overrides</code>, and <code>national_accounts</code>. These five data sources, discussed more extensively below, contain everything we need to calculate the FIM.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="data-cleaning.html#cb5-1" tabindex="-1"></a><span class="co"># Source the module in the src directory containing the functions which import</span></span>
+<span id="cb5-2"><a href="data-cleaning.html#cb5-2" tabindex="-1"></a><span class="co"># data</span></span>
+<span id="cb5-3"><a href="data-cleaning.html#cb5-3" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/data_import.R&quot;</span>)</span>
+<span id="cb5-4"><a href="data-cleaning.html#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="data-cleaning.html#cb5-5" tabindex="-1"></a><span class="do">## Read in data sources to be combined</span></span>
+<span id="cb5-6"><a href="data-cleaning.html#cb5-6" tabindex="-1"></a>projections <span class="ot">&lt;-</span> <span class="fu">import_projections</span>()</span>
+<span id="cb5-7"><a href="data-cleaning.html#cb5-7" tabindex="-1"></a>national_accounts <span class="ot">&lt;-</span> <span class="fu">import_national_accounts</span>()</span>
+<span id="cb5-8"><a href="data-cleaning.html#cb5-8" tabindex="-1"></a>forecast <span class="ot">&lt;-</span> <span class="fu">import_forecast</span>()</span>
+<span id="cb5-9"><a href="data-cleaning.html#cb5-9" tabindex="-1"></a>historical_overrides <span class="ot">&lt;-</span> <span class="fu">import_historical_overrides</span>()</span>
+<span id="cb5-10"><a href="data-cleaning.html#cb5-10" tabindex="-1"></a>deflator_overrides <span class="ot">&lt;-</span> <span class="fu">import_deflator_overrides</span>()</span>
+<span id="cb5-11"><a href="data-cleaning.html#cb5-11" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="data-cleaning.html#cb5-12" tabindex="-1"></a><span class="do">## Calculate what the current quarter is using the date from historical overrides</span></span>
+<span id="cb5-13"><a href="data-cleaning.html#cb5-13" tabindex="-1"></a>current_quarter <span class="ot">&lt;-</span> historical_overrides <span class="sc">%&gt;%</span> <span class="fu">slice_max</span>(date) <span class="sc">%&gt;%</span> <span class="fu">pull</span>(date)</span></code></pre></div>
+</div>
+<div id="cleaning-our-fim-data" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Cleaning Our FIM Data<a href="data-cleaning.html#cleaning-our-fim-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In this section of code, we prepare our data inputs. We create 23 data frames with two columns: (1) the date and (2) a data series for one of our FIM variables.</p>
+<p>The 23 primary FIM inputs are as follows:</p>
+<ul>
+<li>Federal Purchases</li>
+<li>Consumption Grants</li>
+<li>Investment Grants</li>
+<li>State Purchases</li>
+<li>Federal Non-Corporate Taxes</li>
+<li>State Non-Corporate Taxes</li>
+<li>Federal Corporate Taxes</li>
+<li>Supply Side IRA<br />
+</li>
+<li>State Corporate Taxes<br />
+</li>
+<li>Federal Social Benefits<br />
+</li>
+<li>State Social Benefits<br />
+</li>
+<li>Rebate Checks<br />
+</li>
+<li>Rebate Checks ARP<br />
+</li>
+<li>Federal UI<br />
+</li>
+<li>State UI<br />
+</li>
+<li>Federal Subsidies<br />
+</li>
+<li>Federal Aid to Small Businesses ARP<br />
+</li>
+<li>Federal Other Direct Aid ARP<br />
+</li>
+<li>Federal Other Vulnerable ARP<br />
+</li>
+<li>Federal Student Loans<br />
+</li>
+<li>State Subsidies</li>
+<li>Federal Health Outlays</li>
+<li>State Health Outlays</li>
+</ul>
+<p>We first source a helper script called <code>src/data_cleaning.R</code>, which writes the functions that create the two-column data frames mentioned above. The helper script defines a separate function for each input, calling the appropriate data from <code>national_accounts</code>, <code>forecast</code>, and our overrides data if necessary.</p>
+<p>For example, the helper script defines <code>create_federal_purchases()</code> as the following:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="data-cleaning.html#cb6-1" tabindex="-1"></a>create_federal_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb6-2"><a href="data-cleaning.html#cb6-2" tabindex="-1"></a>    national_accounts, </span>
+<span id="cb6-3"><a href="data-cleaning.html#cb6-3" tabindex="-1"></a>    forecast, </span>
+<span id="cb6-4"><a href="data-cleaning.html#cb6-4" tabindex="-1"></a>    placeholder_nas</span>
+<span id="cb6-5"><a href="data-cleaning.html#cb6-5" tabindex="-1"></a>) {</span>
+<span id="cb6-6"><a href="data-cleaning.html#cb6-6" tabindex="-1"></a>  <span class="co"># Select column of interest from the forecast tibble</span></span>
+<span id="cb6-7"><a href="data-cleaning.html#cb6-7" tabindex="-1"></a>  forecast <span class="ot">&lt;-</span> forecast <span class="sc">%&gt;%</span> </span>
+<span id="cb6-8"><a href="data-cleaning.html#cb6-8" tabindex="-1"></a>    <span class="fu">select</span>(date, federal_purchases) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-9"><a href="data-cleaning.html#cb6-9" tabindex="-1"></a>    <span class="co"># Rename to generic `data_series` for easier merging</span></span>
+<span id="cb6-10"><a href="data-cleaning.html#cb6-10" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> federal_purchases)</span>
+<span id="cb6-11"><a href="data-cleaning.html#cb6-11" tabindex="-1"></a>  </span>
+<span id="cb6-12"><a href="data-cleaning.html#cb6-12" tabindex="-1"></a>  <span class="co"># Select column of interest from the national accounts tibble</span></span>
+<span id="cb6-13"><a href="data-cleaning.html#cb6-13" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb6-14"><a href="data-cleaning.html#cb6-14" tabindex="-1"></a>    <span class="co"># `gf` is the Haver code for federal purchases</span></span>
+<span id="cb6-15"><a href="data-cleaning.html#cb6-15" tabindex="-1"></a>    <span class="fu">select</span>(date, gf) <span class="sc">%&gt;%</span>  </span>
+<span id="cb6-16"><a href="data-cleaning.html#cb6-16" tabindex="-1"></a>    <span class="co"># Rename data to generic `data_series` for easier merging</span></span>
+<span id="cb6-17"><a href="data-cleaning.html#cb6-17" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> gf) </span>
+<span id="cb6-18"><a href="data-cleaning.html#cb6-18" tabindex="-1"></a>  </span>
+<span id="cb6-19"><a href="data-cleaning.html#cb6-19" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the forecast using the commonly named `data_series`</span></span>
+<span id="cb6-20"><a href="data-cleaning.html#cb6-20" tabindex="-1"></a>  <span class="co"># and `date` columns. The historic (national accounts) data take precedence in</span></span>
+<span id="cb6-21"><a href="data-cleaning.html#cb6-21" tabindex="-1"></a>  <span class="co"># the case of any conflicting observations.</span></span>
+<span id="cb6-22"><a href="data-cleaning.html#cb6-22" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, forecast, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-23"><a href="data-cleaning.html#cb6-23" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb6-24"><a href="data-cleaning.html#cb6-24" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(placeholder_nas, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-25"><a href="data-cleaning.html#cb6-25" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb6-26"><a href="data-cleaning.html#cb6-26" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>)))</span>
+<span id="cb6-27"><a href="data-cleaning.html#cb6-27" tabindex="-1"></a>  </span>
+<span id="cb6-28"><a href="data-cleaning.html#cb6-28" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb6-29"><a href="data-cleaning.html#cb6-29" tabindex="-1"></a>}</span></code></pre></div>
+<p>In the function above, we retrieve our forecast sheet data, filter to keep only our projections for federal purchases, and rename <code>federal_purchases</code> to a generic <code>data_series</code>. We then call our national accounts data and keep only the columns <code>gf</code> and <code>date</code>. <code>gf</code> is the Haver code for federal purchases. We rename <code>gf</code> to <code>data_series</code> to merge the historical BEA data with our forecasts. Using the <code>coalesce_join()</code> function, we merge these two datasets by the <code>date</code> column. When the data sources have conflicting values for the same date, the value from the national accounts data overrides the forecast. We then merge the data with our <code>placeholder_nas</code> object (see above for how this is created), and replace the remaining NAs with zeros. The result is a 259-row data frame with two columns: <code>date</code> and <code>data_series</code> – our data for federal purchases.</p>
+<p>Some of our FIM inputs are slightly more complicated. Federal non-corporate taxes, for example, is the sum of multiple Haver variables. In the <code>create_federal_non_corporate_taxes()</code> function, we perform calculations using three different Haver series before merging the national accounts data with our forecasts. See below:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="data-cleaning.html#cb7-1" tabindex="-1"></a>create_federal_non_corporate_taxes <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb7-2"><a href="data-cleaning.html#cb7-2" tabindex="-1"></a>    national_accounts, </span>
+<span id="cb7-3"><a href="data-cleaning.html#cb7-3" tabindex="-1"></a>    forecast, </span>
+<span id="cb7-4"><a href="data-cleaning.html#cb7-4" tabindex="-1"></a>    placeholder_nas</span>
+<span id="cb7-5"><a href="data-cleaning.html#cb7-5" tabindex="-1"></a>) {</span>
+<span id="cb7-6"><a href="data-cleaning.html#cb7-6" tabindex="-1"></a>  <span class="co"># Select column of interest from the forecast tibble</span></span>
+<span id="cb7-7"><a href="data-cleaning.html#cb7-7" tabindex="-1"></a>  forecast <span class="ot">&lt;-</span> forecast <span class="sc">%&gt;%</span> </span>
+<span id="cb7-8"><a href="data-cleaning.html#cb7-8" tabindex="-1"></a>    <span class="fu">select</span>(date, federal_non_corporate_taxes) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-9"><a href="data-cleaning.html#cb7-9" tabindex="-1"></a>    <span class="co"># Rename to generic `data_series` for easier merging</span></span>
+<span id="cb7-10"><a href="data-cleaning.html#cb7-10" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> federal_non_corporate_taxes)</span>
+<span id="cb7-11"><a href="data-cleaning.html#cb7-11" tabindex="-1"></a>  </span>
+<span id="cb7-12"><a href="data-cleaning.html#cb7-12" tabindex="-1"></a>  <span class="co"># Select column of interest from the national accounts tibble</span></span>
+<span id="cb7-13"><a href="data-cleaning.html#cb7-13" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb7-14"><a href="data-cleaning.html#cb7-14" tabindex="-1"></a>    <span class="co"># Calculate federal non corporate taxes as a sum of 3 series</span></span>
+<span id="cb7-15"><a href="data-cleaning.html#cb7-15" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">data_series =</span> </span>
+<span id="cb7-16"><a href="data-cleaning.html#cb7-16" tabindex="-1"></a>             gfrpt <span class="sc">+</span> <span class="co"># Haver code for federal personal taxes</span></span>
+<span id="cb7-17"><a href="data-cleaning.html#cb7-17" tabindex="-1"></a>             gfrpri <span class="sc">+</span> <span class="co"># Haver code for federal production taxes</span></span>
+<span id="cb7-18"><a href="data-cleaning.html#cb7-18" tabindex="-1"></a>             gfrs <span class="co"># Haver code for federal payroll taxes</span></span>
+<span id="cb7-19"><a href="data-cleaning.html#cb7-19" tabindex="-1"></a>           ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-20"><a href="data-cleaning.html#cb7-20" tabindex="-1"></a>    <span class="co"># Keep the date and the new data_series column</span></span>
+<span id="cb7-21"><a href="data-cleaning.html#cb7-21" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series)</span>
+<span id="cb7-22"><a href="data-cleaning.html#cb7-22" tabindex="-1"></a>  </span>
+<span id="cb7-23"><a href="data-cleaning.html#cb7-23" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the forecast using the commonly named `data_series`</span></span>
+<span id="cb7-24"><a href="data-cleaning.html#cb7-24" tabindex="-1"></a>  <span class="co"># and `date` columns. The historic (national accounts) data take precedence in</span></span>
+<span id="cb7-25"><a href="data-cleaning.html#cb7-25" tabindex="-1"></a>  <span class="co"># the case of any conflicting observations.</span></span>
+<span id="cb7-26"><a href="data-cleaning.html#cb7-26" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, forecast, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-27"><a href="data-cleaning.html#cb7-27" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb7-28"><a href="data-cleaning.html#cb7-28" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(placeholder_nas, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-29"><a href="data-cleaning.html#cb7-29" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb7-30"><a href="data-cleaning.html#cb7-30" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>)))</span>
+<span id="cb7-31"><a href="data-cleaning.html#cb7-31" tabindex="-1"></a>  </span>
+<span id="cb7-32"><a href="data-cleaning.html#cb7-32" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb7-33"><a href="data-cleaning.html#cb7-33" tabindex="-1"></a>}</span></code></pre></div>
+<p>There are also some data series that require us to apply historical overrides– we make adjustments to the historical national accounts data to reflect our own assumptions about how/when money was spent when we disagree with BEA. Here is an example of a variable that requires us to call our historical overrides:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="data-cleaning.html#cb8-1" tabindex="-1"></a>create_federal_aid_to_small_businesses_arp <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb8-2"><a href="data-cleaning.html#cb8-2" tabindex="-1"></a>    national_accounts, </span>
+<span id="cb8-3"><a href="data-cleaning.html#cb8-3" tabindex="-1"></a>    forecast, </span>
+<span id="cb8-4"><a href="data-cleaning.html#cb8-4" tabindex="-1"></a>    historical_overrides,</span>
+<span id="cb8-5"><a href="data-cleaning.html#cb8-5" tabindex="-1"></a>    placeholder_nas</span>
+<span id="cb8-6"><a href="data-cleaning.html#cb8-6" tabindex="-1"></a>) {</span>
+<span id="cb8-7"><a href="data-cleaning.html#cb8-7" tabindex="-1"></a>  <span class="co"># Select column of interest from the forecast tibble</span></span>
+<span id="cb8-8"><a href="data-cleaning.html#cb8-8" tabindex="-1"></a>  forecast <span class="ot">&lt;-</span> forecast <span class="sc">%&gt;%</span> </span>
+<span id="cb8-9"><a href="data-cleaning.html#cb8-9" tabindex="-1"></a>    <span class="fu">select</span>(date, federal_aid_to_small_businesses_arp) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-10"><a href="data-cleaning.html#cb8-10" tabindex="-1"></a>    <span class="co"># Rename to generic `data_series` for easier merging</span></span>
+<span id="cb8-11"><a href="data-cleaning.html#cb8-11" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> federal_aid_to_small_businesses_arp)</span>
+<span id="cb8-12"><a href="data-cleaning.html#cb8-12" tabindex="-1"></a>  </span>
+<span id="cb8-13"><a href="data-cleaning.html#cb8-13" tabindex="-1"></a>  <span class="co"># We don&#39;t actually have national accounts as a data series for this tibble.</span></span>
+<span id="cb8-14"><a href="data-cleaning.html#cb8-14" tabindex="-1"></a>  <span class="co"># So we populate it with a placeholder tibble spanning 1970 Q1 to 2034 Q3 with</span></span>
+<span id="cb8-15"><a href="data-cleaning.html#cb8-15" tabindex="-1"></a>  <span class="co"># 0s in each entry</span></span>
+<span id="cb8-16"><a href="data-cleaning.html#cb8-16" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> </span>
+<span id="cb8-17"><a href="data-cleaning.html#cb8-17" tabindex="-1"></a>    <span class="fu">create_placeholder_nas</span>(</span>
+<span id="cb8-18"><a href="data-cleaning.html#cb8-18" tabindex="-1"></a>      <span class="at">col_name =</span> <span class="st">&quot;data_series&quot;</span>,</span>
+<span id="cb8-19"><a href="data-cleaning.html#cb8-19" tabindex="-1"></a>      <span class="at">start =</span> <span class="st">&quot;1970-01-01&quot;</span>,</span>
+<span id="cb8-20"><a href="data-cleaning.html#cb8-20" tabindex="-1"></a>      <span class="at">end =</span> <span class="st">&quot;2034-07-01&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-21"><a href="data-cleaning.html#cb8-21" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series) <span class="sc">%&gt;%</span> <span class="co"># Keep only the 2 columns we need</span></span>
+<span id="cb8-22"><a href="data-cleaning.html#cb8-22" tabindex="-1"></a>  <span class="co"># Override historic entries of national_accounts using historical_overrides data</span></span>
+<span id="cb8-23"><a href="data-cleaning.html#cb8-23" tabindex="-1"></a>  <span class="fu">mutate_where</span>(</span>
+<span id="cb8-24"><a href="data-cleaning.html#cb8-24" tabindex="-1"></a>    date <span class="sc">&gt;=</span> <span class="fu">yearquarter</span>(<span class="st">&#39;2020 Q2&#39;</span>) <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> current_quarter,</span>
+<span id="cb8-25"><a href="data-cleaning.html#cb8-25" tabindex="-1"></a>    <span class="at">data_series =</span> historical_overrides<span class="sc">$</span>federal_aid_to_small_businesses_arp_override</span>
+<span id="cb8-26"><a href="data-cleaning.html#cb8-26" tabindex="-1"></a>  )</span>
+<span id="cb8-27"><a href="data-cleaning.html#cb8-27" tabindex="-1"></a>  </span>
+<span id="cb8-28"><a href="data-cleaning.html#cb8-28" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the forecast using the commonly named `data_series`</span></span>
+<span id="cb8-29"><a href="data-cleaning.html#cb8-29" tabindex="-1"></a>  <span class="co"># and `date` columns. The historic (national accounts) data take precedence in</span></span>
+<span id="cb8-30"><a href="data-cleaning.html#cb8-30" tabindex="-1"></a>  <span class="co"># the case of any conflicting observations.</span></span>
+<span id="cb8-31"><a href="data-cleaning.html#cb8-31" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, forecast, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-32"><a href="data-cleaning.html#cb8-32" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb8-33"><a href="data-cleaning.html#cb8-33" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(placeholder_nas, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-34"><a href="data-cleaning.html#cb8-34" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb8-35"><a href="data-cleaning.html#cb8-35" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>)))</span>
+<span id="cb8-36"><a href="data-cleaning.html#cb8-36" tabindex="-1"></a>  </span>
+<span id="cb8-37"><a href="data-cleaning.html#cb8-37" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb8-38"><a href="data-cleaning.html#cb8-38" tabindex="-1"></a>}</span></code></pre></div>
+<p>After sourcing the helper script, we execute the functions to build our data inputs.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="data-cleaning.html#cb9-1" tabindex="-1"></a><span class="co"># Source the module that creates the test data columns used in the FIM</span></span>
+<span id="cb9-2"><a href="data-cleaning.html#cb9-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/data_cleaning.R&quot;</span>)</span>
+<span id="cb9-3"><a href="data-cleaning.html#cb9-3" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="data-cleaning.html#cb9-4" tabindex="-1"></a><span class="co"># Run the functions defined in src/data_cleaning.R to produce the FIM data columns</span></span>
+<span id="cb9-5"><a href="data-cleaning.html#cb9-5" tabindex="-1"></a>federal_purchases_test <span class="ot">&lt;-</span> <span class="fu">create_federal_purchases</span>(</span>
+<span id="cb9-6"><a href="data-cleaning.html#cb9-6" tabindex="-1"></a>  national_accounts, </span>
+<span id="cb9-7"><a href="data-cleaning.html#cb9-7" tabindex="-1"></a>  forecast, </span>
+<span id="cb9-8"><a href="data-cleaning.html#cb9-8" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-9"><a href="data-cleaning.html#cb9-9" tabindex="-1"></a>)</span>
+<span id="cb9-10"><a href="data-cleaning.html#cb9-10" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="data-cleaning.html#cb9-11" tabindex="-1"></a>consumption_grants_test <span class="ot">&lt;-</span> <span class="fu">create_consumption_grants</span>(</span>
+<span id="cb9-12"><a href="data-cleaning.html#cb9-12" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-13"><a href="data-cleaning.html#cb9-13" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-14"><a href="data-cleaning.html#cb9-14" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-15"><a href="data-cleaning.html#cb9-15" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-16"><a href="data-cleaning.html#cb9-16" tabindex="-1"></a>)</span>
+<span id="cb9-17"><a href="data-cleaning.html#cb9-17" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="data-cleaning.html#cb9-18" tabindex="-1"></a>investment_grants_test <span class="ot">&lt;-</span> <span class="fu">create_investment_grants</span>(</span>
+<span id="cb9-19"><a href="data-cleaning.html#cb9-19" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-20"><a href="data-cleaning.html#cb9-20" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-21"><a href="data-cleaning.html#cb9-21" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-22"><a href="data-cleaning.html#cb9-22" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-23"><a href="data-cleaning.html#cb9-23" tabindex="-1"></a>)</span>
+<span id="cb9-24"><a href="data-cleaning.html#cb9-24" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="data-cleaning.html#cb9-25" tabindex="-1"></a>state_purchases_test <span class="ot">&lt;-</span> <span class="fu">create_state_purchases</span>(</span>
+<span id="cb9-26"><a href="data-cleaning.html#cb9-26" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-27"><a href="data-cleaning.html#cb9-27" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-28"><a href="data-cleaning.html#cb9-28" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-29"><a href="data-cleaning.html#cb9-29" tabindex="-1"></a>)</span>
+<span id="cb9-30"><a href="data-cleaning.html#cb9-30" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="data-cleaning.html#cb9-31" tabindex="-1"></a>federal_non_corporate_taxes_test <span class="ot">&lt;-</span> <span class="fu">create_federal_non_corporate_taxes</span>(</span>
+<span id="cb9-32"><a href="data-cleaning.html#cb9-32" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-33"><a href="data-cleaning.html#cb9-33" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-34"><a href="data-cleaning.html#cb9-34" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-35"><a href="data-cleaning.html#cb9-35" tabindex="-1"></a>)</span>
+<span id="cb9-36"><a href="data-cleaning.html#cb9-36" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="data-cleaning.html#cb9-37" tabindex="-1"></a>state_non_corporate_taxes_test <span class="ot">&lt;-</span> <span class="fu">create_state_non_corporate_taxes</span>(</span>
+<span id="cb9-38"><a href="data-cleaning.html#cb9-38" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-39"><a href="data-cleaning.html#cb9-39" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-40"><a href="data-cleaning.html#cb9-40" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-41"><a href="data-cleaning.html#cb9-41" tabindex="-1"></a>)</span>
+<span id="cb9-42"><a href="data-cleaning.html#cb9-42" tabindex="-1"></a></span>
+<span id="cb9-43"><a href="data-cleaning.html#cb9-43" tabindex="-1"></a>federal_corporate_taxes_test <span class="ot">&lt;-</span> <span class="fu">create_federal_corporate_taxes</span>(</span>
+<span id="cb9-44"><a href="data-cleaning.html#cb9-44" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-45"><a href="data-cleaning.html#cb9-45" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-46"><a href="data-cleaning.html#cb9-46" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-47"><a href="data-cleaning.html#cb9-47" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-48"><a href="data-cleaning.html#cb9-48" tabindex="-1"></a>)</span>
+<span id="cb9-49"><a href="data-cleaning.html#cb9-49" tabindex="-1"></a></span>
+<span id="cb9-50"><a href="data-cleaning.html#cb9-50" tabindex="-1"></a>supply_side_ira_test <span class="ot">&lt;-</span> <span class="fu">create_supply_side_ira</span>(</span>
+<span id="cb9-51"><a href="data-cleaning.html#cb9-51" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-52"><a href="data-cleaning.html#cb9-52" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-53"><a href="data-cleaning.html#cb9-53" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-54"><a href="data-cleaning.html#cb9-54" tabindex="-1"></a>)</span>
+<span id="cb9-55"><a href="data-cleaning.html#cb9-55" tabindex="-1"></a></span>
+<span id="cb9-56"><a href="data-cleaning.html#cb9-56" tabindex="-1"></a></span>
+<span id="cb9-57"><a href="data-cleaning.html#cb9-57" tabindex="-1"></a>state_corporate_taxes_test <span class="ot">&lt;-</span> <span class="fu">create_state_corporate_taxes</span>(</span>
+<span id="cb9-58"><a href="data-cleaning.html#cb9-58" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-59"><a href="data-cleaning.html#cb9-59" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-60"><a href="data-cleaning.html#cb9-60" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-61"><a href="data-cleaning.html#cb9-61" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-62"><a href="data-cleaning.html#cb9-62" tabindex="-1"></a>)</span>
+<span id="cb9-63"><a href="data-cleaning.html#cb9-63" tabindex="-1"></a></span>
+<span id="cb9-64"><a href="data-cleaning.html#cb9-64" tabindex="-1"></a>federal_social_benefits_test <span class="ot">&lt;-</span> <span class="fu">create_federal_social_benefits</span>(</span>
+<span id="cb9-65"><a href="data-cleaning.html#cb9-65" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-66"><a href="data-cleaning.html#cb9-66" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-67"><a href="data-cleaning.html#cb9-67" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-68"><a href="data-cleaning.html#cb9-68" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-69"><a href="data-cleaning.html#cb9-69" tabindex="-1"></a>)</span>
+<span id="cb9-70"><a href="data-cleaning.html#cb9-70" tabindex="-1"></a></span>
+<span id="cb9-71"><a href="data-cleaning.html#cb9-71" tabindex="-1"></a>state_social_benefits_test <span class="ot">&lt;-</span> <span class="fu">create_state_social_benefits</span>(</span>
+<span id="cb9-72"><a href="data-cleaning.html#cb9-72" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-73"><a href="data-cleaning.html#cb9-73" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-74"><a href="data-cleaning.html#cb9-74" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-75"><a href="data-cleaning.html#cb9-75" tabindex="-1"></a>)</span>
+<span id="cb9-76"><a href="data-cleaning.html#cb9-76" tabindex="-1"></a></span>
+<span id="cb9-77"><a href="data-cleaning.html#cb9-77" tabindex="-1"></a>rebate_checks_test <span class="ot">&lt;-</span> <span class="fu">create_rebate_checks</span>(</span>
+<span id="cb9-78"><a href="data-cleaning.html#cb9-78" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-79"><a href="data-cleaning.html#cb9-79" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-80"><a href="data-cleaning.html#cb9-80" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-81"><a href="data-cleaning.html#cb9-81" tabindex="-1"></a>)</span>
+<span id="cb9-82"><a href="data-cleaning.html#cb9-82" tabindex="-1"></a></span>
+<span id="cb9-83"><a href="data-cleaning.html#cb9-83" tabindex="-1"></a>rebate_checks_arp_test <span class="ot">&lt;-</span> <span class="fu">create_rebate_checks_arp</span>(</span>
+<span id="cb9-84"><a href="data-cleaning.html#cb9-84" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-85"><a href="data-cleaning.html#cb9-85" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-86"><a href="data-cleaning.html#cb9-86" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-87"><a href="data-cleaning.html#cb9-87" tabindex="-1"></a>)</span>
+<span id="cb9-88"><a href="data-cleaning.html#cb9-88" tabindex="-1"></a></span>
+<span id="cb9-89"><a href="data-cleaning.html#cb9-89" tabindex="-1"></a>federal_ui_test <span class="ot">&lt;-</span> <span class="fu">create_federal_ui</span>(</span>
+<span id="cb9-90"><a href="data-cleaning.html#cb9-90" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-91"><a href="data-cleaning.html#cb9-91" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-92"><a href="data-cleaning.html#cb9-92" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-93"><a href="data-cleaning.html#cb9-93" tabindex="-1"></a>)</span>
+<span id="cb9-94"><a href="data-cleaning.html#cb9-94" tabindex="-1"></a></span>
+<span id="cb9-95"><a href="data-cleaning.html#cb9-95" tabindex="-1"></a>state_ui_test <span class="ot">&lt;-</span> <span class="fu">create_state_ui</span>(</span>
+<span id="cb9-96"><a href="data-cleaning.html#cb9-96" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-97"><a href="data-cleaning.html#cb9-97" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-98"><a href="data-cleaning.html#cb9-98" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-99"><a href="data-cleaning.html#cb9-99" tabindex="-1"></a>)</span>
+<span id="cb9-100"><a href="data-cleaning.html#cb9-100" tabindex="-1"></a></span>
+<span id="cb9-101"><a href="data-cleaning.html#cb9-101" tabindex="-1"></a></span>
+<span id="cb9-102"><a href="data-cleaning.html#cb9-102" tabindex="-1"></a>federal_subsidies_test <span class="ot">&lt;-</span> <span class="fu">create_federal_subsidies</span>(</span>
+<span id="cb9-103"><a href="data-cleaning.html#cb9-103" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-104"><a href="data-cleaning.html#cb9-104" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-105"><a href="data-cleaning.html#cb9-105" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-106"><a href="data-cleaning.html#cb9-106" tabindex="-1"></a>)</span>
+<span id="cb9-107"><a href="data-cleaning.html#cb9-107" tabindex="-1"></a></span>
+<span id="cb9-108"><a href="data-cleaning.html#cb9-108" tabindex="-1"></a>federal_aid_to_small_businesses_arp_test <span class="ot">&lt;-</span> <span class="fu">create_federal_aid_to_small_businesses_arp</span>(</span>
+<span id="cb9-109"><a href="data-cleaning.html#cb9-109" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-110"><a href="data-cleaning.html#cb9-110" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-111"><a href="data-cleaning.html#cb9-111" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-112"><a href="data-cleaning.html#cb9-112" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-113"><a href="data-cleaning.html#cb9-113" tabindex="-1"></a>)</span>
+<span id="cb9-114"><a href="data-cleaning.html#cb9-114" tabindex="-1"></a></span>
+<span id="cb9-115"><a href="data-cleaning.html#cb9-115" tabindex="-1"></a></span>
+<span id="cb9-116"><a href="data-cleaning.html#cb9-116" tabindex="-1"></a>federal_other_direct_aid_arp_test <span class="ot">&lt;-</span> <span class="fu">create_federal_other_direct_aid_arp</span>(</span>
+<span id="cb9-117"><a href="data-cleaning.html#cb9-117" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-118"><a href="data-cleaning.html#cb9-118" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-119"><a href="data-cleaning.html#cb9-119" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-120"><a href="data-cleaning.html#cb9-120" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-121"><a href="data-cleaning.html#cb9-121" tabindex="-1"></a>)</span>
+<span id="cb9-122"><a href="data-cleaning.html#cb9-122" tabindex="-1"></a></span>
+<span id="cb9-123"><a href="data-cleaning.html#cb9-123" tabindex="-1"></a></span>
+<span id="cb9-124"><a href="data-cleaning.html#cb9-124" tabindex="-1"></a>federal_other_vulnerable_arp_test <span class="ot">&lt;-</span> <span class="fu">create_federal_other_vulnerable_arp</span>(</span>
+<span id="cb9-125"><a href="data-cleaning.html#cb9-125" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-126"><a href="data-cleaning.html#cb9-126" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-127"><a href="data-cleaning.html#cb9-127" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-128"><a href="data-cleaning.html#cb9-128" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-129"><a href="data-cleaning.html#cb9-129" tabindex="-1"></a>)</span>
+<span id="cb9-130"><a href="data-cleaning.html#cb9-130" tabindex="-1"></a></span>
+<span id="cb9-131"><a href="data-cleaning.html#cb9-131" tabindex="-1"></a></span>
+<span id="cb9-132"><a href="data-cleaning.html#cb9-132" tabindex="-1"></a>federal_student_loans_test <span class="ot">&lt;-</span> <span class="fu">create_federal_student_loans</span>(</span>
+<span id="cb9-133"><a href="data-cleaning.html#cb9-133" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-134"><a href="data-cleaning.html#cb9-134" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-135"><a href="data-cleaning.html#cb9-135" tabindex="-1"></a>  historical_overrides,</span>
+<span id="cb9-136"><a href="data-cleaning.html#cb9-136" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-137"><a href="data-cleaning.html#cb9-137" tabindex="-1"></a>)</span>
+<span id="cb9-138"><a href="data-cleaning.html#cb9-138" tabindex="-1"></a></span>
+<span id="cb9-139"><a href="data-cleaning.html#cb9-139" tabindex="-1"></a></span>
+<span id="cb9-140"><a href="data-cleaning.html#cb9-140" tabindex="-1"></a>state_subsidies_test <span class="ot">&lt;-</span> <span class="fu">create_state_subsidies</span>(</span>
+<span id="cb9-141"><a href="data-cleaning.html#cb9-141" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-142"><a href="data-cleaning.html#cb9-142" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-143"><a href="data-cleaning.html#cb9-143" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-144"><a href="data-cleaning.html#cb9-144" tabindex="-1"></a>)</span>
+<span id="cb9-145"><a href="data-cleaning.html#cb9-145" tabindex="-1"></a></span>
+<span id="cb9-146"><a href="data-cleaning.html#cb9-146" tabindex="-1"></a></span>
+<span id="cb9-147"><a href="data-cleaning.html#cb9-147" tabindex="-1"></a>federal_health_outlays_test <span class="ot">&lt;-</span> <span class="fu">create_federal_health_outlays</span>(</span>
+<span id="cb9-148"><a href="data-cleaning.html#cb9-148" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-149"><a href="data-cleaning.html#cb9-149" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-150"><a href="data-cleaning.html#cb9-150" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-151"><a href="data-cleaning.html#cb9-151" tabindex="-1"></a>)</span>
+<span id="cb9-152"><a href="data-cleaning.html#cb9-152" tabindex="-1"></a></span>
+<span id="cb9-153"><a href="data-cleaning.html#cb9-153" tabindex="-1"></a></span>
+<span id="cb9-154"><a href="data-cleaning.html#cb9-154" tabindex="-1"></a>state_health_outlays_test <span class="ot">&lt;-</span> <span class="fu">create_state_health_outlays</span>(</span>
+<span id="cb9-155"><a href="data-cleaning.html#cb9-155" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb9-156"><a href="data-cleaning.html#cb9-156" tabindex="-1"></a>  forecast,</span>
+<span id="cb9-157"><a href="data-cleaning.html#cb9-157" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb9-158"><a href="data-cleaning.html#cb9-158" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="cleaning-accessory-data" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Cleaning Accessory Data<a href="data-cleaning.html#cleaning-accessory-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In addition to the primary inputs listed above, the FIM also relies on what we term “accessory variables” - the PCE and purchases deflators, personal consumption expenditures, GDP, and real potential GDP growth. As with the 23 policy data series, <code>src/data_cleaning.R</code> also writes the functions that create these objects.</p>
+<p>For example, the helper script (<code>src/data_cleaning.R</code>), which we’ve already sourced, writes <code>create_federal_purchases_deflator_growth()</code>as the following:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="data-cleaning.html#cb10-1" tabindex="-1"></a>create_federal_purchases_deflator_growth <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb10-2"><a href="data-cleaning.html#cb10-2" tabindex="-1"></a>    national_accounts, </span>
+<span id="cb10-3"><a href="data-cleaning.html#cb10-3" tabindex="-1"></a>    projections, </span>
+<span id="cb10-4"><a href="data-cleaning.html#cb10-4" tabindex="-1"></a>    deflator_overrides,</span>
+<span id="cb10-5"><a href="data-cleaning.html#cb10-5" tabindex="-1"></a>    placeholder_nas</span>
+<span id="cb10-6"><a href="data-cleaning.html#cb10-6" tabindex="-1"></a>) {</span>
+<span id="cb10-7"><a href="data-cleaning.html#cb10-7" tabindex="-1"></a>  <span class="co"># Select column of interest from the projections tibble</span></span>
+<span id="cb10-8"><a href="data-cleaning.html#cb10-8" tabindex="-1"></a>  projections <span class="ot">&lt;-</span> projections <span class="sc">%&gt;%</span> </span>
+<span id="cb10-9"><a href="data-cleaning.html#cb10-9" tabindex="-1"></a>    <span class="co"># Divide federal purchases &quot;gf&quot; by real federal purchases &quot;gfh&quot; and calculate</span></span>
+<span id="cb10-10"><a href="data-cleaning.html#cb10-10" tabindex="-1"></a>    <span class="co"># the quarterly growth rate using the qgr function, equal to x/lag(x), then </span></span>
+<span id="cb10-11"><a href="data-cleaning.html#cb10-11" tabindex="-1"></a>    <span class="co"># subtract 1.</span></span>
+<span id="cb10-12"><a href="data-cleaning.html#cb10-12" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">data_series =</span> <span class="fu">qgr</span>((gf <span class="sc">/</span> gfh)) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-13"><a href="data-cleaning.html#cb10-13" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series)</span>
+<span id="cb10-14"><a href="data-cleaning.html#cb10-14" tabindex="-1"></a>  </span>
+<span id="cb10-15"><a href="data-cleaning.html#cb10-15" tabindex="-1"></a>  <span class="co"># Select columns of interest from the national accounts tibble</span></span>
+<span id="cb10-16"><a href="data-cleaning.html#cb10-16" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb10-17"><a href="data-cleaning.html#cb10-17" tabindex="-1"></a>    <span class="co"># Haver code for federal purchases deflator is &#39;jgf&#39;</span></span>
+<span id="cb10-18"><a href="data-cleaning.html#cb10-18" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">data_series =</span> jgf_growth) <span class="sc">%&gt;%</span></span>
+<span id="cb10-19"><a href="data-cleaning.html#cb10-19" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series)</span>
+<span id="cb10-20"><a href="data-cleaning.html#cb10-20" tabindex="-1"></a>  </span>
+<span id="cb10-21"><a href="data-cleaning.html#cb10-21" tabindex="-1"></a>  <span class="co"># Process the overrides data so they are ready for merging</span></span>
+<span id="cb10-22"><a href="data-cleaning.html#cb10-22" tabindex="-1"></a>  deflator_overrides <span class="ot">&lt;-</span> deflator_overrides <span class="sc">%&gt;%</span></span>
+<span id="cb10-23"><a href="data-cleaning.html#cb10-23" tabindex="-1"></a>    <span class="fu">filter</span>(date <span class="sc">&gt;</span> current_quarter <span class="sc">&amp;</span> date <span class="sc">&lt;=</span> <span class="fu">max</span>(date)) <span class="sc">%&gt;%</span></span>
+<span id="cb10-24"><a href="data-cleaning.html#cb10-24" tabindex="-1"></a>    <span class="co"># Rename the column of interest to data_series</span></span>
+<span id="cb10-25"><a href="data-cleaning.html#cb10-25" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">data_series =</span> federal_purchases_deflator_growth_override) <span class="sc">%&gt;%</span></span>
+<span id="cb10-26"><a href="data-cleaning.html#cb10-26" tabindex="-1"></a>    <span class="fu">select</span>(date, data_series)</span>
+<span id="cb10-27"><a href="data-cleaning.html#cb10-27" tabindex="-1"></a>  </span>
+<span id="cb10-28"><a href="data-cleaning.html#cb10-28" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the projection using the commonly named `data_series`</span></span>
+<span id="cb10-29"><a href="data-cleaning.html#cb10-29" tabindex="-1"></a>  <span class="co"># and `date` columns. The historic (national accounts) data take precedence in</span></span>
+<span id="cb10-30"><a href="data-cleaning.html#cb10-30" tabindex="-1"></a>  <span class="co"># the case of any conflicting observations.</span></span>
+<span id="cb10-31"><a href="data-cleaning.html#cb10-31" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, projections, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-32"><a href="data-cleaning.html#cb10-32" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb10-33"><a href="data-cleaning.html#cb10-33" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(., placeholder_nas, <span class="at">by =</span> <span class="st">&quot;date&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-34"><a href="data-cleaning.html#cb10-34" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb10-35"><a href="data-cleaning.html#cb10-35" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb10-36"><a href="data-cleaning.html#cb10-36" tabindex="-1"></a>    <span class="co"># Use deflator_overrides to overwrite select existing entries</span></span>
+<span id="cb10-37"><a href="data-cleaning.html#cb10-37" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(deflator_overrides, ., <span class="at">by =</span> <span class="st">&quot;date&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-38"><a href="data-cleaning.html#cb10-38" tabindex="-1"></a>    <span class="co"># Reorder the entries chronologically</span></span>
+<span id="cb10-39"><a href="data-cleaning.html#cb10-39" tabindex="-1"></a>    <span class="fu">arrange</span>(date)</span>
+<span id="cb10-40"><a href="data-cleaning.html#cb10-40" tabindex="-1"></a></span>
+<span id="cb10-41"><a href="data-cleaning.html#cb10-41" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb10-42"><a href="data-cleaning.html#cb10-42" tabindex="-1"></a>}</span></code></pre></div>
+<p>In the function above, we first retrieve our <code>projections</code> object– the data we pull from CBO. <code>projections</code> follows the same naming conventions as our national accounts data– each data series is identified with a short Haver code. We select <code>gf</code> and <code>gfh</code>, the codes for nominal federal purchases and real federal purchases, respectively. We use the <code>qgr()</code> function contained in the fim package to calculate the quarterly growth rate of the federal purchases deflator. The deflator is simply nominal purchases divided by real purchases. We next retrieve our national accounts data and similarly calculate the federal purchases deflator in history.</p>
+<p>Although <code>projections</code> includes forecasts of the federal purchases deflator until 2034 Q3, we sometimes make adjustments to these values when we disagree with CBO. We make these changes in the forecast sheet. Our edited deflators are stored in the deflator_overrides sheet, which we previously loaded. We overwrite the values from <code>projections</code> for the entire forecast period.</p>
+<p>We merge the national accounts, projections, and deflator overrides with an empty data frame and coalesce any remaining NAs to zero.</p>
+<p><em>GDP and Consumption</em>
+Some of our accessory variables are slightly more complicated. To forecast GDP and consumption, we apply CBO growth rates to historical NIPA data. See below:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="data-cleaning.html#cb11-1" tabindex="-1"></a>create_gdp <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb11-2"><a href="data-cleaning.html#cb11-2" tabindex="-1"></a>  national_accounts, </span>
+<span id="cb11-3"><a href="data-cleaning.html#cb11-3" tabindex="-1"></a>  projections, </span>
+<span id="cb11-4"><a href="data-cleaning.html#cb11-4" tabindex="-1"></a>  placeholder_nas</span>
+<span id="cb11-5"><a href="data-cleaning.html#cb11-5" tabindex="-1"></a>) {</span>
+<span id="cb11-6"><a href="data-cleaning.html#cb11-6" tabindex="-1"></a>  <span class="co"># Redefine GDP and real GDP values in the future using CBO growth rates</span></span>
+<span id="cb11-7"><a href="data-cleaning.html#cb11-7" tabindex="-1"></a>  <span class="co"># Select column of interest from the projections tibble</span></span>
+<span id="cb11-8"><a href="data-cleaning.html#cb11-8" tabindex="-1"></a>  projections1 <span class="ot">&lt;-</span> projections <span class="sc">%&gt;%</span> </span>
+<span id="cb11-9"><a href="data-cleaning.html#cb11-9" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">gdp_growth =</span> <span class="fu">q_g</span>(gdp)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-10"><a href="data-cleaning.html#cb11-10" tabindex="-1"></a>    <span class="co"># We only need the gdp growth rate from our projections</span></span>
+<span id="cb11-11"><a href="data-cleaning.html#cb11-11" tabindex="-1"></a>    <span class="fu">select</span>(date, gdp_growth) <span class="sc">%&gt;%</span></span>
+<span id="cb11-12"><a href="data-cleaning.html#cb11-12" tabindex="-1"></a>    <span class="co"># We need only the growth rates that represent future quarters</span></span>
+<span id="cb11-13"><a href="data-cleaning.html#cb11-13" tabindex="-1"></a>    <span class="fu">filter</span>(date <span class="sc">&gt;</span> current_quarter)</span>
+<span id="cb11-14"><a href="data-cleaning.html#cb11-14" tabindex="-1"></a>  </span>
+<span id="cb11-15"><a href="data-cleaning.html#cb11-15" tabindex="-1"></a>  <span class="co"># Select columns of interest from the national accounts tibble</span></span>
+<span id="cb11-16"><a href="data-cleaning.html#cb11-16" tabindex="-1"></a>  national_accounts1 <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb11-17"><a href="data-cleaning.html#cb11-17" tabindex="-1"></a>    <span class="co"># Haver code for GDP is &#39;gdp&#39;</span></span>
+<span id="cb11-18"><a href="data-cleaning.html#cb11-18" tabindex="-1"></a>    <span class="fu">select</span>(date, gdp)</span>
+<span id="cb11-19"><a href="data-cleaning.html#cb11-19" tabindex="-1"></a>  <span class="co"># Define an index number for the current data point and end data point</span></span>
+<span id="cb11-20"><a href="data-cleaning.html#cb11-20" tabindex="-1"></a>  current_index <span class="ot">&lt;-</span> <span class="fu">which</span>(national_accounts1<span class="sc">$</span>date <span class="sc">==</span> current_quarter)</span>
+<span id="cb11-21"><a href="data-cleaning.html#cb11-21" tabindex="-1"></a>  seed_gdp <span class="ot">=</span> national_accounts1<span class="sc">$</span>gdp[current_index]</span>
+<span id="cb11-22"><a href="data-cleaning.html#cb11-22" tabindex="-1"></a>  </span>
+<span id="cb11-23"><a href="data-cleaning.html#cb11-23" tabindex="-1"></a>  <span class="co"># Define new GDP projections by growing current GDP (seed) at CBO growth rates</span></span>
+<span id="cb11-24"><a href="data-cleaning.html#cb11-24" tabindex="-1"></a>  <span class="co"># using the cumulative_series() function</span></span>
+<span id="cb11-25"><a href="data-cleaning.html#cb11-25" tabindex="-1"></a>  new_gdp_projections <span class="ot">&lt;-</span> <span class="fu">cumulative_series</span>(</span>
+<span id="cb11-26"><a href="data-cleaning.html#cb11-26" tabindex="-1"></a>    <span class="at">seed =</span> seed_gdp,</span>
+<span id="cb11-27"><a href="data-cleaning.html#cb11-27" tabindex="-1"></a>    <span class="at">growth_rates =</span> <span class="dv">1</span> <span class="sc">+</span> projections1<span class="sc">$</span>gdp_growth</span>
+<span id="cb11-28"><a href="data-cleaning.html#cb11-28" tabindex="-1"></a>  )</span>
+<span id="cb11-29"><a href="data-cleaning.html#cb11-29" tabindex="-1"></a>  </span>
+<span id="cb11-30"><a href="data-cleaning.html#cb11-30" tabindex="-1"></a>  <span class="co"># Define projections row as this adjusted forecast</span></span>
+<span id="cb11-31"><a href="data-cleaning.html#cb11-31" tabindex="-1"></a>  projections2 <span class="ot">&lt;-</span> projections1 <span class="sc">%&gt;%</span></span>
+<span id="cb11-32"><a href="data-cleaning.html#cb11-32" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">gdp =</span> new_gdp_projections) <span class="sc">%&gt;%</span></span>
+<span id="cb11-33"><a href="data-cleaning.html#cb11-33" tabindex="-1"></a>    <span class="fu">select</span>(date, gdp)</span>
+<span id="cb11-34"><a href="data-cleaning.html#cb11-34" tabindex="-1"></a>  </span>
+<span id="cb11-35"><a href="data-cleaning.html#cb11-35" tabindex="-1"></a>  <span class="co"># Merge the national accounts with the projection using the commonly named `gdp`</span></span>
+<span id="cb11-36"><a href="data-cleaning.html#cb11-36" tabindex="-1"></a>  <span class="co"># and `date` columns. </span></span>
+<span id="cb11-37"><a href="data-cleaning.html#cb11-37" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts1, projections2, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-38"><a href="data-cleaning.html#cb11-38" tabindex="-1"></a>    <span class="co"># Rename the gdp column to generic data_series</span></span>
+<span id="cb11-39"><a href="data-cleaning.html#cb11-39" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> gdp) <span class="sc">%&gt;%</span></span>
+<span id="cb11-40"><a href="data-cleaning.html#cb11-40" tabindex="-1"></a>    <span class="co"># Merge with a data frame of NAs extending to 2034 Q3</span></span>
+<span id="cb11-41"><a href="data-cleaning.html#cb11-41" tabindex="-1"></a>    <span class="fu">coalesce_join</span>(., placeholder_nas, <span class="at">by =</span> <span class="st">&quot;date&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-42"><a href="data-cleaning.html#cb11-42" tabindex="-1"></a>    <span class="co"># Repopulate the NAs to be 0s</span></span>
+<span id="cb11-43"><a href="data-cleaning.html#cb11-43" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">replace_na</span>(., <span class="dv">0</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb11-44"><a href="data-cleaning.html#cb11-44" tabindex="-1"></a>    <span class="co"># Reorder the entries chronologically</span></span>
+<span id="cb11-45"><a href="data-cleaning.html#cb11-45" tabindex="-1"></a>    <span class="fu">arrange</span>(date)</span>
+<span id="cb11-46"><a href="data-cleaning.html#cb11-46" tabindex="-1"></a>  </span>
+<span id="cb11-47"><a href="data-cleaning.html#cb11-47" tabindex="-1"></a>  <span class="fu">return</span>(result)</span>
+<span id="cb11-48"><a href="data-cleaning.html#cb11-48" tabindex="-1"></a>}</span></code></pre></div>
+<p>In the function above, we create our GDP data series. In history, we pull GDP straight from BEA. In the future, we construct a projection of GDP using CBO’s forecasts for future GDP growth rates.</p>
+<p>First, we retrieve our <code>projections</code> data and use the <code>gdp</code> column to calculate future GDP growth based on CBO’s GDP projections. We calculate quarterly GDP growth using the <code>qgr()</code> function contained in the fim package. We then pull our <code>national_accounts</code> data and select the GDP column to use later.</p>
+<p>Next, we define an object called <code>current_index</code> – this gets the position (or row number) in <code>national_accounts</code> where the date column matches the value stored in the <code>current_quarter</code> object. Put more simply, we get the row number of the current quarter. We also define an object called <code>seed_gdp</code>, the value of GDP at the position of <code>current_index</code> (we’re pulling the value of GDP in the current quarter, the last quarter for which we have data). This is the starting value for our projections.</p>
+<p>We define our new projections by growing the current quarter GDP (seed) using the CBO growth rates we calculated above using the <code>cumulative_series()</code> function contained in the fim package. The function takes a value <code>seed</code>, which is the initial value from which the projection starts. It also takes <code>projections1$gdp_growth</code>, a vector of growth rates. The result is a <code>new_gdp_projections</code> - a vector containing the initial GDP value times the cumulative product of the growth rates for each quarter.</p>
+<p>We merge our national accounts data with our new GDP projections to create our GDP series.</p>
+<p>We define <code>consumption</code> similarly - we take BEA’s consumption and grow it at CBO’s growth rate.</p>
+<p><strong>Extras</strong></p>
+<p>Lastly, we write functions that construct three “extra” variables that aren’t directly used in our analysis but are important for understanding/publishing our results. <code>create_date()</code> generates a one column data frame containing the date from 1970 Q1 to 2034 Q3. <code>create_id()</code> produces a a binary variable indicating whether the entry is a projection or historical. <code>create_recession()</code> produces an indicator for whether the quarter was a recession quarter.</p>
+<p>See below for an example:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="data-cleaning.html#cb12-1" tabindex="-1"></a>create_id <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
+<span id="cb12-2"><a href="data-cleaning.html#cb12-2" tabindex="-1"></a>    national_accounts,</span>
+<span id="cb12-3"><a href="data-cleaning.html#cb12-3" tabindex="-1"></a>    projections) {</span>
+<span id="cb12-4"><a href="data-cleaning.html#cb12-4" tabindex="-1"></a>  </span>
+<span id="cb12-5"><a href="data-cleaning.html#cb12-5" tabindex="-1"></a>  <span class="co"># Select columns of interest from the projections tibble </span></span>
+<span id="cb12-6"><a href="data-cleaning.html#cb12-6" tabindex="-1"></a>  projections <span class="ot">&lt;-</span> projections <span class="sc">%&gt;%</span> </span>
+<span id="cb12-7"><a href="data-cleaning.html#cb12-7" tabindex="-1"></a>    <span class="fu">select</span>(date, id)</span>
+<span id="cb12-8"><a href="data-cleaning.html#cb12-8" tabindex="-1"></a>  </span>
+<span id="cb12-9"><a href="data-cleaning.html#cb12-9" tabindex="-1"></a>  <span class="co"># Select columns of interest from the national_accounts tibble </span></span>
+<span id="cb12-10"><a href="data-cleaning.html#cb12-10" tabindex="-1"></a>  national_accounts <span class="ot">&lt;-</span> national_accounts <span class="sc">%&gt;%</span> </span>
+<span id="cb12-11"><a href="data-cleaning.html#cb12-11" tabindex="-1"></a>    <span class="fu">select</span>(date, id)</span>
+<span id="cb12-12"><a href="data-cleaning.html#cb12-12" tabindex="-1"></a>  </span>
+<span id="cb12-13"><a href="data-cleaning.html#cb12-13" tabindex="-1"></a>  <span class="co"># Merge national accounts with projections. In the case of conflicting values, </span></span>
+<span id="cb12-14"><a href="data-cleaning.html#cb12-14" tabindex="-1"></a>  <span class="co"># overwrite the value from projections with the value from national accounts. </span></span>
+<span id="cb12-15"><a href="data-cleaning.html#cb12-15" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">coalesce_join</span>(national_accounts, projections, <span class="at">by =</span> <span class="st">&#39;date&#39;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-16"><a href="data-cleaning.html#cb12-16" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">data_series =</span> id)</span>
+<span id="cb12-17"><a href="data-cleaning.html#cb12-17" tabindex="-1"></a>}</span></code></pre></div>
+<p>The chunk of code below executes each of the functions discussed above to create our accessory variables.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="data-cleaning.html#cb13-1" tabindex="-1"></a><span class="co"># Quarterly Federal Purchases Deflator Growth </span></span>
+<span id="cb13-2"><a href="data-cleaning.html#cb13-2" tabindex="-1"></a>federal_purchases_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_federal_purchases_deflator_growth</span>(</span>
+<span id="cb13-3"><a href="data-cleaning.html#cb13-3" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-4"><a href="data-cleaning.html#cb13-4" tabindex="-1"></a>  projections,</span>
+<span id="cb13-5"><a href="data-cleaning.html#cb13-5" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-6"><a href="data-cleaning.html#cb13-6" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-7"><a href="data-cleaning.html#cb13-7" tabindex="-1"></a>)</span>
+<span id="cb13-8"><a href="data-cleaning.html#cb13-8" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="data-cleaning.html#cb13-9" tabindex="-1"></a><span class="co"># Annualized Federal Purchases Deflator Growth </span></span>
+<span id="cb13-10"><a href="data-cleaning.html#cb13-10" tabindex="-1"></a>federal_purchases_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-11"><a href="data-cleaning.html#cb13-11" tabindex="-1"></a>  <span class="at">x=</span> federal_purchases_deflator_growth_test)</span>
+<span id="cb13-12"><a href="data-cleaning.html#cb13-12" tabindex="-1"></a></span>
+<span id="cb13-13"><a href="data-cleaning.html#cb13-13" tabindex="-1"></a><span class="co"># Quarterly Consumption Grants Deflator Growth </span></span>
+<span id="cb13-14"><a href="data-cleaning.html#cb13-14" tabindex="-1"></a>consumption_grants_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_consumption_grants_deflator_growth</span>(</span>
+<span id="cb13-15"><a href="data-cleaning.html#cb13-15" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-16"><a href="data-cleaning.html#cb13-16" tabindex="-1"></a>  projections,</span>
+<span id="cb13-17"><a href="data-cleaning.html#cb13-17" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-18"><a href="data-cleaning.html#cb13-18" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-19"><a href="data-cleaning.html#cb13-19" tabindex="-1"></a>)</span>
+<span id="cb13-20"><a href="data-cleaning.html#cb13-20" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="data-cleaning.html#cb13-21" tabindex="-1"></a><span class="co"># Annualized Consumption Grants Deflator Growth </span></span>
+<span id="cb13-22"><a href="data-cleaning.html#cb13-22" tabindex="-1"></a>consumption_grants_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-23"><a href="data-cleaning.html#cb13-23" tabindex="-1"></a>  <span class="at">x=</span> consumption_grants_deflator_growth_test)</span>
+<span id="cb13-24"><a href="data-cleaning.html#cb13-24" tabindex="-1"></a></span>
+<span id="cb13-25"><a href="data-cleaning.html#cb13-25" tabindex="-1"></a><span class="co"># Quarterly Investment Grants Deflator Growth </span></span>
+<span id="cb13-26"><a href="data-cleaning.html#cb13-26" tabindex="-1"></a>investment_grants_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_investment_grants_deflator_growth</span>(</span>
+<span id="cb13-27"><a href="data-cleaning.html#cb13-27" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-28"><a href="data-cleaning.html#cb13-28" tabindex="-1"></a>  projections,</span>
+<span id="cb13-29"><a href="data-cleaning.html#cb13-29" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-30"><a href="data-cleaning.html#cb13-30" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-31"><a href="data-cleaning.html#cb13-31" tabindex="-1"></a>)</span>
+<span id="cb13-32"><a href="data-cleaning.html#cb13-32" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="data-cleaning.html#cb13-33" tabindex="-1"></a><span class="co"># Annualized Investment Grants Deflator Growth</span></span>
+<span id="cb13-34"><a href="data-cleaning.html#cb13-34" tabindex="-1"></a>investment_grants_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-35"><a href="data-cleaning.html#cb13-35" tabindex="-1"></a>  <span class="at">x=</span> investment_grants_deflator_growth_test)</span>
+<span id="cb13-36"><a href="data-cleaning.html#cb13-36" tabindex="-1"></a></span>
+<span id="cb13-37"><a href="data-cleaning.html#cb13-37" tabindex="-1"></a><span class="co"># Quarterly State Purchases Deflator Growth </span></span>
+<span id="cb13-38"><a href="data-cleaning.html#cb13-38" tabindex="-1"></a>state_purchases_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_state_purchases_deflator_growth</span>(</span>
+<span id="cb13-39"><a href="data-cleaning.html#cb13-39" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-40"><a href="data-cleaning.html#cb13-40" tabindex="-1"></a>  projections,</span>
+<span id="cb13-41"><a href="data-cleaning.html#cb13-41" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-42"><a href="data-cleaning.html#cb13-42" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-43"><a href="data-cleaning.html#cb13-43" tabindex="-1"></a>)</span>
+<span id="cb13-44"><a href="data-cleaning.html#cb13-44" tabindex="-1"></a></span>
+<span id="cb13-45"><a href="data-cleaning.html#cb13-45" tabindex="-1"></a><span class="co"># Annualized State Purchases Deflator Growth </span></span>
+<span id="cb13-46"><a href="data-cleaning.html#cb13-46" tabindex="-1"></a>state_purchases_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-47"><a href="data-cleaning.html#cb13-47" tabindex="-1"></a>  <span class="at">x=</span> state_purchases_deflator_growth_test)</span>
+<span id="cb13-48"><a href="data-cleaning.html#cb13-48" tabindex="-1"></a></span>
+<span id="cb13-49"><a href="data-cleaning.html#cb13-49" tabindex="-1"></a><span class="co"># Quarterly Consumption Deflator Growth</span></span>
+<span id="cb13-50"><a href="data-cleaning.html#cb13-50" tabindex="-1"></a>consumption_deflator_growth_test <span class="ot">&lt;-</span> <span class="fu">create_consumption_deflator_growth</span>(</span>
+<span id="cb13-51"><a href="data-cleaning.html#cb13-51" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-52"><a href="data-cleaning.html#cb13-52" tabindex="-1"></a>  projections,</span>
+<span id="cb13-53"><a href="data-cleaning.html#cb13-53" tabindex="-1"></a>  deflator_overrides,</span>
+<span id="cb13-54"><a href="data-cleaning.html#cb13-54" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-55"><a href="data-cleaning.html#cb13-55" tabindex="-1"></a>)</span>
+<span id="cb13-56"><a href="data-cleaning.html#cb13-56" tabindex="-1"></a></span>
+<span id="cb13-57"><a href="data-cleaning.html#cb13-57" tabindex="-1"></a><span class="co"># Annualized Consumption Deflator Growth </span></span>
+<span id="cb13-58"><a href="data-cleaning.html#cb13-58" tabindex="-1"></a>consumption_deflator_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-59"><a href="data-cleaning.html#cb13-59" tabindex="-1"></a>  <span class="at">x=</span> consumption_deflator_growth_test)</span>
+<span id="cb13-60"><a href="data-cleaning.html#cb13-60" tabindex="-1"></a></span>
+<span id="cb13-61"><a href="data-cleaning.html#cb13-61" tabindex="-1"></a><span class="co"># Quarterly Real Potential GDP Growth </span></span>
+<span id="cb13-62"><a href="data-cleaning.html#cb13-62" tabindex="-1"></a>real_potential_gdp_growth_test <span class="ot">&lt;-</span> <span class="fu">create_real_potential_gdp_growth</span>(</span>
+<span id="cb13-63"><a href="data-cleaning.html#cb13-63" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-64"><a href="data-cleaning.html#cb13-64" tabindex="-1"></a>  projections,</span>
+<span id="cb13-65"><a href="data-cleaning.html#cb13-65" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-66"><a href="data-cleaning.html#cb13-66" tabindex="-1"></a>)</span>
+<span id="cb13-67"><a href="data-cleaning.html#cb13-67" tabindex="-1"></a></span>
+<span id="cb13-68"><a href="data-cleaning.html#cb13-68" tabindex="-1"></a><span class="co"># Annualized Real Potential GDP Growth </span></span>
+<span id="cb13-69"><a href="data-cleaning.html#cb13-69" tabindex="-1"></a>real_potential_gdp_growth_annualized_test <span class="ot">&lt;-</span> <span class="fu">create_annualized_growth</span>(</span>
+<span id="cb13-70"><a href="data-cleaning.html#cb13-70" tabindex="-1"></a>  <span class="at">x=</span> real_potential_gdp_growth_test)</span>
+<span id="cb13-71"><a href="data-cleaning.html#cb13-71" tabindex="-1"></a></span>
+<span id="cb13-72"><a href="data-cleaning.html#cb13-72" tabindex="-1"></a><span class="co"># GDP </span></span>
+<span id="cb13-73"><a href="data-cleaning.html#cb13-73" tabindex="-1"></a>gdp_test <span class="ot">&lt;-</span> <span class="fu">create_gdp</span>(</span>
+<span id="cb13-74"><a href="data-cleaning.html#cb13-74" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-75"><a href="data-cleaning.html#cb13-75" tabindex="-1"></a>  projections,</span>
+<span id="cb13-76"><a href="data-cleaning.html#cb13-76" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-77"><a href="data-cleaning.html#cb13-77" tabindex="-1"></a>)</span>
+<span id="cb13-78"><a href="data-cleaning.html#cb13-78" tabindex="-1"></a></span>
+<span id="cb13-79"><a href="data-cleaning.html#cb13-79" tabindex="-1"></a><span class="co"># Consumption</span></span>
+<span id="cb13-80"><a href="data-cleaning.html#cb13-80" tabindex="-1"></a>consumption_test <span class="ot">&lt;-</span> <span class="fu">create_consumption</span>(</span>
+<span id="cb13-81"><a href="data-cleaning.html#cb13-81" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-82"><a href="data-cleaning.html#cb13-82" tabindex="-1"></a>  projections,</span>
+<span id="cb13-83"><a href="data-cleaning.html#cb13-83" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-84"><a href="data-cleaning.html#cb13-84" tabindex="-1"></a>)</span>
+<span id="cb13-85"><a href="data-cleaning.html#cb13-85" tabindex="-1"></a></span>
+<span id="cb13-86"><a href="data-cleaning.html#cb13-86" tabindex="-1"></a><span class="co"># EXTRAS </span></span>
+<span id="cb13-87"><a href="data-cleaning.html#cb13-87" tabindex="-1"></a><span class="co"># Date </span></span>
+<span id="cb13-88"><a href="data-cleaning.html#cb13-88" tabindex="-1"></a>date_test <span class="ot">&lt;-</span> <span class="fu">create_date</span>(</span>
+<span id="cb13-89"><a href="data-cleaning.html#cb13-89" tabindex="-1"></a>  national_accounts,</span>
+<span id="cb13-90"><a href="data-cleaning.html#cb13-90" tabindex="-1"></a>  projections</span>
+<span id="cb13-91"><a href="data-cleaning.html#cb13-91" tabindex="-1"></a>)</span>
+<span id="cb13-92"><a href="data-cleaning.html#cb13-92" tabindex="-1"></a></span>
+<span id="cb13-93"><a href="data-cleaning.html#cb13-93" tabindex="-1"></a><span class="co"># ID </span></span>
+<span id="cb13-94"><a href="data-cleaning.html#cb13-94" tabindex="-1"></a>id_test <span class="ot">&lt;-</span> <span class="fu">create_id</span>(</span>
+<span id="cb13-95"><a href="data-cleaning.html#cb13-95" tabindex="-1"></a>  national_accounts, </span>
+<span id="cb13-96"><a href="data-cleaning.html#cb13-96" tabindex="-1"></a>  projections</span>
+<span id="cb13-97"><a href="data-cleaning.html#cb13-97" tabindex="-1"></a>)</span>
+<span id="cb13-98"><a href="data-cleaning.html#cb13-98" tabindex="-1"></a></span>
+<span id="cb13-99"><a href="data-cleaning.html#cb13-99" tabindex="-1"></a><span class="co"># Recession </span></span>
+<span id="cb13-100"><a href="data-cleaning.html#cb13-100" tabindex="-1"></a>recession_test <span class="ot">&lt;-</span> <span class="fu">create_recession</span>(</span>
+<span id="cb13-101"><a href="data-cleaning.html#cb13-101" tabindex="-1"></a>  national_accounts, </span>
+<span id="cb13-102"><a href="data-cleaning.html#cb13-102" tabindex="-1"></a>  projections,</span>
+<span id="cb13-103"><a href="data-cleaning.html#cb13-103" tabindex="-1"></a>  <span class="fu">create_placeholder_nas</span>()</span>
+<span id="cb13-104"><a href="data-cleaning.html#cb13-104" tabindex="-1"></a>)</span>
+<span id="cb13-105"><a href="data-cleaning.html#cb13-105" tabindex="-1"></a></span>
+<span id="cb13-106"><a href="data-cleaning.html#cb13-106" tabindex="-1"></a><span class="co"># ---fim-calculation----</span></span>
+<span id="cb13-107"><a href="data-cleaning.html#cb13-107" tabindex="-1"></a></span>
+<span id="cb13-108"><a href="data-cleaning.html#cb13-108" tabindex="-1"></a><span class="do">######################################################################################</span></span>
+<span id="cb13-109"><a href="data-cleaning.html#cb13-109" tabindex="-1"></a><span class="co"># This is the point where we go from generating our data inputs to actually calculating the FIM</span></span>
+<span id="cb13-110"><a href="data-cleaning.html#cb13-110" tabindex="-1"></a><span class="do">######################################################################################</span></span>
+<span id="cb13-111"><a href="data-cleaning.html#cb13-111" tabindex="-1"></a></span>
+<span id="cb13-112"><a href="data-cleaning.html#cb13-112" tabindex="-1"></a><span class="co"># This script defines the input variables used in the FIM. It assumes that the </span></span>
+<span id="cb13-113"><a href="data-cleaning.html#cb13-113" tabindex="-1"></a><span class="co"># test columns are saved in memory from the section above having already</span></span>
+<span id="cb13-114"><a href="data-cleaning.html#cb13-114" tabindex="-1"></a><span class="co"># been run.</span></span>
+<span id="cb13-115"><a href="data-cleaning.html#cb13-115" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/define_inputs.R&quot;</span>)</span>
+<span id="cb13-116"><a href="data-cleaning.html#cb13-116" tabindex="-1"></a></span>
+<span id="cb13-117"><a href="data-cleaning.html#cb13-117" tabindex="-1"></a><span class="co"># Next, we source essential functions we need to calculate the FIM in this section.</span></span>
+<span id="cb13-118"><a href="data-cleaning.html#cb13-118" tabindex="-1"></a><span class="co"># All of these modules contain nothing but functions. No actual code is executed</span></span>
+<span id="cb13-119"><a href="data-cleaning.html#cb13-119" tabindex="-1"></a><span class="co"># when you source them. Instead, the code is executed in this script.</span></span>
+<span id="cb13-120"><a href="data-cleaning.html#cb13-120" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;src/contributions.R&quot;</span>)</span>
+<span id="cb13-121"><a href="data-cleaning.html#cb13-121" tabindex="-1"></a></span>
+<span id="cb13-122"><a href="data-cleaning.html#cb13-122" tabindex="-1"></a><span class="co"># Another type of variable we need is MPC matrices. If you read the documentation</span></span>
+<span id="cb13-123"><a href="data-cleaning.html#cb13-123" tabindex="-1"></a><span class="co"># in `src/mpc_lorae.R`, you&#39;ll develop a clearer understanding of how these </span></span>
+<span id="cb13-124"><a href="data-cleaning.html#cb13-124" tabindex="-1"></a><span class="co"># matrices produce an MPC operation. We cache these matrices so that they do not </span></span>
+<span id="cb13-125"><a href="data-cleaning.html#cb13-125" tabindex="-1"></a><span class="co"># need to be regenerated each time the code is run. Instead, in the future, we&#39;ll</span></span>
+<span id="cb13-126"><a href="data-cleaning.html#cb13-126" tabindex="-1"></a><span class="co"># only rebuild these matrices when MPC inputs are changed using an &quot;observer&quot; </span></span>
+<span id="cb13-127"><a href="data-cleaning.html#cb13-127" tabindex="-1"></a><span class="co"># design pattern. This will save us a lot of computing time.</span></span>
+<span id="cb13-128"><a href="data-cleaning.html#cb13-128" tabindex="-1"></a><span class="co"># </span></span></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="data-sources-and-data-cleaning.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="fim-calculation.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
