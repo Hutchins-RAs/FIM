@@ -23,7 +23,7 @@
 <meta name="author" content="Georgia Nabors" />
 
 
-<meta name="date" content="2025-03-07" />
+<meta name="date" content="2025-03-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -217,8 +217,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="defining-the-fim-functions" class="section level2 hasAnchor" number="4.2">
 <h2><span class="header-section-number">4.2</span> Defining the FIM Functions<a href="fim-calculation.html#defining-the-fim-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Next, we source a helper script called <code>src/contributions.R</code> that defines the functions we use to calculate the FIM. They execute our “FIM math” step-by-step. There is documentation of our exact methodology in the FIM folder.</p>
-<p>In the helper script, we define several unit functions, which are the specific steps we apply to our input data to eventually produce our outputs - the contribution of each policy category to the overall FIM. We produce a contribution for federal purchases, state purchases, and consumption (taxes and transfers). The overall FIM is simply the sum of these contributions.</p>
-<p>Note that not all input data needs to go through all of the unit functions in order to produce the output. Specifically, the mpc step can be optionally skipped.</p>
+<p>In the helper script, we define several unit functions, which are the specific steps we apply to our input data to eventually generate our outputs. We also define two “wrapper functions” – functions that bundle together our unit functions to produce our final outputs. Our outputs are the contribution of each policy category to the overall FIM. We produce a contribution for federal purchases, state purchases, and consumption (taxes and transfers). The overall FIM is simply the sum of these contributions.</p>
+<p>Note that not all input data needs to go through all of the unit functions in order to produce the output. Specifically, the <code>mpc()</code> step can be optionally skipped.</p>
 <p><strong>MPC Function</strong></p>
 <p>The first unit function is called <code>mpc()</code>:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="fim-calculation.html#cb16-1" tabindex="-1"></a>mpc <span class="ot">&lt;-</span> <span class="cf">function</span>(x, mpc_matrix) {</span>
@@ -242,13 +242,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-19"><a href="fim-calculation.html#cb16-19" tabindex="-1"></a>}</span></code></pre></div>
 <p>This function takes a time series and an MPC matrix as its inputs. Our MPCs are stored in the <code>cache</code> folder. This documentation book contains a separate MPC chapter explaining in depth our MPCs and the process we use to apply them.</p>
 <p>The <code>mpc()</code> function first calls <code>x</code> (the data) and the appropriate <code>mpc_matrix</code> - an RDS file containing our MPCs. Our MPCs are cached, meaning we never overwrite or regenerate them in this code. This saves us significant processing time.</p>
-<p>Next, the function checks to ensure the dimensions of the matrix are equal to the length of the data series. Everything should be 259 entries in length (enough rows to store data from 1970 Q1 until 2034 Q3). For RAs working on the FIM in 2032, you will need to extend the MPC matrices and our data frame inputs to accommodate more quarters. Please see the MPC section for documentation on how we created these MPC matrices.</p>
+<p>Next, the function checks to ensure the dimensions of the matrix are equal to the length of the data series. Everything should be 259 entries in length (enough rows to store data from 1970 Q1 until 2034 Q3). For RAs working on the FIM in 2032, you will need to extend the MPC matrices and our data frame inputs to accommodate more quarters. Please see the MPC section for documentation on how we create these MPC matrices.</p>
 <p>We then format the data (<code>x</code>) as a vertical column matrix and coerce all NAs to zero. We define an object called output, which is the <code>mpc_matrix</code> multiplied by the vector of data. The function ultimately returns a numeric vector representing the post-MPC data.
 Again, please see the MPC section for further explanation of our MPCs.</p>
 <p>We do not apply MPCs to federal purchases, state purchases, investment grants, and consumption grants. This data already measures the direct effects of government spending on output. Our supply side IRA series (included as taxes) also does not have an MPC. “Supply side IRA” is construction spending on manufacturing facilities and equipment related to the IRA and CHIPs, which like federal and state purchases, we assume has an instantaneous effect on GDP. The implied MPC is 1 since “supply side IRA” already represents a direct estimate of how much legislation increased manufacturing output.</p>
 <p>We apply MPCs when we do believe that the effect of a cash flow on GDP is not immediate. For example, unemployment benefits might be received in quarter 1, but not spent until quarter 2. And some of the initial disbursement might be saved permanently. Thus, MPCs capture the timing effects of taxes and transfers on GDP as well as the fact that these polices may not have a 1:1 effect on output.</p>
 <p><em>So what gets an MPC?</em></p>
-<p>In summary, we apply MPCs to all of our taxe and transferpolicies except for supply side IRA. We do not apply MPCs to purchases or grants.</p>
+<p>In summary, we apply MPCs to all of our tax and transfer policies except for supply side IRA. We do not apply MPCs to purchases or grants.</p>
 <p><strong>Purchases FIM Function</strong></p>
 <p>Next, the <code>contributions.R</code> helper script defines two unit functions to calculate the FIM for purchases.</p>
 <p>The first function is the following:</p>
@@ -299,9 +299,9 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <span id="cb19-14"><a href="fim-calculation.html#cb19-14" tabindex="-1"></a>}</span></code></pre></div>
 <p>There is no MPC argument as we do not apply MPCs to purchases.</p>
 <p><strong>Taxes and Transfers</strong></p>
-<p>First, it’s important to be clear on the following: when we say “impulse from transfers and taxes”, we mean the post-MPC data - the dollars from the policy that actually turned into consumption each quarter.</p>
+<p>First, it’s important to be clear on the following: when we say “impulse from transfers and taxes”, we mean the post-MPC data – the dollars from the policy that actually turned into consumption each quarter.</p>
 <p>We calculate the FIM for net transfers a bit differently than we do for purchases. So let’s dive into our unit functions for consumption:</p>
-<p>First, we define <code>t_counterfactual()</code>, which as the name suggests, defines our counterfactual consumption - the level of consumption that would have prevailed if the impulse from taxes and transfers grew at the rate of potential GDP.</p>
+<p>First, we define <code>t_counterfactual()</code>, which as the name suggests, defines our counterfactual consumption – the level of consumption that would have prevailed if the impulse from taxes and transfers grew at the rate of potential GDP.</p>
 <p>Counterfactual consumption is equal to actual personal consumption expenditures less the consumption impulse from policy (the post-MPC data) plus the lagged impulse grown with real potential GDP and the PCE deflator. To simplify, we get actual consumption, subtract out the actual policy impulse, and replace it with a counterfactual policy impulse (what the policy impulse would have been if it grew at potential). The result is counterfactual consumption: what consumption would have been under this Hutchins-constructed policy impulse rather than the actual one.</p>
 <p>See below:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="fim-calculation.html#cb20-1" tabindex="-1"></a>t_counterfactual <span class="ot">&lt;-</span> <span class="cf">function</span>(x,  <span class="co"># Our data series </span></span>
@@ -321,7 +321,7 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <li><code>rpgg</code>, real potential GDP growth, at a quarterly rate</li>
 <li><code>dg</code>, consumption deflator growth, at a quarterly rate.</li>
 </ul>
-<p>Note: We need to convert our results to a numeric object. Sometimes, instead of using the sum of all of our post-MPC taxes and transfers, we input an individual post-MPC policy data series as <code>x</code> (<code>post-mpc-federal-subsidies</code>, for example). This is explained the ‘Net Transfers FIM Calculation’ section. These post-MPC objects are matrices, so we need to convert the result to numeric so it can be further processed by the functions below.</p>
+<p>Note: We need to convert our results to a numeric object. Sometimes, instead of using the sum of all of our post-MPC taxes and transfers, we input an individual post-MPC policy data series as <code>x</code> (<code>post-mpc-federal-subsidies</code>, for example). See the ‘Economics Methodology’ section for further explanation of how/why we do this. These post-MPC objects are matrices, so we need to convert the result to numeric so it can be further processed by the functions below.</p>
 <p>The function above executes the following part of our FIM math:
 <img src="images/t_counterfactual.png" alt="“An image of the counterfactual consumption FIM math”" /></p>
 <p>Our second unit function is <code>minus_neutral_t()</code>, the heart of our FIM calculation for transfers!</p>
@@ -366,6 +366,7 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 </div>
 <div id="applying-our-mpcs" class="section level2 hasAnchor" number="4.3">
 <h2><span class="header-section-number">4.3</span> Applying Our MPCs<a href="fim-calculation.html#applying-our-mpcs" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Now that we’ve defined each of our functions, let’s move on to applying our MPCS so we can calculate the FIM. d</p>
 <p>First, we use the <code>mpc()</code> function to apply MPCs to our taxes data. As discussed above, we take our data <code>x</code> and an MPC matrix as our inputs.</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="fim-calculation.html#cb24-1" tabindex="-1"></a><span class="co"># APPLY MPCS TO TAXES</span></span>
 <span id="cb24-2"><a href="fim-calculation.html#cb24-2" tabindex="-1"></a></span>
@@ -474,9 +475,9 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <h2><span class="header-section-number">4.4</span> Calculating the FIM<a href="fim-calculation.html#calculating-the-fim" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div id="purchases-fim" class="section level3 hasAnchor" number="4.4.1">
 <h3><span class="header-section-number">4.4.1</span> Purchases FIM<a href="fim-calculation.html#purchases-fim" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>In the national accounts data, the BEA allocates federal grants to state and local governments to the “state purchases” data series. We want to more accurately allocate this spending to the level of government that actually financed the purchases. Therefore, when we calculate the FIM for purchases, we need to reassign some spending by state and local governments to its actual source - the federal government.</p>
+<p>In the national accounts data, the BEA allocates federal grants to state and local governments to the “state purchases” data series. We want to more accurately allocate this spending to the level of government that actually financed the purchases. Therefore, when we calculate the FIM for purchases, we need to reassign some spending by state and local governments to its actual source – the federal government.</p>
 <p>A common distinction in the FIM lexicon is “NIPA consistent purchases” and “FIM consistent purchases.” “NIPA purchases” describes purchases as they are allocated by BEA. FIM purchases reflect our version of purchases, with consumption and investment grants to states reassigned to the federal government.</p>
-<p>Above, we calculated our data for FIM state purchases - NIPA state purchases minus consumption and investment grants. We calculate the FIM for “FIM consistent state purchases” in the section below. <code>fim_state_purchases_test()</code> is our data input, reflecting state purchases without the purchases funded by the federal government.</p>
+<p>Above, we calculated our data for FIM state purchases – NIPA state purchases minus consumption and investment grants. We calculate the FIM for “FIM consistent state purchases” in the section below. <code>fim_state_purchases_test()</code> is our data input, reflecting state purchases without the purchases funded by the federal government.</p>
 <p>To get the FIM for “FIM consistent federal purchases” we first calculate the FIM for total NIPA purchases. Then we subtract out the FIM for “FIM consistent state purchases.” The result is the FIM for “FIM consistent federal purchases.”</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="fim-calculation.html#cb27-1" tabindex="-1"></a><span class="co"># Federal Purchases Contribution (NIPA Consistent)</span></span>
 <span id="cb27-2"><a href="fim-calculation.html#cb27-2" tabindex="-1"></a>nipa_federal_purchases_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_purchases</span>(</span>
@@ -514,7 +515,7 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <div id="net-transfers-fim" class="section level3 hasAnchor" number="4.4.2">
 <h3><span class="header-section-number">4.4.2</span> Net Transfers FIM<a href="fim-calculation.html#net-transfers-fim" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Next, we calculate the FIM for net transfers by simply applying our <code>contribution_transfers()</code> wrapper function. Our data input is <code>taxes_transfers_test$data_series</code>, the sum of our post-MPC taxes and transfers.</p>
-<p>We also estimate the FIM for each specific tax or transfer program. Instead of plugging in the sum of our post-mpc taxes and transfers, we plug in the post-mpc data for an individual policy - <code>post_mpc_federal_subsidies</code>, for example. By doing this, we’re looking at the difference between the actual growth in consumption (which includes the actual impulse from that specific policy) and counterfactual consumption (which instead includes our constructed policy impulse - last quarter grown at potential). The result is an estimation of the contribution of that specific policy to the overall FIM. This is exactly the same math as what we apply to the net transfers sum. If we add each of these contributions, we will get close to our result using <code>taxes_transfers_test$data_series</code> as an input. Small differences arise because in <em>version 1</em>, we sum the net transfers data, calculate the FIM, and then annualize, whereas in version 2, we calculate the FIM, annualize, and then sum the components.</p>
+<p>We also estimate the FIM for each specific tax or transfer program. Instead of plugging in the sum of our post-mpc taxes and transfers, we plug in the post-mpc data for an individual policy – <code>post_mpc_federal_subsidies</code>, for example. By doing this, we’re looking at the difference between the actual growth in consumption (which includes the actual impulse from that specific policy) and counterfactual consumption (which instead includes our constructed policy impulse - last quarter grown at potential). The result is an estimation of the contribution of that specific policy to the overall FIM. This is exactly the same math as what we apply to the net transfers sum. If we add each of these contributions, we will get close to our result using <code>taxes_transfers_test$data_series</code> as an input. Small differences arise because in <em>version 1</em>, we sum the net transfers data, calculate the FIM, and then annualize, whereas in version 2, we calculate the FIM, annualize, and then sum the components.</p>
 <p>Below, we calculate the contribution for the net transfers sum as well as the individual components.</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="fim-calculation.html#cb28-1" tabindex="-1"></a><span class="co"># Net Transfers</span></span>
 <span id="cb28-2"><a href="fim-calculation.html#cb28-2" tabindex="-1"></a>consumption_contribution <span class="ot">&lt;-</span> <span class="fu">contribution_transfers</span>(</span>
