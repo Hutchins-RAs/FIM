@@ -15,6 +15,7 @@ output:
     toc_float: true
 ---
 
+```{=html}
 <style>
 .toc .active-link {
   background-color: gray;
@@ -36,23 +37,24 @@ output:
 }
 
 </style>
-
-
+```
+```{=html}
 <style>
   .r-object {
     font-family: Consolas;
     color: purple;
   }
 </style>
-
-
+```
+```{=html}
 <style>
   .git-object {
     font-family: Consolas, Courier New, Monaco, monospace;
     background-color: #f6f8fa;
   }
 </style>
-
+```
+```{=html}
 <style>
   .file {
     font-family: Consolas, Courier New, Monaco, monospace;
@@ -62,7 +64,8 @@ output:
     border-radius: 4px;
   }
 </style>
-
+```
+```{=html}
 <style>
   .head {
     background-color: #f6f8fa;
@@ -70,281 +73,298 @@ output:
     border-radius: 4px;
   }
 </style>
-
-
+```
 #### This is a guide to maintaining the [The Hutchins Impact Measure (the FIM)](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/). In it, I've tried to cover the basics of:
-- [Setting up your computer to run the FIM](#section-1)
-- [The FIM process](#section-2)
-- [Updating the FIM](#section-3)
+
+-   [Setting up your computer to run the FIM](#section-1)
+-   [The FIM process](#section-2)
+-   [Updating the FIM](#section-3)
 
 #### <a id="<i><u>note</i></u>"></a> <i><u>Note</i></u> that this is not a standalone document nor a comprehensive guide. It is aimed at supplementing our other resources, including:
 
-- Manu's [read-me](https://github.com/Hutchins-Center/fim#readme)
-- The guides and checklists in the data/<span class = "file">forecast.xlsx</span> workbook.
-- Our methodology documents found [here](https://www.brookings.edu/2022/02/17/a-guide-to-the-hutchins-center-fiscal-impact-measure/), [here](https://www.brookings.edu/research/the-hutchins-centers-fiscal-impact-measure/), and [here](https://www.brookings.edu/wp-content/uploads/2019/07/Deriving-the-Fiscal-Impact-Measure_12.23.pdf).
+-   Manu's [read-me](https://github.com/Hutchins-Center/fim#readme)
+-   The guides and checklists in the data/[forecast.xlsx]{.file} workbook.
+-   Our methodology documents found [here](https://www.brookings.edu/2022/02/17/a-guide-to-the-hutchins-center-fiscal-impact-measure/), [here](https://www.brookings.edu/research/the-hutchins-centers-fiscal-impact-measure/), and [here](https://www.brookings.edu/wp-content/uploads/2019/07/Deriving-the-Fiscal-Impact-Measure_12.23.pdf).
 
-
-<div id="section-1">
+::: {#section-1}
 ## Set up your computer to run the FIM
 
-<div id="section-1-1">
+::: {#section-1-1}
 ### Get Github
 
-We host the FIM at the following Github repository: [https://github.com/Hutchins-Center/fim](https://github.com/Hutchins-Center/fim). It contains the code, data, and output for the FIM. It was originally authored by Manuel Alcala Kovalski (Manu). 
+We host the FIM at the following Github repository: <https://github.com/Hutchins-Center/fim>. It contains the code, data, and output for the FIM. It was originally authored by Manuel Alcala Kovalski (Manu).
 
 If you're new to Github, you might find Manu's [slides](https://malcalakovalski.github.io/git_brownbag/#1) a useful introduction. The Desktop version of Git is probably the easiest to use and is the version I've chosen for this guide. Here's how to get Git:
 
-1. Sign up for a [Github account](https://github.com/signup) if you don't already have one.
-2. Install the [Github Desktop app](https://desktop.github.com/) from the Software Center.
-3. Clone the following repository to a folder on your computer: [https://github.com/Hutchins-Center/fim](https://github.com/Hutchins-Center/fim). (In the Desktop App, go to `File`>`Clone a respository`>`URL` and paste in the link.) In `Local path` choose a location on your computer where you'd like to host the `fim` folder.
-<i><u>Note</i></u>: Choose a file path that is not synced to Sharepoint. More specifically, the file should be on your hard drive, not one that is uploaded to a Cloud. 
+1.  Sign up for a [Github account](https://github.com/signup) if you don't already have one.
+2.  Install the [Github Desktop app](https://desktop.github.com/) from the Software Center.
+3.  Clone the following repository to a folder on your computer: <https://github.com/Hutchins-Center/fim>. (In the Desktop App, go to `File`\>`Clone a respository`\>`URL` and paste in the link.) In `Local path` choose a location on your computer where you'd like to host the `fim` folder. <i><u>Note</i></u>: Choose a file path that is not synced to Sharepoint. More specifically, the file should be on your hard drive, not one that is uploaded to a Cloud.
 
-We use Git to <span class = "git-object">push</span> our own changes and <span class = "git-object">pull</span> other contributors' changes to the FIM. 
+We use Git to [push]{.git-object} our own changes and [pull]{.git-object} other contributors' changes to the FIM.
 
-- Any updates you make within the `fim` folder will have to be saved using <span class = "git-object">commit</span> in the Github Desktop app. Make sure to use a descriptive commit summary that highlights the changes you made.
+-   Any updates you make within the `fim` folder will have to be saved using [commit]{.git-object} in the Github Desktop app. Make sure to use a descriptive commit summary that highlights the changes you made.
 
-- After committing your changes, you will have to <span class = "git-object">push</span> your changes to <span class = "origin">fetch</span>([https://github.com/Hutchins-Center/fim](https://github.com/Hutchins-Center/fim)) to make them available to other contributors. 
+-   After committing your changes, you will have to [push]{.git-object} your changes to [fetch]{.origin}(<https://github.com/Hutchins-Center/fim>) to make them available to other contributors.
 
-- Pushed changes can then be <span class = "git-object">fetch</span>-ed and <span class = "git-object">pull</span>-ed within the Github Desktop app by others.
+-   Pushed changes can then be [fetch]{.git-object}-ed and [pull]{.git-object}-ed within the Github Desktop app by others.
 
-<i><u>Note</i></u> that merging changes for the same file can be tricky so multiple users should not be simultaneously working on the same file. Wait for them to <span class = "git-object">push</span> their changes. Then <span class = "git-object">fetch</span> and <span class = "git-object">pull</span> them in before making changes to the same file. 
+<i><u>Note</i></u> that merging changes for the same file can be tricky so multiple users should not be simultaneously working on the same file. Wait for them to [push]{.git-object} their changes. Then [fetch]{.git-object} and [pull]{.git-object} them in before making changes to the same file.
 
-Only approved contributors can make changes to the repository. To be added, please reach out to the admin with your Github username. The current admin is Lorae Stojanovic (`@lorae-brookings`). To add contributors, admins can navigate to [https://github.com/Hutchins-Center/fim/settings/access](https://github.com/Hutchins-Center/fim/settings/access) and add people by their username. They can also remove contributors or reassign admin duties. For security, try to restrict the admin designation to one RA at a time.
-</div>
+Only approved contributors can make changes to the repository. To be added, please reach out to the admin with your Github username. The current admin is Lorae Stojanovic (`@lorae-brookings`). To add contributors, admins can navigate to <https://github.com/Hutchins-Center/fim/settings/access> and add people by their username. They can also remove contributors or reassign admin duties. For security, try to restrict the admin designation to one RA at a time.
+:::
 
+::: {#section-1-2}
+### Install the [fim]{.r-object} package
 
-<div id = "section-1-2">
-### Install the <span class = "r-object">fim</span> package
+After cloning the `fim` repository to your computer, you should install the [fim]{.r-object} package in R. This package, written by Manu, contains all functions required for the FIM. Again, it is highly recommended that you consult Manu's [read-me](https://github.com/Hutchins-Center/fim#readme) and the resources that he cites to better understand how the FIM works.
 
-After cloning the `fim` repository to your computer, you should install the <span class = "r-object">fim</span> package in R. This package, written by Manu, contains all functions required for the FIM. Again, it is highly recommended that you consult Manu's [read-me](https://github.com/Hutchins-Center/fim#readme) and the resources that he cites to better understand how the FIM works. 
+1.  Install RTools from the Software Center if you don't already have it.
 
-1. Install RTools from the Software Center if you don't already have it. 
+2.  Install the [fim]{.r-object} package by running the following code in your R console:
 
-2. Install the <span class = "r-object">fim</span> package by running the following code in your R console:
-
-```
+```         
 install.packages("devtools") 
 install.packages("librarian") 
 
 devtools::install_github("Hutchins-Center/fim")
 ```
 
-3. <a id = "load_fim"></a> To load the <span class = "r-object">fim</span> package, open the <span class = "file">fim.Rproj</span> file in the fim directory. This will set the working directory to the fim folder. <u>IMPORTANT: Make sure to always have the <span class = "file">fim.Rproj</span> file open before running any code related to the FIM.</u>
+3.  <a id = "load_fim"></a> To load the [fim]{.r-object} package, open the [fim.Rproj]{.file} file in the fim directory. This will set the working directory to the fim folder. <u>IMPORTANT: Make sure to always have the [fim.Rproj]{.file} file open before running any code related to the FIM.</u>
 
-4. Next, open the <span class = "file">fiscal_impact.R</span> script and run up till the line ```devtools::load_all()``` (line 8 at the time of writing this guide) to load the <span class = "r-object">fim</span> package and all relevant functions. <i><u>Note</i></u>: if it is your first time running the script, it is best to run this section one line at a time and install all dependencies. Each subsequent time, you can load the <span class = "r-object">fim</span> by pressing `CTRL + SHIFT + L` when working within the <span class = "file">fim.Rproj</span> file.
+4.  Next, open the [fiscal_impact.R]{.file} script and run up till the line `devtools::load_all()` (line 8 at the time of writing this guide) to load the [fim]{.r-object} package and all relevant functions. <i><u>Note</i></u>: if it is your first time running the script, it is best to run this section one line at a time and install all dependencies. Each subsequent time, you can load the [fim]{.r-object} by pressing `CTRL + SHIFT + L` when working within the [fim.Rproj]{.file} file.
 
 As general R practice, avoid saving the R Workspace image when you exit. (To disable this exit prompt, navigate to `Tools > Global Options` from the top menu bar. In the `General` tab, change the value for `Save workspace to . RData on exit` to `Never`)
-</div>
-</div>
-
+:::
+:::
 
 <div id="section-3">
+
 ## Updating the FIM
 
 <div id = "section-3-1">
+
 ### Data sources
+
 We gather <a id = "data"></a> data for two specific parts of the FIM: the *historical* period and the *forecast* period.
 
-- We get data for our *historical* period (everything including the most recent numbers) from BEA's [National Income and Product Accounts](https://www.bea.gov/products/national-income-and-product-accounts), which are hosted on [Haver](https://haver.com/).
+-   We get data for our *historical* period (everything including the most recent numbers) from BEA's [National Income and Product Accounts](https://www.bea.gov/products/national-income-and-product-accounts), which are hosted on [Haver](https://haver.com/).
 
-  - <a id = "bea_data"></a> Every month, the BEA releases new data on GDP (known as the [gdp release](https://www.bea.gov/data/gdp/gross-domestic-product)). For each quarter, we get a preliminary estimate and two revisions, thus giving us data over three months for each quarter. These data are updated in the [Haver datasets](https://haverproducts.com/products/u-s-economic-detail/#top).
-  
+    -   <a id = "bea_data"></a> Every month, the BEA releases new data on GDP (known as the [gdp release](https://www.bea.gov/data/gdp/gross-domestic-product)). For each quarter, we get a preliminary estimate and two revisions, thus giving us data over three months for each quarter. These data are updated in the [Haver datasets](https://haverproducts.com/products/u-s-economic-detail/#top).
+
 <p>
-- We get estimates for our *forecast* period using the BEA data as well as CBOs [Budget, Economic, and Revenue Projections](https://www.cbo.gov/data/budget-economic-data).
 
-  - Typically, a few times each year, the CBO releases updates on its projections. We use variables from the [10-year Budget](https://www.cbo.gov/data/budget-economic-data#3), [10-year Economic](https://www.cbo.gov/data/budget-economic-data#4), and [Revenue](https://www.cbo.gov/data/budget-economic-data#7) projections as a baseline for many of our *forecast* estimates.
-</div>
+-   We get estimates for our *forecast* period using the BEA data as well as CBOs [Budget, Economic, and Revenue Projections](https://www.cbo.gov/data/budget-economic-data).
+
+    -   Typically, a few times each year, the CBO releases updates on its projections. We use variables from the [10-year Budget](https://www.cbo.gov/data/budget-economic-data#3), [10-year Economic](https://www.cbo.gov/data/budget-economic-data#4), and [Revenue](https://www.cbo.gov/data/budget-economic-data#7) projections as a baseline for many of our *forecast* estimates.
+
+        </div>
 
 <div id = "section-3-2">
+
 ### Documents used in updates
 
 <div id = "section-3-2-1">
-#### data-raw/<span class = "file">haver_pull.R</span>
-- Used for 'pulling in the data' when GDP numbers come in, used every update.<a id = "haver_pull"></a>
-  - We pull GDP data from Haver using this script following a [BEA release](#data) (typically the last Thursday of the month; view upcoming releases [here](https://www.bea.gov/news/schedule)).
-  - It updates the <span class = "r-object">national accounts</span> dataset and the <i>Haver Pivoted</i> sheet in the data/<span class = "file">forecast.xlsx</span> workbook.
-  - <i><u>Note</i></u>: We only run the script the morning of the GDP release (once the numbers have been updated on Haver). It is important to [prep the forecast sheet](#prep) before pulling in the data, meaning it should only be run once you're ready for the current update and not in between updates.
-  </div>
+
+#### data-raw/[haver_pull.R]{.file}
+
+-   Used for 'pulling in the data' when GDP numbers come in, used every update.<a id = "haver_pull"></a>
+
+    -   We pull GDP data from Haver using this script following a [BEA release](#data) (typically the last Thursday of the month; view upcoming releases [here](https://www.bea.gov/news/schedule)).
+    -   It updates the [national accounts]{.r-object} dataset and the <i>Haver Pivoted</i> sheet in the data/[forecast.xlsx]{.file} workbook.
+    -   <i><u>Note</i></u>: We only run the script the morning of the GDP release (once the numbers have been updated on Haver). It is important to [prep the forecast sheet](#prep) before pulling in the data, meaning it should only be run once you're ready for the current update and not in between updates.
+
+    </div>
 
 <div id = "section-3-2-2">
-#### data/<span class = "file">forecast.xlsx</span>
-- We call this the <a id = "forecast"></a>'forecast sheet' (even though it's a workbook and has a sheet called <i>forecast</i> within it), used every update.
-  - This is the main document that we use to update the FIM forecast.
-  - It comprises sheets that calculate the forecast levels for various FIM components, as well as the data and policy scores used to generate them. It also includes the primary instructions on how to update the FIM and a record of MPC assumptions.
-  - When new BEA data comes in, we use data-raw/<span class = "file">haver_pull.R</span> to pull it into the <i>Haver Pivoted</i> sheet. The <i>Haver Pivoted</i> sheet contains quarterly BEA data up to and including the most recent numbers in the right-most column.
-  - The sheets of the FIM components pull data from <i>Haver Pivoted</i>. Each of these sheets has one or several tables split into a *historical* and a *forecast* period. The line items in these tables feed into formulas to create a top-line FIM component in the *forecast* period, which is then pulled into the <i>forecast</i> sheet.
-  - Certain values are also called into the <i>historical overrides</i> and <i>deflators_override</i> sheets. These two sheets, along with the <i>forecast</i> sheet, are the only ones pulled into the code.
-  </div>
 
-<div id = "section-3-2-3">
-#### <span class="file">fiscal_impact.R</span>
-- <a id = "fiscal_impact.R"></a>What we call 'running the FIM', used every update.
-  - This is the main script that calculates the FIM. Typically, this is the only script we run after we are happy with the <span class="file">forecast.xlsx</span> sheet. 
-  - It pulls in the updated data (the <span class="r-object">national accounts</span> and <span class="r-object">projections</span> datasets), the updated *forecast* sheet from the data/<span class="file">forecast.xlsx</span> workbook, the historical overrides and our updated deflators (*historical overrides*, and *deflators_override* sheets from the same workbook).
-  - It cleans, reshapes, and defines the FIM categories for the *historical* and *forecast* period by calling all the relevant functions from the <span class="r-object">fim</span> package. 
-  - It calculates the FIM by generating the counterfactual levels, getting the difference from the actuals, applying MPCs, and their % contributions to GDP. (See the methodology document linked [above](#<i><u>note</i></u>) for details)
-  - It generates the update comparison (where we compare how much our estimates have changed since the last update by category), reported in the <span class="file">index.html</span> file.
-  - It generates the web materials that we publish on the website: `results/month-year/`<span class="file">Fiscal-Impact-month-year.html</span> and `results/month-year/`<span class="file">interactive-month-year.csv</span>. It also saves a copy of the <span class="file">forecast.xlsx</span> workbook for the current update in the same `results` directory for future reference.
-  </div>
+#### data/[forecast.xlsx]{.file}
 
-<div id = "section-3-2-4">
-#### inst/extdata/<span class = "file">projections.xlsx</span>
-- Used only when CBO has a new baseline.
-  - This workbook holds the CBO Budget and Economic Outlook variables that are used in the code.
-  - When CBO releases a new baseline, we manually update the sheets in this workbook to pull them into R
-</div>
+-   We call this the <a id = "forecast"></a>'forecast sheet' (even though it's a workbook and has a sheet called <i>forecast</i> within it), used every update.
 
+    -   This is the main document that we use to update the FIM forecast.
+    -   It comprises sheets that calculate the forecast levels for various FIM components, as well as the data and policy scores used to generate them. It also includes the primary instructions on how to update the FIM and a record of MPC assumptions.
+    -   When new BEA data comes in, we use data-raw/[haver_pull.R]{.file} to pull it into the <i>Haver Pivoted</i> sheet. The <i>Haver Pivoted</i> sheet contains quarterly BEA data up to and including the most recent numbers in the right-most column.
+    -   The sheets of the FIM components pull data from <i>Haver Pivoted</i>. Each of these sheets has one or several tables split into a *historical* and a *forecast* period. The line items in these tables feed into formulas to create a top-line FIM component in the *forecast* period, which is then pulled into the <i>forecast</i> sheet.
+    -   Certain values are also called into the <i>historical overrides</i> and <i>deflators_override</i> sheets. These two sheets, along with the <i>forecast</i> sheet, are the only ones pulled into the code.
 
-<div id = "section-3-2-5">
-####  data-raw/<span class = "file">projections.R</span>
-- Used only when CBO has a new baseline.
-  - This script pulls CBO data into R.
-  - We run it after we've updated inst/extdata/<span class = "file">projections.xlsx</span> with a new CBO baseline.
-  - It pulls the *economic* and *budget* sheets from <span class = "file">projections.xlsx</span>, cleans them, and updates the <span class = "r-object">projections</span> dataset.
-  - The updated <span class = "r-object">projections</span> dataset is used when we run the FIM using <span class = "file">fiscal_impact.R</span>. This means that we only have to run <span class = "file">projections.R</span> once we get a new CBO baseline.
-  - <i><u>Note</i></u> that neither <span class = "file">projections.xlsx</span> nor <span class = "file">projections.R</span> updates the <span class = "file">forecast.xlsx</span> workbook following a CBO release: they only update the <span class = "r-object">projections</span> dataset. We manually paste in certain series from the CBO update into the forecast sheet (see instructions here)
-</div>
-</div>
+    </div>
 
+::: {#section-3-2-3}
+#### [fiscal_impact.R]{.file} {#fiscal_impact.r}
+
+-   <a id = "fiscal_impact.R"></a>What we call 'running the FIM', used every update.
+
+    -   This is the main script that calculates the FIM. Typically, this is the only script we run after we are happy with the [forecast.xlsx]{.file} sheet.
+    -   It pulls in the updated data (the [national accounts]{.r-object} and [projections]{.r-object} datasets), the updated *forecast* sheet from the data/[forecast.xlsx]{.file} workbook, the historical overrides and our updated deflators (*historical overrides*, and *deflators_override* sheets from the same workbook).
+    -   It cleans, reshapes, and defines the FIM categories for the *historical* and *forecast* period by calling all the relevant functions from the [fim]{.r-object} package.
+    -   It calculates the FIM by generating the counterfactual levels, getting the difference from the actuals, applying MPCs, and their % contributions to GDP. (See the methodology document linked [above](#%3Ci%3E%3Cu%3Enote%3C/i%3E%3C/u%3E) for details)
+    -   It generates the update comparison (where we compare how much our estimates have changed since the last update by category), reported in the [index.html]{.file} file.
+    -   It generates the web materials that we publish on the website: `results/month-year/`[Fiscal-Impact-month-year.html]{.file} and `results/month-year/`[interactive-month-year.csv]{.file}. It also saves a copy of the [forecast.xlsx]{.file} workbook for the current update in the same `results` directory for future reference.
+
+    </div>
+
+::: {#section-3-2-4}
+#### inst/extdata/[projections.xlsx]{.file}
+
+-   Used only when CBO has a new baseline.
+    -   This workbook holds the CBO Budget and Economic Outlook variables that are used in the code.
+    -   When CBO releases a new baseline, we manually update the sheets in this workbook to pull them into R
+:::
+
+::: {#section-3-2-5}
+#### data-raw/[projections.R]{.file}
+
+-   Used only when CBO has a new baseline.
+    -   This script pulls CBO data into R.
+    -   We run it after we've updated inst/extdata/[projections.xlsx]{.file} with a new CBO baseline.
+    -   It pulls the *economic* and *budget* sheets from [projections.xlsx]{.file}, cleans them, and updates the [projections]{.r-object} dataset.
+    -   The updated [projections]{.r-object} dataset is used when we run the FIM using [fiscal_impact.R]{.file}. This means that we only have to run [projections.R]{.file} once we get a new CBO baseline.
+    -   <i><u>Note</i></u> that neither [projections.xlsx]{.file} nor [projections.R]{.file} updates the [forecast.xlsx]{.file} workbook following a CBO release: they only update the [projections]{.r-object} dataset. We manually paste in certain series from the CBO update into the forecast sheet (see instructions here)
+:::
+:::
 
 <div id = "section-3-3">
+
 ### Steps to update the FIM
 
 <div id="section-3-3-1">
 
 #### BEA
+
 As mentioned [above](#data), we get monthly data for the quarterly BEA numbers. The process varies a little if it's a [new quarter](#new_q) or [revision](#rev). FIM updates are published the day after we get the data (i.e., by the end of Friday if we got the data on Thursday).
 
-<div style="line-height: 1.5;">
+::: {style="line-height: 1.5;"}
 All BEA updates follow the same basic structure:
 
-1. [Prep](#prep) the forecast sheet.
-2. [Pull](#pull) GDP data.
-3. [Discuss](#discuss) and adjust the forecast.
-4. [Run](#run_the_fim) the FIM.
-5. [Publish](#publish) the results.
-</div>
+1.  [Prep](#prep) the forecast sheet.
+2.  [Pull](#pull) GDP data.
+3.  [Discuss](#discuss) and adjust the forecast.
+4.  [Run](#run_the_fim) the FIM.
+5.  [Publish](#publish) the results.
+:::
 
-<div id = "section-3-3-1-1">
-#####  New quarter update 
+::: {#section-3-3-1-1}
+##### New quarter update
+
 <a id = "new_q"></a>Every three months (Jan, Apr, Jul, and Oct) we get data for what we call a "new" quarter from the BEA. BEA calls this the [Advance estimate](https://www.bea.gov/help/glossary/advance-estimate) for the most recent quarter (so, in Jan 2023, we got the Advance estimate for Q4 2022; in Dec 2022, we got the Advance estimate for Q3 2022, etc.) Running this update is the most time-intensive because steps (1), (3), and (5) take more time than they do in a revision. Methodologically, only step (1) is different between a [new quarter](#new_q) and a [revision](#rev).
 
-1. <a id = "prep"></a> Prep the forecast sheet
-    - <b>When do we do this?</b> Before the data come out, ideally before the Thursday of the [GDP release](https://www.bea.gov/data/gdp/gross-domestic-product). 
-    - Open the data/[forecast.xlsx](#forecast) file.
-    - Navigate to the sheet that says <i>Checklist (New Quarter Release)</i> sheet
-    - Go through the checklist and update the sheets in the Excel workbook according to the instructions. The goal is to do all the steps that can be done without the data: at the time of writing this guide, that means going through row 6, "Prepare the Historical Overrides and deflators_override sheets." 
-        - <i><u>Note</i></u>: be extra careful with row 5, "Prepare this month's spreadsheet for a new quarter of data to be read in from Haver." This is the most important part of our new quarter update, as it sets us up to use the new data we'll be getting to inform our new forecast. Double check every formula in the historical period and the forecast period, check your intuition for how we're using the data to inform our forecast, check whether there are any inconsistencies in our formulas ... basically, do a good job because mistakes here can be costly. 
-        - At the time of writing this guide, the following sheets must have their formulas updated: MPI (see [below](#MPI)), historical overrides and deflators_override (see row 6), Unemployment Insurance, Grants, Federal and State Purchases, Subsidies, Medicaid, Medicare, Social benefits, Taxes and Deflators.) We do not get Federal or State Corporate Taxes in the Advance estimate, so these lines ought to remain as a forecast this time (in other words, don't pull them forward in the Taxes sheet -- we'll do that when we get the second estimate)
+1.  <a id = "prep"></a> Prep the forecast sheet
+    -   <b>When do we do this?</b> Before the data come out, ideally before the Thursday of the [GDP release](https://www.bea.gov/data/gdp/gross-domestic-product).
+    -   Open the data/[forecast.xlsx](#forecast) file.
+    -   Navigate to the sheet that says <i>Checklist (New Quarter Release)</i> sheet
+    -   Go through the checklist and update the sheets in the Excel workbook according to the instructions. The goal is to do all the steps that can be done without the data: at the time of writing this guide, that means going through row 6, "Prepare the Historical Overrides and deflators_override sheets."
+        -   <i><u>Note</i></u>: be extra careful with row 5, "Prepare this month's spreadsheet for a new quarter of data to be read in from Haver." This is the most important part of our new quarter update, as it sets us up to use the new data we'll be getting to inform our new forecast. Double check every formula in the historical period and the forecast period, check your intuition for how we're using the data to inform our forecast, check whether there are any inconsistencies in our formulas ... basically, do a good job because mistakes here can be costly.
+        -   At the time of writing this guide, the following sheets must have their formulas updated: MPI (see [below](#MPI)), historical overrides and deflators_override (see row 6), Unemployment Insurance, Grants, Federal and State Purchases, Subsidies, Medicaid, Medicare, Social benefits, Taxes and Deflators.) We do not get Federal or State Corporate Taxes in the Advance estimate, so these lines ought to remain as a forecast this time (in other words, don't pull them forward in the Taxes sheet -- we'll do that when we get the second estimate)
+2.  <a id = "pull"></a> Pull GDP data
+    -   <b>When do we do this?</b> The day of the [GDP release](https://www.bea.gov/data/gdp/gross-domestic-product), ideally first thing Thursday morning.
+    -   Open the [fim.Rproj]{.file} file and load the [fim]{.r-object} package (`CTRL+SHIFT+L`)
+    -   Open the data-raw/[haver_pull.R](#haver_pull) script and run it. Make sure that you don't have the data/[forecast.xlsx](#forecast) workbook open, as this script overwrites the <i>Haver Pivoted</i> sheet (and, as mentioned [above](#haver_pull), updates the [national accounts]{.r-object}.) <i><u>Note</i></u>: If this is your first time running [haver_pull.R](#haver_pull), you'll need to first install the `Haver` package in R by running the following in your console: `install.packages("Haver", repos="http://www.haver.com/r/")`
+    -   To check whether the data has been successfully updated, go to data/[forecast.xlsx](#forecast) \> <i>Haver Pivoted</i> and scroll to the rightmost column. It should have the latest quarter of BEA data for each of the series.
+    -   <i><u>Note</i></u>: We pull data from three Haver databases: <b> USNA</b>, <b>USECON</b> and <b>CPIDATA</b>. Each variable that we pull has a haver code associated with it. If you want to add a new variable to the FIM, you should add the haver code and variable name to data/[haver_names.xlsx]{.file} (if it's in <b> USNA</b>) or you should add it to the data-raw/[haver_pull.R](#haver_pull) script using the `pull_data()` function. Make sure to put this new variable at the end of the [national accounts]{.r-object} dataset using the `relocate()` function so as to not mess up the formulas in the forecast sheet.
+    -   <i><u>Note</i></u>: If this is a new quarter, we're not going to get the following numbers: Construction (cpgs), Federal Corporate Income Taxes (gfrcp), and State Corporate Income Taxes (gsrcp). BEA publishes this data for the first time in the second estimate, and we'll get them next month.
+        -   <a id = "MPI"></a><b> A bit about the Monthly Personal Income release</b>: The data we get on Thursday from the GDP release are quarterly. On Friday morning, we get <i>monthly</i> data for certain series that feed into the FIM (such as Social Security, Medicare, Medicaid, UI, and Personal and Social Insurance Taxes.) This is contained in the [MPI](https://www.bea.gov/data/income-saving/personal-income).
+        -   We use this more granular data to help guide our forecast for these components. (Note that we already have the quarterly data for Social Security, etc. The MPI is simply providing us with more information about trends/data points that are not contained in the quarterly numbers.)
+        -   To look at the MPI, download the release tables and paste [<u>Table 1. Personal Income and Its Disposition (Months)</u>](https://www.bea.gov/data/income-saving/personal-income) into the previous month's MPI sheet. Rename the sheet to the current month. Look through the components in the release -- which ones feed into the FIM? At the time of writing this guide, we get Social Security, Medicare, Medicaid, UI, and Personal and Social Insurance Taxes, but we used to get more in the [Pandemic Era](https://www.bea.gov/federal-recovery-programs-and-bea-statistics/covid-19-recovery). Highlight the items that are relevant to us.
+        -   The rightmost column of this sheet should contain forecast values of the first quarter that we're forecasting (so 2023 Q3 values if we got data for 2023 Q2 on Thursday.) Make sure to update/add formulas in this column so that they call from the appropriate cells in our individual sheets. (So, for instance, if we just got data for 2023 Q2, the rightmost column of the Medicare line in the MPI table should be calling column W of <i>Total Medicare</i> line in the <i>Medicare</i> sheet.)
+3.  <a id = "discuss"></a> Discuss and adjust the forecast
+    -   <b>When do we do this?</b> After we've pulled in the data, ideally on Thursday and some on Friday.
+    -   This refers to rows 13-15 of the <i>Checklist (New Quarter Release)</i> sheet. Basically, we'll look through the forecast and see how much things have moved and try to reason through the changes.The goal is to figure out where the changes in our forecast are coming from to have a productive conversation with Louise.\
+    -   It's best to work through the <i>forecast comparison</i> sheet component by component. The top table in this sheet is our current forecast which is being pulled from the <i>forecast</i> sheet. The second table is what our forecast was last month (recall we pasted these values in when we [prepped the forecast sheet](#prep).) The third table tells us the level differences in our forecast -- how much it moved from last time. The fourth table tells us the same thing, but in percent terms.
+    -   Look out for any components that look different in the third and fourth tables. This will tell us which sheets to visit to reconcile any differences in our forecast from last time.
+    -   If a component looks different, figure out why and flag the differences for Louise. For instance, if the current forecast for consumption grants looks off from the previous, go into the <i>Grants</i> sheet and figure out how we're getting the numbers that are being pulled into row 2 of the <i>forecast</i> sheet. You can paste in the tables that we had last time in the <i>Grants</i> sheet (from `results/{last month}/input_data/forecast_{last_month}.xlsx`) to find the source of the differences more easily.
+    -   On Friday morning, after we get the [MPI](#MPI), walk through the monthly data for the components we got from the BEA and compare it to our forecast for the next quarter. Is our forecast for each component in line with the monthly trends? Do we need to revise any up or down? Again, flag items to talk through with Louise.
+4.  <a id = "run_the_fim"></a> Run the FIM
+    -   <b>When do we do this?</b> After we're happy with the state of our <i>forecast</i> sheet and our <i>historical overrides</i> and <i>deflators_override</i> sheets have been appropriately updated, usually late Thursday or Friday. Usually run more than once.
+    -   This involves running the [fiscal_impact.R](#fiscal_impact.R) script in its entirety (make sure to have the <b>fim.Rproj</b> file open when you run it.) The script will produce the results and comparison files to walk through with Louise.
+    -   You can see the output of the FIM in the <b>index.html</b> file. This is the main file that we walk through with Louise, as it shows us how the changes we made in the forecast sheet translated to changes in the FIM. The percent contributions of each component (FIM consistent purchases, Taxes and Transfers) add up to the headline FIM. The underlying numbers that go into the charts are contained in `results/{current_month}/fim-{current_month}.xlsx` (for the blue bars) and in `results/{last_month}/fim-{last_month}.xlsx` for (for the yellow bars.)
+    -   Go through the output and make adjustments to the <i>forecast</i> sheet as necessary. Run the FIM each time you make a change in the <b>forecast.xlsx</b> workbook.
+    -   NEW: After you're happy with the final output, open `Fiscal-Impact.html`. Hit `CTRL+P` and save the webpage as a pdf named `Fiscal-Impact.pdf` in the `fim` directory. Make sure that the printed pdf doesn't have any header/footers and is in color, etc.
+5.  <a id = "publish"></a> Publish results
+    -   <b>When do we do this?</b> After we've finalized the FIM output, ideally Friday afternoon (at worst, evening.)
+    -   We publish the FIM results on two platforms: [Wordpress](https://www.brookings.edu/wp-admin/) and [Hubspot](https://app.hubspot.com/login/). Speak with Comms to make sure you have accounts on both platforms with publishing privileges.
+    -   The publication is accompanied by a "write up" that summarizes the current FIM. We create this in [The Hutchins Center Sharepoint](https://brookingsinstitution.sharepoint.com/sites/hutchinscenterteam/) rather than in the `fim` github directory. All write ups are contained in `Documents/Projects/Fiscal Impact/Write Ups`. You can simply make a copy of last month's write up document, rename it, and track changes to the text to reflect the latest FIM. Go into the `Fiscal-Impact.pdf` file in the `fim` directory, screenshot the pictures, and replace them in the document. Double check every claim and send the draft to David and Louise to look over. Wait for their sign off before publishing.
+    -   Publishing on [Wordpress](https://www.brookings.edu/wp-admin/):
+        -   This updates the [FIM landing page](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/) on the Brookings website -- the one that lives on the web and comes up when you Google the FIM.
+        -   Go to [https://www.brookings.edu/wp-admin](https://www.brookings.edu/wp-admin/)
+        -   In the left-hand panel, select Content \> Articles
+        -   Search "fiscal impact" in the search bar. The Hutchins Center Fiscal Impact Measure post should come up. Hit "Edit".
+        -   Update the text of the post in the WYSIWYG tab to reflect the latest write up. Make sure to not get rid of any of the html code on this page while doing so.
+        -   On the left sidebar, navigate to the "Sidebar / Widgets" tab. In the file labeled "Fiscal impact," upload the `Fiscal-Impact.pdf` that you saved from the html version. To do this, hover over the paper icon and click on the pencil icon to edit. Upload the new file, making sure that you select the "Replace the file, use the new file name, and update all links" and "Replace the date with the current date" options.
+        -   To upload the interactive file, you will need to upload the CSV file to the Media Library. Click on the icon for the uploaded file in the Media Library grid. In the Attachment details window, copy the File URL to your clipboard. Go under the Interactives tab from the left sidebar and choose "Hutchins Center Fiscal Impact Measure CSV Update." Replace the https link with the URL for the new CSV file. It should now reflect this update's month and year. (The file path that you're replacing should look something like this: [`https://www.brookings.edu/wp-content/uploads/2023/04/interactive-05-2023.csv`](https://www.brookings.edu/wp-content/uploads/2023/04/interactive-05-2023.csv)) Click on the Update button in the right-hand column of the template.
+        -   You should now be able to replace the interactive file in the "Sidebar / Widgets" tab using the same steps as replacing the pdf. Note that the file name will most probably include a "-1" near the end to indicate that a CSV file has already been saved with that name in the Media Library.
+        -   Hit "Edit" in the "Published on" menu on the top righthand panel. Select a time that's a few minutes earlier than the current time.
+        -   Hit "Update"
+        -   Check that the interactive and the post were updated on the [FIM landing page](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/) and that it contains the appropriate downloads.
+        -   Send an email to David, Louise and Stephanie with the information that the FIM has been updated.
+    -   Publishing on [Hubspot](https://app.hubspot.com/login/):
+        -   <a id = "hubspot"></a>This step drafts a newsletter that we only send out every new quarter (and not during the revision). Note that if you have any experience drafting the Roundup email, you'll find this to be very similar.
+        -   Log in to [Hubspot](https://app.hubspot.com/login/)
+        -   Search for "fim" in the search bar
+        -   Hover over the last quarter email draft and hit "Clone" \> "Regular" \> "Keep custom plain text"
+        -   Update the date and the text of the email. Make sure to link the [Hutchins Center Fiscal Impact Measure](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/) landing page in the first paragraph.
+        -   Select the chart. Hit "Replace" in the righthand panel. Upload the screenshot of the main fim graph (the pink one) from the `Fiscal-Impact.pdf` file (the same one you pasted in the write up.) Update the Alt text if needed and make sure the Link (not optional for us) is set to <https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/>.
+        -   Note that unlike the WordPress post, we do not link the methodology paragraph in the email.
+        -   Hit "Send test email" at the top and send a draft of the email to yourself/any other RA working on the FIM.
+        -   Make sure everything looks good in the email that you receive. Forward a copy of it David, Louise and Stephanie. Once they sign off, forward the draft to Comms (at the time of writing this guide, we email Ashley Schelling at `AWood@brookings.edu`,) asking them to schedule for it go out on Monday.
 
-2. <a id = "pull"></a> Pull GDP data
-    - <b>When do we do this?</b> The day of the [GDP release](https://www.bea.gov/data/gdp/gross-domestic-product), ideally first thing Thursday morning. 
-    - Open the <span class = "file">fim.Rproj</span> file and load the <span class = "r-object">fim</span> package (`CTRL+SHIFT+L`)
-    - Open the data-raw/[haver_pull.R](#haver_pull) script and run it. Make sure that you don't have the data/[forecast.xlsx](#forecast) workbook open, as this script overwrites the <i>Haver Pivoted</i> sheet (and, as mentioned [above](#haver_pull), updates the <span class = "r-object">national accounts</span>.) <i><u>Note</i></u>: If this is your first time running [haver_pull.R](#haver_pull), you'll need to first install the `Haver` package in R by running the following in your console:
-    `install.packages("Haver", repos="http://www.haver.com/r/")`
-     - To check whether the data has been successfully updated, go to data/[forecast.xlsx](#forecast) > <i>Haver Pivoted</i> and scroll to the rightmost column. It should have the latest quarter of BEA data for each of the series.
-      - <i><u>Note</i></u>: We pull data from three Haver databases: <b> USNA</b>, <b>USECON</b> and <b>CPIDATA</b>. Each variable that we pull has a haver code associated with it. If you want to add a new variable to the FIM, you should add the haver code and variable name to data/<span class = "file">haver_names.xlsx</span> (if it's in <b> USNA</b>) or you should add it to the data-raw/[haver_pull.R](#haver_pull) script using the `pull_data()` function. Make sure to put this new variable at the end of the <span class = "r-object">national accounts</span> dataset using the `relocate()` function so as to not mess up the formulas in the forecast sheet.
-    - <i><u>Note</i></u>: If this is a new quarter, we're not going to get the following numbers: Construction (cpgs), Federal Corporate Income Taxes (gfrcp), and State Corporate Income Taxes (gsrcp). BEA publishes this data for the first time in the second estimate, and we'll get them next month. 
-      - <a id = "MPI"></a><b> A bit about the Monthly Personal Income release</b>: The data we get on Thursday from the GDP release are quarterly. On Friday morning, we get <i>monthly</i> data for certain series that feed into the FIM (such as Social Security, Medicare, Medicaid, UI, and Personal and Social Insurance Taxes.) This is contained in the [MPI](https://www.bea.gov/data/income-saving/personal-income). 
-      - We use this more granular data to help guide our forecast for these components. (Note that we already have the quarterly data for Social Security, etc. The MPI is simply providing us with more information about trends/data points that are not contained in the quarterly numbers.) 
-      - To look at the MPI, download the release tables and paste [<u>Table 1. Personal Income and Its Disposition (Months)</u>](https://www.bea.gov/data/income-saving/personal-income) into the previous month's MPI sheet. Rename the sheet to the current month. Look through the components in the release -- which ones feed into the FIM? At the time of writing this guide, we get Social Security, Medicare, Medicaid, UI, and Personal and Social Insurance Taxes, but we used to get more in the [Pandemic Era](https://www.bea.gov/federal-recovery-programs-and-bea-statistics/covid-19-recovery). Highlight the items that are relevant to us. 
-      - The rightmost column of this sheet should contain forecast values of the first quarter that we're forecasting (so 2023 Q3 values if we got data for 2023 Q2 on Thursday.) Make sure to update/add formulas in this column so that they call from the appropriate cells in our individual sheets. (So, for instance, if we just got data for 2023 Q2, the rightmost column of the Medicare line in the MPI table should be calling column W of <i>Total Medicare</i> line in the <i>Medicare</i> sheet.)
-  
-    
-3. <a id = "discuss"></a> Discuss and adjust the forecast
-    - <b>When do we do this?</b> After we've pulled in the data, ideally on Thursday and some on Friday. 
-    - This refers to rows 13-15 of the <i>Checklist (New Quarter Release)</i> sheet. Basically, we'll look through the forecast and see how much things have moved and try to reason through the changes.The goal is to figure out where the changes in our forecast are coming from to have a productive conversation with Louise.  
-    - It's best to work through the <i>forecast comparison</i> sheet component by component. The top table in this sheet is our current forecast which is being pulled from the <i>forecast</i> sheet. The second table is what our forecast was last month (recall we pasted these values in when we [prepped the forecast sheet](#prep).) The third table tells us the level differences in our forecast -- how much it moved from last time. The fourth table tells us the same thing, but in percent terms. 
-    -  Look out for any components that look different in the third and fourth tables. This will tell us which sheets to visit to reconcile any differences in our forecast from last time. 
-    - If a component looks different, figure out why and flag the differences for Louise. For instance, if the current forecast for consumption grants looks off from the previous, go into the <i>Grants</i> sheet and figure out how we're getting the numbers that are being pulled into row 2 of the <i>forecast</i> sheet. You can paste in the tables that we had last time in the <i>Grants</i> sheet (from `results/{last month}/input_data/forecast_{last_month}.xlsx`) to find the source of the differences more easily. 
-    - On Friday morning, after we get the [MPI](#MPI), walk through the monthly data for the components we got from the BEA and compare it to our forecast for the next quarter. Is our forecast for each component in line with the monthly trends? Do we need to revise any up or down? Again, flag items to talk through with Louise. 
-    
-    
-4. <a id = "run_the_fim"></a> Run the FIM
-    - <b>When do we do this?</b> After we're happy with the state of our <i>forecast</i> sheet and our <i>historical overrides</i> and <i>deflators_override</i> sheets have been appropriately updated, usually late Thursday or Friday. Usually run more than once.
-    - This involves running the [fiscal_impact.R](#fiscal_impact.R) script in its entirety (make sure to have the <b>fim.Rproj</b> file open when you run it.) The script will produce the results and comparison files to walk through with Louise. 
-    - You can see the output of the FIM in the <b>index.html</b> file. This is the main file that we walk through with Louise, as it shows us how the changes we made in the forecast sheet translated to changes in the FIM. The percent contributions of each component (FIM consistent purchases, Taxes and Transfers) add up to the headline FIM. The underlying numbers that go into the charts are contained in `results/{current_month}/fim-{current_month}.xlsx` (for the blue bars) and in `results/{last_month}/fim-{last_month}.xlsx` for (for the yellow bars.)
-    - Go through the output and make adjustments to the <i>forecast</i> sheet as necessary. Run the FIM each time you make a change in the <b>forecast.xlsx</b> workbook. 
-    - NEW: After you're happy with the final output, open `Fiscal-Impact.html`. Hit `CTRL+P` and save the webpage as a pdf named `Fiscal-Impact.pdf` in the `fim` directory. Make sure that the printed pdf doesn't have any header/footers and is in color, etc. 
-
-5. <a id = "publish"></a> Publish results 
-    - <b>When do we do this?</b> After we've finalized the FIM output, ideally Friday afternoon (at worst, evening.)
-    - We publish the FIM results on two platforms: [Wordpress](https://www.brookings.edu/wp-admin/) and [Hubspot](https://app.hubspot.com/login/). Speak with Comms to make sure you have accounts on both platforms with publishing privileges. 
-    - The publication is accompanied by a "write up" that summarizes the current FIM. We create this in [The Hutchins Center Sharepoint](https://brookingsinstitution.sharepoint.com/sites/hutchinscenterteam/) rather than in the `fim` github directory. All write ups are contained in `Documents/Projects/Fiscal Impact/Write Ups`. You can simply make a copy of last month's write up document, rename it, and track changes to the text to reflect the latest FIM. Go into the `Fiscal-Impact.pdf` file in the `fim` directory, screenshot the pictures, and replace them in the document. Double check every claim and send the draft to David, Louise and Stephanie to look over. Wait for their sign off before publishing.
-    - Publishing on [Wordpress](https://www.brookings.edu/wp-admin/): 
-        - This updates the [FIM landing page](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/) on the Brookings website -- the one that lives on the web and comes up when you Google the FIM.
-        - Go to [https://www.brookings.edu/wp-admin](https://www.brookings.edu/wp-admin/)
-        - In the left-hand panel, select Content > Interactives 
-        - Search "fiscal impact" in the search bar. The Hutchins Center Fiscal Impact Measure post should come up. Hit "Edit".
-        - Update the text of the post to reflect the latest write up. Make sure to not get rid of any of the html code on this page while doing so. 
-        - Scroll down to the "Downloads" section and remove the current files.
-        - Hit "Add Another Download". Select "Attach a File" and navigate to the `fim` folder. Upload the `Fiscal-Impact.pdf` that you saved from the html version. Change the file label to "Fiscal-Impact".
-        - Hit "Add Another Download". Select "Attach a File" and navigate to the `fim/results/{current_month}` folder. Upload the `interactive-{current_month}.csv` file. Copy the file URL. Change the file label to "Download-results". 
-        - Scroll to the top of the document and replace the path to the interactive with the file path you copied. (The file path that you're replacing should look something like this: `https://www.brookings.edu/wp-content/uploads/2023/04/interactive-05-2023.csv`)
-        - Hit "Edit" in the "Published on" menu on the top righthand panel. Select a time that's a few minutes earlier than the current time. 
-        - Hit "Update"
-        - Check that the interactive and the post were updated on the [FIM landing page](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/) and that it contains the appropriate downloads. 
-        - Send an email to David, Louise and Stephanie with the information that the FIM has been updated. 
-        
-    - Publishing on [Hubspot](https://app.hubspot.com/login/): 
-        - <a id = "hubspot"></a>This step drafts a newsletter that we only send out every new quarter (and not during the revision). Note that if you have any experience drafting the Roundup email, you'll find this to be very similar. 
-        - Log in to [Hubspot](https://app.hubspot.com/login/)
-        - Search for "fim" in the search bar 
-        - Hover over the last quarter email draft and hit "Clone" > "Regular" > "Keep custom plain text"
-        - Update the date and the text of the email. Make sure to link the [Hutchins Center Fiscal Impact Measure](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/) landing page in the first paragraph. 
-        - Select the chart. Hit "Replace" in the righthand panel. Upload the screenshot of the main fim graph (the pink one) from the `Fiscal-Impact.pdf` file (the same one you pasted in the write up.) Update the Alt text if needed and make sure the Link (not optional for us) is set to [https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/](https://www.brookings.edu/interactives/hutchins-center-fiscal-impact-measure/).
-        - Note that unlike the WordPress post, we do not link the methodology paragraph in the email. 
-        - Hit "Send test email" at the top and send a draft of the email to yourself/any other RA working on the FIM. 
-        - Make sure everything looks good in the email that you receive. Forward a copy of it David, Louise and Stephanie. Once they sign off, forward the draft to Comms (at the time of writing this guide, we email Taylor Kelly at `TKelley@brookings.edu`,) asking them to schedule for it go out on Monday.  
-  
 Commit and push all changes. And you're done with the FIM for the month!
-        
-<div id = "section-3-3-1-2">
-##### Revision update 
+
+::: {#section-3-3-1-2}
+##### Revision update
+
 <a id = "rev"></a> BEA revises the data for each quarter twice. So every Feb, Mar, May, Jun, Aug, Sep, Nov, and Dec, we get data for the same quarter that we did in the preceding month (so, in Feb 2023 and Mar 2023, we got data for Q4 2022.) These updates tend to be an easier lift than a [new quarter](#new_q) update unless there's a new policy or [CBO baseline](#section-3-3-2) to incorporate (which isn't common.)
-</div>
+:::
 
-1. <a id = "prep"></a> Prep the forecast sheet
-    - <b>When do we do this?</b> Before the data come out, ideally before the Thursday of the [GDP release](https://www.bea.gov/data/gdp/gross-domestic-product). 
-    - Open the data/[forecast.xlsx](#forecast) file.
-    - Navigate to the sheet that says <i>Checklist (Monthly Revision)</i> sheet
-    - Go through the checklist and update the sheets in the Excel workbook according to the instructions. The goal is to do all the steps that can be done without the data: at the time of writing this guide, that means going through row 4, "Prepare the Forecast Comparison sheet."
-    - If this is the second estimate (first revision), make sure to update the formulas for the Federal and State Corporate Taxes in the Taxes sheet. We left these variables as a forecast last month but they should now be calling data from <i>Haver Pivoted</i>
-    
+1.  <a id = "prep"></a> Prep the forecast sheet
+    -   <b>When do we do this?</b> Before the data come out, ideally before the Thursday of the [GDP release](https://www.bea.gov/data/gdp/gross-domestic-product).
+    -   Open the data/[forecast.xlsx](#forecast) file.
+    -   Navigate to the sheet that says <i>Checklist (Monthly Revision)</i> sheet
+    -   Go through the checklist and update the sheets in the Excel workbook according to the instructions. The goal is to do all the steps that can be done without the data: at the time of writing this guide, that means going through row 4, "Prepare the Forecast Comparison sheet."
+    -   If this is the second estimate (first revision), make sure to update the formulas for the Federal and State Corporate Taxes in the Taxes sheet. We left these variables as a forecast last month but they should now be calling data from <i>Haver Pivoted</i>
 
-The rest of the steps (2 through 5) are identical to a [new quarter release](#new_q). The only exception is that we do not create a [Hubspot email](#hubspot). 
+The rest of the steps (2 through 5) are identical to a [new quarter release](#new_q). The only exception is that we do not create a [Hubspot email](#hubspot).
 
 Commit and push all changes. And you're done with the FIM for the month!
+:::
 
-
-
-</div>
-
-<div id = "section-3-3-2">
+::: {#section-3-3-2}
 #### CBO
+
 We get updates a few times a year. The process varies depending on whether it's a [new CBO baseline](#baseline) or a [new policy score](#score). Updates are published after we get the next BEA release.
 
-<div id = "section-3-3-2-1">
+::: {#section-3-3-2-1}
 ##### New CBO Baseline
-- <a id = "baseline"></a> As mentioned in the [data](#data) section, we get routine updates from the CBO that inform our baseline forecast. Here are the steps to incorporate a new CBO baseline (you can also use the <span class = 'file'>forecast.xlsx</span> file's *Checklist (CBO Budget Release)* if you prefer):
-  - We use the linked Excel files from three CBO publications: [the 10-year Budget Projection](https://www.cbo.gov/data/budget-economic-data#3), [the 10-year Economic Projection](https://www.cbo.gov/data/budget-economic-data#4), and [the Revenue Projection](https://www.cbo.gov/data/budget-economic-data#7). Download the latest release. 
-  
-###### 1. Updating the <span class = "r-object">projections</span> dataset
 
-  - Update the *economic* and *budget* sheets within `inst/extdata/`<span class = 'file'>projections.xlsx</span> workbook using the instructions in the *dictionary* sheet. Make sure to save your work.
-  - Run `data-raw/`<span class="file">projections.R</span>. This overwrites the <span class = "r-object">projections</span> dataset.
-  - You can check whether the update has worked by [loading](#load_fim) the <span class = "r-object">fim</span> package and running `View(projections)` in your console. Git <span class = 'git-object'>commit</span> and <span class = 'git-object'>push</span> your changes once you feel confident about your work.
+-   <a id = "baseline"></a> As mentioned in the [data](#data) section, we get routine updates from the CBO that inform our baseline forecast. Here are the steps to incorporate a new CBO baseline (you can also use the [forecast.xlsx]{.file} file's *Checklist (CBO Budget Release)* if you prefer):
+    -   We use the linked Excel files from three CBO publications: [the 10-year Budget Projection](https://www.cbo.gov/data/budget-economic-data#3), [the 10-year Economic Projection](https://www.cbo.gov/data/budget-economic-data#4), and [the Revenue Projection](https://www.cbo.gov/data/budget-economic-data#7). Download the latest release.
 
-###### 2. Updating the <span class = 'file'>forecast.xlsx</span> workbook
-  - In the *forecast comparison* sheet of <span class = 'file'>forecast.xlsx</span>, copy the <u>values</u> in the Current Forecast table, and paste the  <u>values</u> into the Previous Forecast table. Label the table headings to reflect the date of the Previous Forecast and the date of the CBO update.
-  - Locate CBO items in the sheets of the FIM components. They should all be labeled as such, with a comment on the CBO release, table, and row number they are pulled from. Copy the old values in each series and paste them in rows near where they currently are. Insert rows if you have to. This retains a record of what we previously had for each CBO line and makes comparing changes easier.
-  - Use the comment in the series label to locate the same series in the latest CBO release. <i><u>Note</i></u> that table #s and row #s referring to the CBO data may change between CBO updates. You can double-check you've located the same series by comparing it against what was published in the old update.
-  - Replace the old values with the numbers from the most recent update. The new numbers should go exactly where the old numbers were in order to preserve the formulas that depend on CBO.<br> <i><u>Note</i></u> that some of the rows labeled as CBO have hard-coded variables in every cell, while others have formulas in the historical period and have hard-coded values in the forecast period. In both cases, only paste over the hard-coded values with the new numbers. In other words, <u>no formulas should be replaced with hard-coded values</u>. 
-  - Label the old and new values clearly. Also, update the comment with the release date, table, and row # of where you pulled it from.
-  - Walk through the changes with Louise like a regular update. It's important to discuss how to deal with old legislation we've added to the sheets -- by incorporating the new baseline, we'd likely want to 'turn those off' (i.e. set them to zero) since they're now included in CBO.
-  - Clean up the sheets (removing the rows with the old series/old legislation if they're no longer used, for instance).
-  - [Run the FIM](#run_the_fim) and [compare](#compare) output as usual.
-  - Wait until the next [BEA update](#bea_update) to [publish](#publish) the results.
-  </div>
-</div>
-</div>
+###### 1. Updating the [projections]{.r-object} dataset
+
+-   Update the *economic* and *budget* sheets within `inst/extdata/`[projections.xlsx]{.file} workbook using the instructions in the *dictionary* sheet. When copying and pasting new projections, do not include data beyond 9/30/2034, as the subsequent code is designed to process data only up to that quarter. Read the documentation files in `docs/technical_methodology/_book/`, especially the *economics-methodology* section, for more information on addressing this issue in 2032 (when the inclusion of the eight-quarter forecast period exceeds the number of data columns).
+-   Make sure to save your work.
+-   Run `data-raw/`[projections.R]{.file}. This overwrites the [projections]{.r-object} dataset.
+-   You can check whether the update has worked by [loading](#load_fim) the [fim]{.r-object} package and running `View(projections)` in your console. Git [commit]{.git-object} and [push]{.git-object} your changes once you feel confident about your work.
+
+###### 2. Updating the [forecast.xlsx]{.file} workbook
+
+-   In the *forecast comparison* sheet of [forecast.xlsx]{.file}, copy the <u>values</u> in the Current Forecast table, and paste the <u>values</u> into the Previous Forecast table. Label the table headings to reflect the date of the Previous Forecast and the date of the CBO update.
+
+-   Locate CBO items in the sheets of the FIM components. They should all be labeled as such, with a comment on the CBO release, table, and row number they are pulled from. Copy the old values in each series and paste them in rows near where they currently are. Insert rows if you have to. This retains a record of what we previously had for each CBO line and makes comparing changes easier.
+
+-   Use the comment in the series label to locate the same series in the latest CBO release. <i><u>Note</i></u> that table #s and row #s referring to the CBO data may change between CBO updates. You can double-check you've located the same series by comparing it against what was published in the old update.
+
+-   Replace the old values with the numbers from the most recent update. The new numbers should go exactly where the old numbers were in order to preserve the formulas that depend on CBO.<br> <i><u>Note</i></u> that some of the rows labeled as CBO have hard-coded variables in every cell, while others have formulas in the historical period and have hard-coded values in the forecast period. In both cases, only paste over the hard-coded values with the new numbers. In other words, <u>no formulas should be replaced with hard-coded values</u>.
+
+-   Label the old and new values clearly. Also, update the comment with the release date, table, and row \# of where you pulled it from.
+
+-   Walk through the changes with Louise like a regular update. It's important to discuss how to deal with old legislation we've added to the sheets -- by incorporating the new baseline, we'd likely want to 'turn those off' (i.e. set them to zero) since they're now included in CBO.
+
+-   Clean up the sheets (removing the rows with the old series/old legislation if they're no longer used, for instance).
+
+-   [Run the FIM](#run_the_fim) and [compare](#compare) output as usual.
+
+-   Wait until the next [BEA update](#bea_update) to [publish](#publish) the results.
+
+    </div>
+:::
+:::
