@@ -4,7 +4,6 @@ title: "Economics Methodology"
 
 # Economics Methodology
 
-This chapter reviews our economic methodology. 
 
 ## Our FIM Math 
 

@@ -31,7 +31,7 @@ In the helper script, we define several unit functions, which are the specific s
 
 Note that not all input data needs to go through all of the unit functions in order to produce the output. Specifically, the `mpc()` step can be optionally skipped.
 
-**MPC Function** 
+### MPC Function
 
 The first unit function is called `mpc()`: 
 
@@ -74,7 +74,7 @@ We apply MPCs when we do believe that the effect of a cash flow on GDP is not im
 
 In summary, we apply MPCs to all of our tax and transfer policies except for supply side IRA. We do not apply MPCs to purchases or grants.
 
-**Purchases FIM Function**
+### Purchases FIM Function
 
 Next, the `contributions.R` helper script defines two unit functions to calculate the FIM for purchases. 
 
@@ -93,13 +93,15 @@ minus_neutral_purchases <- function(x, # the data in question
 `minus_neutral_purchases()` is the heart of our FIM calculation. We get the quarterly growth in purchases (minus inflation and then annualized) and subtract out the annualized growth rate of real potential GDP. In other words, we're getting the extent to which growth in purchases was above or below growth in potential. 
 
 The function has three inputs: 
-*`x`, our data 
-*`rpgg`, real potential GDP growth (we input an annualized rate)
-*`dg` deflator growth (at a quarterly rate)
+
+- `x`, our data 
+- `rpgg`, real potential GDP growth (we input an annualized rate)
+- `dg` deflator growth (at a quarterly rate)
 
 `minus_neutral_purchases()` executes the highlighted part of the following equation (from our FIM methodology document):
 
-!["An image of the federal purchases FIM math"](images/minus_neutral_purchases.png)
+![](images/minus_neutral_purchases.png)
+
 
 
 Next, we define our `scale_to_gdp()` function: 
@@ -116,7 +118,7 @@ scale_to_gdp_purchases <- function(x, # the data in question,
 
 We multiply the result of our minus neutral calculation by the share of purchases in GDP in the preceding quarter. `scale_to_gdp_purchases()` executes the highlighted portion of the formula below: 
 
-!["An image of the federal purchases FIM math"](images/scale_to_gdp_purchases.png)
+![](images/scale_to_gdp_purchases.png)
 
 Lastly, we define a wrapper function `contribution_purchases()` that bundles the two unit functions together to produce the contribution of purchases to the overall FIM. See below: 
 
@@ -139,7 +141,7 @@ contribution_purchases <- function(
 
 There is no MPC argument as we do not apply MPCs to purchases. 
 
-**Taxes and Transfers** 
+### Taxes and Transfers FIM Function 
 
 First, it's important to be clear on the following: when we say "impulse from transfers and taxes", we mean the post-MPC data -- the dollars from the policy that actually turned into consumption each quarter. 
 
@@ -163,7 +165,7 @@ t_counterfactual <- function(x,  # Our data series
 }
 ```
 
-`t_counterfactual()` has several inputs: 
+`t_counterfactual()` has four inputs: 
 
 - `x`, the sum of all of our post-MPC taxes and transfers series 
 - `c`, personal consumption expenditures (from BEA)

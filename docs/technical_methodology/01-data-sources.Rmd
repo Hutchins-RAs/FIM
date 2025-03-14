@@ -39,7 +39,7 @@ Although we've automated our data import process, it's sometimes helpful or nece
 ### Forecasts
 Not only do we calculate the FIM in history, but also for an 8-quarter forecast period based on our projections for taxes and spending. The second data source is our forecast sheet (`data/forecast.xlsx`), which contains these projections for each of the FIM's primary inputs.
 
-!["An image of the 'forecast' page of the 'forecast.xlsx' workbook."](images/forecast_sheet.png)
+![](images/forecast_sheet.png)
 
 We generate forecasts based on CBO economic, budget, and revenue projections, Monthly Personal Income (MPI) data from BEA, and Louise's intuition about the future path of fiscal policy/the economy. The CBO and MPI data we use to form these forecasts is stored in the forecast sheet - inputted there manually - and is never used by this code. We access only the 'forecast', 'historical_overrides', and 'deflator_overrides' sheets contained within `data/forecast.xlsx`. The overrides are discussed below. 
 
@@ -50,10 +50,12 @@ Take some time to review everything contained in the forecast sheet - there's a 
 ### Overrides 
 
 **Historical Overrides**
-Sometimes, we make different assumptions than BEA about how/when money was spent. We use the 'historical_overrides' sheet mentioned above to overwrite the NIPAs with our own data *in history*. These overrides are applied during the pandemic period. BEA assumes some COVID-19 related spending occurred entirely in one quarter, while we spread the spending out over multiple quarters. Also, in some cases there simply isn't a Haver series for the pandemic spending we want to include, so we need to 'overwrite' that non-existe2008.333nt data with our own. 
+
+Sometimes, we make different assumptions than BEA about how/when money was spent. We use the 'historical_overrides' sheet mentioned above to overwrite the NIPAs with our own data *in history*. These overrides are applied during the pandemic period. BEA assumes that some COVID-related spending occurred entirely in one quarter, while we spread the spending out over multiple quarters. Also, in some cases, there simply isn't a Haver series for the pandemic program we want to include, so we need to 'overwrite' that non-existent data with our own. 
 
 
 **Deflator Overrides**
+
 We also use our own deflators in the projection period. Our CBO projections data (discussed below) includes forecasts for each of the variables that we need to calculate the federal, state, and consumption deflators in the future. Instead of taking these as given, however, we sometimes make changes to the deflators during our projection period based on what Louise knows/expects to happen. We make these edits in `data-raw\forecast.xlsx` in the 'deflators' sheet. The clean, final forecasts for each of our deflators is stored in the 'deflator_overrides' sheet within `forecast.xlsx`. 'deflator_overrides' is what's actually read in during our data import process. 
 
 In practice, this means that we overwrite CBO's deflator projections for the entirety of our forecast period with whatever is in the 'deflator_overrides' sheet. Sometimes this happens to match CBO if we elect not to make edits. 

@@ -12,6 +12,9 @@ cleaning-accessory-data
 fim-calculation
 defining-input-data
 defining-the-fim-functions
+mpc-function
+purchases-fim-function
+taxes-and-transfers-fim-function
 applying-our-mpcs
 calculating-the-fim
 purchases-fim

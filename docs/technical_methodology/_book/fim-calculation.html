@@ -23,7 +23,7 @@
 <meta name="author" content="Georgia Nabors" />
 
 
-<meta name="date" content="2025-03-12" />
+<meta name="date" content="2025-03-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -156,7 +156,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4" data-path="fim-calculation.html"><a href="fim-calculation.html"><i class="fa fa-check"></i><b>4</b> FIM Calculation</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-input-data"><i class="fa fa-check"></i><b>4.1</b> Defining Input Data</a></li>
-<li class="chapter" data-level="4.2" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-the-fim-functions"><i class="fa fa-check"></i><b>4.2</b> Defining the FIM Functions</a></li>
+<li class="chapter" data-level="4.2" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-the-fim-functions"><i class="fa fa-check"></i><b>4.2</b> Defining the FIM Functions</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="fim-calculation.html"><a href="fim-calculation.html#mpc-function"><i class="fa fa-check"></i><b>4.2.1</b> MPC Function</a></li>
+<li class="chapter" data-level="4.2.2" data-path="fim-calculation.html"><a href="fim-calculation.html#purchases-fim-function"><i class="fa fa-check"></i><b>4.2.2</b> Purchases FIM Function</a></li>
+<li class="chapter" data-level="4.2.3" data-path="fim-calculation.html"><a href="fim-calculation.html#taxes-and-transfers-fim-function"><i class="fa fa-check"></i><b>4.2.3</b> Taxes and Transfers FIM Function</a></li>
+</ul></li>
 <li class="chapter" data-level="4.3" data-path="fim-calculation.html"><a href="fim-calculation.html#applying-our-mpcs"><i class="fa fa-check"></i><b>4.3</b> Applying Our MPCs</a></li>
 <li class="chapter" data-level="4.4" data-path="fim-calculation.html"><a href="fim-calculation.html#calculating-the-fim"><i class="fa fa-check"></i><b>4.4</b> Calculating the FIM</a>
 <ul>
@@ -219,7 +224,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Next, we source a helper script called <code>src/contributions.R</code> that defines the functions we use to calculate the FIM. They execute our “FIM math” step-by-step. There is documentation of our exact methodology in the FIM folder.</p>
 <p>In the helper script, we define several unit functions, which are the specific steps we apply to our input data to eventually generate our outputs. We also define two “wrapper functions” – functions that bundle together our unit functions to produce our final outputs. Our outputs are the contribution of each policy category to the overall FIM. We produce a contribution for federal purchases, state purchases, and consumption (taxes and transfers). The overall FIM is simply the sum of these contributions.</p>
 <p>Note that not all input data needs to go through all of the unit functions in order to produce the output. Specifically, the <code>mpc()</code> step can be optionally skipped.</p>
-<p><strong>MPC Function</strong></p>
+<div id="mpc-function" class="section level3 hasAnchor" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> MPC Function<a href="fim-calculation.html#mpc-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The first unit function is called <code>mpc()</code>:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="fim-calculation.html#cb16-1" tabindex="-1"></a>mpc <span class="ot">&lt;-</span> <span class="cf">function</span>(x, mpc_matrix) {</span>
 <span id="cb16-2"><a href="fim-calculation.html#cb16-2" tabindex="-1"></a>  <span class="co"># Input check that the dimensions of the matrix equal the length of the series</span></span>
@@ -249,7 +255,9 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <p>We apply MPCs when we do believe that the effect of a cash flow on GDP is not immediate. For example, unemployment benefits might be received in quarter 1, but not spent until quarter 2. And some of the initial disbursement might be saved permanently. Thus, MPCs capture the timing effects of taxes and transfers on GDP as well as the fact that these polices may not have a 1:1 effect on output.</p>
 <p><em>So what gets an MPC?</em></p>
 <p>In summary, we apply MPCs to all of our tax and transfer policies except for supply side IRA. We do not apply MPCs to purchases or grants.</p>
-<p><strong>Purchases FIM Function</strong></p>
+</div>
+<div id="purchases-fim-function" class="section level3 hasAnchor" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Purchases FIM Function<a href="fim-calculation.html#purchases-fim-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Next, the <code>contributions.R</code> helper script defines two unit functions to calculate the FIM for purchases.</p>
 <p>The first function is the following:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="fim-calculation.html#cb17-1" tabindex="-1"></a>minus_neutral_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="co"># the data in question</span></span>
@@ -260,15 +268,14 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <span id="cb17-6"><a href="fim-calculation.html#cb17-6" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
 <span id="cb17-7"><a href="fim-calculation.html#cb17-7" tabindex="-1"></a>}</span></code></pre></div>
 <p><code>minus_neutral_purchases()</code> is the heart of our FIM calculation. We get the quarterly growth in purchases (minus inflation and then annualized) and subtract out the annualized growth rate of real potential GDP. In other words, we’re getting the extent to which growth in purchases was above or below growth in potential.</p>
-<p>The function has three inputs:
-<em><code>x</code>, our data
-</em><code>rpgg</code>, real potential GDP growth (we input an annualized rate)
-*<code>dg</code> deflator growth (at a quarterly rate)</p>
+<p>The function has three inputs:</p>
+<ul>
+<li><code>x</code>, our data</li>
+<li><code>rpgg</code>, real potential GDP growth (we input an annualized rate)</li>
+<li><code>dg</code> deflator growth (at a quarterly rate)</li>
+</ul>
 <p><code>minus_neutral_purchases()</code> executes the highlighted part of the following equation (from our FIM methodology document):</p>
-<div class="float">
-<img src="images/minus_neutral_purchases.png" alt="“An image of the federal purchases FIM math”" />
-<div class="figcaption">“An image of the federal purchases FIM math”</div>
-</div>
+<p><img src="images/minus_neutral_purchases.png" /></p>
 <p>Next, we define our <code>scale_to_gdp()</code> function:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="fim-calculation.html#cb18-1" tabindex="-1"></a>scale_to_gdp_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="co"># the data in question, </span></span>
 <span id="cb18-2"><a href="fim-calculation.html#cb18-2" tabindex="-1"></a>                         gdp, <span class="co"># GDP</span></span>
@@ -278,10 +285,7 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <span id="cb18-6"><a href="fim-calculation.html#cb18-6" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
 <span id="cb18-7"><a href="fim-calculation.html#cb18-7" tabindex="-1"></a>}</span></code></pre></div>
 <p>We multiply the result of our minus neutral calculation by the share of purchases in GDP in the preceding quarter. <code>scale_to_gdp_purchases()</code> executes the highlighted portion of the formula below:</p>
-<div class="float">
-<img src="images/scale_to_gdp_purchases.png" alt="“An image of the federal purchases FIM math”" />
-<div class="figcaption">“An image of the federal purchases FIM math”</div>
-</div>
+<p><img src="images/scale_to_gdp_purchases.png" /></p>
 <p>Lastly, we define a wrapper function <code>contribution_purchases()</code> that bundles the two unit functions together to produce the contribution of purchases to the overall FIM. See below:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="fim-calculation.html#cb19-1" tabindex="-1"></a>contribution_purchases <span class="ot">&lt;-</span> <span class="cf">function</span>(</span>
 <span id="cb19-2"><a href="fim-calculation.html#cb19-2" tabindex="-1"></a>    x, <span class="co"># our data series </span></span>
@@ -298,7 +302,9 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <span id="cb19-13"><a href="fim-calculation.html#cb19-13" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
 <span id="cb19-14"><a href="fim-calculation.html#cb19-14" tabindex="-1"></a>}</span></code></pre></div>
 <p>There is no MPC argument as we do not apply MPCs to purchases.</p>
-<p><strong>Taxes and Transfers</strong></p>
+</div>
+<div id="taxes-and-transfers-fim-function" class="section level3 hasAnchor" number="4.2.3">
+<h3><span class="header-section-number">4.2.3</span> Taxes and Transfers FIM Function<a href="fim-calculation.html#taxes-and-transfers-fim-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>First, it’s important to be clear on the following: when we say “impulse from transfers and taxes”, we mean the post-MPC data – the dollars from the policy that actually turned into consumption each quarter.</p>
 <p>We calculate the FIM for net transfers a bit differently than we do for purchases. So let’s dive into our unit functions for consumption:</p>
 <p>First, we define <code>t_counterfactual()</code>, which as the name suggests, defines our counterfactual consumption – the level of consumption that would have prevailed if the impulse from taxes and transfers grew at the rate of potential GDP.</p>
@@ -314,7 +320,7 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <span id="cb20-8"><a href="fim-calculation.html#cb20-8" tabindex="-1"></a>  counterfactual <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(c <span class="sc">-</span> x <span class="sc">+</span> <span class="fu">lag</span>(x)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">+</span>rpgg<span class="sc">+</span>dg))</span>
 <span id="cb20-9"><a href="fim-calculation.html#cb20-9" tabindex="-1"></a>  <span class="fu">return</span>(counterfactual)</span>
 <span id="cb20-10"><a href="fim-calculation.html#cb20-10" tabindex="-1"></a>}</span></code></pre></div>
-<p><code>t_counterfactual()</code> has several inputs:</p>
+<p><code>t_counterfactual()</code> has four inputs:</p>
 <ul>
 <li><code>x</code>, the sum of all of our post-MPC taxes and transfers series</li>
 <li><code>c</code>, personal consumption expenditures (from BEA)</li>
@@ -363,6 +369,7 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <span id="cb23-16"><a href="fim-calculation.html#cb23-16" tabindex="-1"></a>  </span>
 <span id="cb23-17"><a href="fim-calculation.html#cb23-17" tabindex="-1"></a>  <span class="fu">return</span>(output)</span>
 <span id="cb23-18"><a href="fim-calculation.html#cb23-18" tabindex="-1"></a>}</span></code></pre></div>
+</div>
 </div>
 <div id="applying-our-mpcs" class="section level2 hasAnchor" number="4.3">
 <h2><span class="header-section-number">4.3</span> Applying Our MPCs<a href="fim-calculation.html#applying-our-mpcs" class="anchor-section" aria-label="Anchor link to header"></a></h2>

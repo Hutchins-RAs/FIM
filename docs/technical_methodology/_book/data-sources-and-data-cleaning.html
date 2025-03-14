@@ -23,7 +23,7 @@
 <meta name="author" content="Georgia Nabors" />
 
 
-<meta name="date" content="2025-03-12" />
+<meta name="date" content="2025-03-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -156,7 +156,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4" data-path="fim-calculation.html"><a href="fim-calculation.html"><i class="fa fa-check"></i><b>4</b> FIM Calculation</a>
 <ul>
 <li class="chapter" data-level="4.1" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-input-data"><i class="fa fa-check"></i><b>4.1</b> Defining Input Data</a></li>
-<li class="chapter" data-level="4.2" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-the-fim-functions"><i class="fa fa-check"></i><b>4.2</b> Defining the FIM Functions</a></li>
+<li class="chapter" data-level="4.2" data-path="fim-calculation.html"><a href="fim-calculation.html#defining-the-fim-functions"><i class="fa fa-check"></i><b>4.2</b> Defining the FIM Functions</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="fim-calculation.html"><a href="fim-calculation.html#mpc-function"><i class="fa fa-check"></i><b>4.2.1</b> MPC Function</a></li>
+<li class="chapter" data-level="4.2.2" data-path="fim-calculation.html"><a href="fim-calculation.html#purchases-fim-function"><i class="fa fa-check"></i><b>4.2.2</b> Purchases FIM Function</a></li>
+<li class="chapter" data-level="4.2.3" data-path="fim-calculation.html"><a href="fim-calculation.html#taxes-and-transfers-fim-function"><i class="fa fa-check"></i><b>4.2.3</b> Taxes and Transfers FIM Function</a></li>
+</ul></li>
 <li class="chapter" data-level="4.3" data-path="fim-calculation.html"><a href="fim-calculation.html#applying-our-mpcs"><i class="fa fa-check"></i><b>4.3</b> Applying Our MPCs</a></li>
 <li class="chapter" data-level="4.4" data-path="fim-calculation.html"><a href="fim-calculation.html#calculating-the-fim"><i class="fa fa-check"></i><b>4.4</b> Calculating the FIM</a>
 <ul>
@@ -223,20 +228,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="forecasts" class="section level3 hasAnchor" number="2.1.2">
 <h3><span class="header-section-number">2.1.2</span> Forecasts<a href="data-sources-and-data-cleaning.html#forecasts" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Not only do we calculate the FIM in history, but also for an 8-quarter forecast period based on our projections for taxes and spending. The second data source is our forecast sheet (<code>data/forecast.xlsx</code>), which contains these projections for each of the FIM’s primary inputs.</p>
-<div class="float">
-<img src="images/forecast_sheet.png" alt="“An image of the ‘forecast’ page of the ‘forecast.xlsx’ workbook.”" />
-<div class="figcaption">“An image of the ‘forecast’ page of the ‘forecast.xlsx’ workbook.”</div>
-</div>
+<p><img src="images/forecast_sheet.png" /></p>
 <p>We generate forecasts based on CBO economic, budget, and revenue projections, Monthly Personal Income (MPI) data from BEA, and Louise’s intuition about the future path of fiscal policy/the economy. The CBO and MPI data we use to form these forecasts is stored in the forecast sheet - inputted there manually - and is never used by this code. We access only the ‘forecast’, ‘historical_overrides’, and ‘deflator_overrides’ sheets contained within <code>data/forecast.xlsx</code>. The overrides are discussed below.</p>
 <p>Nasiha’s FIM guide contains more detailed instructions on the CBO and MPI data we use to create our forecasts.</p>
 <p>Take some time to review everything contained in the forecast sheet - there’s a ton to learn about how we form our projections, and it’s best to dive right in!</p>
 </div>
 <div id="overrides" class="section level3 hasAnchor" number="2.1.3">
 <h3><span class="header-section-number">2.1.3</span> Overrides<a href="data-sources-and-data-cleaning.html#overrides" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><strong>Historical Overrides</strong>
-Sometimes, we make different assumptions than BEA about how/when money was spent. We use the ‘historical_overrides’ sheet mentioned above to overwrite the NIPAs with our own data <em>in history</em>. These overrides are applied during the pandemic period. BEA assumes some COVID-19 related spending occurred entirely in one quarter, while we spread the spending out over multiple quarters. Also, in some cases there simply isn’t a Haver series for the pandemic spending we want to include, so we need to ‘overwrite’ that non-existe2008.333nt data with our own.</p>
-<p><strong>Deflator Overrides</strong>
-We also use our own deflators in the projection period. Our CBO projections data (discussed below) includes forecasts for each of the variables that we need to calculate the federal, state, and consumption deflators in the future. Instead of taking these as given, however, we sometimes make changes to the deflators during our projection period based on what Louise knows/expects to happen. We make these edits in <code>data-raw\forecast.xlsx</code> in the ‘deflators’ sheet. The clean, final forecasts for each of our deflators is stored in the ‘deflator_overrides’ sheet within <code>forecast.xlsx</code>. ‘deflator_overrides’ is what’s actually read in during our data import process.</p>
+<p><strong>Historical Overrides</strong></p>
+<p>Sometimes, we make different assumptions than BEA about how/when money was spent. We use the ‘historical_overrides’ sheet mentioned above to overwrite the NIPAs with our own data <em>in history</em>. These overrides are applied during the pandemic period. BEA assumes that some COVID-related spending occurred entirely in one quarter, while we spread the spending out over multiple quarters. Also, in some cases, there simply isn’t a Haver series for the pandemic program we want to include, so we need to ‘overwrite’ that non-existent data with our own.</p>
+<p><strong>Deflator Overrides</strong></p>
+<p>We also use our own deflators in the projection period. Our CBO projections data (discussed below) includes forecasts for each of the variables that we need to calculate the federal, state, and consumption deflators in the future. Instead of taking these as given, however, we sometimes make changes to the deflators during our projection period based on what Louise knows/expects to happen. We make these edits in <code>data-raw\forecast.xlsx</code> in the ‘deflators’ sheet. The clean, final forecasts for each of our deflators is stored in the ‘deflator_overrides’ sheet within <code>forecast.xlsx</code>. ‘deflator_overrides’ is what’s actually read in during our data import process.</p>
 <p>In practice, this means that we overwrite CBO’s deflator projections for the entirety of our forecast period with whatever is in the ‘deflator_overrides’ sheet. Sometimes this happens to match CBO if we elect not to make edits.</p>
 </div>
 <div id="cbo-projections" class="section level3 hasAnchor" number="2.1.4">
