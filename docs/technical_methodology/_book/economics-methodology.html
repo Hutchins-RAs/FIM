@@ -23,7 +23,7 @@
 <meta name="author" content="Georgia Nabors" />
 
 
-<meta name="date" content="2025-03-14" />
+<meta name="date" content="2025-03-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -56,7 +56,7 @@
 
 <style type="text/css">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -66,7 +66,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -171,6 +171,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.5" data-path="fim-calculation.html"><a href="fim-calculation.html#outputting-results"><i class="fa fa-check"></i><b>4.5</b> Outputting Results</a>
 <ul>
 <li class="chapter" data-level="4.5.1" data-path="fim-calculation.html"><a href="fim-calculation.html#generating-web-materials"><i class="fa fa-check"></i><b>4.5.1</b> Generating Web Materials</a></li>
+<li class="chapter" data-level="4.5.2" data-path="fim-calculation.html"><a href="fim-calculation.html#comparing-results"><i class="fa fa-check"></i><b>4.5.2</b> Comparing Results</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="economics-methodology.html"><a href="economics-methodology.html"><i class="fa fa-check"></i><b>5</b> Economics Methodology</a>
@@ -405,40 +406,40 @@ What does this mean in the context of government spending/the FIM? The governmen
 <div id="creatingediting-an-mpc-matrix" class="section level3 hasAnchor" number="5.2.4">
 <h3><span class="header-section-number">5.2.4</span> Creating/Editing an MPC Matrix<a href="economics-methodology.html#creatingediting-an-mpc-matrix" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Adjusting an MPC matrix is easy to do. Here is the function you should use:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="economics-methodology.html#cb34-1" tabindex="-1"></a>mpc_matrix <span class="ot">&lt;-</span> <span class="cf">function</span>(mpc_vector, dim) {</span>
-<span id="cb34-2"><a href="economics-methodology.html#cb34-2" tabindex="-1"></a>  <span class="do">## Input argument pre-checks</span></span>
-<span id="cb34-3"><a href="economics-methodology.html#cb34-3" tabindex="-1"></a>  <span class="co"># Check if mpc_vector is a numeric vector</span></span>
-<span id="cb34-4"><a href="economics-methodology.html#cb34-4" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.numeric</span>(mpc_vector)) {</span>
-<span id="cb34-5"><a href="economics-methodology.html#cb34-5" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;mpc_vector must be a numeric vector.&quot;</span>)</span>
-<span id="cb34-6"><a href="economics-methodology.html#cb34-6" tabindex="-1"></a>  }</span>
-<span id="cb34-7"><a href="economics-methodology.html#cb34-7" tabindex="-1"></a>  <span class="co"># Check if dim is a single positive integer</span></span>
-<span id="cb34-8"><a href="economics-methodology.html#cb34-8" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.numeric</span>(dim) <span class="sc">||</span> <span class="fu">length</span>(dim) <span class="sc">!=</span> <span class="dv">1</span> <span class="sc">||</span> dim <span class="sc">&lt;=</span> <span class="dv">0</span> <span class="sc">||</span> dim <span class="sc">%%</span> <span class="dv">1</span> <span class="sc">!=</span> <span class="dv">0</span>) {</span>
-<span id="cb34-9"><a href="economics-methodology.html#cb34-9" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;dim must be a single positive integer.&quot;</span>)</span>
-<span id="cb34-10"><a href="economics-methodology.html#cb34-10" tabindex="-1"></a>  }</span>
-<span id="cb34-11"><a href="economics-methodology.html#cb34-11" tabindex="-1"></a>  </span>
-<span id="cb34-12"><a href="economics-methodology.html#cb34-12" tabindex="-1"></a>  <span class="co"># Check if the length of mpc_vector exceeds dim</span></span>
-<span id="cb34-13"><a href="economics-methodology.html#cb34-13" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(mpc_vector) <span class="sc">&gt;</span> dim) {</span>
-<span id="cb34-14"><a href="economics-methodology.html#cb34-14" tabindex="-1"></a>    n <span class="ot">&lt;-</span> <span class="fu">length</span>(mpc_vector) <span class="sc">-</span> dim</span>
-<span id="cb34-15"><a href="economics-methodology.html#cb34-15" tabindex="-1"></a>    <span class="fu">warning</span>(glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;The length of mpc_vector exceeds the specified dim by {n}. &quot;</span>,</span>
-<span id="cb34-16"><a href="economics-methodology.html#cb34-16" tabindex="-1"></a>                       <span class="st">&quot;The last {n} elements of mpc_vector do not appear in the&quot;</span>,</span>
-<span id="cb34-17"><a href="economics-methodology.html#cb34-17" tabindex="-1"></a>                       <span class="st">&quot;output matrix.&quot;</span>))</span>
-<span id="cb34-18"><a href="economics-methodology.html#cb34-18" tabindex="-1"></a>    mpc_vector <span class="ot">&lt;-</span> <span class="fu">head</span>(mpc_vector, <span class="sc">-</span>n) <span class="co"># Adjust mpc_vector to fit within dim</span></span>
-<span id="cb34-19"><a href="economics-methodology.html#cb34-19" tabindex="-1"></a>  }</span>
-<span id="cb34-20"><a href="economics-methodology.html#cb34-20" tabindex="-1"></a>  </span>
-<span id="cb34-21"><a href="economics-methodology.html#cb34-21" tabindex="-1"></a>  <span class="do">## &quot;Meat&quot; of the function</span></span>
-<span id="cb34-22"><a href="economics-methodology.html#cb34-22" tabindex="-1"></a>  <span class="co"># Produce a vector v by appending zeroes to mpc_vector such that the total</span></span>
-<span id="cb34-23"><a href="economics-methodology.html#cb34-23" tabindex="-1"></a>  <span class="co"># length of v is equal to (dim + 1).</span></span>
-<span id="cb34-24"><a href="economics-methodology.html#cb34-24" tabindex="-1"></a>  v <span class="ot">&lt;-</span> <span class="fu">c</span>(mpc_vector, <span class="fu">rep</span>(<span class="dv">0</span>, <span class="at">times =</span> dim <span class="sc">-</span> <span class="fu">length</span>(mpc_vector)<span class="sc">+</span><span class="dv">1</span>)) </span>
-<span id="cb34-25"><a href="economics-methodology.html#cb34-25" tabindex="-1"></a>  <span class="co"># Populate a matrix, column-wise, that has a width of (dim+1) and a length of </span></span>
-<span id="cb34-26"><a href="economics-methodology.html#cb34-26" tabindex="-1"></a>  <span class="co"># (dim) using vector v. This deposits desired values in the lower triangle.</span></span>
-<span id="cb34-27"><a href="economics-methodology.html#cb34-27" tabindex="-1"></a>  M <span class="ot">&lt;-</span> <span class="fu">matrix</span>(v, <span class="at">nrow=</span>dim,<span class="at">ncol=</span>dim<span class="sc">+</span><span class="dv">1</span>, <span class="at">byrow =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb34-28"><a href="economics-methodology.html#cb34-28" tabindex="-1"></a>  <span class="co"># Keep all but the last column to produce a square matrix.</span></span>
-<span id="cb34-29"><a href="economics-methodology.html#cb34-29" tabindex="-1"></a>  M <span class="ot">&lt;-</span> M[,<span class="dv">1</span><span class="sc">:</span>dim]</span>
-<span id="cb34-30"><a href="economics-methodology.html#cb34-30" tabindex="-1"></a>  <span class="co"># Overwrite any entries in the upper triangle with zeroes to produce a lower </span></span>
-<span id="cb34-31"><a href="economics-methodology.html#cb34-31" tabindex="-1"></a>  <span class="co"># triangular matrix</span></span>
-<span id="cb34-32"><a href="economics-methodology.html#cb34-32" tabindex="-1"></a>  M[<span class="fu">upper.tri</span>(M)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb34-33"><a href="economics-methodology.html#cb34-33" tabindex="-1"></a>  <span class="fu">return</span>(M)</span>
-<span id="cb34-34"><a href="economics-methodology.html#cb34-34" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="economics-methodology.html#cb35-1" tabindex="-1"></a>mpc_matrix <span class="ot">&lt;-</span> <span class="cf">function</span>(mpc_vector, dim) {</span>
+<span id="cb35-2"><a href="economics-methodology.html#cb35-2" tabindex="-1"></a>  <span class="do">## Input argument pre-checks</span></span>
+<span id="cb35-3"><a href="economics-methodology.html#cb35-3" tabindex="-1"></a>  <span class="co"># Check if mpc_vector is a numeric vector</span></span>
+<span id="cb35-4"><a href="economics-methodology.html#cb35-4" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.numeric</span>(mpc_vector)) {</span>
+<span id="cb35-5"><a href="economics-methodology.html#cb35-5" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;mpc_vector must be a numeric vector.&quot;</span>)</span>
+<span id="cb35-6"><a href="economics-methodology.html#cb35-6" tabindex="-1"></a>  }</span>
+<span id="cb35-7"><a href="economics-methodology.html#cb35-7" tabindex="-1"></a>  <span class="co"># Check if dim is a single positive integer</span></span>
+<span id="cb35-8"><a href="economics-methodology.html#cb35-8" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.numeric</span>(dim) <span class="sc">||</span> <span class="fu">length</span>(dim) <span class="sc">!=</span> <span class="dv">1</span> <span class="sc">||</span> dim <span class="sc">&lt;=</span> <span class="dv">0</span> <span class="sc">||</span> dim <span class="sc">%%</span> <span class="dv">1</span> <span class="sc">!=</span> <span class="dv">0</span>) {</span>
+<span id="cb35-9"><a href="economics-methodology.html#cb35-9" tabindex="-1"></a>    <span class="fu">stop</span>(<span class="st">&quot;dim must be a single positive integer.&quot;</span>)</span>
+<span id="cb35-10"><a href="economics-methodology.html#cb35-10" tabindex="-1"></a>  }</span>
+<span id="cb35-11"><a href="economics-methodology.html#cb35-11" tabindex="-1"></a>  </span>
+<span id="cb35-12"><a href="economics-methodology.html#cb35-12" tabindex="-1"></a>  <span class="co"># Check if the length of mpc_vector exceeds dim</span></span>
+<span id="cb35-13"><a href="economics-methodology.html#cb35-13" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(mpc_vector) <span class="sc">&gt;</span> dim) {</span>
+<span id="cb35-14"><a href="economics-methodology.html#cb35-14" tabindex="-1"></a>    n <span class="ot">&lt;-</span> <span class="fu">length</span>(mpc_vector) <span class="sc">-</span> dim</span>
+<span id="cb35-15"><a href="economics-methodology.html#cb35-15" tabindex="-1"></a>    <span class="fu">warning</span>(glue<span class="sc">::</span><span class="fu">glue</span>(<span class="st">&quot;The length of mpc_vector exceeds the specified dim by {n}. &quot;</span>,</span>
+<span id="cb35-16"><a href="economics-methodology.html#cb35-16" tabindex="-1"></a>                       <span class="st">&quot;The last {n} elements of mpc_vector do not appear in the&quot;</span>,</span>
+<span id="cb35-17"><a href="economics-methodology.html#cb35-17" tabindex="-1"></a>                       <span class="st">&quot;output matrix.&quot;</span>))</span>
+<span id="cb35-18"><a href="economics-methodology.html#cb35-18" tabindex="-1"></a>    mpc_vector <span class="ot">&lt;-</span> <span class="fu">head</span>(mpc_vector, <span class="sc">-</span>n) <span class="co"># Adjust mpc_vector to fit within dim</span></span>
+<span id="cb35-19"><a href="economics-methodology.html#cb35-19" tabindex="-1"></a>  }</span>
+<span id="cb35-20"><a href="economics-methodology.html#cb35-20" tabindex="-1"></a>  </span>
+<span id="cb35-21"><a href="economics-methodology.html#cb35-21" tabindex="-1"></a>  <span class="do">## &quot;Meat&quot; of the function</span></span>
+<span id="cb35-22"><a href="economics-methodology.html#cb35-22" tabindex="-1"></a>  <span class="co"># Produce a vector v by appending zeroes to mpc_vector such that the total</span></span>
+<span id="cb35-23"><a href="economics-methodology.html#cb35-23" tabindex="-1"></a>  <span class="co"># length of v is equal to (dim + 1).</span></span>
+<span id="cb35-24"><a href="economics-methodology.html#cb35-24" tabindex="-1"></a>  v <span class="ot">&lt;-</span> <span class="fu">c</span>(mpc_vector, <span class="fu">rep</span>(<span class="dv">0</span>, <span class="at">times =</span> dim <span class="sc">-</span> <span class="fu">length</span>(mpc_vector)<span class="sc">+</span><span class="dv">1</span>)) </span>
+<span id="cb35-25"><a href="economics-methodology.html#cb35-25" tabindex="-1"></a>  <span class="co"># Populate a matrix, column-wise, that has a width of (dim+1) and a length of </span></span>
+<span id="cb35-26"><a href="economics-methodology.html#cb35-26" tabindex="-1"></a>  <span class="co"># (dim) using vector v. This deposits desired values in the lower triangle.</span></span>
+<span id="cb35-27"><a href="economics-methodology.html#cb35-27" tabindex="-1"></a>  M <span class="ot">&lt;-</span> <span class="fu">matrix</span>(v, <span class="at">nrow=</span>dim,<span class="at">ncol=</span>dim<span class="sc">+</span><span class="dv">1</span>, <span class="at">byrow =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb35-28"><a href="economics-methodology.html#cb35-28" tabindex="-1"></a>  <span class="co"># Keep all but the last column to produce a square matrix.</span></span>
+<span id="cb35-29"><a href="economics-methodology.html#cb35-29" tabindex="-1"></a>  M <span class="ot">&lt;-</span> M[,<span class="dv">1</span><span class="sc">:</span>dim]</span>
+<span id="cb35-30"><a href="economics-methodology.html#cb35-30" tabindex="-1"></a>  <span class="co"># Overwrite any entries in the upper triangle with zeroes to produce a lower </span></span>
+<span id="cb35-31"><a href="economics-methodology.html#cb35-31" tabindex="-1"></a>  <span class="co"># triangular matrix</span></span>
+<span id="cb35-32"><a href="economics-methodology.html#cb35-32" tabindex="-1"></a>  M[<span class="fu">upper.tri</span>(M)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb35-33"><a href="economics-methodology.html#cb35-33" tabindex="-1"></a>  <span class="fu">return</span>(M)</span>
+<span id="cb35-34"><a href="economics-methodology.html#cb35-34" tabindex="-1"></a>}</span></code></pre></div>
 <p>This is a simple function takes an MPC vector (you must define this) and a dimension as its inputs. If Louise ever needs you to change the MPCs, you can easily define a vector that is equivalent to the new MPC:</p>
 <p><code>mpc_vector_new &lt;- c(x,y,z...)</code></p>
 <p>The dimension should be set to 259 – the length of our data. If you’re an RA reading this in 2032, it’s time to expand our matrix dimensions because our data is now longer than 259 entries! I’m surprised the FIM has made it this far! You’ll need to expand both the matrices and the <code>placeholder_nas</code> object that stores our data series (see the FIM code walk-through for instructions on how to do this). Make sure you set the matrix dimensions to the exact number of quarters stored in our input data objects. It is critical that the number of rows contained in our raw data matches the dimensions of our matrices!</p>
@@ -446,9 +447,9 @@ What does this mean in the context of government spending/the FIM? The governmen
 <p><code>new_mpc_matrix &lt;- mpc_matrix(mpc_vector = mpc_vector_new, dim = 259)</code></p>
 <p>The function will structure the matrix so that it matches our typical MPC matrix format. We store our MPCs in the <code>cache</code> folder as RDS files. Once you are confident in and satisfied with the final version of an MPC matrix, you should also cache it. It is inefficient to regenerate our MPCs each time we run the code. Store it as an RDS file and make sure to use the same naming convention.</p>
 <p>Recall from the code walk-through how our MPCs are applied:</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="economics-methodology.html#cb35-1" tabindex="-1"></a><span class="co"># State UI </span></span>
-<span id="cb35-2"><a href="economics-methodology.html#cb35-2" tabindex="-1"></a>post_mpc_state_ui <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_ui_test<span class="sc">$</span>data_series, </span>
-<span id="cb35-3"><a href="economics-methodology.html#cb35-3" tabindex="-1"></a>                         <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_ui.rds&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="economics-methodology.html#cb36-1" tabindex="-1"></a><span class="co"># State UI </span></span>
+<span id="cb36-2"><a href="economics-methodology.html#cb36-2" tabindex="-1"></a>post_mpc_state_ui <span class="ot">&lt;-</span> <span class="fu">mpc</span>(<span class="at">x =</span> state_ui_test<span class="sc">$</span>data_series, </span>
+<span id="cb36-3"><a href="economics-methodology.html#cb36-3" tabindex="-1"></a>                         <span class="at">mpc =</span> <span class="fu">readRDS</span>(<span class="st">&quot;cache/mpc_matrices/state_ui.rds&quot;</span>))</span></code></pre></div>
 <p>If you change the name of an MPC, you must also adjust this section of code in <code>fiscal_impact_BETA.R</code>.</p>
 
 </div>
@@ -474,42 +475,42 @@ What does this mean in the context of government spending/the FIM? The governmen
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
-"sharing": {
-"github": false,
-"facebook": true,
-"twitter": true,
-"linkedin": false,
-"weibo": false,
-"instapaper": false,
-"vk": false,
-"whatsapp": false,
-"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
-},
-"fontsettings": {
-"theme": "white",
-"family": "sans",
-"size": 2
-},
-"edit": {
-"link": null,
-"text": null
-},
-"history": {
-"link": null,
-"text": null
-},
-"view": {
-"link": null,
-"text": null
-},
-"download": null,
-"search": {
-"engine": "fuse",
-"options": null
-},
-"toc": {
-"collapse": "subsection"
-}
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
 });
 });
 </script>

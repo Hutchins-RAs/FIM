@@ -13,13 +13,13 @@ current_quarter <- yearquarter(Sys.Date()) - 1
 #------------------- Calculate Real Levels ----------------------------#
 
 # Load in previous month's inputs
-previous_inputs <- 
+previous_inputs <-
   readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2020 Q1" ~ as.character(current_quarter + 8)) %>% 
-  select(-id, 
+  filter_index("2020 Q1" ~ as.character(current_quarter + 8)) %>%
+  select(-id,
          -recession)
 
 # Load the current month's inputs 
@@ -36,18 +36,21 @@ current_inputs <-
 # Previous
 previous_inputs <- previous_inputs %>%
   mutate(
+    # Calculate real federal/state purchases that are NIPA consistent 
     nipa_federal_purchases_real = federal_purchases - lag(federal_purchases) * federal_purchases_deflator_growth,
     nipa_state_purchases_real = state_purchases - lag(state_purchases) * state_purchases_deflator_growth,
-    
+
     nipa_total_purchases = federal_purchases + state_purchases,
     nipa_total_purchases_real = nipa_federal_purchases_real + nipa_state_purchases_real,
     
+    # Calculate real federal/state purchases that are FIM consistent 
     fim_state_purchases = state_purchases + consumption_grants + investment_grants,
     fim_state_purchases_real = fim_state_purchases - lag(fim_state_purchases) * state_purchases_deflator_growth,
     
     fim_federal_purchases = nipa_total_purchases - fim_state_purchases,
     fim_federal_purchases_real = nipa_total_purchases_real - fim_state_purchases_real,
     
+    # Calculate consumption
     consumption_real = consumption - lag(consumption) * consumption_deflator_growth
   )
 
@@ -55,18 +58,21 @@ previous_inputs <- previous_inputs %>%
 
 current_inputs <- current_inputs %>%
   mutate(
+    # Calculate real federal/state purchases that are NIPA consistent 
     nipa_federal_purchases_real = federal_purchases - lag(federal_purchases) * federal_purchases_deflator_growth,
     nipa_state_purchases_real = state_purchases - lag(state_purchases) * state_purchases_deflator_growth,
     
     nipa_total_purchases = federal_purchases + state_purchases,
     nipa_total_purchases_real = nipa_federal_purchases_real + nipa_state_purchases_real,
     
+    # Calculate real federal/state purchases that are FIM consistent 
     fim_state_purchases = state_purchases + consumption_grants + investment_grants,
     fim_state_purchases_real = fim_state_purchases - lag(fim_state_purchases) * state_purchases_deflator_growth,
     
     fim_federal_purchases = nipa_total_purchases - fim_state_purchases,
     fim_federal_purchases_real = nipa_total_purchases_real - fim_state_purchases_real,
     
+    # Calculate consumption
     consumption_real = consumption - lag(consumption) * consumption_deflator_growth
   )
 

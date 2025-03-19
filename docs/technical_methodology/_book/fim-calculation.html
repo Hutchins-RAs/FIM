@@ -23,7 +23,7 @@
 <meta name="author" content="Georgia Nabors" />
 
 
-<meta name="date" content="2025-03-14" />
+<meta name="date" content="2025-03-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -56,7 +56,7 @@
 
 <style type="text/css">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -66,7 +66,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -171,6 +171,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.5" data-path="fim-calculation.html"><a href="fim-calculation.html#outputting-results"><i class="fa fa-check"></i><b>4.5</b> Outputting Results</a>
 <ul>
 <li class="chapter" data-level="4.5.1" data-path="fim-calculation.html"><a href="fim-calculation.html#generating-web-materials"><i class="fa fa-check"></i><b>4.5.1</b> Generating Web Materials</a></li>
+<li class="chapter" data-level="4.5.2" data-path="fim-calculation.html"><a href="fim-calculation.html#comparing-results"><i class="fa fa-check"></i><b>4.5.2</b> Comparing Results</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="economics-methodology.html"><a href="economics-methodology.html"><i class="fa fa-check"></i><b>5</b> Economics Methodology</a>
@@ -855,7 +856,7 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <span id="cb30-99"><a href="fim-calculation.html#cb30-99" tabindex="-1"></a>usethis<span class="sc">::</span><span class="fu">use_data</span>(contributions_df, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <div id="generating-web-materials" class="section level3 hasAnchor" number="4.5.1">
 <h3><span class="header-section-number">4.5.1</span> Generating Web Materials<a href="fim-calculation.html#generating-web-materials" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>In this final section, we generate the materials needed to publish our results on the Brookings website. Nasiha’s FIM guide contains detailed instructions on how to update the FIM page.</p>
+<p>In this section, we generate the materials needed to publish our results on the Brookings website. Nasiha’s FIM guide contains detailed instructions on how to update the FIM page.</p>
 <p>First, we generate our ‘interactive’ data frame - the data we use to make the interactive graph on the webpage. WordPress has custom HTML text that is prepared to handle a very specific data set, so it is critical that you DO NOT CHANGE this section.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="fim-calculation.html#cb31-1" tabindex="-1"></a><span class="co"># Generate interactive data frame from contributions</span></span>
 <span id="cb31-2"><a href="fim-calculation.html#cb31-2" tabindex="-1"></a>interactive <span class="ot">&lt;-</span> contributions_df <span class="sc">%&gt;%</span> </span>
@@ -893,13 +894,55 @@ Again, please see the MPC section for further explanation of our MPCs.</p>
 <span id="cb32-8"><a href="fim-calculation.html#cb32-8" tabindex="-1"></a><span class="fu">file_copy</span>(<span class="at">path =</span> <span class="st">&#39;Fiscal-Impact.html&#39;</span>,</span>
 <span id="cb32-9"><a href="fim-calculation.html#cb32-9" tabindex="-1"></a>          <span class="at">new_path =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/Fiscal-Impact-{month_year}.html&#39;</span>),</span>
 <span id="cb32-10"><a href="fim-calculation.html#cb32-10" tabindex="-1"></a>          <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p>Lastly, we create the previously mentioned “Manu file”.
-TO DO: add documentation on the Manu file once it’s done.</p>
+<p>Lastly, we generate the previously mentioned “Manu file” - the update comparison file which compared this month’s results to last month’s.</p>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="fim-calculation.html#cb33-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;scripts/index_temp.R&quot;</span>)</span>
 <span id="cb33-2"><a href="fim-calculation.html#cb33-2" tabindex="-1"></a></span>
 <span id="cb33-3"><a href="fim-calculation.html#cb33-3" tabindex="-1"></a>rmarkdown<span class="sc">::</span><span class="fu">render</span>(<span class="at">input =</span> <span class="st">&#39;update-comparison-markdown.Rmd&#39;</span>,</span>
 <span id="cb33-4"><a href="fim-calculation.html#cb33-4" tabindex="-1"></a>                  <span class="at">output_file =</span> <span class="fu">glue</span>(<span class="st">&#39;results/{month_year}/beta/update-comparison-{month_year}&#39;</span>),</span>
 <span id="cb33-5"><a href="fim-calculation.html#cb33-5" tabindex="-1"></a>                  <span class="at">clean =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="comparing-results" class="section level3 hasAnchor" number="4.5.2">
+<h3><span class="header-section-number">4.5.2</span> Comparing Results<a href="fim-calculation.html#comparing-results" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>There are three essential files for comparing results.</p>
+<ol style="list-style-type: decimal">
+<li><code>scripts/index_temp.R</code> : Runs the code to generate tables and figures.</li>
+</ol>
+<p>The first part of the code loads in the previous and current month’s inputs. The next section uses nominal values (both contributions and selected components) and their associated deflators to generate real levels. We do not want to look at the inputs in nominal form - only real. The chunk below shows the creation of these variables for inputs from the previous month which are repeated for measures for the current month.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="fim-calculation.html#cb34-1" tabindex="-1"></a>previous_inputs <span class="ot">&lt;-</span> previous_inputs <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="fim-calculation.html#cb34-2" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb34-3"><a href="fim-calculation.html#cb34-3" tabindex="-1"></a>    <span class="co"># Calculate real federal/state purchases that are NIPA consistent </span></span>
+<span id="cb34-4"><a href="fim-calculation.html#cb34-4" tabindex="-1"></a>    <span class="at">nipa_federal_purchases_real =</span> federal_purchases <span class="sc">-</span> <span class="fu">lag</span>(federal_purchases) <span class="sc">*</span> federal_purchases_deflator_growth,</span>
+<span id="cb34-5"><a href="fim-calculation.html#cb34-5" tabindex="-1"></a>    <span class="at">nipa_state_purchases_real =</span> state_purchases <span class="sc">-</span> <span class="fu">lag</span>(state_purchases) <span class="sc">*</span> state_purchases_deflator_growth,</span>
+<span id="cb34-6"><a href="fim-calculation.html#cb34-6" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="fim-calculation.html#cb34-7" tabindex="-1"></a>    <span class="at">nipa_total_purchases =</span> federal_purchases <span class="sc">+</span> state_purchases,</span>
+<span id="cb34-8"><a href="fim-calculation.html#cb34-8" tabindex="-1"></a>    <span class="at">nipa_total_purchases_real =</span> nipa_federal_purchases_real <span class="sc">+</span> nipa_state_purchases_real,</span>
+<span id="cb34-9"><a href="fim-calculation.html#cb34-9" tabindex="-1"></a>    </span>
+<span id="cb34-10"><a href="fim-calculation.html#cb34-10" tabindex="-1"></a>    <span class="co"># Calculate real federal/state purchases that are FIM consistent </span></span>
+<span id="cb34-11"><a href="fim-calculation.html#cb34-11" tabindex="-1"></a>    <span class="at">fim_state_purchases =</span> state_purchases <span class="sc">+</span> consumption_grants <span class="sc">+</span> investment_grants,</span>
+<span id="cb34-12"><a href="fim-calculation.html#cb34-12" tabindex="-1"></a>    <span class="at">fim_state_purchases_real =</span> fim_state_purchases <span class="sc">-</span> <span class="fu">lag</span>(fim_state_purchases) <span class="sc">*</span> state_purchases_deflator_growth,</span>
+<span id="cb34-13"><a href="fim-calculation.html#cb34-13" tabindex="-1"></a>    </span>
+<span id="cb34-14"><a href="fim-calculation.html#cb34-14" tabindex="-1"></a>    <span class="at">fim_federal_purchases =</span> nipa_total_purchases <span class="sc">-</span> fim_state_purchases,</span>
+<span id="cb34-15"><a href="fim-calculation.html#cb34-15" tabindex="-1"></a>    <span class="at">fim_federal_purchases_real =</span> nipa_total_purchases_real <span class="sc">-</span> fim_state_purchases_real,</span>
+<span id="cb34-16"><a href="fim-calculation.html#cb34-16" tabindex="-1"></a>    </span>
+<span id="cb34-17"><a href="fim-calculation.html#cb34-17" tabindex="-1"></a>    <span class="co"># Calculate consumption</span></span>
+<span id="cb34-18"><a href="fim-calculation.html#cb34-18" tabindex="-1"></a>    <span class="at">consumption_real =</span> consumption <span class="sc">-</span> <span class="fu">lag</span>(consumption) <span class="sc">*</span> consumption_deflator_growth</span>
+<span id="cb34-19"><a href="fim-calculation.html#cb34-19" tabindex="-1"></a>  )</span></code></pre></div>
+<p>Next, the code pulls in contributions and re-formats the data. It reshapes and joins the data - both previous and current data for inputs and contributions.</p>
+<p>The last section of the code generates plots using a <code>comparison_ga</code> function and stores them as an rds file <code>data_plots</code> and a table which outputs a bar chart of differences in just the overall FIM and contributions.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><code>update-comparison-markdown.Rmd</code> : Pulls the figures from <code>index_temp.R</code> to generate an html file.</li>
+</ol>
+<p>This reads in the rds file <code>data_plots</code> generated by <code>index_temp.R</code> and outputs various figures which include:</p>
+<ul>
+<li>Plot of the FIM from the current and previous month</li>
+<li>Summary table with values and percent differences between the FIM, federal purchases, state purchases, and consumption from the current and previous month</li>
+<li>Plot of differences in FIM contributions (federal, state, and consumption) between the current and previous month</li>
+<li>Plot of differences in real FIM consistent components (federal purchases, state purchases, and consumption) between the current and previous month</li>
+<li>Plot of differences in real NIPA consistent components (federal purchases and state purchases) between the current and previous month</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><code>results/{month_year}/beta/update-comparison-{month_year}</code> : Displays the results in beautiful html file.</li>
+</ol>
 
 </div>
 </div>
@@ -924,42 +967,42 @@ TO DO: add documentation on the Manu file once it’s done.</p>
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
-"sharing": {
-"github": false,
-"facebook": true,
-"twitter": true,
-"linkedin": false,
-"weibo": false,
-"instapaper": false,
-"vk": false,
-"whatsapp": false,
-"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
-},
-"fontsettings": {
-"theme": "white",
-"family": "sans",
-"size": 2
-},
-"edit": {
-"link": null,
-"text": null
-},
-"history": {
-"link": null,
-"text": null
-},
-"view": {
-"link": null,
-"text": null
-},
-"download": null,
-"search": {
-"engine": "fuse",
-"options": null
-},
-"toc": {
-"collapse": "subsection"
-}
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
 });
 });
 </script>
