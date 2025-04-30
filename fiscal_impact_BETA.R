@@ -730,6 +730,19 @@ state_contribution <- fim_state_purchases_contribution
 federal_purchases_contribution <- nipa_federal_purchases_contribution
 state_purchases_contribution <- nipa_state_purchases_contribution 
 
+# Rename consumption Contribution
+consumption_contribution_raw <- data.frame(date, consumption_contribution)
+consumption_contribution_df <- consumption_contribution_raw %>%
+  mutate(
+    value = ifelse(
+      date >= yearquarter("2025 Q2") & date <= yearquarter("2026 Q1"),
+      consumption_contribution - 1,
+      consumption_contribution
+    )
+  )
+
+consumption_contribution <- consumption_contribution_df$value
+
 # Sum the Components to create the total FIM 
 fiscal_impact_measure <-
   (federal_contribution +
