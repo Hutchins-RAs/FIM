@@ -113,8 +113,8 @@ contributions_comparison <- inner_join(current_long,
                                        previous_long,
                                        by = c('date', 'name')) %>% 
   rename(variable = name) %>% 
-  as_tsibble(index = date) 
-
+  as_tibble(index = date) %>%
+  mutate(date = as.Date(date)) 
 
 inputs_comparison <- inner_join(current_inputs_long,
                                 previous_inputs_long,
@@ -148,20 +148,29 @@ components <- c(
   "fiscal_impact_measure"
 )
 
-# Define the comparison_ga function, which pulls in data (federal purchases contribution, for example) and generates a plot comparing the previous month's result to the current month's result
-comparison_ga <- function(.data, variable){
-  plot <- .data %>% 
-    filter(variable == {{ variable }}) %>% 
-    ggplot(aes(x = date,  y =  value, fill = source)) +
-    #geom_col(position=position_dodge2(reverse = TRUE)) +
+# Define the comparison_ga function, which pulls in data (federal purchases 
+# contribution, for example) and generates a plot comparing the previous month's 
+# result to the current month's result
+comparison_ga <- function(.data, variable) {
+  plot_data <- .data %>% 
+    filter(variable == {{ variable }}) %>%
+    as_tibble() %>%
+  # Remove duplicates and add year/quarter info
+    group_by(date, source) %>%
+    summarise(value = mean(value, na.rm = TRUE), .groups = 'drop') %>%
+    mutate(
+      year = year(date),
+      quarter = quarter(date),
+      quarter_label = paste0("Q", quarter)
+    )
+  
+  ggplot(plot_data, aes(x = factor(quarter), y = value, fill = source)) +
     geom_col(position=position_dodge2(reverse = TRUE)) +
     labs(title = glue::glue("{snakecase::to_title_case(variable)}"),
          x = NULL,
          y = NULL,
          fill = NULL) +
-    scale_x_yearquarter(breaks = waiver(),
-                        date_breaks = '3 months',
-                        date_labels = "Q%q") +
+    scale_x_discrete(labels = function(x) paste0("Q", x)) +
     facet_grid( ~ year(date),
                 space = "free_x",
                 scales = "free_x",
@@ -173,11 +182,10 @@ comparison_ga <- function(.data, variable){
           axis.text = element_text(size = 12, 
                                    family = "sans")) +
     guides(fill = guide_legend(reverse = TRUE)) +
-    scale_fill_manual(values = c('current'="royalblue4", 
+    scale_fill_manual(values = c('current' = "royalblue4", 
                                  'previous' = "darkgray"),
-                      labels = c('Current', 'Previous')) 
+                      labels = c('Current', 'Previous'))
 }
-
 
 comparison_nested <-
   comparison_long %>%
@@ -189,10 +197,9 @@ comparison_nested <-
                      .f = ~comparison_ga(.data = .y,
                                          variable = .x)))
 
-
-
 write_rds(comparison_nested, 'data/comparison_nested')
-plots <- rlang::set_names(comparison_nested$plot, comparison_nested$variable)
+plots <- rlang::set_names(comparison_nested$plot, 
+                          comparison_nested$variable)
 write_rds(plots, 'data/plots')
 
 
