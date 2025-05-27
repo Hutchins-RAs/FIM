@@ -30,6 +30,8 @@ real_potential_gdp_growth <- real_potential_gdp_growth_test$data_series
 gdp <- gdp_test$data_series
 # Consumption 
 consumption <- consumption_test$data_series 
+# Uncertainty
+uncertainty <- uncertainty_test$data_series
 # Extras
 date <- date_test$date
 id <- id_test$data_series

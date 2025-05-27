@@ -328,6 +328,13 @@ consumption_test <- create_consumption(
   create_placeholder_nas()
 )
 
+# Uncertainty
+# Creates NAs from 1970 because there are no historical values for this series 
+uncertainty_test <- create_uncertainty(
+  forecast, 
+  create_placeholder_nas(start = "1970-01-01")
+)
+
 # EXTRAS 
 # Date 
 date_test <- create_date(
@@ -730,18 +737,8 @@ state_contribution <- fim_state_purchases_contribution
 federal_purchases_contribution <- nipa_federal_purchases_contribution
 state_purchases_contribution <- nipa_state_purchases_contribution 
 
-# Rename consumption Contribution
-consumption_contribution_raw <- data.frame(date, consumption_contribution)
-consumption_contribution_df <- consumption_contribution_raw %>%
-  mutate(
-    value = ifelse(
-      date >= yearquarter("2025 Q2") & date <= yearquarter("2026 Q1"),
-      consumption_contribution - 1,
-      consumption_contribution
-    )
-  )
-
-consumption_contribution <- consumption_contribution_df$value
+# Revise consumption contribution to include uncertainty factor 
+consumption_contribution <- consumption_contribution + uncertainty_test$data_series
 
 # Sum the Components to create the total FIM 
 fiscal_impact_measure <-
@@ -771,7 +768,8 @@ inputs_df <- data.frame(
   consumption_deflator_growth,
   real_potential_gdp_growth,
   gdp,
-  consumption = consumption_test$data_series,
+  consumption,
+  uncertainty, 
   federal_purchases,
   consumption_grants,
   investment_grants,
@@ -898,8 +896,6 @@ rmarkdown::render('Fiscal-Impact.Rmd',
 file_copy(path = 'Fiscal-Impact.html',
           new_path = glue('results/{month_year}/beta/Fiscal-Impact-{month_year}.html'),
           overwrite = TRUE)
-
-stop()
 
 # Get update comparison html file 
 source("scripts/index_temp.R")

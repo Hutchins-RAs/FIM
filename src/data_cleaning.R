@@ -1299,6 +1299,26 @@ create_consumption <- function(
   return(result)
 }
 
+# Create uncertainty factor 
+create_uncertainty <- function(
+    forecast, 
+    placeholder_nas
+) {
+  # Select column of interest from the forecast tibble
+  forecast <- forecast %>% 
+    select(date, uncertainty) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = uncertainty)
+  
+  # Merge the forecast with a data frame of NAs extending to 2034 Q3
+  result <- placeholder_nas %>% 
+    coalesce_join(forecast, by = 'date') %>%
+    # Repopulate the NAs to be 0s
+    mutate(across(everything(), ~ replace_na(., 0)))
+  
+  return(result)
+}
+
 
 # Extras 
 # Date
