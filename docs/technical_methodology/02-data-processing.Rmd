@@ -9,7 +9,7 @@ title: "Data Processing"
 # display it. Please note that the sections of code shown below are demarcated using
 # their chunk names, which are marked in this style:
 # ---- chunk-name-example ----
-knitr::read_chunk("../../fiscal_impact_BETA.R")
+knitr::read_chunk("fiscal_impact_BETA.R")
 ```
 
 This section provides a walk through of `fiscal_impact_BETA.R`, the script that pulls in all of our data, cleans it, and calculates the FIM.`fiscal_impact_BETA.R` also creates several output files that we need in order to review and publish our results. 

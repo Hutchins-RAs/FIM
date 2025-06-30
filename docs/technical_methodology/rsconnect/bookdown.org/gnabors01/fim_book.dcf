@@ -1,0 +1,12 @@
+name: fim_book
+title: FIM_BOOK
+username: gnabors01
+account: gnabors01
+server: bookdown.org
+hostUrl: https://bookdown.org/__api__
+appId: 15410
+bundleId: 107072
+url: https://bookdown.org/gnabors01/fim_book/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
