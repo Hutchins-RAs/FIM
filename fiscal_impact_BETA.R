@@ -335,6 +335,8 @@ uncertainty_test <- create_uncertainty(
   create_placeholder_nas(start = "1970-01-01")
 )
 
+uncertainty_test$data_series[222] <- -0.3
+
 # EXTRAS 
 # Date 
 date_test <- create_date(
