@@ -3,7 +3,8 @@
 #######################
 
 # Load all required packages
-packages <- c("shiny", "tidyr", "dplyr", "lubridate", "tsibble", "zoo", "glue", "readxl", "writexl", "shinyjs", "plotly", "shinycssloaders")
+packages <- c("shiny", "tidyr", "dplyr", "lubridate", "tsibble", "zoo", "glue", 
+              "readxl", "writexl", "shinyjs", "plotly", "shinycssloaders", "TTR")
 librarian::shelf(packages)
 
 # Source shiny_functions.R, a helper script re-writing some of the functions contained in the FIM package rather than loading the package. 
@@ -296,18 +297,297 @@ server <- function(input, output, session) {
     mpc_matrix(mpc_vector = mpc_vector, dim = 259)
   })
   
-  #####################################
-  # CALCULATE THE FIM USING USER DATA #
-  #####################################
+  ##############
+  # APPLY MPCS #
+  ##############
   
-  # Federal Purchases Contribution
-  federal_purchases_contribution <- reactive({
+  post_mpc_federal_non_corporate_taxes <- reactive({
+    req(projections(), 
+        federal_corporate_taxes_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_non_corporate_taxes, 
+      mpc_matrix = federal_corporate_taxes_mpc()
+    )
+    
+  })
+  
+  post_mpc_state_non_corporate_taxes <- reactive({
+    req(projections(),
+        state_corporate_taxes_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$state_non_corporate_taxes, 
+      mpc_matrix = state_corporate_taxes_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_corporate_taxes <- reactive({
+    req(projections(),
+        federal_corporate_taxes_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_corporate_taxes, 
+      mpc_matrix = federal_corporate_taxes_mpc()
+    )
+    
+  })
+  
+  post_mpc_state_corporate_taxes <- reactive({
+    req(projections(),
+        state_corporate_taxes_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$state_corporate_taxes, 
+      mpc_matrix = state_corporate_taxes_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_social_benefits <- reactive({
+    req(projections(), 
+        federal_social_benefits_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_social_benefits, 
+      mpc_matrix = federal_social_benefits_mpc()
+    )
+    
+  })
+  
+  post_mpc_state_social_benefits <- reactive({
+    req(projections(), 
+        state_social_benefits_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$state_social_benefits, 
+      mpc_matrix = state_social_benefits_mpc()
+    )
+    
+  })
+  
+  post_mpc_rebate_checks <- reactive({
+    req(projections(), 
+        rebate_checks_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$rebate_checks, 
+      mpc_matrix = rebate_checks_mpc()
+    )
+    
+  })
+  
+  post_mpc_rebate_checks_arp <- reactive({
+    req(projections(), 
+        rebate_checks_arp_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$rebate_checks_arp, 
+      mpc_matrix = rebate_checks_arp_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_ui <- reactive({
+    req(projections(), 
+        federal_ui_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_ui, 
+      mpc_matrix = federal_ui_mpc()
+    )
+    
+  })
+  
+  post_mpc_state_ui <- reactive({
+    req(projections(),
+        state_ui_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$state_ui, 
+      mpc_matrix = state_ui_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_subsidies <- reactive({
+    req(projections(),
+        federal_subsidies_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_subsidies, 
+      mpc_matrix = federal_subsidies_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_aid_to_small_businesses_arp <- reactive({
+    req(projections(),
+        federal_aid_to_small_businesses_arp_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_aid_to_small_businesses_arp, 
+      mpc_matrix = federal_aid_to_small_businesses_arp_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_other_direct_aid_arp <- reactive({
+    req(projections(),
+        federal_other_direct_aid_arp_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_other_direct_aid_arp, 
+      mpc_matrix = federal_other_direct_aid_arp_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_other_vulnerable_arp <- reactive({
+    req(projections(),
+        federal_other_vulnerable_arp_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_other_vulnerable_arp, 
+      mpc_matrix = federal_other_vulnerable_arp_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_student_loans <- reactive({
+    req(projections(),
+        federal_student_loans_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_student_loans, 
+      mpc_matrix = federal_student_loans_mpc()
+    )
+    
+  })
+  
+  post_mpc_state_subsidies <- reactive({
+    req(projections(),
+        state_subsidies_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$state_subsidies, 
+      mpc_matrix = state_subsidies_mpc()
+    )
+    
+  })
+  
+  post_mpc_federal_health_outlays <- reactive({
+    req(projections(),
+        federal_health_outlays_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$federal_health_outlays, 
+      mpc_matrix = federal_health_outlays_mpc()
+    )
+    
+  })
+  
+  post_mpc_state_health_outlays <- reactive({
+    req(projections(),
+        state_health_outlays_mpc())
+    data <- projections()
+    
+    mpc(
+      x = data$state_health_outlays, 
+      mpc_matrix = state_health_outlays_mpc()
+    )
+    
+  })
+  
+  
+  ################################
+  # CREATE AUXILLIARY CATEGORIES #
+  ################################  
+  
+  taxes <- reactive({
+    req(projections(), 
+        post_mpc_federal_non_corporate_taxes(), 
+        post_mpc_state_non_corporate_taxes(), 
+        post_mpc_federal_corporate_taxes(), 
+        post_mpc_state_corporate_taxes())
+    data <- projections()
+    
+    sum <- post_mpc_federal_non_corporate_taxes + post_mpc_state_non_corporate_taxes + 
+      post_mpc_federal_corporate_taxes + post_mpc_state_corporate_taxes + 
+      data$supply_side_ira
+    
+  })
+  
+  transfers <- reactive({
+    req(post_mpc_federal_social_benefits(), 
+        post_mpc_state_social_benefits(),
+        post_mpc_rebate_checks(), 
+        post_mpc_rebate_checks_arp(),
+        post_mpc_federal_ui(), 
+        post_mpc_state_ui(), 
+        post_mpc_federal_subsidies(), 
+        post_mpc_federal_aid_to_small_businesses_arp(), 
+        post_mpc_federal_other_direct_aid_arp(), 
+        post_mpc_federal_other_vulnerable_arp(), 
+        post_mpc_federal_student_loans(), 
+        post_mpc_state_subsidies(), 
+        post_mpc_federal_health_outlays(), 
+        post_mpc_state_health_outlays())
+    
+    sum <- post_mpc_federal_social_benefits + post_mpc_state_social_benefits +
+      post_mpc_rebate_checks + post_mpc_rebate_checks_arp + 
+      post_mpc_federal_ui + post_mpc_state_ui + 
+      post_mpc_federal_subsidies + post_mpc_federal_aid_to_small_businesses_arp + 
+      post_mpc_federal_other_direct_aid_arp + post_mpc_federal_other_vulnerable_arp  + 
+      post_mpc_federal_student_loans + post_mpc_state_subsidies +
+      post_mpc_federal_health_outlays + post_mpc_state_health_outlays
+    
+  })
+    
+  taxes_transfers <- reactive({
+    req(taxes(), transfers())
+    sum <- taxes + transfers
+    
+  })
+  
+  fim_state_purchases <- reactive({
     req(projections())
     data <- projections()
     
-    contribution(
+    sum <- data$state_purchases + 
+      data$consumption_grants + 
+      data$investment_grants 
+  })
+  
+  ###############################
+  # CALCULATE FIM CONTRIBUTIONS #
+  ###############################  
+  
+  # Federal Purchases Contribution (NIPA Consistent)
+  nipa_federal_purchases_contribution <- reactive({
+    req(projections())
+    data <- projections()
+    
+    contribution_purchases(
       x = data$federal_purchases,
-      mpc_matrix = NULL, 
       dg = data$federal_purchases_deflator_growth,
       rpgg = data$real_potential_gdp_growth,
       gdp = data$gdp
@@ -315,86 +595,137 @@ server <- function(input, output, session) {
     
   })
   
-  # Consumption Grants Contribution 
-  consumption_grants_contribution <- reactive({
+  # State Purchases Contribution (NIPA Consistent)
+  nipa_state_purchases_contribution <- reactive({
     req(projections())
     data <- projections()
     
-    contribution(
-      x = data$consumption_grants,
-      mpc_matrix = NULL, 
-      dg = data$consumption_grants_deflator_growth, 
-      rpgg = data$real_potential_gdp_growth,
-      gdp = data$gdp 
-    )
-  })
-  
-  # Investment Grants Contribution 
-  investment_grants_contribution <- reactive({
-    req(projections())
-    data <- projections()
-    
-    contribution(
-      x = data$investment_grants, 
-      mpc_matrix = NULL, 
-      dg = data$investment_grants_deflator_growth,
-      rpgg = data$real_potential_gdp_growth, 
-      gdp = data$gdp
-    )
-  })
-  
-  # State Purchases Contribution 
-  state_purchases_contribution <- reactive({
-    req(projections())
-    data <- projections()
-    
-    contribution(
+    contribution_purchases(
       x = data$state_purchases, 
-      mpc_matrix = NULL, 
       dg = data$state_purchases_deflator_growth,
       rpgg = data$real_potential_gdp_growth, 
       gdp = data$gdp 
     )
   })
   
-  #Federal Non-Corporate Taxes 
-  federal_non_corporate_taxes_contribution <- reactive({
+  # Total NIPA Purchases Contribution (NIPA Consistent)
+  nipa_total_purchases_contribution <- reactive({
+    req(nipa_state_purchases_contribution(), 
+        nipa_federal_purchases_contribution())
+    
+    sum <- nipa_state_purchases_contribution() + 
+      nipa_federal_purchases_contribution()
+    
+  })
+  
+  # State Purchases Contribution (FIM Consistent)
+  fim_state_purchases_contribution <- reactive({
     req(projections())
     data <- projections()
     
-    contribution(
-      x = data$federal_non_corporate_taxes,
-      mpc_matrix = federal_non_corporate_taxes_mpc(), 
+    contribution_purchases(
+      x = data$fim_state_purchases,
+      dg = data$state_purchases_deflator_growth,
+      rpgg = data$real_potential_gdp_growth,
+      gdp = data$gdp
+    )
+    
+  })
+  
+  # Federal Purchases Contribution (FIM Consistent)
+  fim_federal_purchases_contribution <- reactive({
+    req(nipa_total_purchases_contribution(),
+        fim_state_purchases_contribution())
+    
+    sum <- nipa_total_purchases_contribution() - fim_state_purchases_contribution()
+    
+  })
+  
+  # Consumption Contribution (include uncertainty factor)
+  consumption_contribution <- reactive({
+    req(projections(),
+        taxes_transfers())
+    data <- projections()
+    
+    sum <- contribution_transfers(
+      x = taxes_transfers(),
+      dg = data$consumption_deflator_growth, 
+      rpgg = data$real_potential_gdp_growth,
+      c = data$consumption,
+      gdp = data$gdp 
+    ) + 
+      data$uncertainty
+  })
+  
+  taxes_contribution <- reactive({
+    req(projections(),
+        taxes())
+    data <- projections()
+    
+    contribution_transfers(
+      x = taxes(),
+      dg = data$consumption_deflator_growth, 
+      rpgg = data$real_potential_gdp_growth,
+      c = data$consumption,
+      gdp = data$gdp 
+    )
+  })
+  
+  transfers_contribution <- reactive({
+    req(projections(),
+        transfers())
+    data <- projections()
+    
+    contribution_transfers(
+      x = transfers(),
+      dg = data$consumption_deflator_growth, 
+      rpgg = data$real_potential_gdp_growth,
+      c = data$consumption,
+      gdp = data$gdp 
+    )
+  })
+  
+  #Federal Non-Corporate Taxes 
+  federal_non_corporate_taxes_contribution <- reactive({
+    req(projections(),
+        post_mpc_federal_non_corporate_taxes())
+    data <- projections()
+    
+    contribution_transfers(
+      x = post_mpc_federal_non_corporate_taxes(),
       dg = data$consumption_deflator_growth,
       rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # State Non-Corporate Taxes Contribution
   state_non_corporate_taxes_contribution <- reactive ({
-    req(projections())
+    req(projections(),
+        post_mpc_state_non_corporate_taxes())
     data <- projections()
     
-    contribution(
-      x = data$state_non_corporate_taxes,
-      mpc_matrix = state_non_corporate_taxes_mpc(),
+    contribution_transfers(
+      x = post_mpc_state_non_corporate_taxes(),
       dg = data$consumption_deflator_growth,
       rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # Federal Corporate Taxes Contribution
   federal_corporate_taxes_contribution <- reactive ({
-    req(projections())
+    req(projections(),
+        post_mpc_federal_corporate_taxes())
     data <- projections()
     
-    contribution(
-      x = data$federal_corporate_taxes,
-      mpc_matrix = federal_corporate_taxes_mpc(),
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_corporate_taxes(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
@@ -406,222 +737,234 @@ server <- function(input, output, session) {
     
     contribution(
       x = data$supply_side_ira, 
-      mpc_matrix = NULL, 
       dg = data$consumption_deflator_growth, 
-      rpgg = data$real_potential_gdp_growth, 
+      rpgg = data$real_potential_gdp_growth,
+      c = data$consumption,
       gdp = data$gdp 
     )
   })
   
   # State Corporate Taxes Contribution 
   state_corporate_taxes_contribution <- reactive ({
-    req(projections())
+    req(projections(),
+        post_mpc_state_corporate_taxes())
     data <- projections()
     
-    contribution(
-      x = data$state_corporate_taxes,
-      mpc_matrix = state_corporate_taxes_mpc(),
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_state_corporate_taxes(),
       dg = data$consumption_deflator_growth,
-      gdp = data$gdp 
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
+      gdp = data$gdp
     )
   })
   
   # Federal Social Benefits
-  federal_social_benefits_contribution <- reactive({
-    req(projections())
+  federal_social_benefits_contribution <- reactive ({
+    req(projections(),
+        post_mpc_federal_social_benefits())
     data <- projections()
     
-    contribution(
-      x = data$federal_social_benefits, 
-      mpc_matrix = federal_social_benefits_mpc(),
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_social_benefits(),
       dg = data$consumption_deflator_growth,
-      gdp = data$gdp 
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
+      gdp = data$gdp
     )
   })
   
-  # State social benefits 
+  # State Social Benefits
   state_social_benefits_contribution <- reactive ({
-    req(projections())
+    req(projections(),
+        post_mpc_state_social_benefits())
     data <- projections()
     
-    contribution(
-      x = data$state_social_benefits, 
-      mpc_matrix = state_social_benefits_mpc(),
+    contribution_transfers(
+      x = post_mpc_state_social_benefits(),
+      dg = data$consumption_deflator_growth,
       rpgg = data$real_potential_gdp_growth, 
-      dg = data$consumption_deflator_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
-  }) 
+  })
   
   # Rebate Checks 
   rebate_checks_contribution <- reactive ({
-    req(projections())
+    req(projections(),
+        post_mpc_rebate_checks())
     data <- projections()
     
-    contribution(
-      x = data$rebate_checks,
-      mpc_matrix = rebate_checks_mpc(),
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_rebate_checks(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # Rebate Checks ARP 
   rebate_checks_arp_contribution <- reactive ({
-    req(projections())
+    req(projections(),
+        post_mpc_rebate_checks_arp())
     data <- projections()
     
-    contribution(
-      x = data$rebate_checks_arp,
-      mpc_matrix = rebate_checks_arp_mpc(),
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_rebate_checks_arp(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # Federal UI
   federal_ui_contribution <- reactive ({
-    req(projections())
+    req(projections(),
+        post_mpc_federal_ui())
     data <- projections()
     
-    contribution(
-      x = data$federal_ui,
-      mpc_matrix = readRDS("cache/mpc/federal_ui.rds"),
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_ui(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # State UI Contribution 
   state_ui_contribution <- reactive ({
-    req(projections())
+    req(projections(),
+        post_mpc_state_ui())
     data <- projections()
     
-    contribution(
-      x = data$state_ui,
-      mpc_matrix = readRDS("cache/mpc/state_ui.rds"), 
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_state_ui(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # Federal Subsidies Contribution 
-  federal_subsidies_contribution <- reactive({
-    req(projections())
+  federal_subsidies_contribution <- reactive ({
+    req(projections(),
+        post_mpc_federal_subsidies())
     data <- projections()
     
-    contribution(
-      x = data$federal_subsidies, 
-      mpc_matrix = federal_subsidies_mpc(), 
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_subsidies(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
-    
   })
   
   # Federal Aid to Small Businesses ARP Contribution 
-  federal_aid_to_small_businesses_arp_contribution <- reactive({
-    req(projections())
+  federal_aid_to_small_businesses_arp_contribution <- reactive ({
+    req(projections(),
+        post_mpc_federal_aid_to_small_businesses_arp())
     data <- projections()
     
-    contribution(
-      x = data$federal_aid_to_small_businesses_arp,
-      mpc_matrix = federal_aid_to_small_businesses_arp_mpc(),
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_aid_to_small_businesses_arp(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # Federal Other Direct Aid ARP Contribution
-  federal_other_direct_aid_arp_contribution <- reactive({
-    req(projections())
+  federal_other_direct_aid_arp_contribution <- reactive ({
+    req(projections(),
+        post_mpc_federal_other_direct_aid_arp())
     data <- projections()
     
-    contribution(
-      x = data$federal_other_direct_aid_arp, 
-      mpc_matrix = federal_other_direct_aid_arp_mpc(), 
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_other_direct_aid_arp(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
-    
   })
   
   # Federal Other Vulnerable ARP 
-  federal_other_vulnerable_arp_contribution <- reactive({
-    req(projections())
+  federal_other_vulnerable_arp_contribution <- reactive ({
+    req(projections(),
+        post_mpc_federal_other_vulnerable_arp())
     data <- projections()
     
-    contribution(
-      x = data$federal_other_vulnerable_arp,
-      mpc_matrix = federal_other_vulnerable_arp_mpc(), 
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_other_vulnerable_arp(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # Federal Student Loans 
-  federal_student_loans_contribution <- reactive({
-    req(projections())
+  federal_student_loans_contribution <- reactive ({
+    req(projections(),
+        post_mpc_federal_student_loans())
     data <- projections()
     
-    contribution(
-      x = data$federal_student_loans,
-      mpc_matrix = federal_student_loans_mpc(), 
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_student_loans(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # State Subsidies Contribution 
-  state_subsidies_contribution <- reactive({
-    req(projections())
+  state_subsidies_contribution <- reactive ({
+    req(projections(),
+        post_mpc_state_subsidies())
     data <- projections()
     
-    contribution(
-      x = data$state_subsidies,
-      mpc_matrix =  state_subsidies_mpc(), 
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_state_subsidies(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
   
   # Federal Health Outlays Contribution 
-  federal_health_outlays_contribution <- reactive({
-    req(projections())
+  federal_health_outlays_contribution <- reactive ({
+    req(projections(),
+        post_mpc_federal_health_outlays())
     data <- projections()
     
-    contribution(
-      x = data$federal_health_outlays,
-      mpc_matrix =  federal_health_outlays_mpc(), 
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_federal_health_outlays(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
-    
   })
   
   # State Health Outlays 
-  state_health_outlays_contribution <- reactive({
-    req(projections())
+  state_health_outlays_contribution <- reactive ({
+    req(projections(),
+        post_mpc_state_health_outlays())
     data <- projections()
     
-    contribution(
-      x = data$state_health_outlays, 
-      mpc_matrix = state_health_outlays_mpc(), 
-      rpgg = data$real_potential_gdp_growth,
+    contribution_transfers(
+      x = post_mpc_state_health_outlays(),
       dg = data$consumption_deflator_growth,
+      rpgg = data$real_potential_gdp_growth, 
+      c = data$consumption,
       gdp = data$gdp
     )
   })
@@ -632,73 +975,32 @@ server <- function(input, output, session) {
   
   # Calculate Federal Contribution 
   federal_contribution <- reactive({
-    req(federal_purchases_contribution(), 
-        consumption_grants_contribution(), 
-        investment_grants_contribution())
+    req(fim_federal_purchases_contribution())
     
-    sum <- federal_purchases_contribution() + consumption_grants_contribution() + investment_grants_contribution()
+    sum <- fim_federal_purchases_contribution()
   }) 
   
   # Calculate State Contribution 
   state_contribution <- reactive({
-    req(state_purchases_contribution(), 
-        consumption_grants_contribution(), 
-        investment_grants_contribution())
+    req(fim_state_purchases_contribution())
     
-    sum <- state_purchases_contribution() - consumption_grants_contribution() - investment_grants_contribution()
-  })
-  
-  # Calculate Taxes Contribution
-  taxes_contribution <- reactive({
-    req(
-      federal_non_corporate_taxes_contribution(), 
-      state_non_corporate_taxes_contribution(), 
-      federal_corporate_taxes_contribution(), 
-      supply_side_ira_contribution(), 
-      state_corporate_taxes_contribution)
-    
-    sum <- federal_non_corporate_taxes_contribution() + 
-      state_non_corporate_taxes_contribution() +
-      federal_corporate_taxes_contribution() + 
-      supply_side_ira_contribution() + 
-      state_corporate_taxes_contribution()
-  })
-  
-  # Calculate Transfers Contribution 
-  transfers_contribution <- reactive({
-    req(federal_social_benefits_contribution(), state_social_benefits_contribution(), rebate_checks_contribution(), 
-        rebate_checks_arp_contribution(), federal_ui_contribution(), state_ui_contribution(), federal_subsidies_contribution(), 
-        federal_aid_to_small_businesses_arp_contribution(), federal_other_vulnerable_arp_contribution(), federal_student_loans_contribution(), 
-        state_subsidies_contribution(), federal_health_outlays_contribution(), state_health_outlays_contribution()) 
-    
-    sum <-   federal_social_benefits_contribution() + 
-      state_social_benefits_contribution() + 
-      rebate_checks_contribution() + 
-      rebate_checks_arp_contribution() + 
-      federal_ui_contribution() + 
-      state_ui_contribution() + 
-      federal_subsidies_contribution() + 
-      federal_aid_to_small_businesses_arp_contribution() + 
-      federal_other_direct_aid_arp_contribution() + 
-      federal_other_vulnerable_arp_contribution() + 
-      federal_student_loans_contribution() + 
-      state_subsidies_contribution() + 
-      federal_health_outlays_contribution() + 
-      state_health_outlays_contribution()
+    sum <- fim_state_purchases_contribution() 
   })
   
   # Calculate FIM
   fim <- reactive({ 
-    req(transfers_contribution(), taxes_contribution(), federal_contribution(), state_contribution())
-    sum <- transfers_contribution() + taxes_contribution() + federal_contribution() + state_contribution()
+    req(federal_contribution(), state_contribution(), consumption_contribution())
+    sum <- federal_contribution() + state_contribution() + consumption_contribution()
     
   })
   
   # Create Contributions Data Frame (interactive users are able to download this data frame as an Excel file)
   contributions <- reactive({
     req(
+      projections(), 
+      # Individual Contributions:
       federal_purchases_contribution(), consumption_grants_contribution(), 
-      investment_grants_contribution(), state_purchases_contribution(), 
+      state_purchases_contribution(), 
       federal_non_corporate_taxes_contribution(), state_non_corporate_taxes_contribution(), 
       federal_corporate_taxes_contribution(), supply_side_ira_contribution(), 
       state_corporate_taxes_contribution(), federal_social_benefits_contribution(), 
@@ -710,13 +1012,20 @@ server <- function(input, output, session) {
       federal_other_vulnerable_arp_contribution(), federal_student_loans_contribution(), 
       state_subsidies_contribution(), federal_health_outlays_contribution(), 
       state_health_outlays_contribution(),
+      # Aggregate Contributions:
+      federal_contribution(), 
+      state_contribution(), 
+      taxes_contribution(), 
+      transfers_contribution(), 
+      consumption_contribution(), 
+      # Total: 
       fim()
     )
     data.frame(
+      # Individual Contributions: 
       date = as.character(projections()$date), 
       federal_purchases_contribution = federal_purchases_contribution(),
       consumption_grants_contribution = consumption_grants_contribution(), 
-      investment_grants_contribution = investment_grants_contribution(), 
       state_purchases_contribution = state_purchases_contribution(), 
       federal_non_corporate_taxes_contribution = federal_non_corporate_taxes_contribution(), 
       state_non_corporate_taxes_contribution = state_non_corporate_taxes_contribution(), 
@@ -737,6 +1046,13 @@ server <- function(input, output, session) {
       state_subsidies_contribution = state_subsidies_contribution(), 
       federal_health_outlays_contribution = federal_health_outlays_contribution(), 
       state_health_outlays_contribution = state_health_outlays_contribution(),
+      # Aggregate Contributions: 
+      federal_contribution = federal_contribution(), 
+      state_contribution = state_contribution(), 
+      taxes_contribution = taxes_contribution(), 
+      transfers_contribution = transfers_contribution(), 
+      consumption_contribution(), 
+      # Total: 
       fim()
     ) %>% 
       filter(date > "1999 Q4") %>% # keep only more recent quarters 
@@ -789,7 +1105,8 @@ server <- function(input, output, session) {
     data <- hutchins_fim %>% 
       filter(date > yearquarter("1999 Q4")) %>%
       filter(date < current_quarter + 9) %>% 
-      mutate(date = as.character(date)) 
+      mutate(date = as.character(date)) %>%
+      mutate()
     
     plot1 <- plot_ly() %>% 
       add_trace(data, x = ~data$date, y = ~data$fiscal_impact_measure, type = "bar",

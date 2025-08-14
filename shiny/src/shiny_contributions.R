@@ -7,6 +7,9 @@ minus_neutral <- function(x, # the data in question
   return(output)
 }
 
+#' This function takes a time series and marginal propensity to consume (MPC)
+#' matrix as inputs and calculates the post-MPC series using using matrix 
+#' multiplication.
 mpc <- function(x, mpc_matrix) {
   # Input check that the dimensions of the matrix equal the length of the series
   if (nrow(mpc_matrix) != length(x)) {
@@ -32,23 +35,43 @@ scale_to_gdp <- function(x, gdp) {
   return(output)
 }
 
-
-contribution <- function(x, mpc_matrix = NULL, rpgg, dg, gdp) {
-  # If mpc_matrix is not NULL, apply the mpc function first
-  if (!is.null(mpc_matrix)) {
-    x <- x %>%
-      mpc(x = ., mpc_matrix = mpc_matrix)
-  }
+#' This function calculates the generic contribution of a time series to GDP
+#' growth. 
+contribution_purchases <- function(
+    x, # our data series 
+    rpgg, # real potential GDP growth
+    dg, # deflator growth
+    gdp #gdp
+) {
   
-  # Apply the minus_neutral function to x, setting real potential GDP growth
-  # and deflator growth inputs to those specified by the arguments.
-  result <- x %>%
-    minus_neutral(x = ., rpgg = rpgg, dg = dg)
+  # Actual Growth Minus Counterfactual Growth
+  result <- minus_neutral_purchases(x = x, rpgg = rpgg, dg = dg)
   
-  # Apply the scale_to_gdp function
-  result %>%
-    scale_to_gdp(x = ., gdp = gdp)
+  # Apply Scale to GDP Function
+  output <- scale_to_gdp_purchases(x = x, result = result, gdp = gdp)
+  return(output)
 }
+
+
+contribution_transfers <- function(x, # our data
+                                   c, # consumption 
+                                   rpgg, # real potential GDP growth
+                                   dg, # deflator growth
+                                   gdp # gdp 
+) {
+  
+  # Define Counterfactual
+  counterfactual <- as.numeric(c - x + lag(x) * (1 + rpgg + dg))
+  
+  # Define Minus Neutral
+  minus_neutral <- (c / lag(c))^4 - (counterfactual / lag(c))^4
+  
+  # Scale to GDP
+  output <- 100 * minus_neutral * (lag(c) / lag(gdp))
+  
+  return(output)
+}
+
 
 level <- function(x, mpc_matrix = NULL, rpgg, dg, gdp) {
   # If mpc_matrix is not NULL, apply the mpc function first
