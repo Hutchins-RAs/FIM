@@ -2,6 +2,8 @@
 # Define Server Logic #
 #######################
 
+Sys.setenv(TZ = "UTC")
+
 # Load all required packages
 packages <- c("shiny", "tidyr", "dplyr", "lubridate", "tsibble", "zoo", "glue", 
               "readxl", "writexl", "shinyjs", "plotly", "shinycssloaders", "TTR")
@@ -25,8 +27,7 @@ load('cache/historical_overrides.rda')
 mpcs <- readxl::read_xlsx('cache/mpcs.xlsx')
 
 # Set the Current Quarter 
-current_quarter <- yearquarter(Sys.Date()) %>% yearquarter()
-current_quarter <- current_quarter - 1
+current_quarter <- yearquarter(Sys.Date()) - 1
 
 # Source the contributions R script, which defines the functions that are used to calculate the FIM contributions. 
 source("src/shiny_contributions.R")
@@ -102,47 +103,94 @@ server <- function(input, output, session) {
       
   })
   
-  # Create projections dataset that joins national accounts, forecasts, and historical overrides 
+  # Create projections dataset that joins national accounts, forecasts, and historical overrides
   projections <- reactive({
     req(forecast_user())
     ui_forecast <- data.frame(forecast_user())
     
-    # Join the NIPAs (contained in the cache folder) with the user in
-    coalesce_join(usna, ui_forecast, by = 'date') %>% 
-      mutate(across(where(is.numeric), ~ coalesce(.x, 0)))%>% # Coalesce NA's to 0 for numeric values
-      
-      # Replace missing values with 0 
-      mutate( # Coalesce NA's to 0 for all numeric values 
-        across(where(is.numeric),
-               ~ coalesce(.x, 0))) %>%
-      
-      #Define FIM health variables 
+    # Join the NIPAs (contained in the cache folder) with the user forecast
+    base_data <- coalesce_join(usna, ui_forecast, by = 'date') %>% 
+      mutate(across(where(is.numeric), ~ coalesce(.x, 0))) %>%
       mutate(
         federal_health_outlays = medicare + medicaid_grants,
-        state_health_outlays = medicaid - medicaid_grants
-      ) %>% 
-      
-      # apply historical_overrides for ARP 
-      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-                   federal_other_direct_aid_arp = historical_overrides$federal_other_direct_aid_arp_override,
-                   federal_other_vulnerable_arp = historical_overrides$federal_other_vulnerable_arp_override,
-                   federal_social_benefits = historical_overrides$federal_social_benefits_override,
-                   federal_aid_to_small_businesses_arp = historical_overrides$federal_aid_to_small_businesses_arp_override) %>% 
-      mutate_where(date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes),
-                   federal_corporate_taxes = tail(historical_overrides$federal_corporate_taxes_override, n = 1),
-                   state_corporate_taxes = tail(historical_overrides$state_corporate_taxes_override, n = 1)) %>% 
-      mutate_where(date == yearquarter("2021 Q1"),
-                   federal_social_benefits = federal_social_benefits + 203) %>% 
-      mutate_where(date == yearquarter('2021 Q4'),
-                   federal_ui = 11, 
-                   state_ui = ui - federal_ui) %>%
-      #apply historical_overrides for Supply Side IRA
-      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-                   supply_side_ira = historical_overrides$supply_side_ira_override) %>%
-      #apply historical_overrides for Federal Student Loans
-      mutate_where(date >= yearquarter('2020 Q2') & date <= current_quarter,
-                   federal_student_loans = historical_overrides$federal_student_loans_override)
+        state_health_outlays   = medicaid - medicaid_grants
+      )
+    
+    # Apply overrides
+    historical_overrides_filtered <- historical_overrides %>%
+      filter(date >= yearquarter('2020 Q2') & date <= current_quarter) %>%
+      select(date, contains("override"))
+    
+    result <- base_data %>%
+      left_join(historical_overrides_filtered, by = "date") %>%
+      mutate(
+        federal_other_direct_aid_arp = case_when(
+          date >= yearquarter('2020 Q2') & date <= current_quarter & 
+            !is.na(federal_other_direct_aid_arp_override) ~ federal_other_direct_aid_arp_override,
+          TRUE ~ federal_other_direct_aid_arp
+        ),
+        federal_other_vulnerable_arp = case_when(
+          date >= yearquarter('2020 Q2') & date <= current_quarter & 
+            !is.na(federal_other_vulnerable_arp_override) ~ federal_other_vulnerable_arp_override,
+          TRUE ~ federal_other_vulnerable_arp
+        ),
+        federal_social_benefits = case_when(
+          date >= yearquarter('2020 Q2') & date <= current_quarter & 
+            !is.na(federal_social_benefits_override) ~ federal_social_benefits_override,
+          TRUE ~ federal_social_benefits
+        ),
+        federal_aid_to_small_businesses_arp = case_when(
+          date >= yearquarter('2020 Q2') & date <= current_quarter & 
+            !is.na(federal_aid_to_small_businesses_arp_override) ~ federal_aid_to_small_businesses_arp_override,
+          TRUE ~ federal_aid_to_small_businesses_arp
+        ),
+        federal_corporate_taxes = case_when(
+          date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes) & 
+            !is.na(federal_corporate_taxes_override) ~ federal_corporate_taxes_override,
+          TRUE ~ federal_corporate_taxes
+        ),
+        state_corporate_taxes = case_when(
+          date == current_quarter & is.na(federal_corporate_taxes) & is.na(state_corporate_taxes) & 
+            !is.na(state_corporate_taxes_override) ~ state_corporate_taxes_override,
+          TRUE ~ state_corporate_taxes
+        ),
+        supply_side_ira = case_when(
+          date >= yearquarter('2020 Q2') & date <= current_quarter & 
+            !is.na(supply_side_ira_override) ~ supply_side_ira_override,
+          TRUE ~ supply_side_ira
+        ),
+        federal_student_loans = case_when(
+          date >= yearquarter('2020 Q2') & date <= current_quarter & 
+            !is.na(federal_student_loans_override) ~ federal_student_loans_override,
+          TRUE ~ federal_student_loans
+        ),
+        federal_social_benefits = case_when(
+          date == yearquarter("2021 Q1") ~ federal_social_benefits + 203,
+          TRUE ~ federal_social_benefits
+        ),
+        federal_ui = case_when(
+          date == yearquarter('2021 Q4') ~ 11,
+          TRUE ~ federal_ui
+        ),
+        state_ui = case_when(
+          date == yearquarter('2021 Q4') ~ ui - 11,
+          TRUE ~ state_ui
+        )
+      ) %>%
+      select(-contains("override")) 
+    
+    # --- Pad with future quarters until 259 rows ---
+    all_dates <- tibble(
+      date = seq(yearquarter("2020 Q2"), by = 1, length.out = 259)
+    )
+    
+    result_padded <- all_dates %>%
+      left_join(result, by = "date") %>%
+      mutate(across(where(is.numeric), ~ coalesce(.x, 0)))
+    
+    return(result_padded)
   })
+  
   
   #########################
   # GENERATE MPC MATRICES #
@@ -251,7 +299,7 @@ server <- function(input, output, session) {
   
   # Federal Other Direct Aid ARP MPC
   federal_other_direct_aid_arp_mpc <- reactive({
-    req(mpcs_user)
+    req(mpcs_user())
     
     mpc_vector <- as.vector(mpcs_user()$federal_other_direct_aid_arp_mpc)
     mpc_matrix(mpc_vector = mpc_vector, dim = 259)
@@ -275,7 +323,7 @@ server <- function(input, output, session) {
   
   # State Subsidies MPC 
   state_subsidies_mpc <- reactive({
-    req(mpcs_user)
+    req(mpcs_user())
     
     mpc_vector <- as.vector(mpcs_user()$state_subsidies_mpc)
     mpc_matrix(mpc_vector = mpc_vector, dim = 259)
@@ -283,7 +331,7 @@ server <- function(input, output, session) {
   
   # Federal Health Outlays 
   federal_health_outlays_mpc <- reactive({
-    req(mpcs_user)
+    req(mpcs_user())
     
     mpc_vector <- as.vector(mpcs_user()$federal_health_outlays_mpc)
     mpc_matrix(mpc_vector = mpc_vector, dim = 259)
@@ -291,7 +339,7 @@ server <- function(input, output, session) {
   
   # State Health Outlays MPC 
   state_health_outlays_mpc <- reactive({
-    req(mpcs_user)
+    req(mpcs_user())
     
     mpc_vector <- as.vector(mpcs_user()$state_health_outlays_mpc)
     mpc_matrix(mpc_vector = mpc_vector, dim = 259)
@@ -303,24 +351,24 @@ server <- function(input, output, session) {
   
   post_mpc_federal_non_corporate_taxes <- reactive({
     req(projections(), 
-        federal_corporate_taxes_mpc())
+        federal_non_corporate_taxes_mpc())
     data <- projections()
     
     mpc(
       x = data$federal_non_corporate_taxes, 
-      mpc_matrix = federal_corporate_taxes_mpc()
+      mpc_matrix = federal_non_corporate_taxes_mpc()
     )
     
   })
   
   post_mpc_state_non_corporate_taxes <- reactive({
     req(projections(),
-        state_corporate_taxes_mpc())
+        state_non_corporate_taxes_mpc())
     data <- projections()
     
     mpc(
       x = data$state_non_corporate_taxes, 
-      mpc_matrix = state_corporate_taxes_mpc()
+      mpc_matrix = state_non_corporate_taxes_mpc()
     )
     
   })
@@ -358,7 +406,7 @@ server <- function(input, output, session) {
       x = data$federal_social_benefits, 
       mpc_matrix = federal_social_benefits_mpc()
     )
-    
+  
   })
   
   post_mpc_state_social_benefits <- reactive({
@@ -530,8 +578,8 @@ server <- function(input, output, session) {
         post_mpc_state_corporate_taxes())
     data <- projections()
     
-    sum <- post_mpc_federal_non_corporate_taxes + post_mpc_state_non_corporate_taxes + 
-      post_mpc_federal_corporate_taxes + post_mpc_state_corporate_taxes + 
+    post_mpc_federal_non_corporate_taxes() + post_mpc_state_non_corporate_taxes() + 
+      post_mpc_federal_corporate_taxes() + post_mpc_state_corporate_taxes() + 
       data$supply_side_ira
     
   })
@@ -552,19 +600,20 @@ server <- function(input, output, session) {
         post_mpc_federal_health_outlays(), 
         post_mpc_state_health_outlays())
     
-    sum <- post_mpc_federal_social_benefits + post_mpc_state_social_benefits +
-      post_mpc_rebate_checks + post_mpc_rebate_checks_arp + 
-      post_mpc_federal_ui + post_mpc_state_ui + 
-      post_mpc_federal_subsidies + post_mpc_federal_aid_to_small_businesses_arp + 
-      post_mpc_federal_other_direct_aid_arp + post_mpc_federal_other_vulnerable_arp  + 
-      post_mpc_federal_student_loans + post_mpc_state_subsidies +
-      post_mpc_federal_health_outlays + post_mpc_state_health_outlays
+    post_mpc_federal_social_benefits() + post_mpc_state_social_benefits() +
+      post_mpc_rebate_checks() + post_mpc_rebate_checks_arp() + 
+      post_mpc_federal_ui() + post_mpc_state_ui() + 
+      post_mpc_federal_subsidies() + post_mpc_federal_aid_to_small_businesses_arp() + 
+      post_mpc_federal_other_direct_aid_arp() + post_mpc_federal_other_vulnerable_arp()  + 
+      post_mpc_federal_student_loans() + post_mpc_state_subsidies() +
+      post_mpc_federal_health_outlays() + post_mpc_state_health_outlays()
     
   })
     
   taxes_transfers <- reactive({
     req(taxes(), transfers())
-    sum <- taxes + transfers
+    
+    taxes() + transfers()
     
   })
   
@@ -572,7 +621,7 @@ server <- function(input, output, session) {
     req(projections())
     data <- projections()
     
-    sum <- data$state_purchases + 
+    data$state_purchases + 
       data$consumption_grants + 
       data$investment_grants 
   })
@@ -613,18 +662,19 @@ server <- function(input, output, session) {
     req(nipa_state_purchases_contribution(), 
         nipa_federal_purchases_contribution())
     
-    sum <- nipa_state_purchases_contribution() + 
+    nipa_state_purchases_contribution() + 
       nipa_federal_purchases_contribution()
     
   })
   
   # State Purchases Contribution (FIM Consistent)
   fim_state_purchases_contribution <- reactive({
-    req(projections())
+    req(projections(),
+        fim_state_purchases())
     data <- projections()
     
     contribution_purchases(
-      x = data$fim_state_purchases,
+      x = fim_state_purchases(),
       dg = data$state_purchases_deflator_growth,
       rpgg = data$real_potential_gdp_growth,
       gdp = data$gdp
@@ -637,7 +687,7 @@ server <- function(input, output, session) {
     req(nipa_total_purchases_contribution(),
         fim_state_purchases_contribution())
     
-    sum <- nipa_total_purchases_contribution() - fim_state_purchases_contribution()
+    nipa_total_purchases_contribution() - fim_state_purchases_contribution()
     
   })
   
@@ -647,7 +697,7 @@ server <- function(input, output, session) {
         taxes_transfers())
     data <- projections()
     
-    sum <- contribution_transfers(
+    contribution_transfers(
       x = taxes_transfers(),
       dg = data$consumption_deflator_growth, 
       rpgg = data$real_potential_gdp_growth,
@@ -655,6 +705,7 @@ server <- function(input, output, session) {
       gdp = data$gdp 
     ) + 
       data$uncertainty
+    
   })
   
   taxes_contribution <- reactive({
@@ -977,21 +1028,30 @@ server <- function(input, output, session) {
   federal_contribution <- reactive({
     req(fim_federal_purchases_contribution())
     
-    sum <- fim_federal_purchases_contribution()
+    fim_federal_purchases_contribution()
   }) 
   
   # Calculate State Contribution 
   state_contribution <- reactive({
     req(fim_state_purchases_contribution())
     
-    sum <- fim_state_purchases_contribution() 
+    fim_state_purchases_contribution() 
   })
   
   # Calculate FIM
   fim <- reactive({ 
     req(federal_contribution(), state_contribution(), consumption_contribution())
-    sum <- federal_contribution() + state_contribution() + consumption_contribution()
     
+    federal_contribution() + state_contribution() + consumption_contribution()
+    
+  })
+  
+  # Get 4q Moving Average
+  fiscal_impact_4q_ma <- reactive({
+    req(fim())
+    
+    fim() %>%
+      SMA(zoo::na.locf(., na.rm = F), n=4)
   })
   
   # Create Contributions Data Frame (interactive users are able to download this data frame as an Excel file)
@@ -1065,19 +1125,26 @@ server <- function(input, output, session) {
     projections()$date
   })
   
-  # Create Plot Data (the fiscal_impact_measure() reactive is a data frame containing all the data we need to create our results plot)
-  fiscal_impact_measure <- reactive({
+  # Create Plot Data with proper alignment
+  fiscal_impact_measure_output <- reactive({
+    req(date(), fim(), projections())
     
-    data.frame(
-      date(), 
-      fim(), 
-      hutchins_fim$fiscal_impact_measure
-    ) %>% 
-      rename(
-        user_fim = fim..,
-        hutchins_fim = hutchins_fim.fiscal_impact_measure, 
-        date = date..
-      )  
+    # Create user data frame
+    user_data <- data.frame(
+      date = projections()$date, 
+      user_fim = fim()
+    )
+    
+    # Create hutchins data frame (assuming hutchins_fim has a date column)
+    hutchins_data <- data.frame(
+      date = hutchins_fim$date,  # Make sure this column exists
+      hutchins_fim = hutchins_fim$fiscal_impact_measure
+    )
+    
+    # Merge on matching dates only
+    merged_data <- merge(user_data, hutchins_data, by = "date", all = FALSE)
+     
+    return(merged_data)
   })
   
   # Define results loaded reactive function
@@ -1101,146 +1168,167 @@ server <- function(input, output, session) {
     # Check if the user data has not been uploaded 
     if(!resultsLoaded()){
       
-    # Define FIM Plot to display initially 
-    data <- hutchins_fim %>% 
-      filter(date > yearquarter("1999 Q4")) %>%
-      filter(date < current_quarter + 9) %>% 
-      mutate(date = as.character(date)) %>%
-      mutate()
-    
-    plot1 <- plot_ly() %>% 
-      add_trace(data, x = ~data$date, y = ~data$fiscal_impact_measure, type = "bar",
-                name = "Hutchins Center FIM", marker = list(color = "#e4649c"),
-                hovertemplate = 'Fiscal Impact: %{y:.2f}%<extra></extra>') %>% 
-      add_trace(data, x = ~data$date, y = ~data$fiscal_impact_4q_ma, type = "scatter",
-                mode = 'lines+markers',
-                name = "4 Quarter Moving Average", marker = list(color = "black"), line = list(color = "black"),
-                hovertemplate = 'Four Quarter Moving Average: %{y:.2f}%<extra></extra>') %>% 
-      layout(
-        # X Axis 
-        xaxis = list(
-          title = "",
-          showspikes = TRUE, 
-          spikemode = "across", 
-          spikecolor = "black",
-          spikethickness = 1,
-          spikedash = "solid", 
-          
-          tickmode = 'linear',
-          tick0 = '2000 Q1',
-          dtick = 4
-
-          ),
-        
-        # Y Axis 
-        yaxis = list(
-          title = "",
-          ticksuffix = "%"
-        ), 
-        
-        # Format Hover Line 
-        hovermode = "x unified", # displays a single label for all data points that share the same x coordinate
-        
-        
-        # Format Data Label 
-        hoverlabel = list(
-          bordercolor = 'transparent', # makes the border of the hover label transparent 
-          font = list(size = 12)  # Change size of the hover label text
-        ),
-        
-        # Format Legend 
-        legend = list(
-          x=1,      # Horizontal position (0 to 1)
-          y=1,    # Vertical position (0 to 1)
-          xanchor='left', # Align legend by its left
-          yanchor='middle' # Align legend by its middle
-        )
-        
-      ) %>% 
+      # Define FIM Plot to display initially 
+      data <- hutchins_fim %>% 
+        filter(date > yearquarter("1999 Q4")) %>%
+        filter(date < (current_quarter + 9)) %>% 
+        mutate(date = as.character(date)) %>%
+        mutate(fiscal_impact_4q_ma = SMA(zoo::na.locf(fiscal_impact_measure, na.rm = F), n=4))
       
-      # Remove selection tools 
-      config(displayModeBar = FALSE)
-    
+      # Create the plot object
+      plot1 <- plot_ly(data) %>% 
+        add_trace(x = ~date, y = ~fiscal_impact_measure, type = "bar",
+                  name = "Hutchins Center FIM", marker = list(color = "#e4649c"),
+                  hovertemplate = 'Fiscal Impact: %{y:.2f}%<extra></extra>') %>% 
+        add_trace(x = ~date, y = ~fiscal_impact_4q_ma, type = "scatter",
+                  mode = 'lines+markers',
+                  name = "4 Quarter Moving Average", marker = list(color = "black"), line = list(color = "black"),
+                  hovertemplate = 'Four Quarter Moving Average: %{y:.2f}%<extra></extra>') %>% 
+        layout(
+          # X Axis 
+          xaxis = list(
+            title = "",
+            showspikes = TRUE, 
+            spikemode = "across", 
+            spikecolor = "black",
+            spikethickness = 1,
+            spikedash = "solid", 
+            tickmode = 'linear',
+            tick0 = '2000 Q1',
+            dtick = 4
+          ),
+          
+          # Y Axis 
+          yaxis = list(
+            title = "",
+            ticksuffix = "%"
+          ), 
+          
+          # Format Hover Line 
+          hovermode = "x unified",
+          
+          # Format Data Label 
+          hoverlabel = list(
+            bordercolor = 'transparent',
+            font = list(size = 12)
+          ),
+          
+          # Format Legend 
+          legend = list(
+            x=1,
+            y=1,
+            xanchor='left',
+            yanchor='middle'
+          )
+        ) %>% 
+        config(displayModeBar = FALSE)
+      
+      # Return the plot object
+      plot1
+      
     } else {
-  
-  
-  # Create results plot with user defined inputs once a spreadsheet has been uploaded 
-    data <- fiscal_impact_measure() %>% 
-      filter(date < current_quarter + 9) %>% 
-      filter(date >= yearquarter("2015 Q1")) %>% 
-      mutate(date = as.character(date))
-    
-    plot2 <- plot_ly() %>% 
-      add_trace(data, x = ~data$date, y = ~data$user_fim, type = "bar", 
-                name = "Your FIM", marker = list(color = "#003A70"),
-                hovertemplate = 'Your FIM: %{y:.2f}%<extra></extra>') %>% 
-      add_trace(data, x = ~data$date, y = ~data$hutchins_fim, type = "bar", 
-                name = "Hutchins FIM", marker = list(color = "#FF9E1B"),
-                hovertemplate = 'Hutchins FIM: %{y:.2f}%<extra></extra>') %>% 
-      layout(
-        
-        # X Axis 
-        xaxis = list(
-          title = "",
-          showspikes = TRUE, 
-          spikemode = "across", 
-          spikecolor = "black",
-          spikethickness = 1,
-          spikedash = "solid", 
-          
-          tickmode = 'linear',
-          tick0 = '2000 Q1',
-          dtick = 4
-          
+      
+      # Get the data for user results
+      data <- fiscal_impact_measure_output()
+      
+      # Check if data is NULL or empty
+      if(is.null(data) || nrow(data) == 0) {
+        # Return an empty plot or a message plot
+        return(plot_ly() %>% 
+                 layout(title = "Loading data..."))
+      }
+      
+      # Create results plot with user defined inputs once a spreadsheet has been uploaded 
+      data <- data %>% 
+        filter(date < (current_quarter + 9)) %>% 
+        filter(date >= yearquarter("2015 Q1")) %>% 
+        mutate(date = as.character(date))
+      
+      # Create the plot object
+      plot2 <- plot_ly(data) %>% 
+        add_trace(x = ~date, y = ~user_fim, type = "bar", 
+                  name = "Your FIM", marker = list(color = "#003A70"),
+                  hovertemplate = 'Your FIM: %{y:.2f}%<extra></extra>') %>% 
+        add_trace(x = ~date, y = ~hutchins_fim, type = "bar", 
+                  name = "Hutchins FIM", marker = list(color = "#FF9E1B"),
+                  hovertemplate = 'Hutchins FIM: %{y:.2f}%<extra></extra>') %>% 
+        layout(
+          # X Axis 
+          xaxis = list(
+            title = "",
+            showspikes = TRUE, 
+            spikemode = "across", 
+            spikecolor = "black",
+            spikethickness = 1,
+            spikedash = "solid", 
+            tickmode = 'linear',
+            tick0 = '2000 Q1',
+            dtick = 4
           ), 
-        
-        # Y Axis 
-        yaxis = list(
-          title = "",
-          ticksuffix = "%"
+          
+          # Y Axis 
+          yaxis = list(
+            title = "",
+            ticksuffix = "%"
           ), 
-        
-        # Format Hover Line 
-        hovermode = "x unified",
-        
-        # Format Data Label 
-        hoverlabel = list(
+          
+          # Format Hover Line 
+          hovermode = "x unified",
+          
+          # Format Data Label 
+          hoverlabel = list(
             bordercolor = 'transparent'
           )
-        
         ) %>% 
-      config(displayModeBar = FALSE)
-    
-  }
-        
+        config(displayModeBar = FALSE)
+      
+      # Return the plot object
+      plot2
+    }
   })
   
-  # Create Table Data (create a reactive data frame containing the user's summary results for the forecast period)
+  # Also fix the table_data reactive function:
   table_data <- reactive({
-    req(date(), fiscal_impact_measure(), transfers_contribution(), taxes_contribution(),
+    # Only execute if results are loaded
+    if(!resultsLoaded()) {
+      return(NULL)
+    }
+    
+    req(date(), fiscal_impact_measure_output(), consumption_contribution(),
         federal_contribution(), state_contribution())
     
-    data <- data.frame(
-      fiscal_impact_measure(), 
-      federal_contribution(), 
-      state_contribution(),
-      transfers_contribution(), 
-      taxes_contribution()) %>% 
-      filter(date <= current_quarter + 8) %>% 
-      filter(date >= current_quarter) %>% 
-      mutate(date = as.character(date)) %>% 
-      select(-hutchins_fim)
+    tryCatch({
+      data.frame(
+        date = date(),
+        user_fim = fim(),
+        federal_contribution = federal_contribution(), 
+        state_contribution = state_contribution(),
+        consumption_contribution = consumption_contribution()
+      ) %>% 
+        # FIX: Ensure current_quarter is properly formatted for comparison
+        filter(date <= (current_quarter + 8)) %>% 
+        filter(date >= current_quarter) %>% 
+        mutate(date = as.character(date))
+    }, error = function(e) {
+      cat("Error in table_data:", e$message, "\n")
+      return(NULL)
+    })
   })
   
-  # Create Summary Table
+  # Fixed renderTable function
   output$dataTable <- renderTable({
-    req(table_data()) 
+    if(!resultsLoaded()) {
+      return(NULL)
+    }
     
     data <- table_data()
+    if(is.null(data)) {
+      return(NULL)
+    }
+    
     colnames(data) <- c("Date", "Your FIM", "Federal Purchases Contribution",
                         "State Purchases Contribution", 
-                        "Transfers Contribution",
-                        "Taxes Contribution")
+                        "Consumption Contribution")
     data
   })
   

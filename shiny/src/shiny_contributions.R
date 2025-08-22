@@ -89,3 +89,62 @@ level <- function(x, mpc_matrix = NULL, rpgg, dg, gdp) {
   result %>%
     scale_to_gdp(x = ., gdp = gdp)
 }
+
+# ===========================
+# Unit-Level Functions (PURCHASES)
+# ===========================
+
+# DEFINE MINUS NEUTRAL FUNCTION (PURCHASES)
+minus_neutral_purchases <- function(x, # the data in question
+                                    rpgg, # real potential gdp growth,
+                                    dg # consumption deflator growth
+) {
+  output <- (x/lag(x) - dg)^4 - (1+rpgg)
+  return(output)
+}
+
+# DEFINE SCALE_TO_GDP FUNCTION (PURCHASES)
+# Scale to GDP
+scale_to_gdp_purchases <- function(x, # the data in question, 
+                                   gdp, # GDP
+                                   result)
+{
+  output = 100*result*(lag(x)/lag(gdp))
+  return(output)
+}
+
+
+# ===========================================
+# Unit-Level Functions (TAXES AND TRANSFERS)
+# ===========================================
+
+# Define counterfactual Consumption
+# We subtract the actual policy impulse from consumption and replace it with our 
+# 'counterfactual' impulse - the last quarter's impulse grown at the rate of potential.
+t_counterfactual <- function(x,  # Our data series 
+                             c, # Personal Consumption Expenditures
+                             rpgg, # Real Potential GDP Growth (quarterly)
+                             dg # Deflator Growth (quarterly)
+) {
+  
+  
+  counterfactual <- as.numeric(c - x + lag(x)*(1+rpgg+dg))
+  return(counterfactual)
+}
+
+# Define minus neutral
+minus_neutral_t <- function(c, 
+                            counterfactual
+) {
+  minus_neutral <- (c/lag(c))^4 - (counterfactual/lag(c))^4 
+  return(minus_neutral)
+}
+
+# Scale results to GDP 
+scale_to_gdp_t <- function(minus_neutral,
+                           gdp,
+                           c
+) {
+  result <- 100*minus_neutral*(lag(c)/lag(gdp))
+  return(result)
+}
