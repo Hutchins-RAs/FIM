@@ -1301,7 +1301,8 @@ create_consumption <- function(
 
 # Create uncertainty factor 
 create_uncertainty <- function(
-    forecast, 
+    forecast,
+    historical_overrides,
     placeholder_nas
 ) {
   # Select column of interest from the forecast tibble
@@ -1310,14 +1311,29 @@ create_uncertainty <- function(
     # Rename to generic `data_series` for easier merging
     rename(data_series = uncertainty)
   
-  # Merge the forecast with a data frame of NAs extending to 2034 Q3
-  result <- placeholder_nas %>% 
-    coalesce_join(forecast, by = 'date') %>%
+  #select column of interest from the historical overrides
+  historical_overrides <- historical_overrides %>%
+    select(date, uncertainty_override) %>% 
+    # Rename to generic `data_series` for easier merging
+    rename(data_series = uncertainty_override)
+  
+  # Merge the historical overrides with the forecast using the commonly named 
+  # `data_series` and `date` columns. The historical overrides take precedence in
+  # the case of any conflicting observations.
+  result <- coalesce_join(historical_overrides, forecast, by = 'date') %>% 
+    # Merge with a data frame of NAs extending to 2034 Q3
+    coalesce_join(
+      create_placeholder_nas(start = "1970-01-01"), 
+      by = 'date'
+    ) %>%
+    # Make sure the rows are in chronological order
+    arrange(date) %>%
     # Repopulate the NAs to be 0s
     mutate(across(everything(), ~ replace_na(., 0)))
   
   return(result)
 }
+
 
 
 # Extras 

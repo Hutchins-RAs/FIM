@@ -329,14 +329,12 @@ consumption_test <- create_consumption(
 )
 
 # Uncertainty
-# Creates NAs from 1970 because there are no historical values for this series 
 uncertainty_test <- create_uncertainty(
-  forecast, 
-  create_placeholder_nas(start = "1970-01-01")
+  forecast,
+  historical_overrides,
+  create_placeholder_nas()
 )
 
-# FIX ME: Include in historical overrides 
-uncertainty_test$data_series[222] <- -0.3
 
 # EXTRAS 
 # Date 
