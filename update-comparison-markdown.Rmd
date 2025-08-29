@@ -1,6 +1,6 @@
 ---
 title: 'FIM Update'
-author: ' Manu, Georgia, and Sarah '
+author: ' Manu, Georgia, Sarah, and Chase '
 date: "`r glue::glue(format(Sys.Date(), '%A, %B %d %Y'), ' at ', format(Sys.time(), '%I:%M %p'))`"
 tz: 'America/New_York'
 mainfont: Serif
