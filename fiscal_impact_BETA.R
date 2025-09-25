@@ -330,10 +330,12 @@ consumption_test <- create_consumption(
 
 # Uncertainty
 uncertainty_test <- create_uncertainty(
-  forecast
+  forecast,
+  historical_overrides, 
+  create_placeholder_nas()
 )
 
-uncertainty_test$data_series[222] <- -0.3
+# uncertainty_test$data_series[222] <- -0.3
 
 # EXTRAS 
 # Date 
@@ -737,8 +739,8 @@ state_contribution <- fim_state_purchases_contribution
 federal_purchases_contribution <- nipa_federal_purchases_contribution
 state_purchases_contribution <- nipa_state_purchases_contribution 
 
-# test <- data.frame(uncertainty_test$date, consumption_contribution, uncertainty_test$data_series)
-# View(test)
+test <- data.frame(uncertainty_test$date, consumption_contribution, uncertainty_test$data_series)
+View(test)
 
 
 # Revise consumption contribution to include uncertainty factor 
