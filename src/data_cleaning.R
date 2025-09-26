@@ -300,7 +300,7 @@ create_federal_corporate_taxes <- function(
     mutate_where(
       date == current_quarter,
       data_series = tail(historical_overrides$federal_corporate_taxes_override, n = 1)
-      )
+    )
 
   # Merge the national accounts with the forecast using the commonly named `data_series`
   # and `date` columns. The historic (national accounts) data take precedence in

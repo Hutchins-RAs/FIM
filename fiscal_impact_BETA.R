@@ -131,6 +131,7 @@ federal_corporate_taxes_test <- create_federal_corporate_taxes(
   create_placeholder_nas()
 )
 
+
 supply_side_ira_test <- create_supply_side_ira(
   forecast,
   historical_overrides,
@@ -739,7 +740,9 @@ state_contribution <- fim_state_purchases_contribution
 federal_purchases_contribution <- nipa_federal_purchases_contribution
 state_purchases_contribution <- nipa_state_purchases_contribution 
 
-test <- data.frame(uncertainty_test$date, consumption_contribution, uncertainty_test$data_series)
+sum <- consumption_contribution + uncertainty_test$data_series
+
+test <- data.frame(uncertainty_test$date, consumption_contribution, uncertainty_test$data_series, sum)
 View(test)
 
 
