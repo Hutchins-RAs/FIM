@@ -131,7 +131,6 @@ federal_corporate_taxes_test <- create_federal_corporate_taxes(
   create_placeholder_nas()
 )
 
-
 supply_side_ira_test <- create_supply_side_ira(
   forecast,
   historical_overrides,
@@ -336,7 +335,8 @@ uncertainty_test <- create_uncertainty(
   create_placeholder_nas()
 )
 
-# uncertainty_test$data_series[222] <- -0.3
+uncertainty_test$data_series[222] <- -0.3
+  #REMOVE LATER
 
 # EXTRAS 
 # Date 
@@ -820,7 +820,8 @@ inputs_df <- data.frame(
   post_mpc_federal_health_outlays, 
   post_mpc_state_health_outlays
 ) %>%
-  as_tsibble(index = date)
+  as_tsibble(index = date) %>%
+  filter_index(as.character(current_quarter - 8) ~ as.character(current_quarter + 8))
 
 # Combine all the contributions into a data frame
 contributions_df <- data.frame(
@@ -828,35 +829,38 @@ contributions_df <- data.frame(
   id,
   recession,
   federal_purchases_contribution,
-  state_purchases_contribution, 
-  federal_non_corporate_taxes_contribution, 
-  state_non_corporate_taxes_contribution, 
-  federal_corporate_taxes_contribution, 
-  supply_side_ira_contribution, 
-  state_corporate_taxes_contribution, 
-  federal_social_benefits_contribution, 
-  state_social_benefits_contribution, 
+  state_purchases_contribution,
+  federal_non_corporate_taxes_contribution,
+  state_non_corporate_taxes_contribution,
+  federal_corporate_taxes_contribution,
+  supply_side_ira_contribution,
+  state_corporate_taxes_contribution,
+  federal_social_benefits_contribution,
+  state_social_benefits_contribution,
   rebate_checks_contribution,
-  rebate_checks_arp_contribution, 
-  federal_ui_contribution, 
-  state_ui_contribution, 
+  rebate_checks_arp_contribution,
+  federal_ui_contribution,
+  state_ui_contribution,
   federal_subsidies_contribution,
-  federal_aid_to_small_businesses_arp_contribution, 
-  federal_other_direct_aid_arp_contribution, 
+  federal_aid_to_small_businesses_arp_contribution,
+  federal_other_direct_aid_arp_contribution,
   federal_other_vulnerable_arp_contribution,
-  federal_student_loans_contribution, 
+  federal_student_loans_contribution,
   state_subsidies_contribution,
   federal_health_outlays_contribution,
   state_health_outlays_contribution,
   federal_contribution,
   state_contribution,
-  taxes_contribution, 
-  transfers_contribution, 
-  consumption_contribution, 
+  taxes_contribution,
+  transfers_contribution,
+  consumption_contribution,
   fiscal_impact_measure,
   fiscal_impact_4q_ma
 ) %>%
-  as_tsibble(index = date)
+  as_tsibble(index = date) %>%
+  filter_index(as.character(current_quarter - 8) ~ as.character(current_quarter + 8))
+
+
 
 # Write the contributions and inputs to an Excel file in results/{month_year}/beta
 # TODO: This code only works if the beta/ directory already exists. 
