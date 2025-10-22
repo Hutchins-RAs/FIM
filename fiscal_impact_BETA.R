@@ -761,7 +761,6 @@ fiscal_impact_measure <- replace(fiscal_impact_measure,
 
 # Calculate Four Quarter Moving Average
 fiscal_impact_4q_ma <- fiscal_impact_measure %>%
-  SMA(zoo::na.locf(., na.rm = F), n=4)
 
 
 # ---- section-C.7-output-results ----
@@ -807,17 +806,17 @@ inputs_df <- data.frame(
   post_mpc_federal_corporate_taxes,
   post_mpc_state_corporate_taxes,
   post_mpc_federal_social_benefits,
-  post_mpc_state_social_benefits, 
+  post_mpc_state_social_benefits,
   post_mpc_rebate_checks,
-  post_mpc_rebate_checks_arp, 
+  post_mpc_rebate_checks_arp,
   post_mpc_federal_ui,
   post_mpc_state_ui,
   post_mpc_federal_subsidies,
   post_mpc_federal_aid_to_small_businesses_arp,
   post_mpc_federal_other_vulnerable_arp,
-  post_mpc_federal_student_loans, 
-  post_mpc_state_subsidies, 
-  post_mpc_federal_health_outlays, 
+  post_mpc_federal_student_loans,
+  post_mpc_state_subsidies,
+  post_mpc_federal_health_outlays,
   post_mpc_state_health_outlays
 ) %>%
   as_tsibble(index = date) %>%
