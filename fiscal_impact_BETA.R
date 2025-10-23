@@ -761,7 +761,7 @@ fiscal_impact_measure <- replace(fiscal_impact_measure,
 
 # Calculate Four Quarter Moving Average
 fiscal_impact_4q_ma <- fiscal_impact_measure %>%
-
+  SMA(zoo::na.locf(., na.rm = F), n = 4)
 
 # ---- section-C.7-output-results ----
 # Combine all the inputs into a data frame
@@ -858,7 +858,6 @@ contributions_df <- data.frame(
 ) %>%
   as_tsibble(index = date) %>%
   filter_index(as.character(current_quarter - 8) ~ as.character(current_quarter + 8))
-
 
 
 # Write the contributions and inputs to an Excel file in results/{month_year}/beta
