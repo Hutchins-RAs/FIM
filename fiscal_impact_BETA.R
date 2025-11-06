@@ -740,10 +740,9 @@ state_contribution <- fim_state_purchases_contribution
 federal_purchases_contribution <- nipa_federal_purchases_contribution
 state_purchases_contribution <- nipa_state_purchases_contribution 
 
+# Check to see if uncertainty is being added into consumption correctly 
 sum <- consumption_contribution + uncertainty_test$data_series
-
 test <- data.frame(uncertainty_test$date, consumption_contribution, uncertainty_test$data_series, sum)
-View(test)
 
 
 # Revise consumption contribution to include uncertainty factor 
@@ -855,9 +854,11 @@ contributions_df <- data.frame(
   consumption_contribution,
   fiscal_impact_measure,
   fiscal_impact_4q_ma
-) %>%
-  as_tsibble(index = date) %>%
-  filter_index(as.character(current_quarter - 8) ~ as.character(current_quarter + 8))
+) 
+
+# %>%
+#   as_tsibble(index = date) %>%
+#   filter_index(as.character(current_quarter - 8) ~ as.character(current_quarter + 8))
 
 
 # Write the contributions and inputs to an Excel file in results/{month_year}/beta
