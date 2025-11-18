@@ -854,10 +854,8 @@ contributions_df <- data.frame(
   consumption_contribution,
   fiscal_impact_measure,
   fiscal_impact_4q_ma
-) 
-
-# %>%
-#   as_tsibble(index = date) %>%
+) %>%
+as_tsibble(index = date) 
 #   filter_index(as.character(current_quarter - 8) ~ as.character(current_quarter + 8))
 
 
