@@ -27,7 +27,7 @@ options(scipen = 20)# Turn off scientific notation under 20 digits
 post_cbo_baseline<- FALSE
 # Set the value of 'month_year' to the current month and year (in the format "mm-yyyy")
 last_month_year <- glue('{format.Date(today() %m-% months(1), "%m")}-{year(today() %m-% months(1))}')
-month_year <- glue('{format.Date(today() - 7, "%m")}-{year(today())}')
+month_year <- glue('{format.Date(today() - 4, "%m")}-{year(today())}')
 print(month_year)
 
 # Calculate the current date minus 7 days
@@ -131,12 +131,14 @@ federal_corporate_taxes_test <- create_federal_corporate_taxes(
   create_placeholder_nas()
 )
 
+federal_corporate_taxes_test$data_series[222] <- 469.7
+# FIX (assigned to Chase Tyler Parry)
+
 supply_side_ira_test <- create_supply_side_ira(
   forecast,
   historical_overrides,
   create_placeholder_nas()
 )
-
 
 state_corporate_taxes_test <- create_state_corporate_taxes(
   national_accounts,
@@ -144,6 +146,8 @@ state_corporate_taxes_test <- create_state_corporate_taxes(
   historical_overrides,
   create_placeholder_nas()
 )
+
+state_corporate_taxes_test$data_series[222] <- 183
 
 federal_social_benefits_test <- create_federal_social_benefits(
   national_accounts,
