@@ -1,0 +1,167 @@
+---
+title: "Fiscal Impact Breakdown"
+subtitle: "A Guide"
+author: "Sarah Ahmad"
+date: "`r Sys.Date()`"
+header-includes:
+  - \usepackage[default]{sourcesanspro}
+  - \usepackage[T1]{fontenc}
+mainfont: SourceSansPro
+output: 
+  html_document: 
+    toc: true
+    toc_depth: 5
+    toc_float: true
+---
+
+```{=html}
+<style>
+.toc .active-link {
+  background-color: gray;
+  color: blue;
+}
+.toc li a {
+  color: blue;
+  background-color: white;
+}
+
+.toc {
+  position: fixed;
+  top: 50px;
+  left: 10px;
+  background-color: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  max-width: 200px;
+}
+
+</style>
+```
+```{=html}
+<style>
+  .r-object {
+    font-family: Consolas;
+    color: purple;
+  }
+</style>
+```
+```{=html}
+<style>
+  .git-object {
+    font-family: Consolas, Courier New, Monaco, monospace;
+    background-color: #f6f8fa;
+  }
+</style>
+```
+```{=html}
+<style>
+  .file {
+    font-family: Consolas, Courier New, Monaco, monospace;
+    background-color: #f6f8fa;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+</style>
+```
+```{=html}
+<style>
+  .head {
+    background-color: #f6f8fa;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+</style>
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Objective
+
+Provide documentation on how to create and upload the Fiscal Impact Breakdown workbook on the [FIM website](https://www.brookings.edu/articles/hutchins-center-fiscal-impact-measure/). 
+
+
+### Location 
+
+We save all of the drafts of **Fiscal Impact Breakdown** workbooks in [The Hutchins Center Sharepoint](https://brookingsinstitution.sharepoint.com/sites/hutchinscenterteam/) contained in the following folder: "Documents/Projects/Fiscal Impact/Fiscal Impact Breakdown." 
+
+Note that you will need to create a new file each time the FIM is updated (every month) until we find a way to automate it. The following document provides steps on where to find each column from the FIM results folder + other sources to update the workbook. 
+
+This Breakdown sheet also draws on the differences workbook as well which to current date has the effects of: 
+
+* Government shutdown (run by changing the federal purchases deflator)
+* Tariffs (run by changing the federal production taxes to what it would have looked like minus the tariff announcements)
+* OBBBA (run by removing the effects of OBBBA on: federal non-corporate taxes, federal corporate taxes, federal student loans, federal purchases, federal social benefits, federal health outlays, and state health outlays). 
+
+The way that we calculate the effects of these various policies is by comparing what the FIM would have looked like absent these policies (counterfactual) and the current FIM. The difference workbook should also be created every time the FIM is updated. Currently, this differences workbook lives in the results folder.   
+
+### Upload
+
+When you've updated the Breakdown workbook, make sure that there are no links to personal files. Then, follow the following steps: 
+
+1. Login to your Wordpress account
+2. In the sidebar, click on Media -> Add Media File and upload the Breakdown workbook
+3. Copy the File URL to your clipboard. 
+4. Next, navigate to Content -> Articles and search for "Hutchins Center Fiscal Impact Measure"
+5. In the Sidebar / Widgets section, scroll down to the third item and click the Pen icon to edit the image
+6. Click on the "Upload a new file" button and upload the file 
+7. To update the link to the Breakdown workbook in the text, edit the hyperlink to the spreadsheet in the WYSIWYG (what you see is what you get) to the file URL you copied in step 2 
+8. Click the blue "Update" button on the right hand side
+9. Double check and you're done!
+
+
+### Structure
+
+* Sheet 1: README 
+* Sheet 2: Table 1 (Breakdown of FIM by component)
+* Sheet 3: Table 2 (Decomposing FIM into effects of OBBBA, other supply side effects, tariffs and tariff uncertainty, and underlying FIM)
+
+### Read Me 
+
+Here is what we have currently: 
+
+"This file presents data for the Hutchins Center Fiscal Impact Measure Breakdown.
+
+Table 1 breaks down the components of the FIM for the current quarter and our forecast for the next eight quarters. For purchases, it shows much is due to the One Big Beautiful Bill Act, to the government shutdown, and to underlying fiscal policy. For taxes and transfers, it shows how much is due to OBBBA, to tariffs, and to other factors.
+
+Table 2 decomposes FIM inputs into underlying factors (purchases and transfers), the effects of the One Big Beautiful Bill Act, the impacts of tariffs and uncertainty around them, effects of supply-side policies, and effects of the government shutdown that began on Oct. 1, 2025 for the current quarter and eight-quarter forecast."
+
+Note: This should be updated whenever we add/subtract columns from the tables. 
+
+### Table 1
+
+The columns referenced here are those that should be updated. The rest are formulas (that should be double checked every time before publishing to make sure they make sense).
+
+**Column A: Date**
+
+This should have 9 values: the current quarter and the 8 quarters in our forecast period. 
+
+
+**Column E: Federal Purchases**
+
+"Downloads/FIM/results/mm-yyyy/beta/contributions-mm-yyyy" in the federal_purchases_contribution column 
+
+
+**Column F: State and Local Purchases**
+
+"Downloads/FIM/results/mm-yyyy/beta/contributions-mm-yyyy" in the state_purchases_contribution column 
+
+
+**Column G: Effect of OBBBA on Federal Purchases**
+
+
+
+
+### Table 2 
+
+Update the quarter date column as needed. Everything else in this table is a formula. Unless there is a change to how we're displaying the data, no other changes are needed here. 
+
+
+
+
+
+
+
+
