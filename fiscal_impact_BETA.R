@@ -118,6 +118,9 @@ federal_non_corporate_taxes_test <- create_federal_non_corporate_taxes(
   create_placeholder_nas()
 )
 
+# Create override for 2025 Q3
+federal_non_corporate_taxes_test$data_series[223] <- 5056 
+
 state_non_corporate_taxes_test <- create_state_non_corporate_taxes(
   national_accounts,
   forecast,
@@ -130,9 +133,6 @@ federal_corporate_taxes_test <- create_federal_corporate_taxes(
   historical_overrides,
   create_placeholder_nas()
 )
-
-federal_corporate_taxes_test$data_series[222] <- 469.7
-# FIX (assigned to Chase Tyler Parry)
 
 supply_side_ira_test <- create_supply_side_ira(
   forecast,
@@ -147,7 +147,6 @@ state_corporate_taxes_test <- create_state_corporate_taxes(
   create_placeholder_nas()
 )
 
-state_corporate_taxes_test$data_series[222] <- 183
 
 federal_social_benefits_test <- create_federal_social_benefits(
   national_accounts,
