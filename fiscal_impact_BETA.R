@@ -92,6 +92,8 @@ federal_purchases_test <- create_federal_purchases(
   create_placeholder_nas()
 )
 
+# Create override for OBBBA
+
 consumption_grants_test <- create_consumption_grants(
   national_accounts,
   forecast,
@@ -119,7 +121,10 @@ federal_non_corporate_taxes_test <- create_federal_non_corporate_taxes(
 )
 
 # Create override for 2025 Q3
-federal_non_corporate_taxes_test$data_series[223] <- 5056 
+#federal_non_corporate_taxes_test$data_series[223] <- 5056 
+
+# Create override for OBBBA
+federal_non_corporate_taxes_test$data_series[223] <- 5172 
 
 state_non_corporate_taxes_test <- create_state_non_corporate_taxes(
   national_accounts,
@@ -532,6 +537,14 @@ fim_state_purchases_contribution <- contribution_purchases(
 # Federal Purchases Contribution (FIM Consistent)
 fim_federal_purchases_contribution <- nipa_total_purchases_contribution - 
   fim_state_purchases_contribution 
+
+check <- data.frame(date,
+                    id,
+                    nipa_federal_purchases_contribution,
+                    nipa_state_purchases_contribution,
+                    nipa_total_purchases_contribution,
+                    fim_state_purchases_contribution,
+                    fim_federal_purchases_contribution) 
 
 # ---- section-C.5-calculate-net-transfers-FIM ----
 
