@@ -120,12 +120,6 @@ federal_non_corporate_taxes_test <- create_federal_non_corporate_taxes(
   create_placeholder_nas()
 )
 
-# Create override for 2025 Q3
-#federal_non_corporate_taxes_test$data_series[223] <- 5056 
-
-# Create override for OBBBA
-federal_non_corporate_taxes_test$data_series[223] <- 5172 
-
 state_non_corporate_taxes_test <- create_state_non_corporate_taxes(
   national_accounts,
   forecast,
@@ -138,6 +132,8 @@ federal_corporate_taxes_test <- create_federal_corporate_taxes(
   historical_overrides,
   create_placeholder_nas()
 )
+
+federal_corporate_taxes_test$data_series[223] <- 79
 
 supply_side_ira_test <- create_supply_side_ira(
   forecast,
