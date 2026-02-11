@@ -1,4 +1,7 @@
 ## code to prepare `projections` dataset goes here
+##adding in the helper script source to make sure that the date code runs smoothly
+source("R/helpers.R")
+
 librarian::shelf(tidyverse, tsibble)
 economic_projections <- readxl::read_xlsx('inst/extdata/projections.xlsx', sheet = 'economic') %>% 
   mutate(date = tsibble::yearquarter(date)) %>%
