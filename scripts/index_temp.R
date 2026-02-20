@@ -15,7 +15,7 @@ current_quarter <- yearquarter(Sys.Date()) - 1
 # Load in previous month's inputs
 previous_inputs <-
   #EDIT WHEN NOT JANK (REMOVE)
-  readxl::read_xlsx(glue('results/01-2026/1.13/beta/inputs-01-2026.xlsx')) %>%
+  readxl::read_xlsx(glue('results/01-2026/1.22/beta/inputs-01-2026.xlsx')) %>%
   #WHAT IT USED TO BE 
   #readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
@@ -86,7 +86,7 @@ current_inputs <- current_inputs %>%
 # Load previous month's results
 previous <-
   #EDIT WHEN NOT JANK (REMOVE)
-  readxl::read_xlsx(glue('results/01-2026/1.13/beta/contributions-01-2026.xlsx')) %>%
+  readxl::read_xlsx(glue('results/01-2026/1.22/beta/contributions-01-2026.xlsx')) %>%
   #WHAT IT USED TO BE 
   #readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
