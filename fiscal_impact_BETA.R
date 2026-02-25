@@ -92,7 +92,8 @@ federal_purchases_test <- create_federal_purchases(
   create_placeholder_nas()
 )
 
-# Create override for OBBBA
+federal_purchases_test$data_series[223] <- 1970.5
+federal_purchases_test$data_series[224] <- 1942
 
 consumption_grants_test <- create_consumption_grants(
   national_accounts,
@@ -120,6 +121,9 @@ federal_non_corporate_taxes_test <- create_federal_non_corporate_taxes(
   create_placeholder_nas()
 )
 
+federal_non_corporate_taxes_test$data_series[223] <- 5210
+federal_non_corporate_taxes_test$data_series[224] <- 5326
+
 state_non_corporate_taxes_test <- create_state_non_corporate_taxes(
   national_accounts,
   forecast,
@@ -133,7 +137,8 @@ federal_corporate_taxes_test <- create_federal_corporate_taxes(
   create_placeholder_nas()
 )
 
-federal_corporate_taxes_test$data_series[223] <- 208.5
+federal_corporate_taxes_test$data_series[223] <- 78.8
+federal_corporate_taxes_test$data_series[224] <- 333
 
 supply_side_ira_test <- create_supply_side_ira(
   forecast,
@@ -155,6 +160,9 @@ federal_social_benefits_test <- create_federal_social_benefits(
   historical_overrides,
   create_placeholder_nas()
 )
+
+federal_social_benefits_test$data_series[223] <- 2371.9
+federal_social_benefits_test$data_series[224] <- 2383.2
 
 state_social_benefits_test <- create_state_social_benefits(
   national_accounts,
@@ -224,6 +232,8 @@ federal_student_loans_test <- create_federal_student_loans(
   create_placeholder_nas()
 )
 
+federal_student_loans_test$data_series[223] <- 3
+federal_student_loans_test$data_series[224] <- 3
 
 state_subsidies_test <- create_state_subsidies(
   national_accounts,
