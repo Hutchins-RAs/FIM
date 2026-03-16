@@ -1,0 +1,102 @@
+---
+title: "FIM Memo Data"
+date: "`r format(Sys.Date(), '%B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 2
+    number_sections: false
+    theme: cerulean
+    highlight: zenburn
+    self_contained: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+# Revision Summary Table
+```{r summary-table}
+summary_tbl
+```
+
+# Comparison Plots
+
+## Top Line
+```{r fiscal-impact}
+plots[["fiscal_impact_measure"]]
+```
+
+## Federal Purchases
+```{r federal-purchases}
+plots[["federal_contribution"]]
+plots[["fim_federal_purchases_real"]]
+plots[["nipa_federal_purchases_real"]]
+```
+
+## State Purchases
+```{r state-purchases}
+plots[["state_contribution"]]
+plots[["fim_state_purchases_real"]]
+plots[["nipa_state_purchases_real"]]
+```
+
+## Consumption
+```{r consumption}
+plots[["consumption_contribution"]]
+plots[["consumption"]]
+plots[["consumption_real"]]
+```
+
+## Taxes
+```{r taxes}
+plots[["federal_non_corporate_taxes"]]
+plots[["federal_non_corporate_taxes_real"]]
+plots[["state_non_corporate_taxes"]]
+plots[["state_non_corporate_taxes_real"]]
+plots[["federal_corporate_taxes"]]
+plots[["federal_corporate_taxes_real"]]
+plots[["state_corporate_taxes"]]
+plots[["state_corporate_taxes_real"]]
+plots[["supply_side_ira"]]
+plots[["supply_side_ira_real"]]
+```
+
+## Social Benefits
+```{r social-benefits}
+plots[["federal_social_benefits"]]
+plots[["federal_social_benefits_real"]]
+plots[["state_social_benefits"]]
+plots[["state_social_benefits_real"]]
+```
+
+## UI
+```{r ui}
+plots[["federal_ui"]]
+plots[["federal_ui_real"]]
+plots[["state_ui"]]
+plots[["state_ui_real"]]
+```
+
+## Subsidies
+```{r subsidies}
+plots[["federal_subsidies"]]
+plots[["federal_subsidies_real"]]
+plots[["state_subsidies"]]
+plots[["state_subsidies_real"]]
+```
+
+## Student Loans
+```{r student-loans}
+plots[["federal_student_loans"]]
+plots[["federal_student_loans_real"]]
+```
+
+## Health Outlays
+```{r health-outlays}
+plots[["federal_health_outlays"]]
+plots[["federal_health_outlays_real"]]
+plots[["state_health_outlays"]]
+plots[["state_health_outlays_real"]]
+```
