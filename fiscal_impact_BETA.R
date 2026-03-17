@@ -920,3 +920,9 @@ source("scripts/index_temp.R")
 rmarkdown::render(input = 'update-comparison-markdown.Rmd',
                   output_file = glue('results/{month_year}/beta/update-comparison-{month_year}'),
                   clean = TRUE)
+
+# This creates an output showing FIM inputs graphically for our "FIM Memo" that is in progress
+source("scripts/memo-data.R")
+rmarkdown::render(input = 'memo-data-markdown.Rmd',
+                  output_file = glue('results/{month_year}/beta/memo-data-{month_year}'),
+                  clean = TRUE)
