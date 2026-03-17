@@ -868,8 +868,18 @@ contributions_df <- data.frame(
 
 # Write the contributions and inputs to an Excel file in results/{month_year}/beta
 # TODO: This code only works if the beta/ directory already exists. 
-openxlsx::write.xlsx(contributions_df, file = glue('results/{month_year}/beta/contributions-{month_year}.xlsx'), overwrite = TRUE)
-openxlsx::write.xlsx(inputs_df, file = glue('results/{month_year}/beta/inputs-{month_year}.xlsx'), overwrite = TRUE)
+# Filters for past 2020 Q1 until the end of the forecast period 
+openxlsx::write.xlsx(
+  contributions_df %>% filter_index('2020 Q1' ~ as.character(current_quarter + 8)),
+  file = glue('results/{month_year}/beta/contributions-{month_year}.xlsx'),
+  overwrite = TRUE
+)
+
+openxlsx::write.xlsx(
+  inputs_df %>% filter_index('2020 Q1' ~ as.character(current_quarter + 8)),
+  file = glue('results/{month_year}/beta/inputs-{month_year}.xlsx'),
+  overwrite = TRUE
+)
 
 write_rds(contributions_df, file = 'data/contributions.rds')
 usethis::use_data(contributions_df, overwrite = TRUE)
@@ -920,6 +930,9 @@ source("scripts/index_temp_OG.R")
 rmarkdown::render(input = 'update-comparison-markdown.Rmd',
                   output_file = glue('results/{month_year}/beta/update-comparison-{month_year}'),
                   clean = TRUE)
+
+# Find differences between previous and current contributions and inputs 
+source("scripts/output_differences.R")
 
 # This creates an output showing FIM inputs graphically for our "FIM Memo" that is in progress
 source("scripts/memo-data.R")
