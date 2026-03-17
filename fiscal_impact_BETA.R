@@ -915,7 +915,7 @@ file_copy(path = 'Fiscal-Impact.html',
           overwrite = TRUE)
 
 # Get update comparison html file 
-source("scripts/index_temp.R")
+source("scripts/index_temp_OG.R")
 
 rmarkdown::render(input = 'update-comparison-markdown.Rmd',
                   output_file = glue('results/{month_year}/beta/update-comparison-{month_year}'),
