@@ -772,6 +772,15 @@ fiscal_impact_measure <- replace(fiscal_impact_measure,
 fiscal_impact_4q_ma <- fiscal_impact_measure %>%
   SMA(zoo::na.locf(., na.rm = F), n = 4)
 
+# Create variables that we pull for the breakdown file
+transfers_breakdown_contribution <- 
+  (transfers_contribution - 
+     federal_student_loans_contribution)
+taxes_breakdown_contribution <-
+  (taxes_contribution -
+     supply_side_ira_contribution)
+
+
 # ---- section-C.7-output-results ----
 # Combine all the inputs into a data frame
 inputs_df <- data.frame(
@@ -861,8 +870,11 @@ contributions_df <- data.frame(
   taxes_contribution,
   transfers_contribution,
   consumption_contribution,
+  taxes_breakdown_contribution,
+  transfers_breakdown_contribution,
   fiscal_impact_measure,
   fiscal_impact_4q_ma
+
 ) %>%
   as_tsibble(index = date)
 
