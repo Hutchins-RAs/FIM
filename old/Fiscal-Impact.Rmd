@@ -1,0 +1,29 @@
+---
+header-includes:
+- \usepackage{dcolumn}
+- \usepackage{rotating}
+- \usepackage{graphicx}
+
+output: pdf_document
+geometry: "top=0cm, bottom=0cm, left=2cm, right=2cm"
+mainfont: Arial
+fontsize: 9pt
+---
+\pagenumbering{gobble}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 6.5, fig.height = 4.5, fig.align = "center")
+```
+
+```{r, echo=FALSE, message=F, warning=FALSE, results='asis'}
+# source("fim_figures.R")
+fimbars1
+fimbars2
+```
+
+```{r, echo=FALSE, message=F, warning=FALSE, out.width = "25%", fig.align = "right"}
+
+knitr::include_graphics("images/HC_NEW_BROOKINGS_RGB.jpg")
+
+```
+

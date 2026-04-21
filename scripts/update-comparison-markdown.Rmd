@@ -14,7 +14,7 @@ output:
     highlight: zenburn
     highretina: 3
     self_contained: yes
-    css: [style.css]
+    css: [../style.css]
 ---
 
 ```{r setup, include=FALSE}
@@ -37,7 +37,7 @@ knitr::opts_chunk$set(
 
 ```{r}
 librarian::shelf(ggplot2, gt, readr)
-  plots <- read_rds('data/plots')
+  plots <- read_rds('../data/plots')
 ```
 
 

@@ -18,7 +18,7 @@
 #
 # This code requires loading functions from mpc_lorae.R, currently located in
 # src/mpc_lorae.R
-source("src/mpc_lorae.R")
+source("scripts/mpc_lorae.R")
 # 
 # TODO: make the two period variables below less brittle
 n_periods <- n_periods #Total number of periods in the data

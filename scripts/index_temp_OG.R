@@ -325,10 +325,10 @@ comparison_nested <-
                      .f = ~comparison_ga(.data = .y,
                                          variable = .x)))
 
-write_rds(comparison_nested, 'data/comparison_nested')
+write_rds(comparison_nested, '../data/comparison_nested')
 plots <- rlang::set_names(comparison_nested$plot, 
                           comparison_nested$variable)
-write_rds(plots, 'data/plots')
+write_rds(plots, '../data/plots')
 
 
 # Get Table-----------------------------------------

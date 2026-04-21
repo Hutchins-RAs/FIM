@@ -1,3 +1,6 @@
+
+# This file pulls our fim_guide markdown file and outputs the more readable html file.  
+
 # Load the rmarkdown package
 library(rmarkdown)
 

@@ -68,7 +68,7 @@
           # ---- section-B-data-import ----
           # Source the module in the src directory containing the functions which import
           # data
-          source("src/data_import.R")
+          source("scripts/data_import.R")
           
           ## Read in data sources to be combined
           projections <- import_projections()
@@ -83,7 +83,7 @@
           # ---- section-B-1-test-data-import ----
           
           # Source the module that creates the test data columns used in the FIM
-          source("src/data_cleaning.R")
+          source("scripts/data_cleaning.R")
           
           # Run the functions defined in src/data_cleaning.R to produce the FIM data columns
           federal_purchases_test <- create_federal_purchases(
@@ -369,12 +369,12 @@
           # This script defines the input variables used in the FIM. It assumes that the 
           # test columns are saved in memory from the section above having already
           # been run.
-          source("src/define_inputs.R")
+          source("scripts/define_inputs.R")
           
           # Next, we source essential functions we need to calculate the FIM in this section.
           # All of these modules contain nothing but functions. No actual code is executed
           # when you source them. Instead, the code is executed in this script.
-          source("src/contributions.R")
+          source("scripts/contributions.R")
           
           # Another type of variable we need is MPC matrices. If you read the documentation
           # in `src/mpc_lorae.R`, you'll develop a clearer understanding of how these 
@@ -937,9 +937,9 @@
                     overwrite = TRUE)
           
           # Get update comparison html file 
-          source("scripts/index_temp_OG.R")
+          source("scripts/index_temp.R")
           
-          rmarkdown::render(input = 'update-comparison-markdown.Rmd',
+          rmarkdown::render(input = 'scripts/update-comparison-markdown.Rmd',
                             output_file = glue('results/{month_year}/beta/update-comparison-{month_year}'),
                             clean = TRUE)
           
@@ -948,6 +948,6 @@
           
           # This creates an output showing FIM inputs graphically for our "FIM Memo" that is in progress
           source("scripts/memo-data.R")
-          rmarkdown::render(input = 'memo-data-markdown.Rmd',
+          rmarkdown::render(input = 'scripts/memo-data-markdown.Rmd',
                             output_file = glue('results/{month_year}/beta/memo-data-{month_year}'),
                             clean = TRUE)
