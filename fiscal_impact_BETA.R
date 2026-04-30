@@ -940,7 +940,7 @@
           source("scripts/index_temp.R")
           
           rmarkdown::render(input = 'scripts/update-comparison-markdown.Rmd',
-                            output_file = glue('results/{month_year}/beta/update-comparison-{month_year}'),
+                            output_file = glue('update-comparison-{month_year}'),
                             clean = TRUE)
           
           # Find differences between previous and current contributions and inputs 

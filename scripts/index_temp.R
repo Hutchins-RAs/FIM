@@ -15,9 +15,9 @@ current_quarter <- yearquarter(Sys.Date()) - 1
 # Load in previous month's inputs
 previous_inputs <-
   #EDIT WHEN NOT JANK (REMOVE)
-  #readxl::read_xlsx(glue('results/02-2026/beta/inputs-02-2026.xlsx')) %>%
+  readxl::read_xlsx(glue('results/04-2026/04.09/beta/inputs-04-2026.xlsx')) %>%
   #WHAT IT USED TO BE 
-  readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx')) %>%
+  # readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
@@ -86,9 +86,9 @@ current_inputs <- current_inputs %>%
 # Load previous month's results
 previous <-
   #EDIT WHEN NOT JANK (REMOVE)
-  #readxl::read_xlsx(glue('results/02-2026/beta/contributions-02-2026.xlsx')) %>%
+  readxl::read_xlsx(glue('results/04-2026/04.09/beta/contributions-04-2026.xlsx')) %>%
   #WHAT IT USED TO BE 
-  readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx')) %>%
+  # readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
@@ -203,10 +203,10 @@ comparison_nested <-
                      .f = ~comparison_ga(.data = .y,
                                          variable = .x)))
 
-write_rds(comparison_nested, '../data/comparison_nested')
+write_rds(comparison_nested, 'data/comparison_nested')
 plots <- rlang::set_names(comparison_nested$plot, 
                           comparison_nested$variable)
-write_rds(plots, '../data/plots')
+write_rds(plots, 'data/plots')
 
 
 # Get Table-----------------------------------------
@@ -278,7 +278,6 @@ summary_tbl <-
     column_labels.border.top.width = px(10),
     # column_labels.border.top.color = "transparent",
     # table.border.top.color = "transparent",
-    # table.border.bottom.color = "transparent",
     heading.background.color = 'royalblue4',
     data_row.padding = px(10),
     source_notes.font.size = 14,
