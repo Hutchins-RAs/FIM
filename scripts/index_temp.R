@@ -21,7 +21,7 @@ previous_inputs <-
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2024 Q1" ~ as.character(current_quarter + 8)) %>%
+  filter_index("2024 Q1" ~ as.character(current_quarter + 9)) %>%
   select(-id,
          -recession)
 
@@ -31,7 +31,7 @@ current_inputs <-
   drop_na(date) %>%
   mutate(date = yearquarter(date)) %>%  
   as_tsibble(index = date) %>%
-  filter_index("2024 Q1" ~ as.character(current_quarter + 8)) %>%
+  filter_index("2024 Q1" ~ as.character(current_quarter + 9)) %>%
   select(-id, 
          -recession)
 
@@ -92,7 +92,7 @@ previous <-
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
-  filter_index("2024 Q1" ~ as.character(current_quarter + 8)) %>% 
+  filter_index("2024 Q1" ~ as.character(current_quarter + 9)) %>% 
   select(-id, 
          -recession)
 
@@ -102,7 +102,7 @@ current <-
   drop_na(date) %>%
   mutate(date = yearquarter(date)) %>%  
   as_tsibble(index = date) %>%
-  filter_index("2024 Q1" ~ as.character(current_quarter + 8)) %>%
+  filter_index("2024 Q1" ~ as.character(current_quarter + 9)) %>%
   select(-id, 
          -recession)
 

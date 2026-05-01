@@ -117,6 +117,12 @@
             forecast,
             create_placeholder_nas()
           )
+          #q3 2025
+          federal_non_corporate_taxes_test$data_series[223] <- 4841
+          #q4 2025
+          federal_non_corporate_taxes_test$data_series[224] <- 4900
+          #q1 2026
+          federal_non_corporate_taxes_test$data_series[225] <- 4857
           
           
           state_non_corporate_taxes_test <- create_state_non_corporate_taxes(
