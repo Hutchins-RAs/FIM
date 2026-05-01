@@ -92,6 +92,7 @@
             create_placeholder_nas()
           )
           
+          
           consumption_grants_test <- create_consumption_grants(
             national_accounts,
             forecast,
@@ -117,13 +118,6 @@
             forecast,
             create_placeholder_nas()
           )
-          #q3 2025
-          federal_non_corporate_taxes_test$data_series[223] <- 4841
-          #q4 2025
-          federal_non_corporate_taxes_test$data_series[224] <- 4900
-          #q1 2026
-          federal_non_corporate_taxes_test$data_series[225] <- 4857
-          
           
           state_non_corporate_taxes_test <- create_state_non_corporate_taxes(
             national_accounts,
@@ -953,7 +947,7 @@
           source("scripts/output_differences.R")
           
           # This creates an output showing FIM inputs graphically for our "FIM Memo" that is in progress
-          source("scripts/memo-data.R")
-          rmarkdown::render(input = 'scripts/memo-data-markdown.Rmd',
-                            output_file = glue('results/{month_year}/beta/memo-data-{month_year}'),
-                            clean = TRUE)
+          # source("scripts/memo-data.R")
+          # rmarkdown::render(input = 'scripts/memo-data-markdown.Rmd',
+          #                   output_file = glue('results/{month_year}/beta/memo-data-{month_year}'),
+          #                   clean = TRUE)

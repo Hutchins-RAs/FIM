@@ -7,11 +7,15 @@
 
 # Read current and previous contributions
 cur_contrib  <- readxl::read_xlsx(glue('results/{month_year}/beta/contributions-{month_year}.xlsx'))
-prev_contrib <- readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx'))
+prev_contrib <- readxl::read_xlsx(glue('results/04-2026/04.09/beta/contributions-04-2026.xlsx'))
+# cur_contrib  <- readxl::read_xlsx(glue('results/{month_year}/beta/contributions-{month_year}.xlsx'))
+# prev_contrib <- readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx'))
 
 # Read current and previous inputs
 cur_inputs  <- readxl::read_xlsx(glue('results/{month_year}/beta/inputs-{month_year}.xlsx'))
-prev_inputs <- readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx'))
+prev_inputs <- readxl::read_xlsx(glue('results/04-2026/04.09/beta/inputs-04-2026.xlsx'))
+# cur_inputs  <- readxl::read_xlsx(glue('results/{month_year}/beta/inputs-{month_year}.xlsx'))
+# prev_inputs <- readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx'))
 
 # ---- process contributions ----
 
@@ -41,8 +45,6 @@ openxlsx::saveWorkbook(wb, glue('results/{month_year}/beta/contributions-compari
 # ---- process inputs (same logic as above) ----
 
 shared <- intersect(names(cur_inputs)[-1], names(prev_inputs)[-1])
-prev <- prev_inputs[1:nrow(cur_inputs), shared]
-prev <- bind_cols(cur_inputs[, 1], prev)
 
 diff <- cur_inputs[, 1]
 for (col in shared) {
