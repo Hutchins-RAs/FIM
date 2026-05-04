@@ -125,6 +125,7 @@
             create_placeholder_nas()
           )
           
+          
           federal_corporate_taxes_test <- create_federal_corporate_taxes(
             national_accounts,
             forecast,
@@ -135,6 +136,8 @@
           federal_corporate_taxes_test$data_series[223] <- 208.5
           #Q4 2025
           federal_corporate_taxes_test$data_series[224] <- 458
+          
+          
           
           supply_side_ira_test <- create_supply_side_ira(
             forecast,
