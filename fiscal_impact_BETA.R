@@ -137,8 +137,6 @@
           #Q4 2025
           federal_corporate_taxes_test$data_series[224] <- 458
           
-          
-          
           supply_side_ira_test <- create_supply_side_ira(
             forecast,
             historical_overrides,
@@ -947,7 +945,7 @@
                             clean = TRUE)
           
           # Find differences between previous and current contributions and inputs 
-          source("scripts/output_differences.R")
+          # source("scripts/output_differences.R")
           
           # This creates an output showing FIM inputs graphically for our "FIM Memo" that is in progress
           # source("scripts/memo-data.R")
