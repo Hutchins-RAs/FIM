@@ -277,11 +277,11 @@
             create_placeholder_nas()
           )
           #q4 2025
-          federal_health_outlays_test$data_series[224] <- federal_health_outlays_test$data_series[224] + 18.5
-          #q1 2026
-          federal_health_outlays_test$data_series[225] <- federal_health_outlays_test$data_series[225] + 18.5
-          
-          
+          # federal_health_outlays_test$data_series[224] <- federal_health_outlays_test$data_series[224] + 18.5
+          # #q1 2026
+          # federal_health_outlays_test$data_series[225] <- federal_health_outlays_test$data_series[225] + 18.5
+          # 
+          # 
           
           state_health_outlays_test <- create_state_health_outlays(
             national_accounts,
