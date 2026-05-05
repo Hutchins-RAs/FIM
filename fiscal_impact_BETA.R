@@ -92,6 +92,12 @@
             create_placeholder_nas()
           )
           
+          #Q3 2025
+          federal_purchases_test$data_series[223] <- 1970.5
+          #Q4 2025
+          federal_purchases_test$data_series[224] <- 1942
+          #Q1 2026
+          federal_purchases_test$data_series[225] <- 1942.5
           
           consumption_grants_test <- create_consumption_grants(
             national_accounts,
@@ -119,6 +125,24 @@
             create_placeholder_nas()
           )
           
+          #Q3 2025
+          federal_non_corporate_taxes_test$data_series[223] <- 5188
+          #Q4 2025
+          federal_non_corporate_taxes_test$data_series[224] <- 5279
+          #Q1 2026
+          federal_non_corporate_taxes_test$data_series[225] <- 5480
+          
+          
+          # # NO TARIFFS 
+          # #Q2 2025
+          # federal_non_corporate_taxes_test$data_series[222] <- 4756
+          # #Q3 2025
+          # federal_non_corporate_taxes_test$data_series[223] <- 4841
+          # #Q4 2025
+          # federal_non_corporate_taxes_test$data_series[224] <- 4900
+          # #Q1 2026
+          # federal_non_corporate_taxes_test$data_series[225] <- 4857
+          
           state_non_corporate_taxes_test <- create_state_non_corporate_taxes(
             national_accounts,
             forecast,
@@ -132,10 +156,20 @@
             historical_overrides,
             create_placeholder_nas()
           )
+          
           #Q3 2025
-          federal_corporate_taxes_test$data_series[223] <- 208.5
+          federal_corporate_taxes_test$data_series[223] <- 508.5
+          
           #Q4 2025
-          federal_corporate_taxes_test$data_series[224] <- 458
+          federal_corporate_taxes_test$data_series[224] <- 494.4
+          
+          #Q1 2026
+          federal_corporate_taxes_test$data_series[225] <- 480.7
+          
+          # #Q3 2025
+          # federal_corporate_taxes_test$data_series[223] <- 208.5
+          # #Q4 2025
+          # federal_corporate_taxes_test$data_series[224] <- 458
           
           supply_side_ira_test <- create_supply_side_ira(
             forecast,
@@ -157,6 +191,10 @@
             historical_overrides,
             create_placeholder_nas()
           )
+          
+          federal_social_benefits_test$data_series[223] <- 2371.9
+          federal_social_benefits_test$data_series[224] <- 2383.2
+          
           
           state_social_benefits_test <- create_state_social_benefits(
             national_accounts,
@@ -482,7 +520,7 @@
                                          post_mpc_federal_ui + post_mpc_state_ui + 
                                          post_mpc_federal_subsidies + post_mpc_federal_aid_to_small_businesses_arp + 
                                          post_mpc_federal_other_direct_aid_arp + post_mpc_federal_other_vulnerable_arp  + 
-                                         post_mpc_federal_student_loans + post_mpc_state_subsidies +
+                                         post_mpc_state_subsidies +
                                          post_mpc_federal_health_outlays + post_mpc_state_health_outlays)
           
           #### SUM TAXES AND TRANSFERS ####
