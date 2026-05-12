@@ -988,10 +988,6 @@
                             clean = TRUE)
           
           # Find differences between previous and current contributions and inputs 
-          # source("scripts/output_differences.R")
+          # NOTE: Update values to make sure the correct differences are being generated 
+          source("scripts/output_differences.R")
           
-          # This creates an output showing FIM inputs graphically for our "FIM Memo" that is in progress
-          # source("scripts/memo-data.R")
-          # rmarkdown::render(input = 'scripts/memo-data-markdown.Rmd',
-          #                   output_file = glue('results/{month_year}/beta/memo-data-{month_year}'),
-          #                   clean = TRUE)
