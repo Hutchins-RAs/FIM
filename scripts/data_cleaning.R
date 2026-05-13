@@ -295,11 +295,14 @@ create_federal_corporate_taxes <- function(
     select(date, gfrcp) %>%  
     # Rename data to generic `data_series` for easier merging
     rename(data_series = gfrcp) %>%
-    # Corporate taxes come one quarter later than GDP. We overwrite JUST the current
-    # quarter using the historical overrides sheet
+    # Override historic entries of national_accounts using historical_overrides data
+    # This is for two reasons: 
+        # Corporate taxes come one quarter later than GDP.
+        # We have overrides in the forecast sheet for OBBBA. 
+    # Start from 2020 Q2 because YOLO
     mutate_where(
-      date == current_quarter,
-      data_series = tail(historical_overrides$federal_corporate_taxes_override, n = 1)
+      date >= yearquarter('2020 Q2') & date <= current_quarter,
+      data_series = historical_overrides$federal_corporate_taxes_override
     )
 
   # Merge the national accounts with the forecast using the commonly named `data_series`

@@ -57,7 +57,6 @@ federal_subsidies <- federal_subsidies_test$data_series
 federal_aid_to_small_businesses_arp <- federal_aid_to_small_businesses_arp_test$data_series
 federal_other_direct_aid_arp <- federal_other_direct_aid_arp_test$data_series
 federal_other_vulnerable_arp <- federal_other_vulnerable_arp_test$data_series
-federal_student_loans <- federal_student_loans_test$data_series
 state_subsidies <- state_subsidies_test$data_series
 federal_health_outlays <- federal_health_outlays_test$data_series
 state_health_outlays <- state_health_outlays_test$data_series

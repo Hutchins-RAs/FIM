@@ -92,6 +92,7 @@
             create_placeholder_nas()
           )
           
+          # # NO OBBBA
           # #Q3 2025
           # federal_purchases_test$data_series[223] <- 1970.5
           # #Q4 2025
@@ -125,6 +126,7 @@
             create_placeholder_nas()
           )
           
+          # # NO OBBBA 
           # #Q3 2025
           # federal_non_corporate_taxes_test$data_series[223] <- 5188
           # #Q4 2025
@@ -157,6 +159,7 @@
             create_placeholder_nas()
           )
           
+          # # NO OBBBA
           # #Q3 2025
           # federal_corporate_taxes_test$data_series[223] <- 508.5
           # 
@@ -165,11 +168,6 @@
           # 
           # #Q1 2026
           # federal_corporate_taxes_test$data_series[225] <- 480.7
-
-          #Q3 2025
-          federal_corporate_taxes_test$data_series[223] <- 208.5
-          #Q4 2025
-          federal_corporate_taxes_test$data_series[224] <- 458
 
           supply_side_ira_test <- create_supply_side_ira(
             forecast,
@@ -192,6 +190,7 @@
             create_placeholder_nas()
           )
           
+          # # NO OBBBA
           # federal_social_benefits_test$data_series[223] <- 2371.9
           # federal_social_benefits_test$data_series[224] <- 2383.2
           # 
@@ -255,14 +254,7 @@
             historical_overrides,
             create_placeholder_nas()
           )
-          
-          
-          federal_student_loans_test <- create_federal_student_loans(
-            national_accounts,
-            forecast,
-            historical_overrides,
-            create_placeholder_nas()
-          )
+    
           
           state_subsidies_test <- create_state_subsidies(
             national_accounts,
@@ -276,11 +268,12 @@
             forecast,
             create_placeholder_nas()
           )
+          
+          # # NO OBBBA
           #q4 2025
           # federal_health_outlays_test$data_series[224] <- federal_health_outlays_test$data_series[224] + 18.5
           # #q1 2026
           # federal_health_outlays_test$data_series[225] <- federal_health_outlays_test$data_series[225] + 18.5
-          # 
           # 
           
           state_health_outlays_test <- create_state_health_outlays(
@@ -494,10 +487,6 @@
           # Federal Other Vulnerable ARP 
           post_mpc_federal_other_vulnerable_arp <- mpc(x = federal_other_vulnerable_arp_test$data_series, 
                                                        mpc = readRDS("cache/mpc_matrices/federal_other_vulnerable_arp.rds"))
-          
-          # Federal Student Loans 
-          post_mpc_federal_student_loans <- mpc(x = federal_student_loans_test$data_series,
-                                                mpc = readRDS("cache/mpc_matrices/federal_student_loans.rds"))
           
           # State Subsidies 
           post_mpc_state_subsidies <- mpc(x = state_subsidies_test$data_series, 
@@ -750,15 +739,6 @@
             gdp = gdp_test$data_series
           )
           
-          # Federal Student Loans 
-          federal_student_loans_contribution <- contribution_transfers(
-            x = post_mpc_federal_student_loans,
-            dg = consumption_deflator_growth_test$data_series, 
-            rpgg = real_potential_gdp_growth_test$data_series, 
-            c = consumption_test$data_series,
-            gdp = gdp_test$data_series
-          )
-          
           # State Subsidies Contribution 
           state_subsidies_contribution <- contribution_transfers(
             x = post_mpc_state_subsidies,
@@ -817,9 +797,6 @@
             SMA(zoo::na.locf(., na.rm = F), n = 4)
           
           # Create variables that we pull for the breakdown file
-          transfers_breakdown_contribution <- 
-            (transfers_contribution - 
-               federal_student_loans_contribution)
           taxes_breakdown_contribution <-
             (taxes_contribution -
                supply_side_ira_contribution)
@@ -859,7 +836,6 @@
             federal_aid_to_small_businesses_arp,
             federal_other_direct_aid_arp,
             federal_other_vulnerable_arp,
-            federal_student_loans,
             state_subsidies,
             federal_health_outlays,
             state_health_outlays,
@@ -876,7 +852,6 @@
             post_mpc_federal_subsidies,
             post_mpc_federal_aid_to_small_businesses_arp,
             post_mpc_federal_other_vulnerable_arp,
-            post_mpc_federal_student_loans,
             post_mpc_state_subsidies,
             post_mpc_federal_health_outlays,
             post_mpc_state_health_outlays
@@ -905,7 +880,6 @@
             federal_aid_to_small_businesses_arp_contribution,
             federal_other_direct_aid_arp_contribution,
             federal_other_vulnerable_arp_contribution,
-            federal_student_loans_contribution,
             state_subsidies_contribution,
             federal_health_outlays_contribution,
             state_health_outlays_contribution,
@@ -915,7 +889,6 @@
             transfers_contribution,
             consumption_contribution,
             taxes_breakdown_contribution,
-            transfers_breakdown_contribution,
             fiscal_impact_measure,
             fiscal_impact_4q_ma
           
@@ -985,6 +958,7 @@
           
           rmarkdown::render(input = 'scripts/update-comparison-markdown.Rmd',
                             output_file = glue('update-comparison-{month_year}'),
+                            output_dir = glue('results/{month_year}/beta'),
                             clean = TRUE)
           
           # Find differences between previous and current contributions and inputs 
