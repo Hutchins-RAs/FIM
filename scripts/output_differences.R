@@ -6,16 +6,16 @@
 # ---- load files ----
 
 # Read current and previous contributions
-cur_contrib  <- readxl::read_xlsx(glue('results/04-2026/beta/contributions-04-2026.xlsx'))
+#cur_contrib  <- readxl::read_xlsx(glue('results/04-2026/beta/contributions-04-2026.xlsx'))
 prev_contrib <- readxl::read_xlsx(glue('results/04-2026/04.30/beta/contributions-04-2026.xlsx'))
-# cur_contrib  <- readxl::read_xlsx(glue('results/{month_year}/beta/contributions-{month_year}.xlsx'))
-# prev_contrib <- readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx'))
+cur_contrib  <- readxl::read_xlsx(glue('results/{month_year}/beta/contributions-{month_year}.xlsx'))
+#prev_contrib <- readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx'))
 
 
 # Read current and previous inputs
-cur_inputs  <- readxl::read_xlsx(glue('results/04-2026/beta/inputs-04-2026.xlsx'))
+#cur_inputs  <- readxl::read_xlsx(glue('results/04-2026/beta/inputs-04-2026.xlsx'))
 prev_inputs <- readxl::read_xlsx(glue('results/04-2026/04.30/beta/inputs-04-2026.xlsx'))
-# cur_inputs  <- readxl::read_xlsx(glue('results/{month_year}/beta/inputs-{month_year}.xlsx'))
+cur_inputs  <- readxl::read_xlsx(glue('results/{month_year}/beta/inputs-{month_year}.xlsx'))
 # prev_inputs <- readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx'))
 
 
@@ -39,9 +39,8 @@ wb <- openxlsx::createWorkbook()
 openxlsx::addWorksheet(wb, "current");     openxlsx::writeData(wb, "current", cur_contrib)
 openxlsx::addWorksheet(wb, "previous");    openxlsx::writeData(wb, "previous", prev)
 openxlsx::addWorksheet(wb, "differences"); openxlsx::writeData(wb, "differences", diff)
-openxlsx::saveWorkbook(wb, glue('results/04-2026/beta/contributions-comparison-04-2026.xlsx'), overwrite = TRUE)
-
-# openxlsx::saveWorkbook(wb, glue('results/{month_year}/beta/contributions-comparison-{month_year}.xlsx'), overwrite = TRUE)
+#openxlsx::saveWorkbook(wb, glue('results/4.30/04-2026/beta/contributions-comparison-04-2026.xlsx'), overwrite = TRUE)
+openxlsx::saveWorkbook(wb, glue('results/{month_year}/beta/contributions-comparison-{month_year}.xlsx'), overwrite = TRUE)
 
 # ---- process inputs (same logic as above) ----
 shared <- intersect(names(cur_inputs)[-1], names(prev_inputs)[-1])
@@ -58,6 +57,5 @@ wb <- openxlsx::createWorkbook()
 openxlsx::addWorksheet(wb, "current");     openxlsx::writeData(wb, "current", cur_inputs)
 openxlsx::addWorksheet(wb, "previous");    openxlsx::writeData(wb, "previous", prev)
 openxlsx::addWorksheet(wb, "differences"); openxlsx::writeData(wb, "differences", diff)
-openxlsx::saveWorkbook(wb, glue('results/04-2026/beta/inputs-comparison-04-2026.xlsx'), overwrite = TRUE)
-
-# openxlsx::saveWorkbook(wb, glue('results/{month_year}/beta/inputs-comparison-{month_year}.xlsx'), overwrite = TRUE)
+#openxlsx::saveWorkbook(wb, glue('results/04-2026/beta/inputs-comparison-04-2026.xlsx'), overwrite = TRUE)
+openxlsx::saveWorkbook(wb, glue('results/{month_year}/beta/inputs-comparison-{month_year}.xlsx'), overwrite = TRUE)
