@@ -13,7 +13,25 @@ START <- "01-01-1970"
 # Quarterly -------------------------------------------------------------------------------------------------------
 
 # BEA NIPAs 
-names_usna <- read_excel("data/haver_names.xlsx")
+names_usna <- read_excel("data/haver_names.xlsx", sheet = "Sheet1")
+
+# Social Benefits add-on Haver codes -----------------------------------------------------------
+# `haver_names_SB` is a separate tab in data/haver_names.xlsx. Keeping the new
+# Social Benefits pull list on its own tab makes it easy to inspect/debug without
+# mixing experimental Social Benefits rows into the main Haver name dictionary.
+#
+# If the Haver pull breaks after this change, first check:
+#   1. data/haver_names.xlsx, sheet `haver_names_SB`
+#   2. whether each listed code exists in the USNA database
+#   3. the bottom rows of `Haver Pivoted`, where these series are relocated
+names_usna_sb <- read_excel("data/haver_names.xlsx", sheet = "haver_names_SB")
+social_benefits_haver_codes <- names_usna_sb$code
+
+usna_haver_codes <- unique(c(names_usna$code, names_usna_sb$code))
+message(
+  "Social Benefits add-on Haver codes: ",
+  paste(social_benefits_haver_codes, collapse = ", ")
+)
 
 # Economic Statistics
 
@@ -52,7 +70,7 @@ ctc <- pull_data('YPTOCM',
   mutate(yptocm = na_if(yptocm, NaN))
 
 usna <-
-  pull_data(names_usna$code,
+  pull_data(usna_haver_codes,
             "usna",
             start.date = START) %>%
   as_tibble() %>% 
@@ -90,7 +108,10 @@ national_accounts <-
   #When adding new codes to read in from Haver, make sure to relocate them at the end of the spreadsheet using the below function:
   relocate(ylwsd:gftfbdx, .after = 'jgsi_growth') %>% 
   relocate(yptocm, .after = everything()) %>%
-  relocate(gfrid:gfrio, .after = everything())
+  relocate(gfrid:gfrio, .after = everything()) %>%
+  # Keep the Social Benefits add-on rows at the bottom of Haver Pivoted so they
+  # are easy to audit and do not shift existing workbook formulas.
+  relocate(any_of(social_benefits_haver_codes), .after = everything())
 
 usethis::use_data(national_accounts, overwrite = TRUE)
 devtools::load_all()
@@ -105,12 +126,30 @@ haver_pivoted <-
   pivot_wider(names_from = date,
               values_from = value) 
 
+social_benefits_haver_pivoted <-
+  filter(haver_pivoted, tolower(name) %in% social_benefits_haver_codes)
+
+message(
+  "Social Benefits add-on rows found in Haver Pivoted: ",
+  paste(social_benefits_haver_pivoted$name, collapse = ", ")
+)
+
+missing_social_benefits_haver_codes <-
+  setdiff(social_benefits_haver_codes, tolower(social_benefits_haver_pivoted$name))
+
+if (length(missing_social_benefits_haver_codes) > 0) {
+  warning(
+    "Missing Social Benefits add-on rows in Haver Pivoted: ",
+    paste(missing_social_benefits_haver_codes, collapse = ", ")
+  )
+}
 
 boldHeader <- createStyle(textDecoration = 'bold') # Makes first row bold
 wb <- loadWorkbook('data/forecast.xlsx')
 if (!('Haver Pivoted' %in% names(wb))) addWorksheet(wb, 'Haver Pivoted')
 writeData(wb, 'Haver Pivoted', haver_pivoted, headerStyle = boldHeader)
 setColWidths(wb, 'Haver Pivoted', cols = 1:ncol(haver_pivoted), widths = 'auto')
+
 saveWorkbook(wb, 'data/forecast.xlsx', overwrite = T)
 # Check values and then:
 # gert::git_commit_all('Haver update')
