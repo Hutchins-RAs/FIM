@@ -255,6 +255,12 @@
             create_placeholder_nas()
           )
     
+          federal_student_loans_test <- create_federal_student_loans(
+            national_accounts,
+            forecast,
+            historical_overrides,
+            create_placeholder_nas()
+          )
           
           state_subsidies_test <- create_state_subsidies(
             national_accounts,
@@ -488,6 +494,10 @@
           post_mpc_federal_other_vulnerable_arp <- mpc(x = federal_other_vulnerable_arp_test$data_series, 
                                                        mpc = readRDS("cache/mpc_matrices/federal_other_vulnerable_arp.rds"))
           
+          # Federal Student Loans 
+          post_mpc_federal_student_loans <- mpc(x = federal_student_loans_test$data_series,
+                                                mpc = readRDS("cache/mpc_matrices/federal_student_loans.rds"))
+          
           # State Subsidies 
           post_mpc_state_subsidies <- mpc(x = state_subsidies_test$data_series, 
                                           mpc = readRDS("cache/mpc_matrices/state_subsidies.rds"))
@@ -514,7 +524,7 @@
                                          post_mpc_federal_ui + post_mpc_state_ui + 
                                          post_mpc_federal_subsidies + post_mpc_federal_aid_to_small_businesses_arp + 
                                          post_mpc_federal_other_direct_aid_arp + post_mpc_federal_other_vulnerable_arp  + 
-                                         post_mpc_state_subsidies +
+                                         post_mpc_state_subsidies + post_mpc_federal_student_loans +
                                          post_mpc_federal_health_outlays + post_mpc_state_health_outlays)
           
           #### SUM TAXES AND TRANSFERS ####
@@ -739,6 +749,16 @@
             gdp = gdp_test$data_series
           )
           
+          
+          # Federal Student Loans Contribution
+          federal_student_loans_contribution <- contribution_transfers(
+            x = post_mpc_federal_student_loans,
+            dg = consumption_deflator_growth_test$data_series, 
+            rpgg = real_potential_gdp_growth_test$data_series, 
+            c = consumption_test$data_series,
+            gdp = gdp_test$data_series
+          )
+          
           # State Subsidies Contribution 
           state_subsidies_contribution <- contribution_transfers(
             x = post_mpc_state_subsidies,
@@ -836,6 +856,7 @@
             federal_aid_to_small_businesses_arp,
             federal_other_direct_aid_arp,
             federal_other_vulnerable_arp,
+            federal_student_loans,
             state_subsidies,
             federal_health_outlays,
             state_health_outlays,
@@ -852,6 +873,7 @@
             post_mpc_federal_subsidies,
             post_mpc_federal_aid_to_small_businesses_arp,
             post_mpc_federal_other_vulnerable_arp,
+            post_mpc_federal_student_loans,
             post_mpc_state_subsidies,
             post_mpc_federal_health_outlays,
             post_mpc_state_health_outlays
@@ -880,6 +902,7 @@
             federal_aid_to_small_businesses_arp_contribution,
             federal_other_direct_aid_arp_contribution,
             federal_other_vulnerable_arp_contribution,
+            federal_student_loans_contribution,
             state_subsidies_contribution,
             federal_health_outlays_contribution,
             state_health_outlays_contribution,
