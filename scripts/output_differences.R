@@ -7,16 +7,16 @@
 
 # Read current and previous contributions
 #cur_contrib  <- readxl::read_xlsx(glue('results/04-2026/beta/contributions-04-2026.xlsx'))
-prev_contrib <- readxl::read_xlsx(glue('results/05-2026/05.29 published/beta/contributions-05-2026.xlsx'))
+#prev_contrib <- readxl::read_xlsx(glue('results/05-2026/05.29 published/beta/contributions-05-2026.xlsx'))
 cur_contrib  <- readxl::read_xlsx(glue('results/{month_year}/beta/contributions-{month_year}.xlsx'))
-#prev_contrib <- readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx'))
+prev_contrib <- readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx'))
 
 
 # Read current and previous inputs
 #cur_inputs  <- readxl::read_xlsx(glue('results/04-2026/beta/inputs-04-2026.xlsx'))
-prev_inputs <- readxl::read_xlsx(glue('results/05-2026/05.29 published/beta/inputs-05-2026.xlsx'))
+#prev_inputs <- readxl::read_xlsx(glue('results/05-2026/05.29 published/beta/inputs-05-2026.xlsx'))
 cur_inputs  <- readxl::read_xlsx(glue('results/{month_year}/beta/inputs-{month_year}.xlsx'))
-# prev_inputs <- readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx'))
+prev_inputs <- readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx'))
 
 
 # ---- process contributions ----

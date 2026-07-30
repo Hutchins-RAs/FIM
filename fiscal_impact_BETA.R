@@ -376,11 +376,11 @@
           )
           
           # Uncertainty
-          uncertainty_test <- create_uncertainty(
-            forecast,
-            historical_overrides, 
-            create_placeholder_nas()
-          )
+          # uncertainty_test <- create_uncertainty(
+          #   forecast,
+          #   historical_overrides, 
+          #   create_placeholder_nas()
+          # )
           
           
           # EXTRAS 
@@ -795,12 +795,12 @@
           state_purchases_contribution <- nipa_state_purchases_contribution 
           
           # Check to see if uncertainty is being added into consumption correctly 
-          sum <- consumption_contribution + uncertainty_test$data_series
-          test <- data.frame(uncertainty_test$date, consumption_contribution, uncertainty_test$data_series, sum)
+          # sum <- consumption_contribution + uncertainty_test$data_series
+          # test <- data.frame(uncertainty_test$date, consumption_contribution, uncertainty_test$data_series, sum)
           
           
           # Revise consumption contribution to include uncertainty factor 
-          consumption_contribution <- consumption_contribution + uncertainty_test$data_series
+          # consumption_contribution <- consumption_contribution + uncertainty_test$data_series
           
           # Sum the Components to create the total FIM 
           fiscal_impact_measure <-
@@ -836,7 +836,6 @@
             real_potential_gdp_growth,
             gdp,
             consumption,
-            uncertainty, 
             federal_purchases,
             consumption_grants,
             investment_grants,

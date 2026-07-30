@@ -15,9 +15,9 @@ current_quarter <- yearquarter(Sys.Date()) - 1
 # Load in previous month's inputs
 previous_inputs <-
   #EDIT WHEN NOT JANK (REMOVE)
-  readxl::read_xlsx(glue('results/05-2026/05.29 published/beta/inputs-05-2026.xlsx')) %>%
+  #readxl::read_xlsx(glue('results/05-2026/05.29 published/beta/inputs-05-2026.xlsx')) %>%
   #WHAT IT USED TO BE 
-  # readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx')) %>%
+  readxl::read_xlsx(glue('results/{last_month_year}/beta/inputs-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
@@ -86,9 +86,9 @@ current_inputs <- current_inputs %>%
 # Load previous month's results
 previous <-
   #EDIT WHEN NOT JANK (REMOVE)
-  readxl::read_xlsx(glue('results/05-2026/05.29 published/beta/contributions-05-2026.xlsx')) %>%
+  #readxl::read_xlsx(glue('results/05-2026/05.29 published/beta/contributions-05-2026.xlsx')) %>%
   #WHAT IT USED TO BE 
-  # readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx')) %>%
+  readxl::read_xlsx(glue('results/{last_month_year}/beta/contributions-{last_month_year}.xlsx')) %>%
   mutate(date = yearquarter(date)) %>%
   drop_na(date) %>%
   as_tsibble(index = date) %>%
@@ -114,15 +114,29 @@ current_long <- pivot_longer(current, cols = where(is.numeric), values_to = 'cur
 previous_inputs_long <- pivot_longer(previous_inputs, cols = where(is.numeric), values_to = 'previous')
 current_inputs_long <- pivot_longer(current_inputs, cols = where(is.numeric), values_to = 'current')
 
+# # Join Contributions 
+# contributions_comparison <- inner_join(current_long,
+#                                        previous_long,
+#                                        by = c('date', 'name')) %>% 
+#   rename(variable = name) %>% 
+#   as_tibble(index = date) %>%
+#   mutate(date = as.Date(date)) 
+# 
+# inputs_comparison <- inner_join(current_inputs_long,
+#                                 previous_inputs_long,
+#                                 by = c('date', 'name')) %>% 
+#   rename(variable = name) %>% 
+#   as_tsibble(index = date) 
+
 # Join Contributions 
-contributions_comparison <- inner_join(current_long,
+contributions_comparison <- left_join(current_long,
                                        previous_long,
                                        by = c('date', 'name')) %>% 
   rename(variable = name) %>% 
   as_tibble(index = date) %>%
   mutate(date = as.Date(date)) 
 
-inputs_comparison <- inner_join(current_inputs_long,
+inputs_comparison <- left_join(current_inputs_long,
                                 previous_inputs_long,
                                 by = c('date', 'name')) %>% 
   rename(variable = name) %>% 
@@ -229,10 +243,14 @@ previous_summary <-
     -date
   )
 
-summary <- inner_join(current_summary,
-                      previous_summary,
-                      by = c("date", "name")) %>% 
-  mutate(Difference = Current - Previous) %>%
+# summary <- inner_join(current_summary,
+#                       previous_summary,
+#                       by = c("date", "name")) %>% 
+#   mutate(Difference = Current - Previous) %>%
+summary <- left_join(current_summary,
+                     previous_summary,
+                     by = c("date", "name")) %>% 
+  mutate(Difference = Current - coalesce(Previous, 0)) %>%
   mutate(name= case_when(
     name == "state_contribution" ~ "State Purchases",
     name == "federal_contribution" ~ "Federal Purchases",
