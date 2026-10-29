@@ -47,14 +47,37 @@ previous_inputs <- previous_inputs %>%
     nipa_total_purchases_real = nipa_federal_purchases_real + nipa_state_purchases_real,
     
     # Calculate real federal/state purchases that are FIM consistent 
-    fim_state_purchases = state_purchases + consumption_grants + investment_grants,
+    fim_state_purchases = state_purchases - consumption_grants - investment_grants,
     fim_state_purchases_real = fim_state_purchases - lag(fim_state_purchases) * state_purchases_deflator_growth,
     
     fim_federal_purchases = nipa_total_purchases - fim_state_purchases,
     fim_federal_purchases_real = nipa_total_purchases_real - fim_state_purchases_real,
     
     # Calculate consumption
-    consumption_real = consumption - lag(consumption) * consumption_deflator_growth
+    consumption_real = consumption - lag(consumption) * consumption_deflator_growth,
+    
+    #Consumption broken down
+    federal_ui_real = federal_ui - lag(federal_ui) * consumption_deflator_growth,
+    state_ui_real = state_ui - lag(state_ui) * consumption_deflator_growth,
+    federal_subsidies_real = federal_subsidies - lag(federal_subsidies) * consumption_deflator_growth,
+    state_subsidies_real = state_subsidies - lag(state_subsidies) * consumption_deflator_growth,
+    federal_health_outlays_real = federal_health_outlays - lag(federal_health_outlays) * consumption_deflator_growth,
+    state_health_outlays_real = state_health_outlays - lag(state_health_outlays) * consumption_deflator_growth,
+    federal_social_benefits_real = federal_social_benefits - lag(federal_social_benefits) * consumption_deflator_growth,
+    state_social_benefits_real = state_social_benefits - lag(state_social_benefits) * consumption_deflator_growth,
+    federal_corporate_taxes_real = federal_corporate_taxes - lag(federal_corporate_taxes) * consumption_deflator_growth,
+    state_corporate_taxes_real = state_corporate_taxes - lag(state_corporate_taxes) * consumption_deflator_growth,
+    federal_non_corporate_taxes_real = federal_non_corporate_taxes - lag(federal_non_corporate_taxes) * consumption_deflator_growth,
+    state_non_corporate_taxes_real = state_non_corporate_taxes - lag(state_non_corporate_taxes) * consumption_deflator_growth,
+    rebate_checks_arp_real = rebate_checks_arp - lag(rebate_checks_arp) * consumption_deflator_growth,
+    federal_other_direct_aid_arp_real = federal_other_direct_aid_arp - lag(federal_other_direct_aid_arp) * consumption_deflator_growth,
+    federal_other_vulnerable_arp_real = federal_other_vulnerable_arp - lag(federal_other_vulnerable_arp) * consumption_deflator_growth,
+    federal_aid_to_small_businesses_arp_real = federal_aid_to_small_businesses_arp - lag(federal_aid_to_small_businesses_arp) * consumption_deflator_growth,
+    federal_student_loans_real = federal_student_loans - lag(federal_student_loans) * consumption_deflator_growth,
+    supply_side_ira_real = supply_side_ira - lag(supply_side_ira) * consumption_deflator_growth,
+    rebate_checks_real = rebate_checks - lag(rebate_checks) * consumption_deflator_growth,
+    consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_deflator_growth,
+    investment_grants_real = investment_grants - lag(investment_grants) * consumption_deflator_growth
   )
 
 # Current 
@@ -69,14 +92,37 @@ current_inputs <- current_inputs %>%
     nipa_total_purchases_real = nipa_federal_purchases_real + nipa_state_purchases_real,
     
     # Calculate real federal/state purchases that are FIM consistent 
-    fim_state_purchases = state_purchases + consumption_grants + investment_grants,
+    fim_state_purchases = state_purchases - consumption_grants - investment_grants,
     fim_state_purchases_real = fim_state_purchases - lag(fim_state_purchases) * state_purchases_deflator_growth,
     
     fim_federal_purchases = nipa_total_purchases - fim_state_purchases,
     fim_federal_purchases_real = nipa_total_purchases_real - fim_state_purchases_real,
     
     # Calculate consumption
-    consumption_real = consumption - lag(consumption) * consumption_deflator_growth
+    consumption_real = consumption - lag(consumption) * consumption_deflator_growth,
+    
+    #Consumption broken down
+    federal_ui_real = federal_ui - lag(federal_ui) * consumption_deflator_growth,
+    state_ui_real = state_ui - lag(state_ui) * consumption_deflator_growth,
+    federal_subsidies_real = federal_subsidies - lag(federal_subsidies) * consumption_deflator_growth,
+    state_subsidies_real = state_subsidies - lag(state_subsidies) * consumption_deflator_growth,
+    federal_health_outlays_real = federal_health_outlays - lag(federal_health_outlays) * consumption_deflator_growth,
+    state_health_outlays_real = state_health_outlays - lag(state_health_outlays) * consumption_deflator_growth,
+    federal_social_benefits_real = federal_social_benefits - lag(federal_social_benefits) * consumption_deflator_growth,
+    state_social_benefits_real = state_social_benefits - lag(state_social_benefits) * consumption_deflator_growth,
+    federal_corporate_taxes_real = federal_corporate_taxes - lag(federal_corporate_taxes) * consumption_deflator_growth,
+    state_corporate_taxes_real = state_corporate_taxes - lag(state_corporate_taxes) * consumption_deflator_growth,
+    federal_non_corporate_taxes_real = federal_non_corporate_taxes - lag(federal_non_corporate_taxes) * consumption_deflator_growth,
+    state_non_corporate_taxes_real = state_non_corporate_taxes - lag(state_non_corporate_taxes) * consumption_deflator_growth,
+    rebate_checks_arp_real = rebate_checks_arp - lag(rebate_checks_arp) * consumption_deflator_growth,
+    federal_other_direct_aid_arp_real = federal_other_direct_aid_arp - lag(federal_other_direct_aid_arp) * consumption_deflator_growth,
+    federal_other_vulnerable_arp_real = federal_other_vulnerable_arp - lag(federal_other_vulnerable_arp) * consumption_deflator_growth,
+    federal_aid_to_small_businesses_arp_real = federal_aid_to_small_businesses_arp - lag(federal_aid_to_small_businesses_arp) * consumption_deflator_growth,
+    federal_student_loans_real = federal_student_loans - lag(federal_student_loans) * consumption_deflator_growth,
+    supply_side_ira_real = supply_side_ira - lag(supply_side_ira) * consumption_deflator_growth,
+    rebate_checks_real = rebate_checks - lag(rebate_checks) * consumption_deflator_growth,
+    consumption_grants_real = consumption_grants - lag(consumption_grants) * consumption_deflator_growth,
+    investment_grants_real = investment_grants - lag(investment_grants) * consumption_deflator_growth
   )
 
 #------------------- Contributions Figures ----------------------------#
@@ -165,7 +211,83 @@ components <- c(
   "consumption",
   "consumption_real",
   
-  "fiscal_impact_measure"
+  "fiscal_impact_measure",
+  
+  "consumption_grants_contribution", 
+  "consumption_grants",
+  "consumption_grants_real",
+  "investment_grants_contribution",
+  "investment_grants",
+  "investment_grants_real",
+  "federal_non_corporate_taxes_contribution",
+  "federal_non_corporate_taxes",
+  "federal_non_corporate_taxes_real",
+  "state_non_corporate_taxes_contribution", 
+  "state_non_corporate_taxes",
+  "state_non_corporate_taxes_real",
+  "federal_corporate_taxes_contribution", 
+  "federal_corporate_taxes",
+  "federal_corporate_taxes_real",
+  "supply_side_ira_contribution", 
+  "supply_side_ira",
+  "supply_side_ira_real",
+  "state_corporate_taxes_contribution", 
+  "state_corporate_taxes",
+  "state_corporate_taxes_real",
+  "federal_social_benefits_contribution", 
+  "federal_social_benefits",
+  "federal_social_benefits_real",
+  "state_social_benefits_contribution", 
+  "state_social_benefits",
+  "state_social_benefits_real",
+  "rebate_checks_contribution", 
+  "rebate_checks",
+  "rebate_checks_real",
+  "rebate_checks_arp_contribution", 
+  "rebate_checks_arp",
+  "rebate_checks_arp_real",
+  "federal_ui_contribution", 
+  "federal_ui",
+  "federal_ui_real",
+  "state_ui_contribution", 
+  "state_ui",
+  "state_ui_real",
+  "federal_subsidies_contribution",  
+  "federal_subsidies",
+  "federal_subsidies_real", 
+  "federal_aid_to_small_businesses_arp_contribution", 
+  "federal_aid_to_small_businesses_arp",
+  "federal_aid_to_small_businesses_arp_real", 
+  "federal_other_direct_aid_arp_contribution", 
+  "federal_other_direct_aid_arp",
+  "federal_other_direct_aid_arp_real", 
+  "federal_other_vulnerable_arp_contribution", 
+  "federal_other_vulnerable_arp",
+  "federal_other_vulnerable_arp_real", 
+  "federal_student_loans_contribution",
+  "federal_student_loans",
+  "federal_student_loans_real",
+  "state_subsidies_contribution", 
+  "state_subsidies",
+  "state_subsidies_real", 
+  "federal_health_outlays_contribution", 
+  "federal_health_outlays",
+  "federal_health_outlays_real", 
+  "state_health_outlays_contribution", 
+  "state_health_outlays",
+  "state_health_outlays_real", 
+  "federal_contribution",
+  "federal",
+  "federal_real",
+  "state_contribution", 
+  "state",
+  "state_real", 
+  "taxes_contribution", 
+  "taxes",
+  "taxes_real",
+  "transfers_contribution",
+  "transfers",
+  "transfers_real"
 )
 
 # Define the comparison_ga function, which pulls in data (federal purchases 

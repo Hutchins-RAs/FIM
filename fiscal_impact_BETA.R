@@ -99,7 +99,12 @@
           # federal_purchases_test$data_series[224] <- 1942
           # #Q1 2026
           # federal_purchases_test$data_series[225] <- 1942.5
-          # 
+          
+          #adjustment SPR Q2 2026
+          federal_purchases_test$data_series[226] <- 1994.5
+          #adjustment SPR Q3 2026
+          federal_purchases_test$data_series[227] <- 2022.1
+        
           consumption_grants_test <- create_consumption_grants(
             national_accounts,
             forecast,
@@ -574,8 +579,26 @@
           ) 
           
           # Federal Purchases Contribution (FIM Consistent)
-          fim_federal_purchases_contribution <- nipa_total_purchases_contribution - 
-            fim_state_purchases_contribution 
+          fim_federal_purchases_contribution <- nipa_total_purchases_contribution -
+            fim_state_purchases_contribution
+
+          # Consumption Grants Contribution (reported only -- already included in
+          # fim_federal_purchases_contribution, not added to the FIM separately)
+          consumption_grants_contribution <- contribution_purchases(
+            x = consumption_grants_test$data_series,
+            dg = consumption_grants_deflator_growth_test$data_series,
+            rpgg = real_potential_gdp_growth_annualized_test$data_series,
+            gdp = gdp_test$data_series
+          )
+
+          # Investment Grants Contribution (reported only -- already included in
+          # fim_federal_purchases_contribution, not added to the FIM separately)
+          investment_grants_contribution <- contribution_purchases(
+            x = investment_grants_test$data_series,
+            dg = investment_grants_deflator_growth_test$data_series,
+            rpgg = real_potential_gdp_growth_annualized_test$data_series,
+            gdp = gdp_test$data_series
+          )
           
           check <- data.frame(date,
                               id,
@@ -887,6 +910,8 @@
             recession,
             federal_purchases_contribution,
             state_purchases_contribution,
+            consumption_grants_contribution,
+            investment_grants_contribution,
             federal_non_corporate_taxes_contribution,
             state_non_corporate_taxes_contribution,
             federal_corporate_taxes_contribution,
