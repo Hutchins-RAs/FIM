@@ -101,9 +101,9 @@
           # federal_purchases_test$data_series[225] <- 1942.5
           
           #adjustment SPR Q2 2026
-          federal_purchases_test$data_series[226] <- 1994.5
+          federal_purchases_test$data_series[226] <- 2004.2
           #adjustment SPR Q3 2026
-          federal_purchases_test$data_series[227] <- 2022.1
+          federal_purchases_test$data_series[227] <- 2073.8
         
           consumption_grants_test <- create_consumption_grants(
             national_accounts,

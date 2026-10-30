@@ -1,0 +1,40 @@
+# Source: Joint Committee on Taxation, JCX-48-24 (December 11, 2024), 'Estimates of Federal Tax Expenditures for Fiscal Years 2024-2028', Table 1, Energy function (PDF pp. 24-26; footnotes p. 34).
+# URL: https://www.jct.gov/publications/2024/jcx-48-24/  PDF: https://www.jct.gov/getattachment/765709fb-9a4b-430a-8f9e-4d342ec97f7e/x-48-24.pdf (saved as JCX-48-24.pdf).
+# UNITS: billions of dollars, FISCAL years. LEVELS (tax expenditures) under PRE-OBBBA law (legislation enacted through November 1, 2024 / footnote: 'Reflects legislation enacted by August 31, 2024'); based on the February 2024 CBO revenue baseline. NOT the same baseline vintage as JCX-35-25 (CBO January 2025).
+# Cell codes as published: '---' = none; '[2]' = positive tax expenditure of less than $50 million; '[6]' = negative tax expenditure of less than $50 million. Footnote [4] = includes refundability (outlay) effects - repeated at bottom. Footnote [7] = includes bonus depreciation and general acceleration under MACRS.
+# No separate row for 45Y (clean electricity production credit) appears in this table. Wind is the only sub-row printed under section 45.
+# irc_section_compiler_note and category_compiler_note were added by the compiler.
+row_as_published,irc_section_compiler_note,category_compiler_note,corp_FY2024,corp_FY2025,corp_FY2026,corp_FY2027,corp_FY2028,indiv_FY2024,indiv_FY2025,indiv_FY2026,indiv_FY2027,indiv_FY2028,total_FY2024_2028
+Residential clean energy credit,25D,consumer,---,---,---,---,---,16.8,11.4,9.9,10.2,10.7,59.0
+Energy efficient home improvement credit,25C,consumer,---,---,---,---,---,1.6,1.6,1.6,1.6,1.7,8.1
+Credits for alternative technology vehicles: Clean vehicle credit,30D,consumer,---,---,---,---,---,1.8,0.4,0.5,0.8,2.1,5.6
+Credits for alternative technology vehicles: Credit for qualified commercial clean vehicles,45W,business (vehicle),1.6,2.4,2.9,3.5,4.1,---,---,---,---,---,14.4
+Credits for alternative technology vehicles: Credit for previously owned plug-in electric vehicles,25E,consumer,---,---,---,---,---,0.3,0.3,0.4,0.3,0.3,1.7
+Credit for production of clean hydrogen [4],45V,business supply-side,0.3,0.7,1.3,2.0,2.9,[2],[2],[2],[2],[2],7.2
+Clean fuel production [4],45Z,business supply-side,---,1.8,2.9,2.5,1.2,---,[2],[2],[2],[2],8.4
+Credits for electricity production from renewable resources (section 45): Wind,45 (legacy PTC),business supply-side,3.3,4.1,5.3,6.7,7.9,0.1,0.1,0.1,0.1,0.1,27.6
+Credit for carbon oxide sequestration,45Q,business supply-side,[2],[2],[2],[2],[2],---,---,---,---,---,0.2
+Energy credit (section 48): Solar,48 (legacy ITC),business supply-side,14.3,19.6,26.1,13.1,5.4,1.6,2.2,2.9,1.5,[6],86.6
+Energy credit (section 48): Fuel Cells,48,business supply-side,0.1,0.1,0.1,0.1,0.1,[2],[2],[2],[2],[2],0.5
+Energy credit (section 48): Energy storage,48,business supply-side,0.1,0.1,0.1,0.1,0.1,[2],[2],[2],[2],[2],0.5
+Energy credit (section 48): Qualified biogas property,48,business supply-side,0.1,0.1,0.1,0.1,0.1,[2],[2],[2],[2],[2],0.5
+Energy credit (section 48): Qualified interconnection property,48,business supply-side,1.2,1.2,1.6,1.7,1.8,[2],[2],[2],[2],[2],7.5
+Energy credit (section 48): Qualified Sec 45 property,48(a)(5) election,business supply-side,[2],0.5,2.6,3.7,4.1,[2],[2],0.5,0.6,0.6,12.6
+Energy credit (section 48): Clean electricity ITC,48E,business supply-side,---,---,[2],13.2,15.4,---,---,[2],2.6,1.0,31.9
+Credit for alternative fuel vehicle refueling property,30C,business/consumer,0.1,0.1,0.1,0.1,0.1,[2],[2],[2],[2],[2],0.4
+Credit for construction of energy-efficient new homes,45L,business (homebuilders),0.2,0.2,0.2,0.2,0.2,0.1,0.1,0.1,0.1,0.1,1.3
+Advanced manufacturing production credit,45X,business supply-side,9.2,16.5,16.7,17.6,18.5,1.0,1.8,1.9,2.0,2.1,87.3
+Advanced manufacturing investment credit,48D (CHIPS; not IRA),business (semiconductor),6.6,8.1,8.1,5.3,3.9,---,---,---,---,---,31.9
+Zero emission nuclear power production credit,45U,business supply-side,1.6,2.7,2.8,2.9,3.0,[2],[2],[2],[2],[2],13.1
+Amortization of geological and geophysical expenditures associated with oil and gas exploration,167(h),fossil (not a credit),[2],[2],[2],[2],[2],[2],[2],[2],[2],[2],0.7
+"Depreciation recovery periods for energy-specific items [7]: Five-year MACRS for certain energy property (solar, wind, etc.)",168,cost recovery (not a credit),0.1,0.1,0.1,0.1,0.1,[2],[2],[2],[2],[2],0.5
+Depreciation recovery periods for energy-specific items [7]: 10-year MACRS for smart electric distribution property,168,cost recovery (not a credit),[2],0.1,0.1,0.1,0.1,---,---,---,---,---,0.3
+Depreciation recovery periods for energy-specific items [7]: 15-year MACRS for certain electric transmission property,168,cost recovery (not a credit),[2],0.1,0.1,0.1,0.1,---,---,---,---,---,0.3
+Depreciation recovery periods for energy-specific items [7]: 15-year MACRS for natural gas distribution line,168,cost recovery (not a credit),[2],0.1,0.1,0.1,0.1,---,---,---,---,---,0.3
+Amortization of air pollution control facilities,169,not a credit,[2],[2],[2],[2],[2],---,---,---,---,---,0.3
+Excess of percentage over cost depletion: Oil and gas,613/613A,fossil (not a credit),0.7,0.7,0.7,0.7,0.6,[2],[2],[2],[2],[2],3.6
+Excess of percentage over cost depletion: Other fuels,613,fossil (not a credit),0.1,0.1,0.1,0.1,0.1,[2],[2],[2],[2],[2],0.6
+Expensing of exploration and development costs: Oil and gas,263(c)/616/617,fossil (not a credit),0.6,0.5,0.5,0.5,0.4,[2],[2],[2],[2],[2],2.5
+Exceptions for publicly-traded partnership with qualified income derived from certain energy-related activities,7704(d),not a credit,---,---,---,---,---,0.4,0.5,0.6,0.7,0.8,3.0
+FOOTNOTE [4] refundability outlay effects included above: Clean fuel for production of clean hydrogen,45V,business supply-side,0.1,0.3,0.6,1.0,1.4,[2],[2],[2],[2],[2],3.5
+FOOTNOTE [4] refundability outlay effects included above: Clean fuel production credit,45Z,business supply-side,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect

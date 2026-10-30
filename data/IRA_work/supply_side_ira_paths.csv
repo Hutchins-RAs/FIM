@@ -1,0 +1,24 @@
+# Supply-side IRA path options for the FIM. Built from data/forecast.xlsx (Supply Side IRA sheet) and JCX-45-25.
+# History (through 2026 Q3) is unchanged. Option 1 grows the 2026 Q3 level at JCT's FY-over-FY change in total
+# post-OBBBA business supply-side credits (45V,45Z,45,45Y,45Q,48,48E,45X,45U), spread evenly over each FY's quarters.
+# Option 2 is JCT's FY credit cost itself, for reference only: it measures tax credits, while the FIM series measures
+# IRA-induced manufacturing investment (Goldman Sachs-based), so its level is not comparable.
+# Option 3 keeps published history through 2026 Q3 and grows it at the quarterly growth of the Census-based rebuild
+# (census_vs_gs_structures.csv: Census mfg construction scaled to GS level, run through the sheet mechanics). No historical revisions.
+date,fiscal_year,current_fim_nominal_bn_saar (Supply Side IRA row 14),option1_jct_shape_nominal_bn_saar,option1_jct_shape_real (row 12 units = nominal / PCE deflator),option1_quarterly_growth_applied,jct_fy_total_business_credits_bn (JCX-45-25),option2_jct_level_reference_bn (credit cost; NOT like-for-like),pce_deflator (Supply Side IRA row 13),option3_census_splice_nominal_bn_saar,option3_census_splice_real (row 12 units),option3_quarterly_growth_applied,census_rebuilt_full_path_nominal (revises history; reference only)
+2025 Q1,2025,64.005359,64.005359,50.898506,,37.3,37.3,1.25751,64.005359,50.898506,,83.66
+2025 Q2,2025,80.473542,80.473542,63.658013,,37.3,37.3,1.264154,80.473542,63.658013,,103.67
+2025 Q3,2025,98.524631,98.524631,77.412177,,37.3,37.3,1.272728,98.524631,77.412177,,121.82
+2025 Q4,2026,110.469376,110.469376,86.188557,,47.8,47.8,1.281717,110.469376,86.188557,,141.31
+2026 Q1,2026,135.971828,135.971828,105.316566,,47.8,47.8,1.291077,135.971828,105.316566,,152.87
+2026 Q2,2026,156.945251,156.945251,120.731491,,47.8,47.8,1.299953,156.945251,120.731491,,158.84
+2026 Q3,2026,164.885836,164.885836,126.018697,,47.8,47.8,1.308424,164.885836,126.018697,,167.0
+2026 Q4,2027,162.643016,157.406986,119.576919,-0.045358,39.7,39.7,1.316366,169.783044,128.978604,0.029701,171.96
+2027 Q1,2027,143.140106,150.267359,113.486342,-0.045358,39.7,39.7,1.324101,169.931145,128.337012,0.000872,172.11
+2027 Q2,2027,115.322938,143.45157,107.72183,-0.045358,39.7,39.7,1.331685,165.725075,124.447633,-0.024752,167.85
+2027 Q3,2027,85.08236,136.94493,102.262004,-0.045358,39.7,39.7,1.339158,157.628884,117.707501,-0.048853,159.65
+2027 Q4,2028,50.689051,136.59867,101.444188,-0.002528,39.3,39.3,1.34654,146.501559,108.798509,-0.070592,148.38
+2028 Q1,2028,28.430618,136.253285,100.642168,-0.002528,39.3,39.3,1.353839,135.551954,100.124137,-0.074741,137.29
+2028 Q2,2028,10.888462,135.908773,99.85526,-0.002528,39.3,39.3,1.361058,124.809691,91.700513,-0.079248,126.41
+2028 Q3,2028,0.0,135.565133,99.080606,-0.002528,39.3,39.3,1.368231,115.834768,84.660257,-0.071909,117.32
+2028 Q4,2029,0.0,132.162107,96.092486,-0.025103,35.5,35.5,1.375364,110.513003,80.351846,-0.045943,111.93

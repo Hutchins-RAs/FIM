@@ -1,0 +1,34 @@
+# Census private manufacturing construction (FRED PRMFGCONS, $M SAAR, monthly -> quarterly avg) vs the Supply Side IRA sheet.
+# 2019 baseline = 80.57 $B; "75pct excess" follows the sheet note (75% of increase over 2019 due to legislation).
+# Real 2022$ uses PPI WPUID612 (the deflator the sheet uses). Sheet structures (col J) are a read of a Goldman Sachs chart
+# published Aug 2023: values after mid-2023 are GS forecasts, not data; 2025 values are cut 20% (rescissions) and zero from 2025 Q4.
+# census_scaled = Census 75pct excess x 0.648 (GS/Census ratio in 2023 Q2), applied from 2023 Q3; GS values kept before that.
+# Rebuilt paths run structures through the sheet mechanics (equipment = 0.5 x structures 8-11 qtrs earlier; x F81=0.6751; x PCE deflator).
+# After the last Census quarter (2026 Q3, 2 months) structures are held flat. Rebuilt values revise history too.
+date,census_months,census_mfg_nominal_bn_saar,census_75pct_excess_over_2019_nominal_bn,census_75pct_excess_real2022,sheet_structures_used_J_real2022,sheet_structures_pre_rescission_O_real2022,census_scaled_structures_real2022,current_row14_nominal,rebuilt_census_scaled_row14_nominal,rebuilt_census_75pct_row14_nominal
+2022 Q3,3,130.88,37.73,37.29,6,6,6,4.74,4.74,4.74
+2022 Q4,3,150.61,52.53,52.42,10,10,10,7.98,7.98,7.98
+2023 Q1,3,179.06,73.87,73.43,37.666666666666664,37.666666666666664,37.67,30.34,30.34,30.34
+2023 Q2,3,198.8,88.67,88.01,57,57,57,46.25,46.25,46.25
+2023 Q3,3,204.14,92.68,91.69,76.66666666666667,76.66666666666667,59.38,62.08,48.5,74.89
+2023 Q4,3,224.97,108.3,107.21,84,84,69.43,68.35,56.97,87.96
+2024 Q1,3,235.21,115.99,113.69,94.33333333333333,94.33333333333333,73.63,78.09,60.95,94.11
+2024 Q2,3,244.03,122.59,120.14,102.66666666666667,102.66666666666667,77.81,85.53,64.82,100.09
+2024 Q3,3,248.3,125.8,123.49,92.33,92.33,79.97,79.75,69.41,105.82
+2024 Q4,3,245.06,123.37,120.92,76.7,76.7,78.31,71.3,72.66,108.53
+2025 Q1,3,232.88,114.24,110.72,48.56,60.7,71.71,64.01,83.66,116.78
+2025 Q2,3,222.35,106.33,102.13,38.96000000000001,48.7,66.14,80.47,103.67,134.38
+2025 Q3,3,209.3,96.55,92.27,24,30,59.76,98.52,121.82,163.64
+2025 Q4,3,192.15,83.69,79.63,0,0,51.57,110.47,141.31,195.92
+2026 Q1,3,180.86,75.22,70.51,0,0,45.66,135.97,152.87,222.53
+2026 Q2,3,171.78,68.41,63.11,0,0,40.87,156.95,158.84,245.27
+2026 Q3,2,168.21,65.73,59.66,,,38.64,164.89,167.0,257.87
+2026 Q4,0,,,,,,38.64,162.64,171.96,265.52
+2027 Q1,0,,,,,,38.64,143.14,172.11,265.76
+2027 Q2,0,,,,,,38.64,115.32,167.85,259.18
+2027 Q3,0,,,,,,38.64,85.08,159.65,246.52
+2027 Q4,0,,,,,,38.64,50.69,148.38,229.12
+2028 Q1,0,,,,,,38.64,28.43,137.29,211.98
+2028 Q2,0,,,,,,38.64,10.89,126.41,195.19
+2028 Q3,0,,,,,,38.64,0.0,117.32,181.16
+2028 Q4,0,,,,,,38.64,0.0,111.93,172.83

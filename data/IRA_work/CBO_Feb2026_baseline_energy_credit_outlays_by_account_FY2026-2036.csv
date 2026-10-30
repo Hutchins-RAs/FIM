@@ -1,0 +1,22 @@
+# Source: Congressional Budget Office, Spending Projections data underlying 'The Budget and Economic Outlook: 2026 to 2036' (February 2026 baseline; POST-OBBBA current law).
+# URL: https://www.cbo.gov/system/files/2026-02/51142-2026-02-Spending-Projections.xlsx (listed at https://www.cbo.gov/data/budget-economic-data). File covers FY2026-2036 only.
+# UNITS: millions of dollars, FISCAL years. Account-level (Treasury Identification Number) mandatory spending in CBO's baseline; all accounts are Department of the Treasury / Internal Revenue Service. Copied as published (thousands separators removed).
+# These are OUTLAYS only (direct/elective payments and refundable portions recorded as spending). The larger revenue-side cost of the credits (credits claimed against tax or transferred under sec. 6418) is NOT in this file.
+# Account 020-0963 title is truncated in CBO's file; it appears to be the sec. 6417 elective-payment account for energy credits generally (its Jan 2025 level of ~$15.7B in FY2025 is consistent with CBO's 61188 report: ~$13B 45X/48C outlays + ~$1B ITC/PTC outlays in FY2025) - compiler inference, not stated by CBO.
+# 020-0962 is the 48D CHIPS credit elective payment (not IRA clean energy). 020-0931 contents are not documented in the file and may not be energy-related; included only for completeness.
+# CBO (Outlook ch. 5): technical revisions cut projected energy-credit outlays by ~$0.1 trillion over 2026-2035 because CBO now expects a larger share of the remaining credits to be claimed as tax credits (revenue) rather than direct payments - so the drop vs Jan 2025 is mostly reclassification, not lower total cost.
+treasury_id,title_as_published,discretionary_or_mandatory,function,subfunction,measure,FY2026,FY2027,FY2028,FY2029,FY2030,FY2031,FY2032,FY2033,FY2034,FY2035,FY2036
+020-0963-0-1-271,Elective Payment for Energy Property and Electricity Produced Fr [title truncated in source],Mandatory,270,271,budget_authority,2821,2318,2025,1749,1103,650,403,261,201,196,196
+020-0963-0-1-271,Elective Payment for Energy Property and Electricity Produced Fr [title truncated in source],Mandatory,270,271,outlays,2821,2318,2025,1749,1103,650,403,261,201,196,196
+020-0964-0-1-272,Clean Vehicle Credit,Mandatory,270,272,budget_authority,480,0,0,0,0,0,0,0,0,0,0
+020-0964-0-1-272,Clean Vehicle Credit,Mandatory,270,272,outlays,480,0,0,0,0,0,0,0,0,0,0
+020-0965-0-1-272,Credit for Previously-owned Clean Vehicles,Mandatory,270,272,budget_authority,51,0,0,0,0,0,0,0,0,0,0
+020-0965-0-1-272,Credit for Previously-owned Clean Vehicles,Mandatory,270,272,outlays,51,0,0,0,0,0,0,0,0,0,0
+020-0947-0-1-271,Payment to Issuer of New Clean Renewable Energy Bonds,Mandatory,270,271,budget_authority,36,35,34,33,32,31,31,31,30,29,28
+020-0947-0-1-271,Payment to Issuer of New Clean Renewable Energy Bonds,Mandatory,270,271,outlays,36,35,34,33,32,31,31,31,30,29,28
+020-0948-0-1-272,Payment to Issuer of Qualified Energy Conservation Bonds,Mandatory,270,272,budget_authority,27,26,25,25,24,23,22,22,21,20,19
+020-0948-0-1-272,Payment to Issuer of Qualified Energy Conservation Bonds,Mandatory,270,272,outlays,27,26,25,25,24,23,22,22,21,20,19
+020-0962-0-1-376,Advanced Manufacturing Investment Credit,Mandatory,370,376,budget_authority,3410,3256,3164,2212,1759,1501,1168,853,630,166,159
+020-0962-0-1-376,Advanced Manufacturing Investment Credit,Mandatory,370,376,outlays,3410,3256,3164,2212,1759,1501,1168,853,630,166,159
+020-0931-0-1-376,Payment Where Certain Tax Credits Exceed Liability for Corporate [title truncated in source],Mandatory,370,376,budget_authority,900,480,190,55,10,0,0,0,0,0,0
+020-0931-0-1-376,Payment Where Certain Tax Credits Exceed Liability for Corporate [title truncated in source],Mandatory,370,376,outlays,900,480,190,55,10,0,0,0,0,0,0

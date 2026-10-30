@@ -1,0 +1,11 @@
+# Source: Congressional Budget Office, 'Business Tax Credits for Wind and Solar Power' (April 11, 2025), Table 3 and Table A-2; values from CBO data file 61188-data.xlsx.
+# URLs: https://www.cbo.gov/publication/61188 (report home; data: https://www.cbo.gov/system/files/2025-04/61188-data.xlsx), HTML report https://www.cbo.gov/publication/61329 (saved as CBO-61188-Business-Tax-Credits-Wind-Solar_report.md).
+# UNITS: billions of dollars, FISCAL years. LEVELS (deficit increase) in CBO's PRE-OBBBA January 2025 baseline. CBO publishes only FY2025 and the FY2026-2035 cumulative total - NO year-by-year path is published in the report or its data file.
+# Table 3 covers the ITC and PTC for all zero-emissions technologies (not only wind/solar). Table A-2 excludes 48D (CHIPS). CBO text: ~60% of manufacturing-credit cost expected as outlays (direct payment); ITC/PTC outlays ~5% of 2026-2035 cost.
+table,table_title_as_published,row,FY2025,FY2026_2035_total
+Table 3,"Estimated Budgetary Effects of Tax Credits for Investing in Zero-Emissions Electric Power (ITC and PTC: secs. 45, 48, 45Y, 48E)",Reduction in revenue,27,294
+Table 3,"Estimated Budgetary Effects of Tax Credits for Investing in Zero-Emissions Electric Power (ITC and PTC: secs. 45, 48, 45Y, 48E)",Outlays,1,14
+Table 3,"Estimated Budgetary Effects of Tax Credits for Investing in Zero-Emissions Electric Power (ITC and PTC: secs. 45, 48, 45Y, 48E)",Total,28,308
+Table A-2,Estimated Budgetary Effects of Tax Credits for Clean Energy Components and Facilities (45X and 48C),Reduction in revenues,7,40
+Table A-2,Estimated Budgetary Effects of Tax Credits for Clean Energy Components and Facilities (45X and 48C),Outlays,13,66
+Table A-2,Estimated Budgetary Effects of Tax Credits for Clean Energy Components and Facilities (45X and 48C),Total,20,105

@@ -1,0 +1,10 @@
+# Source: Congressional Budget Office, 'The Budget and Economic Outlook: 2026 to 2036' (February 11, 2026), Table A-2 'Conventional Estimate of the Budgetary Effects of the 2025 Reconciliation Act' (tax rows only); values from CBO data file 61882-data.xlsx.
+# URLs: https://www.cbo.gov/publication/61882 (data: https://www.cbo.gov/system/files/2026-02/61882-data.xlsx); HTML report https://www.cbo.gov/publication/62105.
+# UNITS: billions of dollars, FISCAL years. CHANGE in the PRIMARY DEFICIT relative to CBO's January 2025 baseline (negative = deficit reduction). Note sign is OPPOSITE to JCX-35-25 (where + = revenue gain).
+# 'Energy-related taxes' = title VII, subtitle A, chapter 5, subchapters A and B of P.L. 119-21 (revenue + outlay effects, from JCT). Compare 'Total of Chapter 5' in JCX-35-25 (which also includes subchapter C 'Other reforms' as CBO-provided; small differences possible).
+row_as_published,FY2025,FY2026,FY2027,FY2028,FY2029,FY2030,FY2031,FY2032,FY2033,FY2034,FY2025_2029,FY2025_2034
+Taxes paid by individuals,32,326,477,499,477,443,439,461,479,499,1810,4131
+Business taxes,100,152,152,137,108,80,56,47,45,44,650,920
+Energy-related taxes,0,-10,-34,-46,-56,-72,-84,-92,-58,-49,-145,-499
+Other tax changes,-0,1,9,11,7,2,9,9,4,7,27,58
+"Subtotal, changes to taxes",132,469,605,600,536,454,419,425,471,501,2341,4610

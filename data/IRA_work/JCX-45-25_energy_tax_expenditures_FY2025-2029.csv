@@ -1,0 +1,38 @@
+# Source: Joint Committee on Taxation, JCX-45-25 (December 3, 2025), 'Estimates of Federal Tax Expenditures for Fiscal Years 2025-2029', Table 1, Energy function (PDF pp. 34-35; footnotes p. 43-44).
+# URL: https://www.jct.gov/publications/2025/jcx-45-25/  PDF: https://www.jct.gov/getattachment/8c830c45-1680-4f7e-a649-2a0106f6b6e3/x-45-25.pdf (saved as JCX-45-25.pdf).
+# UNITS: billions of dollars, FISCAL years. LEVELS (tax expenditure = revenue loss vs. no-provision counterfactual, no behavioral response) under POST-OBBBA law: 'Reflects legislation enacted by August 31, 2025' (includes P.L. 119-21). Calculations use the January 2025 CBO revenue baseline economics.
+# Split by taxpayer type (corporations vs individuals) as published; the total column is FY2025-2029 sum as published.
+# Cell codes as published: '---' = none; '[2]' = positive tax expenditure of less than $50 million. Footnote [3]: estimate includes refundability (outlay) effects - those rows are repeated at bottom. Footnote [4]: includes bonus depreciation and general acceleration under MACRS.
+# NOTE: row 'Clean electricity production credit' is reproduced exactly as printed (corp --- --- [2] 0.2 0.5; indiv --- 0.8 [2] [2] [2]; total 0.8); its components do not sum to the printed total, so one cell is likely a misprint in the source.
+# irc_section_compiler_note and category_compiler_note were added by the compiler (not in the JCT table).
+row_as_published,irc_section_compiler_note,category_compiler_note,corp_FY2025,corp_FY2026,corp_FY2027,corp_FY2028,corp_FY2029,indiv_FY2025,indiv_FY2026,indiv_FY2027,indiv_FY2028,indiv_FY2029,total_FY2025_2029
+Residential clean energy credit,25D,consumer,---,---,---,---,---,12.4,3.3,---,---,---,15.7
+Energy efficient home improvement credit,25C,consumer,---,---,---,---,---,2.4,0.6,---,---,---,3.0
+Credits for alternative technology vehicles: Clean vehicle credit [3],30D,consumer,---,---,---,---,---,3.5,---,---,---,---,3.5
+Credits for alternative technology vehicles: Credit for qualified commercial clean vehicles,45W,business (vehicle),2.1,1.0,0.6,0.5,0.5,---,---,---,---,---,4.8
+Credits for alternative technology vehicles: Credit for previously owned plug-in electric vehicles [3],25E,consumer,---,---,---,---,---,0.6,---,---,---,---,0.6
+Credit for production of clean hydrogen [3],45V,business supply-side,[2],[2],0.1,0.1,0.1,[2],[2],[2],[2],[2],0.4
+Clean fuel production [3],45Z,business supply-side,2.1,5.1,6.6,8.6,10.6,---,[2],[2],[2],[2],33.1
+Credits for electricity production from renewable resources,45 (legacy PTC),business supply-side,4.0,5.1,6.5,7.6,7.7,0.2,0.3,0.3,0.4,0.4,32.6
+Clean electricity production credit,45Y,business supply-side,---,---,[2],0.2,0.5,---,0.8,[2],[2],[2],0.8
+Credit for carbon oxide sequestration,45Q,business supply-side,0.7,1.1,1.7,2.4,3.2,---,---,---,---,---,9.2
+Energy credit,48 (legacy ITC),business supply-side,18.9,25.0,10.0,5.2,1.2,3.6,4.8,1.9,1.0,0.2,71.7
+Clean electricity ITC,48E,business supply-side,---,0.8,7.3,5.7,1.4,---,0.1,0.8,0.6,0.2,16.8
+Credit for alternative fuel vehicle refueling property,30C,business/consumer,0.1,0.1,[2],[2],[2],0.1,[2],[2],---,---,0.3
+Credit for construction of energy-efficient new homes,45L,business (homebuilders),0.4,0.4,0.2,0.2,0.1,0.3,0.2,[2],---,---,1.9
+Advanced manufacturing production credit,45X,business supply-side,4.6,1.7,1.5,4.2,6.4,0.5,0.2,0.1,0.4,0.6,20.1
+Advanced manufacturing investment credit,48D (CHIPS; not IRA),business (semiconductor),5.8,9.6,10.9,9.9,5.3,0.6,1.1,1.2,1.1,0.6,46.2
+Zero emission nuclear power production credit,45U,business supply-side,2.7,2.8,2.9,2.9,3.0,[2],[2],[2],[2],[2],14.3
+Amortization of geological and geophysical expenditures associated with oil and gas exploration,167(h),fossil (not a credit),[2],[2],[2],[2],[2],[2],[2],[2],[2],[2],0.3
+"Depreciation recovery periods for energy-specific items [4]: Five-year MACRS for certain energy property (solar, wind, etc.)",168,cost recovery (not a credit),0.1,0.1,0.1,0.1,0.1,[2],[2],[2],[2],[2],0.5
+Depreciation recovery periods for energy-specific items [4]: 10-year MACRS for smart electric distribution property,168,cost recovery (not a credit),0.1,0.1,0.1,0.1,0.1,---,---,---,---,---,0.3
+Depreciation recovery periods for energy-specific items [4]: 15-year MACRS for certain electric transmission property,168,cost recovery (not a credit),0.1,0.1,0.1,0.1,0.1,---,---,---,---,---,0.3
+Depreciation recovery periods for energy-specific items [4]: 15-year MACRS for natural gas distribution line,168,cost recovery (not a credit),0.1,0.1,0.1,0.1,0.1,---,---,---,---,---,0.3
+Excess of percentage over cost depletion: Oil and gas,613/613A,fossil (not a credit),0.7,0.7,0.7,0.7,0.7,[2],[2],[2],[2],[2],3.4
+Excess of percentage over cost depletion: Other fuels,613,fossil (not a credit),0.1,0.1,0.1,0.1,0.1,[2],[2],[2],[2],[2],0.6
+Expensing of exploration and development costs: Oil and gas,263(c)/616/617,fossil (not a credit),0.5,0.5,0.5,0.4,0.4,[2],[2],[2],[2],[2],2.3
+Exceptions for publicly-traded partnership with qualified income derived from certain energy-related activities,7704(d),not a credit,---,---,---,---,---,0.4,0.7,0.9,1.1,1.2,4.4
+FOOTNOTE [3] refundability outlay effects included above: Clean fuel for production of clean hydrogen,45V,business supply-side,---,---,---,---,---,[2],[2],[2],[2],[2],0.2
+FOOTNOTE [3] refundability outlay effects included above: Clean Vehicle Credit,30D,consumer,---,---,---,---,---,3.5,---,---,---,---,3.5
+FOOTNOTE [3] refundability outlay effects included above: Clean fuel production credit,45Z,business supply-side,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect,Negligible Revenue Effect
+FOOTNOTE [3] refundability outlay effects included above: Credit for previously owned plug-in electric vehicles,25E,consumer,---,---,---,---,---,0.6,---,---,---,---,0.6
